@@ -4,7 +4,6 @@ dotenv.config({ path: ".env.local" });
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { execSync } from "child_process";
 import OpenAI from "openai";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -118,24 +117,6 @@ function saveToolConfig(config) {
   return finalConfig.slug;
 }
 
-function gitCommitAndPush(slug) {
-  try {
-    execSync("git config user.name 'github-actions[bot]'", { stdio: "inherit" });
-    execSync("git config user.email 'github-actions[bot]@users.noreply.github.com'", {
-      stdio: "inherit",
-    });
-
-    execSync("git add tool-configs tool-index.json", { stdio: "inherit" });
-    execSync(`git commit -m "Add tool ${slug}"`, { stdio: "inherit" });
-    execSync("git push", { stdio: "inherit" });
-
-    console.log("Git push complete. Vercel should deploy automatically.");
-  } catch (err) {
-    // Don't crash the script if git fails (e.g., no changes or no remote auth)
-    console.error("Git commit/push failed (this is non-fatal):", err.message);
-  }
-}
-
 async function main() {
   console.log("Generating new tool...");
   const config = await generateToolConfig();
@@ -143,8 +124,6 @@ async function main() {
 
   const finalSlug = saveToolConfig(config);
   console.log(`Saved config and updated index for slug "${finalSlug}".`);
-
-  gitCommitAndPush(finalSlug);
 }
 
 main().catch((err) => {

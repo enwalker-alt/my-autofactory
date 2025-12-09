@@ -27,9 +27,10 @@ Constraints:
 - Each tool must be usable as a single-page web app.
 - Input is plain text (textarea).
 - Output is plain text.
-- Target a specific niche
+- Target a specific niche (e.g., nurses, real estate agents, teachers, salespeople, etc.).
 - Must be actually useful, not a joke.
 - Avoid anything medical diagnosis, legal advice, or unsafe content.
+- The niche and use-case must be clearly different from existing tools (no overlapping user role or text type).
 
 Return ONLY strict JSON with this shape:
 {
@@ -43,12 +44,64 @@ Return ONLY strict JSON with this shape:
 }
 `;
 
-async function generateToolConfig() {
+// ---- helpers to read existing tools ----
+
+function loadExistingTools() {
+  const rootDir = path.join(__dirname, "..");
+  const configDir = path.join(rootDir, "tool-configs");
+
+  if (!fs.existsSync(configDir)) {
+    return [];
+  }
+
+  const files = fs
+    .readdirSync(configDir)
+    .filter((file) => file.endsWith(".json"));
+
+  const tools = files.map((file) => {
+    const filePath = path.join(configDir, file);
+    const content = fs.readFileSync(filePath, "utf-8");
+    try {
+      const json = JSON.parse(content);
+      return {
+        slug: json.slug,
+        title: json.title,
+        description: json.description,
+      };
+    } catch {
+      return null;
+    }
+  });
+
+  return tools.filter(Boolean);
+}
+
+// ---- OpenAI call ----
+
+async function generateToolConfig(existingTools) {
+  const existingSummary =
+    existingTools.length === 0
+      ? "There are currently no existing tools."
+      : "Existing tools:\n" +
+        existingTools
+          .map(
+            (t) =>
+              `- slug: ${t.slug}, title: ${t.title}, description: ${t.description}`
+          )
+          .join("\n");
+
   const completion = await client.chat.completions.create({
     model: "gpt-4.1-mini",
     messages: [
       { role: "system", content: RUBRIC },
-      { role: "user", content: "Generate one new tool config JSON now." },
+      {
+        role: "user",
+        content:
+          existingSummary +
+          "\n\nGenerate ONE new tool config JSON now for a niche that is clearly different from ALL of the above. " +
+          "Do not create anything about nursing, real estate, or academic abstracts/papers/summaries if those are in the list. " +
+          "Avoid overlapping the same user role or type of input text.",
+      },
     ],
     temperature: 0.7,
   });
@@ -58,6 +111,38 @@ async function generateToolConfig() {
 
   const config = JSON.parse(raw);
   return config;
+}
+
+// Try a few times to avoid duplicate slug/title
+async function generateUniqueToolConfig(existingTools, maxTries = 5) {
+  const existingSlugs = new Set(
+    existingTools.map((t) => t.slug?.toLowerCase())
+  );
+  const existingTitles = new Set(
+    existingTools.map((t) => t.title?.toLowerCase())
+  );
+
+  for (let i = 0; i < maxTries; i++) {
+    const config = await generateToolConfig(existingTools);
+
+    const slugLower = (config.slug || "").toLowerCase();
+    const titleLower = (config.title || "").toLowerCase();
+
+    const slugDup = existingSlugs.has(slugLower);
+    const titleDup = existingTitles.has(titleLower);
+
+    if (!slugDup && !titleDup) {
+      return config;
+    }
+
+    console.log(
+      `Generated config was too similar to an existing tool (try ${
+        i + 1
+      }/${maxTries}). Retrying...`
+    );
+  }
+
+  throw new Error("Failed to generate a unique tool after several attempts.");
 }
 
 /**
@@ -81,13 +166,11 @@ function getUniqueSlugAndPath(baseSlug, configDir) {
 function saveToolConfig(config) {
   const rootDir = path.join(__dirname, "..");
   const configDir = path.join(rootDir, "tool-configs");
-  const indexPath = path.join(rootDir, "tool-index.json");
 
   if (!fs.existsSync(configDir)) {
     fs.mkdirSync(configDir, { recursive: true });
   }
 
-  // Get a unique slug + path so we never fail just because a slug already exists
   const { slug: uniqueSlug, configPath } = getUniqueSlugAndPath(
     config.slug,
     configDir
@@ -98,32 +181,18 @@ function saveToolConfig(config) {
   fs.writeFileSync(configPath, JSON.stringify(finalConfig, null, 2), "utf-8");
   console.log(`Saved config to ${configPath}`);
 
-  // Read existing index if it exists, otherwise start a new array
-  let index = [];
-  if (fs.existsSync(indexPath)) {
-    const indexRaw = fs.readFileSync(indexPath, "utf-8");
-    index = JSON.parse(indexRaw);
-  }
-
-  index.push({
-    slug: finalConfig.slug,
-    title: finalConfig.title,
-    description: finalConfig.description,
-  });
-
-  fs.writeFileSync(indexPath, JSON.stringify(index, null, 2), "utf-8");
-  console.log(`Updated tool-index.json with slug "${finalConfig.slug}"`);
-
   return finalConfig.slug;
 }
 
 async function main() {
+  const existingTools = loadExistingTools();
+
   console.log("Generating new tool...");
-  const config = await generateToolConfig();
+  const config = await generateUniqueToolConfig(existingTools);
   console.log("Generated tool:", config.slug);
 
   const finalSlug = saveToolConfig(config);
-  console.log(`Saved config and updated index for slug "${finalSlug}".`);
+  console.log(`Saved config for slug "${finalSlug}".`);
 }
 
 main().catch((err) => {

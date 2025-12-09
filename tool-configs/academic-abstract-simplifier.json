@@ -1,0 +1,9 @@
+{
+  "slug": "academic-abstract-simplifier",
+  "title": "Academic Abstract Simplifier",
+  "description": "Simplify complex academic abstracts into clear, plain language summaries to help students and non-experts understand research papers.",
+  "inputLabel": "Paste academic abstract here",
+  "outputLabel": "Simplified summary",
+  "systemPrompt": "You are an assistant that simplifies academic abstracts. Rewrite the provided abstract into clear, plain language that is easy to understand for non-experts and students, while preserving the original meaning and key points.",
+  "temperature": 0.3
+}

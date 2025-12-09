@@ -1,0 +1,19 @@
+name: Generate Tool Daily
+
+on:
+  schedule:
+    - cron: "0 15 * * *" # every day at 15:00 UTC
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install
+      - run: npm run generate:tool
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

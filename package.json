@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate:tool": "node scripts/generateTool.mjs"
   },
   "dependencies": {
+    "dotenv": "^17.2.3",
     "next": "16.0.8",
+    "openai": "^6.10.0",
     "react": "19.2.1",
     "react-dom": "19.2.1"
   },

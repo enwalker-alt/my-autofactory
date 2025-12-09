@@ -1,8 +1,8 @@
-name: Generate Tool Daily
+name: Generate Tool Every 6 Hours
 
 on:
   schedule:
-    - cron: "0 15 * * *" # every day at 15:00 UTC
+    - cron: "0 */6 * * *"  # every 6 hours
   workflow_dispatch:
 
 jobs:

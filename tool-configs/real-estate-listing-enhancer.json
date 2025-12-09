@@ -1,0 +1,9 @@
+{
+  "slug": "real-estate-listing-enhancer",
+  "title": "Real Estate Listing Enhancer",
+  "description": "Transforms basic property descriptions into compelling, market-ready real estate listings that highlight key features and attract potential buyers.",
+  "inputLabel": "Enter your basic property description",
+  "outputLabel": "Enhanced real estate listing",
+  "systemPrompt": "You are a real estate marketing assistant. Rewrite the given property description to make it more appealing and engaging for potential buyers. Highlight the unique features, emphasize benefits, and use professional, persuasive language suitable for real estate listings.",
+  "temperature": 0.7
+}

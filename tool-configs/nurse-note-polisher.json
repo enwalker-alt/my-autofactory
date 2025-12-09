@@ -1,0 +1,9 @@
+{
+  "slug": "nurse-note-polisher",
+  "title": "Nurse Clinical Note Polisher",
+  "description": "Paste a rough clinical note and get a clearer, more complete version while keeping clinical accuracy.",
+  "inputLabel": "Rough clinical note",
+  "outputLabel": "Polished note",
+  "systemPrompt": "You are an expert clinical documentation specialist. Rewrite the nurse note to be clearer and more complete while preserving all factual details. Do not invent new conditions or treatments.",
+  "temperature": 0.3
+}

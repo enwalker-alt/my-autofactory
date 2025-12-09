@@ -10,6 +10,13 @@ import OpenAI from "openai";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+if (!process.env.OPENAI_API_KEY) {
+  console.error(
+    "ERROR: OPENAI_API_KEY is not set. Make sure the environment variable is defined (e.g., GitHub Actions secret named OPENAI_API_KEY)."
+  );
+  process.exit(1);
+}
+
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -21,7 +28,7 @@ Constraints:
 - Each tool must be usable as a single-page web app.
 - Input is plain text (textarea).
 - Output is plain text.
-- Target a specific niche (e.g., nurses, real estate agents, teachers, salespeople, etc.).
+- Target a specific niche
 - Must be actually useful, not a joke.
 - Avoid anything medical diagnosis, legal advice, or unsafe content.
 
@@ -54,39 +61,79 @@ async function generateToolConfig() {
   return config;
 }
 
+/**
+ * Ensure we get a unique slug + file path.
+ * If "my-tool" exists, we try "my-tool-1", "my-tool-2", ...
+ */
+function getUniqueSlugAndPath(baseSlug, configDir) {
+  let slug = baseSlug;
+  let counter = 1;
+  let configPath = path.join(configDir, `${slug}.json`);
+
+  while (fs.existsSync(configPath)) {
+    slug = `${baseSlug}-${counter}`;
+    configPath = path.join(configDir, `${slug}.json`);
+    counter++;
+  }
+
+  return { slug, configPath };
+}
+
 function saveToolConfig(config) {
   const rootDir = path.join(__dirname, "..");
   const configDir = path.join(rootDir, "tool-configs");
   const indexPath = path.join(rootDir, "tool-index.json");
-  const configPath = path.join(configDir, `${config.slug}.json`);
 
   if (!fs.existsSync(configDir)) {
     fs.mkdirSync(configDir, { recursive: true });
   }
 
-  if (fs.existsSync(configPath)) {
-    throw new Error(`Config for slug ${config.slug} already exists.`);
+  // Get a unique slug + path so we never fail just because a slug already exists
+  const { slug: uniqueSlug, configPath } = getUniqueSlugAndPath(
+    config.slug,
+    configDir
+  );
+
+  const finalConfig = { ...config, slug: uniqueSlug };
+
+  fs.writeFileSync(configPath, JSON.stringify(finalConfig, null, 2), "utf-8");
+  console.log(`Saved config to ${configPath}`);
+
+  // Read existing index if it exists, otherwise start a new array
+  let index = [];
+  if (fs.existsSync(indexPath)) {
+    const indexRaw = fs.readFileSync(indexPath, "utf-8");
+    index = JSON.parse(indexRaw);
   }
 
-  fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf-8");
-
-  const indexRaw = fs.readFileSync(indexPath, "utf-8");
-  const index = JSON.parse(indexRaw);
-
   index.push({
-    slug: config.slug,
-    title: config.title,
-    description: config.description,
+    slug: finalConfig.slug,
+    title: finalConfig.title,
+    description: finalConfig.description,
   });
 
   fs.writeFileSync(indexPath, JSON.stringify(index, null, 2), "utf-8");
+  console.log(`Updated tool-index.json with slug "${finalConfig.slug}"`);
+
+  return finalConfig.slug;
 }
 
 function gitCommitAndPush(slug) {
-  // Requires a git repo + remote already set up
-  execSync("git add tool-configs tool-index.json", { stdio: "inherit" });
-  execSync(`git commit -m "Add tool ${slug}"`, { stdio: "inherit" });
-  execSync("git push", { stdio: "inherit" });
+  try {
+    execSync("git config user.name 'github-actions[bot]'", { stdio: "inherit" });
+    execSync("git config user.email 'github-actions[bot]@users.noreply.github.com'", {
+      stdio: "inherit",
+    });
+
+    execSync("git add tool-configs tool-index.json", { stdio: "inherit" });
+    execSync(`git commit -m "Add tool ${slug}"`, { stdio: "inherit" });
+    execSync("git push", { stdio: "inherit" });
+
+    console.log("Git push complete. Vercel should deploy automatically.");
+  } catch (err) {
+    // Don't crash the script if git fails (e.g., no changes or no remote auth)
+    console.error("Git commit/push failed (this is non-fatal):", err.message);
+  }
 }
 
 async function main() {
@@ -94,15 +141,10 @@ async function main() {
   const config = await generateToolConfig();
   console.log("Generated tool:", config.slug);
 
-  saveToolConfig(config);
-  console.log("Saved config and updated index.");
+  const finalSlug = saveToolConfig(config);
+  console.log(`Saved config and updated index for slug "${finalSlug}".`);
 
-  try {
-    gitCommitAndPush(config.slug);
-    console.log("Git push complete. Vercel should deploy automatically.");
-  } catch (err) {
-    console.error("Git commit/push failed (is git set up?):", err.message);
-  }
+  gitCommitAndPush(finalSlug);
 }
 
 main().catch((err) => {

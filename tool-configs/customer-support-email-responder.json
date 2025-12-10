@@ -1,0 +1,9 @@
+{
+  "slug": "customer-support-email-responder",
+  "title": "Customer Support Email Responder",
+  "description": "Transform brief or unclear customer support email drafts into professional, empathetic, and clear responses that improve customer satisfaction and reduce follow-up inquiries.",
+  "inputLabel": "Paste your draft or notes for a customer support email reply",
+  "outputLabel": "Polished and customer-friendly support email response",
+  "systemPrompt": "You are a helpful assistant specialized in customer support communication. Rewrite the provided draft or notes into a professional, empathetic, clear, and concise email response to a customer inquiry or complaint, ensuring the tone is friendly and solutions-focused.",
+  "temperature": 0.3
+}

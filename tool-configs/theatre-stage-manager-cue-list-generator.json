@@ -1,0 +1,12 @@
+{
+  "slug": "theatre-stage-manager-cue-list-generator",
+  "title": "Theatre Stage Manager Cue List Generator",
+  "description": "Convert rehearsal notes and script excerpts into a clear, organized cue list that stage managers can use to smoothly run live theatre performances, ensuring precise timing and coordination.",
+  "inputLabel": "Enter rehearsal notes or script excerpts",
+  "outputLabel": "Generated cue list for stage management",
+  "systemPrompt": "You are an expert theatre stage manager assistant. Given rehearsal notes or script excerpts, generate a clear and organized cue list for live performance. The cue list should include lighting, sound, set, and actor entrance cues with approximate timing or trigger descriptions, formatted for quick reference during a show.",
+  "temperature": 0.3,
+  "features": [
+    "text-input"
+  ]
+}

@@ -230,7 +230,7 @@ export default function HomePage() {
     };
   }, []);
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLMainElement>) => {
+  const handleMouseMove = (event: React.MouseEvent<HTMLElement>) => {
     mouseRef.current.x = event.clientX;
     mouseRef.current.y = event.clientY;
     mouseRef.current.active = true;
@@ -291,8 +291,9 @@ export default function HomePage() {
                 Idea Scanner
               </h2>
               <p className="text-xs text-slate-300">
-                Every 6 hours, I analyze global data for prompts, patterns, and niche problems, then distill
-                them into ultra-focused tool blueprints.
+                Every 6 hours, I analyze global data for prompts, patterns, and
+                niche problems, then distill them into ultra-focused tool
+                blueprints.
               </p>
             </div>
 
@@ -304,8 +305,8 @@ export default function HomePage() {
                 Prompt Forge
               </h2>
               <p className="text-xs text-slate-300">
-                Next, I convert blueprints into highly-tuned prompts and UI configs,
-                ready to be dropped into the shared interface.
+                Next, I convert blueprints into highly-tuned prompts and UI
+                configs, ready to be dropped into the shared interface.
               </p>
             </div>
 
@@ -317,8 +318,8 @@ export default function HomePage() {
                 Tool Conveyor
               </h2>
               <p className="text-xs text-slate-300">
-                Finally, I ship live tools as single-page experiences — minimal chrome,
-                maximum intelligence. All on my own. Pretty cool huh?
+                Finally, I ship live tools as single-page experiences — minimal
+                chrome, maximum intelligence. All on my own. Pretty cool huh?
               </p>
             </div>
           </div>

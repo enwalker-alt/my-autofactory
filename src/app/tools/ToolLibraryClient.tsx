@@ -1,8 +1,8 @@
-import fs from "fs";
-import path from "path";
-import Link from "next/link";
+// src/app/tools/ToolsClient.tsx
+"use client";
 
-export const dynamic = "force-dynamic";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 
 type ToolMeta = {
   slug: string;
@@ -10,28 +10,9 @@ type ToolMeta = {
   description: string;
 };
 
-function getToolsFromConfigs(): ToolMeta[] {
-  const configDir = path.join(process.cwd(), "tool-configs");
-  const files = fs
-    .readdirSync(configDir)
-    .filter((file) => file.endsWith(".json"));
-
-  return files
-    .map((file) => {
-      const filePath = path.join(configDir, file);
-      const content = fs.readFileSync(filePath, "utf-8");
-      const json = JSON.parse(content);
-
-      return {
-        slug: json.slug,
-        title: json.title,
-        description: json.description,
-      } as ToolMeta;
-    })
-    .sort((a, b) => a.title.localeCompare(b.title));
-}
-
-// --- simple relevance scoring (no AI needed) ---
+type ToolsClientProps = {
+  tools: ToolMeta[];
+};
 
 function escapeRegExp(str: string) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -61,34 +42,26 @@ function scoreTool(tool: ToolMeta, query: string): number {
   return score;
 }
 
-type ToolsPageProps = {
-  searchParams?: {
-    q?: string;
-  };
-};
+export default function ToolsClient({ tools }: ToolsClientProps) {
+  const [query, setQuery] = useState("");
 
-export default function ToolsPage({ searchParams }: ToolsPageProps) {
-  const tools = getToolsFromConfigs();
+  const filteredTools = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return tools;
 
-  // what the user typed (keep original casing for display)
-  const rawQuery = (searchParams?.q ?? "").trim();
-  const query = rawQuery.toLowerCase();
-
-  let filteredTools: ToolMeta[];
-
-  if (!query) {
-    filteredTools = tools;
-  } else {
     const scored = tools
-      .map((tool) => ({ tool, score: scoreTool(tool, query) }))
-      .filter(({ score }) => score > 0) // hide non-matches entirely
+      .map((tool) => ({ tool, score: scoreTool(tool, q) }))
+      .filter(({ score }) => score > 0)
       .sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         return a.tool.title.localeCompare(b.tool.title);
       });
 
-    filteredTools = scored.map(({ tool }) => tool);
-  }
+    // If nothing scored, fall back to showing all
+    if (scored.length === 0) return tools;
+
+    return scored.map(({ tool }) => tool);
+  }, [query, tools]);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#050816] via-[#020617] to-black text-gray-100">
@@ -110,7 +83,8 @@ export default function ToolsPage({ searchParams }: ToolsPageProps) {
 
           {/* Search + meta */}
           <div className="mt-8 space-y-3">
-            <form className="w-full max-w-md mx-auto" method="GET">
+            {/* No actual form submit needed; we search as you type */}
+            <div className="w-full max-w-md mx-auto">
               <div className="relative">
                 <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                   <svg
@@ -129,13 +103,13 @@ export default function ToolsPage({ searchParams }: ToolsPageProps) {
                   </svg>
                 </span>
                 <input
-                  name="q"
-                  defaultValue={rawQuery}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search tools by name or description..."
                   className="w-full rounded-2xl bg-white/5 border border-white/10 px-10 py-2.5 text-sm text-gray-100 placeholder:text-gray-500 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
                 />
               </div>
-            </form>
+            </div>
 
             <p className="text-xs md:text-sm text-gray-500 text-center">
               Showing{" "}
@@ -145,11 +119,10 @@ export default function ToolsPage({ searchParams }: ToolsPageProps) {
               of{" "}
               <span className="text-gray-400 font-medium">{tools.length}</span>{" "}
               tools
-              {rawQuery && (
+              {query.trim() && (
                 <>
                   {" "}
-                  for{" "}
-                  <span className="text-gray-300">&quot;{rawQuery}&quot;</span>
+                  for <span className="text-gray-300">&quot;{query}&quot;</span>
                 </>
               )}
             </p>
@@ -158,11 +131,11 @@ export default function ToolsPage({ searchParams }: ToolsPageProps) {
 
         {/* Tools grid */}
         <section>
-          {filteredTools.length === 0 && rawQuery ? (
+          {filteredTools.length === 0 ? (
             <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-6 text-sm text-gray-400 text-center">
               No tools match{" "}
               <span className="font-medium text-gray-200">
-                &ldquo;{rawQuery}&rdquo;
+                &ldquo;{query}&rdquo;
               </span>
               . Try a different keyword.
             </div>

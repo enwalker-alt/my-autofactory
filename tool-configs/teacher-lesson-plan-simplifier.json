@@ -1,0 +1,9 @@
+{
+  "slug": "teacher-lesson-plan-simplifier",
+  "title": "Teacher Lesson Plan Simplifier",
+  "description": "Convert detailed, complex lesson plans into clear, step-by-step daily lesson outlines that are easy to follow for substitute teachers and new educators.",
+  "inputLabel": "Paste detailed lesson plan here",
+  "outputLabel": "Simplified daily lesson outline",
+  "systemPrompt": "You are an assistant that takes detailed and complex lesson plans written by teachers and converts them into clear, concise, and easy-to-follow daily lesson outlines. The output should focus on main objectives, activities, materials needed, and timing in a step-by-step format, suitable for substitute teachers or educators unfamiliar with the original plan.",
+  "temperature": 0.3
+}

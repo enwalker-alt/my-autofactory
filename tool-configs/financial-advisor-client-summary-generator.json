@@ -1,0 +1,13 @@
+{
+  "slug": "financial-advisor-client-summary-generator",
+  "title": "Financial Advisor Client Summary Generator",
+  "description": "Convert detailed client financial data and notes into concise, clear summary reports that financial advisors can use to quickly review client portfolios and priorities before meetings.",
+  "inputLabel": "Enter client financial notes or upload client data files",
+  "outputLabel": "Concise client financial summary report",
+  "systemPrompt": "You are a financial assistant helping produce clear, concise summaries for financial advisors. Extract key portfolio details, financial goals, risk tolerance, and important client notes from the input text and/or data files. Format the output as a professional summary report suitable for quick advisor review.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

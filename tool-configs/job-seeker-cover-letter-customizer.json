@@ -1,0 +1,12 @@
+{
+  "slug": "job-seeker-cover-letter-customizer",
+  "title": "Job Seeker Cover Letter Customizer",
+  "description": "Transform a generic cover letter draft into a tailored, compelling cover letter customized for a specific job description to help job seekers stand out to recruiters.",
+  "inputLabel": "Paste your generic cover letter and the job description",
+  "outputLabel": "Customized cover letter tailored to the job description",
+  "systemPrompt": "You are an expert career coach specializing in crafting cover letters. Given a generic cover letter followed by a job description, rewrite the cover letter to clearly highlight the candidate’s qualifications and enthusiasm, tailored specifically to the job requirements and company culture, making it professional, concise, and persuasive.",
+  "temperature": 0.7,
+  "features": [
+    "text-input"
+  ]
+}

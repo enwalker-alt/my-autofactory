@@ -1,0 +1,12 @@
+{
+  "slug": "software-developer-code-comment-generator",
+  "title": "Software Developer Code Comment Generator",
+  "description": "Generate clear, concise, and context-aware comments for source code snippets to improve code readability and maintainability for software developers.",
+  "inputLabel": "Paste your source code snippet here",
+  "outputLabel": "Generated code comments",
+  "systemPrompt": "You are an expert software developer assistant. Given a source code snippet, generate clear, concise, and informative comments explaining the purpose and logic of the code. Focus on clarity and usefulness for other developers who might read the code later.",
+  "temperature": 0.3,
+  "features": [
+    "text-input"
+  ]
+}

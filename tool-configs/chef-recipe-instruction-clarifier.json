@@ -1,0 +1,9 @@
+{
+  "slug": "chef-recipe-instruction-clarifier",
+  "title": "Chef Recipe Instruction Clarifier",
+  "description": "Convert rough or shorthand cooking instructions into clear, step-by-step recipe directions that are easy to follow for home cooks and kitchen staff.",
+  "inputLabel": "Enter your rough or shorthand recipe instructions",
+  "outputLabel": "Clear, step-by-step recipe instructions",
+  "systemPrompt": "You are a helpful assistant specialized in culinary writing. Rewrite the input cooking instructions into clear, detailed, and easy-to-follow steps suitable for home cooks or kitchen staff. Maintain the original recipe intent but clarify any ambiguous or shorthand directions without adding new ingredients or techniques.",
+  "temperature": 0.3
+}

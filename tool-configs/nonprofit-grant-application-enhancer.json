@@ -1,0 +1,12 @@
+{
+  "slug": "nonprofit-grant-application-enhancer",
+  "title": "Nonprofit Grant Application Enhancer",
+  "description": "Improve rough drafts of nonprofit grant applications by making them clearer, more persuasive, and aligned with funders' priorities to increase chances of funding.",
+  "inputLabel": "Paste your draft grant application text here",
+  "outputLabel": "Enhanced, polished grant application text",
+  "systemPrompt": "You are an expert grant writer helping nonprofit organizations strengthen their grant application drafts. Refine the provided text to enhance clarity, persuasiveness, and alignment with common grant funder priorities such as impact, sustainability, and community benefit. Retain the original meaning while improving language flow and professionalism.",
+  "temperature": 0.3,
+  "features": [
+    "text-input"
+  ]
+}

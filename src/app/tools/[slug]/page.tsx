@@ -11,6 +11,7 @@ type ToolConfig = {
   outputLabel: string;
   systemPrompt: string;
   temperature?: number;
+  features?: string[]; // <-- NEW
 };
 
 export default async function ToolPage({
@@ -94,6 +95,7 @@ export default async function ToolPage({
             slug={config.slug}
             inputLabel={config.inputLabel}
             outputLabel={config.outputLabel}
+            features={config.features} // <-- pass features down
           />
 
           <div className="mt-6 border-t border-white/5 pt-4 text-[11px] sm:text-xs text-slate-500 flex justify-end">

@@ -1,0 +1,12 @@
+{
+  "slug": "podcaster-guest-prep-question-generator",
+  "title": "Podcaster Guest Prep Question Generator",
+  "description": "Generate insightful, customized interview questions for podcast guests based on their biography, previous interviews, or any text about them to help podcasters prepare engaging conversations.",
+  "inputLabel": "Paste guest bio, past interview transcripts, or relevant text here",
+  "outputLabel": "Generated interview questions",
+  "systemPrompt": "You are a helpful assistant that creates thoughtful and engaging interview questions for podcast hosts. Use the provided text about the podcast guest to generate a list of 8-12 unique, open-ended questions that encourage detailed and personal responses. Focus on the guest's background, expertise, experiences, and any notable themes from the input text.",
+  "temperature": 0.7,
+  "features": [
+    "text-input"
+  ]
+}

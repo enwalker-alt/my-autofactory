@@ -46,6 +46,13 @@ export default function ToolClient({
     }
   }
 
+  function handleCopy() {
+    if (!output) return;
+    navigator.clipboard.writeText(output).catch((err) =>
+      console.error("Failed to copy:", err)
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mt-4">
       <div>
@@ -58,20 +65,35 @@ export default function ToolClient({
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={loading || !input.trim()}
-        className="rounded-md border px-4 py-2 font-medium disabled:opacity-50"
-      >
-        {loading ? "Generating..." : "Generate"}
-      </button>
+      {/* Buttons row */}
+      <div className="flex items-center justify-between gap-3">
+        {/* Generate button (left) */}
+        <button
+          type="submit"
+          disabled={loading || !input.trim()}
+          className="rounded-md border px-4 py-2 font-medium disabled:opacity-50"
+        >
+          {loading ? "Generating..." : "Generate"}
+        </button>
+
+        {/* Copy button (right) – only shows once output exists */}
+        {output && (
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="rounded-md border px-4 py-2 font-medium disabled:opacity-50"
+          >
+            Copy
+          </button>
+        )}
+      </div>
 
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {output && (
         <div>
           <h3 className="font-semibold mb-1">{outputLabel}</h3>
-          <div className="whitespace-pre-wrap border rounded-md p-3 bg-gray-50">
+          <div className="whitespace-pre-wrap border rounded-md p-3 bg-white text-black">
             {output}
           </div>
         </div>

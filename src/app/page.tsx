@@ -81,7 +81,7 @@ export default function HomePage() {
 
     const loop = (now: number) => {
       frameId = requestAnimationFrame(loop);
-      const dt = Math.min((now - lastTime) / 1000, 0.033); // seconds
+      const dt = Math.min((now - lastTime) / 1000, 0.033);
       lastTime = now;
 
       state.t += dt;
@@ -96,23 +96,17 @@ export default function HomePage() {
       const mouseRecentlyActive =
         mouse.active && now - mouse.lastMove < 2000 && mouse.x !== 0;
 
-      // ---- Mode transitions (slow & infrequent) ----
       if (state.mode === "wander" && state.modeTime > 7) {
         const r = Math.random();
-        if (r < 0.3) {
-          setMode("inspect-title");
-        } else if (r < 0.6) {
-          setMode("slide-edge");
-        } else if (state.modeTime > 16) {
-          state.modeTime = 0;
-        }
+        if (r < 0.3) setMode("inspect-title");
+        else if (r < 0.6) setMode("slide-edge");
+        else if (state.modeTime > 16) state.modeTime = 0;
       } else if (state.mode === "inspect-title" && state.modeTime > 6) {
         setMode("wander");
       } else if (state.mode === "slide-edge" && state.modeTime > 8.5) {
         setMode("wander");
       }
 
-      // ---- Compute desired path position (px, py) ----
       let px = state.x;
       let py = state.y;
 
@@ -137,7 +131,7 @@ export default function HomePage() {
         px = baseX + Math.cos(state.t * 1.1) * 24;
         py = baseY + Math.sin(state.t * 1.3) * 16;
       } else if (state.mode === "slide-edge") {
-        const progress = Math.min(state.modeTime / 9, 1); // very slow
+        const progress = Math.min(state.modeTime / 9, 1);
         const path = margin + progress * (width - margin * 2);
         const pathY = margin + progress * (height - margin * 2);
 
@@ -161,11 +155,9 @@ export default function HomePage() {
         }
       }
 
-      // Small organic wobble
       px += Math.sin(state.t * 2.2) * 2;
       py += Math.cos(state.t * 2.0) * 2;
 
-      // ---- Mouse avoidance: soft repulsion of the TARGET ONLY ----
       if (mouseRecentlyActive) {
         const dxm = px - mouse.x;
         const dym = py - mouse.y;
@@ -175,18 +167,16 @@ export default function HomePage() {
         if (dist > 0 && dist < repelRadius) {
           const nx = dxm / dist;
           const ny = dym / dist;
-          const strength = ((repelRadius - dist) / repelRadius) * 100; // where to push target
+          const strength = ((repelRadius - dist) / repelRadius) * 100;
           px += nx * strength;
           py += ny * strength;
         }
       }
 
-      // Clamp target to safe zone
       px = Math.max(margin, Math.min(width - margin, px));
       py = Math.max(margin, Math.min(height - margin, py));
 
-      // ---- Move orb toward target at constant limited speed ----
-      const maxSpeed = 200; // pixels per second (nice and slow)
+      const maxSpeed = 200;
       const maxStep = maxSpeed * dt;
 
       let dx = px - state.x;
@@ -202,22 +192,22 @@ export default function HomePage() {
       state.x += dx;
       state.y += dy;
 
-      // No bouncing, no overshoot – just clamp if somehow out of bounds
       state.x = Math.max(margin, Math.min(width - margin, state.x));
       state.y = Math.max(margin, Math.min(height - margin, state.y));
 
-      // Slight scale based on movement amount
       const speed = distToTarget / dt || 0;
       const scale = 1 + Math.min(speed / 300, 0.08);
       const tiltX = dy * 0.02;
       const tiltY = -dx * 0.02;
 
       if (orbRef.current) {
-        const el = orbRef.current;
-        el.style.transform = `translate3d(${state.x - 24}px, ${
-          state.y - 24
-        }px, 0) scale(${scale}) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-        el.style.filter =
+        orbRef.current.style.transform = `
+          translate3d(${state.x - 24}px, ${state.y - 24}px, 0)
+          scale(${scale})
+          rotateX(${tiltX}deg)
+          rotateY(${tiltY}deg)
+        `;
+        orbRef.current.style.filter =
           "drop-shadow(0 0 18px rgba(56,189,248,0.55)) drop-shadow(0 0 50px rgba(244,114,182,0.55))";
       }
     };
@@ -244,7 +234,7 @@ export default function HomePage() {
   return (
     <>
       <main
-        className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50"
+        className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#050816] via-[#020617] to-black text-slate-50"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
@@ -252,22 +242,19 @@ export default function HomePage() {
         <div className="pointer-events-none absolute -left-40 top-0 h-80 w-80 rounded-full bg-fuchsia-500/25 blur-3xl" />
         <div className="pointer-events-none absolute -right-40 bottom-0 h-96 w-96 rounded-full bg-cyan-500/25 blur-3xl" />
 
-        {/* The roaming orb */}
+        {/* Roaming orb */}
         <div
           ref={orbRef}
           className="pointer-events-none fixed top-0 left-0 z-30 h-12 w-12 rounded-full bg-gradient-to-tr from-fuchsia-500 via-violet-500 to-cyan-300"
         >
-          {/* inner core */}
           <div className="absolute inset-1 rounded-full bg-slate-950/60" />
           <div className="animate-orb-pulse absolute inset-0 rounded-full bg-gradient-to-tr from-fuchsia-400/90 via-violet-300/95 to-cyan-200/90 mix-blend-screen" />
-
-          {/* specular highlights */}
           <div className="absolute left-2 top-1.5 h-4 w-4 rounded-full bg-gradient-to-br from-white/90 via-cyan-100/70 to-transparent blur-[1px] opacity-90" />
           <div className="absolute right-1.5 bottom-2 h-2.5 w-2.5 rounded-full bg-gradient-to-br from-cyan-100 via-white/70 to-transparent opacity-80" />
         </div>
 
+        {/* Main content */}
         <div className="relative z-10 flex flex-col items-center justify-center px-4 py-16">
-          {/* Hero */}
           <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
             <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs font-medium uppercase tracking-[0.2em] text-slate-300">
               Experimental • Auto-generated AI micro-apps
@@ -281,7 +268,7 @@ export default function HomePage() {
             </h1>
           </div>
 
-          {/* Factory pipeline cards */}
+          {/* Cards */}
           <div className="mt-10 grid w-full max-w-5xl gap-6 md:grid-cols-3">
             <div className="group rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_0_40px_rgba(15,23,42,0.9)] backdrop-blur-xl transition hover:border-fuchsia-400/70 hover:shadow-[0_0_60px_rgba(236,72,153,0.7)]">
               <div className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-xl bg-fuchsia-500/20 text-xs font-semibold text-fuchsia-300">
@@ -292,8 +279,7 @@ export default function HomePage() {
               </h2>
               <p className="text-xs text-slate-300">
                 Every 6 hours, I analyze global data for prompts, patterns, and
-                niche problems, then distill them into ultra-focused tool
-                blueprints.
+                niche problems, then distill them into blueprints.
               </p>
             </div>
 
@@ -305,8 +291,7 @@ export default function HomePage() {
                 Prompt Forge
               </h2>
               <p className="text-xs text-slate-300">
-                Next, I convert blueprints into highly-tuned prompts and UI
-                configs, ready to be dropped into the shared interface.
+                I convert blueprints into highly-tuned prompts and UI configs.
               </p>
             </div>
 
@@ -318,13 +303,12 @@ export default function HomePage() {
                 Tool Conveyor
               </h2>
               <p className="text-xs text-slate-300">
-                Finally, I ship live tools as single-page experiences — minimal
-                chrome, maximum intelligence. All on my own. Pretty cool huh?
+                I deploy new tools automatically as single-page AI experiences.
               </p>
             </div>
           </div>
 
-          {/* CTA section */}
+          {/* CTA */}
           <div className="mt-14 flex flex-col items-center justify-center">
             <Link
               href="/tools"
@@ -334,7 +318,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Factory console at bottom */}
+          {/* Console */}
           <div className="mt-20 w-full max-w-3xl rounded-2xl border border-white/10 bg-black/60 p-4 font-mono text-xs text-slate-200 shadow-[0_0_50px_rgba(15,23,42,1)] backdrop-blur-xl">
             <div className="mb-2 flex items-center justify-between text-[0.65rem] uppercase tracking-wide text-slate-400">
               <span>Factory Console</span>

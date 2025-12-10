@@ -1,0 +1,9 @@
+{
+  "slug": "freelance-proposal-improver",
+  "title": "Freelance Proposal Improver",
+  "description": "Enhance rough freelance project proposals by making them clearer, more persuasive, and tailored to potential clients, increasing your chances of winning projects.",
+  "inputLabel": "Paste your draft freelance proposal here",
+  "outputLabel": "Improved and polished freelance proposal",
+  "systemPrompt": "You are an expert freelance consultant. Improve the given freelance project proposal text by making it clearer, more professional, persuasive, and client-focused without changing the core content or adding new project details. Ensure the tone is confident and approachable.",
+  "temperature": 0.7
+}

@@ -91,6 +91,23 @@ export default function ToolClient({
       return;
     }
 
+    // Guard: only allow text-like files
+    const nonText = files.filter(
+      (f) =>
+        !f.type.startsWith("text/") &&
+        !["application/json", "text/html", "application/xml"].includes(f.type)
+    );
+
+    if (nonText.length > 0) {
+      setError(
+        "Right now this tool only supports text-based files (e.g. .txt, .md, .csv). Please convert your PDF or Word document to text first."
+      );
+      setFileTexts([]);
+      setFileNames([]);
+      setUploadSuccess(false);
+      return;
+    }
+
     try {
       const readFileAsText = (file: File) =>
         new Promise<string>((resolve, reject) => {
@@ -118,8 +135,7 @@ export default function ToolClient({
   }
 
   const hasAnyInput =
-    input.trim().length > 0 ||
-    fileTexts.some((t) => t.trim().length > 0);
+    input.trim().length > 0 || fileTexts.some((t) => t.trim().length > 0);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -127,12 +143,13 @@ export default function ToolClient({
       {supportsFileUpload && (
         <div className="space-y-1">
           <label className="block font-medium mb-1">
-            Upload document{""} (optional)
+            Upload document (optional)
           </label>
           <input
             type="file"
             multiple
-            accept=".txt,.md,.csv,.json,.log,.html,.xml,.pdf,.doc,.docx"
+            // text-ish formats only for now
+            accept=".txt,.md,.csv,.json,.log,.html,.xml"
             onChange={handleFileChange}
             className="block w-full text-sm text-slate-200
                        file:mr-4 file:py-2 file:px-4

@@ -24,7 +24,8 @@ const client = new OpenAI({
  * AVAILABLE FEATURES
  * ------------------
  * You can keep extending this list over time (e.g. "multi-step-form",
- * "dropdown-presets", etc.) and expose them to the model via RUBRIC.
+ * "dropdown-presets", "file-upload", "saved-history", etc.) and expose
+ * them to the model via RUBRIC.
  *
  * For now, we support:
  * - "text-input"  → a big textarea for freeform text
@@ -51,16 +52,29 @@ AVAILABLE FEATURES (capabilities you can choose from for each tool):
    - Most tools should include this.
 
 2) "file-upload"
-   - User can upload one or more files (e.g., .txt, .md, .csv, or other text-based documents).
-   - The app will read the text content of the file and feed it to the AI alongside any typed input.
-   - Only include this if the tool genuinely benefits from analyzing the contents of a document
-     (e.g., extracting KPIs from a report, summarizing a contract, pulling tasks from meeting notes, etc.).
+   - User can upload one or more text-based files.
+   - The app will read the text content of the file and feed it to the AI
+     alongside any typed input.
+   - Only include this if the tool genuinely benefits from analyzing
+     the contents of a document (e.g., extracting KPIs from a report,
+     summarizing a contract, pulling tasks from meeting notes, etc.).
+
+SCALING & COMPLEXITY GUIDELINES:
+- As the platform gains more features, you should generally use
+  MULTIPLE features together so tools feel richer and more capable.
+- Simple single-feature tools that only use ["text-input"] are allowed,
+  but should be relatively rare (no more than about 10–20% of tools).
+- Prefer designs that combine 2–4 features in a meaningful way whenever
+  those features would clearly improve the user experience.
 
 IMPORTANT:
-- For EVERY tool you generate, you MUST include a "features" array listing which features it uses.
+- For EVERY tool you generate, you MUST include a "features" array
+  listing which features it uses.
 - "features" may only contain feature names from the list above.
 - If the tool only needs a textarea, use: ["text-input"]
-- If the tool needs both a textarea and uploaded document(s), use: ["text-input", "file-upload"]
+  (this should be uncommon after the platform has many features).
+- If the tool needs a textarea AND uploaded document(s), use:
+  ["text-input", "file-upload"].
 
 Return ONLY strict JSON with this exact shape (no extra top-level keys, no commentary):
 
@@ -136,7 +150,7 @@ async function generateToolConfig(existingTools) {
           "Generate ONE new tool config JSON now for a niche that is clearly different from ALL of the above. " +
           "Do not create anything about nursing, real estate, or academic abstracts/papers/summaries if those are in the list. " +
           "Avoid overlapping the same user role or type of input text.\n\n" +
-          "Choose the minimal set of features needed for this tool and set the 'features' array accordingly.",
+          "Choose the minimal set of features needed for this tool, but generally prefer combining multiple features in a meaningful and non-gimmicky way.",
       },
     ],
     temperature: 0.7,
@@ -166,8 +180,31 @@ async function generateToolConfig(existingTools) {
   };
 }
 
-// Try a few times to avoid duplicate slug/title
-async function generateUniqueToolConfig(existingTools, maxTries = 5) {
+/**
+ * Decide if a config is "too simple" given the global feature set.
+ * - While AVAILABLE_FEATURES is small (<= 2), we allow simple tools.
+ * - Once AVAILABLE_FEATURES grows larger, we strongly discourage tools
+ *   that only use ["text-input"], but still allow them occasionally.
+ */
+function isTooSimple(config) {
+  const feats = config.features || [];
+
+  // If we don't have many global features yet, never treat anything as "too simple"
+  if (AVAILABLE_FEATURES.length <= 2) {
+    return false;
+  }
+
+  // If the tool only uses text-input, this is "too simple" most of the time
+  if (feats.length === 1 && feats[0] === "text-input") {
+    // Allow ~20% single-feature tools, reject the other ~80%
+    return Math.random() < 0.8;
+  }
+
+  return false;
+}
+
+// Try a few times to avoid duplicate slug/title AND overly simple tools
+async function generateUniqueToolConfig(existingTools, maxTries = 7) {
   const existingSlugs = new Set(
     existingTools.map((t) => t.slug?.toLowerCase())
   );
@@ -183,19 +220,36 @@ async function generateUniqueToolConfig(existingTools, maxTries = 5) {
 
     const slugDup = existingSlugs.has(slugLower);
     const titleDup = existingTitles.has(titleLower);
+    const tooSimple = isTooSimple(config);
 
-    if (!slugDup && !titleDup) {
-      return config;
+    if (slugDup || titleDup) {
+      console.log(
+        `Generated config was too similar to an existing tool (try ${
+          i + 1
+        }/${maxTries}). Retrying...`
+      );
+      continue;
     }
 
-    console.log(
-      `Generated config was too similar to an existing tool (try ${
-        i + 1
-      }/${maxTries}). Retrying...`
-    );
+    if (tooSimple) {
+      console.log(
+        `Generated config uses only [\"text-input\"] and is considered too simple (try ${
+          i + 1
+        }/${maxTries}). Retrying for a richer feature combo...`
+      );
+      continue;
+    }
+
+    return config;
   }
 
-  throw new Error("Failed to generate a unique tool after several attempts.");
+  // If all retries fail, just return the last config we got (even if simple),
+  // so the script doesn't completely fail.
+  console.warn(
+    "Failed to generate a unique, sufficiently complex tool after several attempts; using last generated config."
+  );
+  const fallbackConfig = await generateToolConfig(existingTools);
+  return fallbackConfig;
 }
 
 /**
@@ -242,7 +296,7 @@ async function main() {
 
   console.log("Generating new tool...");
   const config = await generateUniqueToolConfig(existingTools);
-  console.log("Generated tool:", config.slug);
+  console.log("Generated tool:", config.slug, "with features:", config.features);
 
   const finalSlug = saveToolConfig(config);
   console.log(`Saved config for slug "${finalSlug}".`);

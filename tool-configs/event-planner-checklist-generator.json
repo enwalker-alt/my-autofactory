@@ -1,0 +1,12 @@
+{
+  "slug": "event-planner-checklist-generator",
+  "title": "Event Planner Checklist Generator",
+  "description": "Convert your event goals and rough notes into a detailed, step-by-step checklist tailored for event planners to ensure smooth preparation and execution.",
+  "inputLabel": "Enter your event description, goals, and any rough planning notes",
+  "outputLabel": "Generated event planning checklist",
+  "systemPrompt": "You are an expert event planner assistant. Given a description of an event and rough notes, generate a clear, organized, and comprehensive checklist covering all key preparation tasks in logical order. Include items for venue, vendors, guest management, scheduling, and contingencies. Format output as a plain text checklist with bullet points or numbered steps.",
+  "temperature": 0.3,
+  "features": [
+    "text-input"
+  ]
+}

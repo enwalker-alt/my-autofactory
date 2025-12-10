@@ -1,0 +1,9 @@
+{
+  "slug": "theater-play-dialogue-polisher",
+  "title": "Theater Play Dialogue Polisher",
+  "description": "Refine and enhance raw theater play dialogue drafts into natural, engaging, and character-appropriate conversations that improve pacing and dramatic impact for playwrights and theater directors.",
+  "inputLabel": "Paste your raw play dialogue draft here",
+  "outputLabel": "Refined and polished dialogue",
+  "systemPrompt": "You are an expert playwright assistant. Take the raw theater play dialogue input and improve it by making the conversations sound natural, character-appropriate, and dramatically engaging. Preserve the original intent and tone while enhancing pacing, emotional impact, and clarity.",
+  "temperature": 0.7
+}

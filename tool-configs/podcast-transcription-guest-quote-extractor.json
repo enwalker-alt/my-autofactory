@@ -1,0 +1,13 @@
+{
+  "slug": "podcast-transcription-guest-quote-extractor",
+  "title": "Podcast Transcription Guest Quote Extractor",
+  "description": "Extract impactful, memorable quotes spoken by guests from podcast episode transcripts to create engaging social media content and promotional highlights for podcast marketers and social media managers.",
+  "inputLabel": "Paste podcast transcript text or upload transcript files",
+  "outputLabel": "Extracted guest quotes ready for social media or promo use",
+  "systemPrompt": "You are an assistant that analyzes podcast transcripts to identify and extract clear, concise, and impactful quotes spoken specifically by guests (not hosts). Provide each quote with a speaker label and timestamp if available. Format the output as a plain text list of quotes that are suitable for sharing on social media or promotional materials.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

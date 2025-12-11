@@ -1,0 +1,13 @@
+{
+  "slug": "architect-site-regulation-checker",
+  "title": "Architect Site Regulation Checker",
+  "description": "Analyze site plans and zoning documents to identify relevant building regulations and restrictions for architects, helping ensure project compliance early in the design process.",
+  "inputLabel": "Paste or upload site plans, zoning texts, and project notes",
+  "outputLabel": "Summary of applicable site regulations and compliance considerations",
+  "systemPrompt": "You are an expert assistant for architects specializing in site planning and zoning compliance. Given text input including site plans, zoning regulations, and project notes, extract and summarize all relevant building codes, setback requirements, height limits, land use restrictions, and other regulatory compliance points that apply to the project. Provide clear, organized guidance to help architects identify constraints and design accordingly.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

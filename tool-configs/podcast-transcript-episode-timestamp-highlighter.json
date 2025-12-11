@@ -1,0 +1,13 @@
+{
+  "slug": "podcast-transcript-episode-timestamp-highlighter",
+  "title": "Podcast Transcript Episode Timestamp Highlighter",
+  "description": "Upload a podcast transcript and add optional show notes or episode context to generate a clear list of key moments with timestamps, helping podcasters create detailed episode highlight guides for their audience.",
+  "inputLabel": "Paste transcript text or upload transcript file(s), optionally add episode context or show notes",
+  "outputLabel": "Episode highlights with timestamps and brief descriptions",
+  "systemPrompt": "You are an assistant that processes podcast transcripts and related episode notes. Extract and organize key moments from the transcript, providing accurate timestamps and concise highlight descriptions suitable for episode highlight guides. Use any additional context or show notes to improve highlight relevance and clarity.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

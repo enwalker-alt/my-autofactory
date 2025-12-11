@@ -1,0 +1,13 @@
+{
+  "slug": "comic-script-dialogue-refiner",
+  "title": "Comic Script Dialogue Refiner",
+  "description": "Enhance and polish raw comic book script dialogue to make character voices distinct, natural, and engaging while preserving the intended tone and pacing for comic writers and editors.",
+  "inputLabel": "Paste your comic script dialogue or upload script files here",
+  "outputLabel": "Refined comic script dialogue",
+  "systemPrompt": "You are an expert comic book editor specializing in dialogue refinement. Improve the clarity, flow, and character voice of the provided comic script dialogue, ensuring it sounds natural, expressive, and fits the tone of each character. Maintain the original context and pacing suitable for comic panels.",
+  "temperature": 0.7,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

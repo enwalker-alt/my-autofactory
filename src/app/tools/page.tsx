@@ -3,6 +3,7 @@ import path from "path";
 import Link from "next/link";
 import SearchBar from "./SearchBar";
 import ToolLibraryClient from "./ToolLibraryClient";
+import CategoryPicker from "./CategoryPicker"; // ⬅️ NEW
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,6 @@ export default function ToolsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#050816] via-[#020617] to-black text-gray-100">
       <div className="max-w-5xl mx-auto px-4 py-12 md:py-16">
-
         {/* HEADER */}
         <section className="mb-10 md:mb-12">
           <div className="text-center">
@@ -78,9 +78,13 @@ export default function ToolsPage() {
             </p>
           </div>
 
-          {/* LIVE SEARCH BAR */}
+          {/* LIVE SEARCH BAR + CATEGORIES */}
           <div className="mt-8 space-y-3">
             <SearchBar />
+
+            <div className="flex justify-center">
+              <CategoryPicker />
+            </div>
           </div>
         </section>
 
@@ -88,7 +92,6 @@ export default function ToolsPage() {
         <section className="mt-6">
           <ToolLibraryClient tools={tools} />
         </section>
-
       </div>
     </main>
   );

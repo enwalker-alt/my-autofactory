@@ -1,8 +1,7 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 
 type ToolMeta = {
   slug: string;
@@ -10,93 +9,129 @@ type ToolMeta = {
   description: string;
 };
 
-function escapeRegExp(str: string) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+type Props = {
+  tools: ToolMeta[];
+};
 
-function scoreTool(tool: ToolMeta, query: string): number {
-  if (!query) return 0;
+const CATEGORY_KEYWORDS: Record<string, string[]> = {
+  writing: ["email", "script", "dialogue", "speaker", "copy", "write"],
+  education: ["academic", "student", "research", "study", "lesson"],
+  business: ["business", "plan", "strategy", "operations", "process"],
+  events: ["event", "agenda", "checklist", "meeting", "conference"],
+  creative: ["comic", "story", "creative", "narrative", "content"],
+  // "all" handled by just not filtering
+};
 
-  const q = query.toLowerCase();
-  const title = tool.title.toLowerCase();
-  const desc = tool.description.toLowerCase();
+const CATEGORY_LABELS: Record<string, string> = {
+  writing: "Writing & Communication",
+  education: "Learning & Research",
+  business: "Business & Operations",
+  events: "Events & Planning",
+  creative: "Creative & Media",
+};
 
-  let score = 0;
-  if (title === q) score += 120;
-  if (title.startsWith(q)) score += 80;
+export default function ToolLibraryClient({ tools }: Props) {
+  const searchParams = useSearchParams();
 
-  const wordRegex = new RegExp(`\\b${escapeRegExp(q)}`);
-  if (wordRegex.test(title)) score += 50;
+  const qRaw = searchParams.get("q") || "";
+  const query = qRaw.trim().toLowerCase();
 
-  if (title.includes(q)) score += 40;
-  if (desc.includes(q)) score += 20;
+  const category = searchParams.get("category") || "";
 
-  return score;
-}
+  let filtered = tools;
 
-export default function ToolsClient({ tools }: { tools: ToolMeta[] }) {
-  const params = useSearchParams();
-  const rawQuery = (params.get("q") ?? "").trim();
-  const query = rawQuery.toLowerCase();
+  // Free-text search
+  if (query) {
+    filtered = filtered.filter((tool) => {
+      const haystack = (tool.title + " " + tool.description).toLowerCase();
+      return haystack.includes(query);
+    });
+  }
 
-  const filteredTools = useMemo(() => {
-    if (!query) return tools;
+  // Category filter
+  if (category && category !== "all") {
+    const keywords = CATEGORY_KEYWORDS[category];
+    if (keywords && keywords.length > 0) {
+      filtered = filtered.filter((tool) => {
+        const haystack = (tool.title + " " + tool.description).toLowerCase();
+        return keywords.some((kw) => haystack.includes(kw));
+      });
+    }
+  }
 
-    const scored = tools
-      .map((tool) => ({ tool, score: scoreTool(tool, query) }))
-      .filter(({ score }) => score > 0)
-      .sort((a, b) => b.score - a.score);
+  const total = tools.length;
+  const count = filtered.length;
 
-    return scored.map((s) => s.tool);
-  }, [query, tools]);
+  const categoryLabel = CATEGORY_LABELS[category];
 
   return (
-    <>
-      <p className="text-xs md:text-sm text-gray-500 text-center mb-4">
-        Showing{" "}
-        <span className="text-gray-200 font-medium">{filteredTools.length}</span>{" "}
-        of{" "}
-        <span className="text-gray-400 font-medium">{tools.length}</span> tools
-        {rawQuery && (
+    <div>
+      {/* Status line */}
+      <div className="mb-4 text-xs md:text-sm text-gray-400 flex flex-wrap items-center justify-center gap-2">
+        <span>
+          Showing <span className="text-purple-200 font-medium">{count}</span> of{" "}
+          <span className="text-purple-200 font-medium">{total}</span> tools
+        </span>
+        {(query || categoryLabel) && (
           <>
-            {" "}
-            for <span className="text-gray-300">&quot;{rawQuery}&quot;</span>
+            <span className="hidden sm:inline-block text-gray-600">•</span>
+            <span className="flex flex-wrap items-center gap-1">
+              {query && (
+                <>
+                  for
+                  <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs border border-white/10">
+                    “{qRaw}”
+                  </span>
+                </>
+              )}
+              {categoryLabel && (
+                <>
+                  {query ? "in" : "for"}
+                  <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-xs border border-purple-400/40 text-purple-100">
+                    {categoryLabel}
+                  </span>
+                </>
+              )}
+            </span>
           </>
         )}
-      </p>
+      </div>
 
-      {filteredTools.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-6 text-sm text-gray-400 text-center">
-          No tools match{" "}
-          <span className="font-medium text-gray-200">
-            &ldquo;{rawQuery}&rdquo;
-          </span>
-          .
+      {/* Empty state */}
+      {count === 0 && (
+        <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center text-xs md:text-sm text-gray-400">
+          No tools match your current filters.
+          <div className="mt-2">
+            Try clearing the search, picking a different category, or browsing
+            all tools.
+          </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          {filteredTools.map((tool) => (
-            <Link key={tool.slug} href={`/tools/${tool.slug}`}>
-              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 md:p-6 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 hover:border-purple-400/70 hover:bg-white/10">
-                <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-purple-500/15 via-transparent to-cyan-500/15" />
+      )}
 
-                <div className="relative">
-                  <h2 className="text-base md:text-lg font-semibold mb-1.5">
-                    {tool.title}
-                  </h2>
-                  <p className="text-xs md:text-sm text-gray-300 leading-relaxed">
-                    {tool.description}
-                  </p>
-
-                  <div className="mt-4 text-xs text-purple-300/80 flex items-center gap-1">
-                    <span>Open tool</span> →
-                  </div>
-                </div>
+      {/* Grid */}
+      {count > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mt-4">
+          {filtered.map((tool) => (
+            <Link
+              key={tool.slug}
+              href={`/tools/${tool.slug}`}
+              className="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-400/40 transition duration-200 p-4 flex flex-col justify-between"
+            >
+              <div>
+                <h2 className="text-sm md:text-base font-medium mb-1 group-hover:text-white">
+                  {tool.title}
+                </h2>
+                <p className="text-xs md:text-sm text-gray-400 line-clamp-3">
+                  {tool.description}
+                </p>
+              </div>
+              <div className="mt-3 text-[11px] text-purple-300/90 group-hover:text-purple-200">
+                Open tool →
               </div>
             </Link>
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }

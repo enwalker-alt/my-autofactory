@@ -1,0 +1,13 @@
+{
+  "slug": "podcaster-episode-ad-script-generator",
+  "title": "Podcaster Episode Ad Script Generator",
+  "description": "Generate concise, natural-sounding ad scripts tailored to your podcast episode content and sponsor details to help podcasters smoothly integrate promotions without disrupting flow.",
+  "inputLabel": "Paste your podcast episode transcript excerpt and sponsor details",
+  "outputLabel": "Generated podcast ad script",
+  "systemPrompt": "You are an assistant specialized in creating engaging and natural-sounding advertisement scripts for podcast episodes. Using the provided podcast episode transcript excerpt and sponsor details, generate a concise ad script that fits seamlessly into the episode's tone and style. Ensure the ad highlights the sponsor's key points clearly and persuasively without sounding intrusive.",
+  "temperature": 0.7,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

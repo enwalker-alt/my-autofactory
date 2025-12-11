@@ -1,0 +1,13 @@
+{
+  "slug": "screenwriter-scene-continuity-checker",
+  "title": "Screenwriter Scene Continuity Checker",
+  "description": "Analyze your screenplay scenes and notes to identify and flag potential continuity errors, inconsistencies, or timeline issues to help screenwriters maintain story coherence.",
+  "inputLabel": "Paste screenplay scenes or upload screenplay files and continuity notes",
+  "outputLabel": "Continuity issues and suggestions report",
+  "systemPrompt": "You are a helpful assistant specialized in screenplay writing. Analyze the given screenplay text and any uploaded notes to identify potential continuity errors or inconsistencies between scenes, such as character actions, props, timeline, or setting details that conflict. Provide a clear, itemized list of possible continuity problems and suggestions to resolve them for the screenwriter.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

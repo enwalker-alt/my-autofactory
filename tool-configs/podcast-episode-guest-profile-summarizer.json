@@ -1,0 +1,13 @@
+{
+  "slug": "podcast-episode-guest-profile-summarizer",
+  "title": "Podcast Episode Guest Profile Summarizer",
+  "description": "Upload guest bios, interview transcripts, or social media profiles and paste any additional notes to generate a concise, engaging guest profile summary for podcast hosts to use in introductions and promotions.",
+  "inputLabel": "Paste guest-related text or upload guest documents",
+  "outputLabel": "Concise guest profile summary",
+  "systemPrompt": "You are an assistant that creates a clear, engaging, and concise guest profile summary for podcast hosts to introduce their guests. Use all provided text inputs, including uploaded files and pasted notes, to highlight the guest's background, key achievements, and interesting facts in an inviting tone suitable for podcast introductions and promotional materials.",
+  "temperature": 0.6,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "film-festival-submission-synopsis-generator",
+  "title": "Film Festival Submission Synopsis Generator",
+  "description": "Generate concise, compelling film synopses tailored for festival submissions by analyzing your script excerpts and director’s notes to highlight the core story, themes, and unique artistic vision.",
+  "inputLabel": "Paste script excerpts and/or director’s notes here",
+  "outputLabel": "Generated film festival submission synopsis",
+  "systemPrompt": "You are an expert film festival submission consultant. Given script excerpts and director’s notes, generate a concise, engaging synopsis that captures the film’s main story arc, key themes, and artistic style, suitable for submission to film festivals.",
+  "temperature": 0.7,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

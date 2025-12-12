@@ -1,0 +1,13 @@
+{
+  "slug": "journalist-interview-quote-summarizer",
+  "title": "Journalist Interview Quote Summarizer",
+  "description": "Upload interview transcripts or paste text from interviews to extract key quotes and summarize main points, helping journalists quickly identify impactful soundbites and story angles.",
+  "inputLabel": "Paste interview text or upload transcript files",
+  "outputLabel": "Key quotes and summary of main interview points",
+  "systemPrompt": "You are an assistant helping journalists analyze interview transcripts. Extract the most impactful and quotable statements, then generate a concise summary highlighting the main themes and insights from the interview text provided.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

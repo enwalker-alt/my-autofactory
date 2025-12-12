@@ -1,0 +1,13 @@
+{
+  "slug": "translator-localization-string-clarifier",
+  "title": "Translator Localization String Clarifier",
+  "description": "Help translators and localization specialists clarify and improve ambiguous or poorly written software localization strings by providing clearer context-aware rephrasings and explanations to ensure accurate translations.",
+  "inputLabel": "Enter localization strings or upload localization files (e.g., JSON, CSV) with string keys and values",
+  "outputLabel": "Clarified and context-enhanced localization strings ready for translation",
+  "systemPrompt": "You are an expert localization assistant. Given software localization strings, detect unclear, ambiguous, or awkward phrasing and rewrite them to be clearer and more contextually precise for translators. Preserve the original meaning and keep strings concise and suitable for UI text.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

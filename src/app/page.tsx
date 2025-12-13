@@ -76,9 +76,7 @@ function AuthPill() {
 
             <span
               className={`ml-1 inline-flex h-2 w-2 rounded-full ${
-                !user
-                  ? "animate-pulse bg-slate-400"
-                  : "bg-emerald-400"
+                !user ? "animate-pulse bg-slate-400" : "bg-emerald-400"
               }`}
               title={!user ? "Loading" : "Online"}
             />
@@ -372,29 +370,11 @@ export default function HomePage() {
 
         {/* Top bar */}
         <header className="relative z-20 mx-auto flex w-full max-w-6xl items-center justify-between px-4 pt-5">
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/10"
-          >
-            <span className="relative inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-gradient-to-tr from-fuchsia-500 via-violet-500 to-cyan-300">
-              <span className="absolute inset-[2px] rounded-full bg-slate-950/60" />
-              <span className="relative text-[0.7rem] font-bold text-slate-100">
-                A
-              </span>
-            </span>
-            <span className="opacity-90 group-hover:opacity-100">Atlas</span>
-            <span className="hidden rounded-full bg-white/10 px-2 py-1 text-[0.65rem] font-medium text-slate-300 md:inline-flex">
-              alpha
-            </span>
-          </Link>
+          {/* Removed: Atlas alpha pill (top-left) */}
+          <div />
 
+          {/* Removed: Tools button next to login */}
           <div className="flex items-center gap-2">
-            <Link
-              href="/tools"
-              className="hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-200 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/10 sm:inline-flex"
-            >
-              Tools
-            </Link>
             <AuthPill />
           </div>
         </header>
@@ -402,7 +382,7 @@ export default function HomePage() {
         {/* Roaming orb */}
         <div
           ref={orbRef}
-          className="pointer-events-none fixed top-0 left-0 z-30 h-12 w-12 rounded-full bg-gradient-to-tr from-fuchsia-500 via-violet-500 to-cyan-300"
+          className="pointer-events-none fixed left-0 top-0 z-30 h-12 w-12 rounded-full bg-gradient-to-tr from-fuchsia-500 via-violet-500 to-cyan-300"
         >
           <div className="absolute inset-1 rounded-full bg-slate-950/60" />
           <div className="animate-orb-pulse absolute inset-0 rounded-full bg-gradient-to-tr from-fuchsia-400/90 via-violet-300/95 to-cyan-200/90 mix-blend-screen" />

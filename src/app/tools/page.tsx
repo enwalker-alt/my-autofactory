@@ -3,7 +3,8 @@ import path from "path";
 import Link from "next/link";
 import SearchBar from "./SearchBar";
 import ToolLibraryClient from "./ToolLibraryClient";
-import CategoryPicker from "./CategoryPicker"; // ⬅️ NEW
+import CategoryPicker from "./CategoryPicker";
+import AuthPill from "@/components/AuthPill"; // ✅ same login pill (client component)
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,11 @@ export default function ToolsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#050816] via-[#020617] to-black text-gray-100">
       <div className="max-w-5xl mx-auto px-4 py-12 md:py-16">
+        {/* TOP RIGHT LOGIN (same spot vibe as homepage) */}
+        <header className="mb-10 flex items-center justify-end">
+          <AuthPill />
+        </header>
+
         {/* HEADER */}
         <section className="mb-10 md:mb-12">
           <div className="text-center">

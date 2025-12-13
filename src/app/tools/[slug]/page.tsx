@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import Link from "next/link";
 import ToolClient from "./ToolClient";
+import AuthPill from "@/components/AuthPill"; // ✅ SAME LOGIN COMPONENT
 
 type ToolConfig = {
   slug: string;
@@ -11,7 +12,7 @@ type ToolConfig = {
   outputLabel: string;
   systemPrompt: string;
   temperature?: number;
-  features?: string[]; // <-- NEW
+  features?: string[];
 };
 
 export default async function ToolPage({
@@ -48,8 +49,15 @@ export default async function ToolPage({
   return (
     <main className="min-h-screen bg-[#020617] text-slate-100">
       <div className="relative mx-auto max-w-5xl px-4 pt-20 pb-16 sm:px-6 lg:px-8">
+        {/* LOGIN PILL — top right, same as other pages */}
+        <div className="absolute right-4 top-6 z-20">
+          <AuthPill />
+        </div>
+
+        {/* Ambient glow */}
         <div className="pointer-events-none absolute inset-x-0 -top-40 -z-10 h-72 bg-gradient-to-b from-purple-700/30 via-transparent to-transparent blur-3xl" />
 
+        {/* Breadcrumb + status */}
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
             <Link href="/" className="hover:text-slate-200 transition-colors">
@@ -63,7 +71,9 @@ export default async function ToolPage({
               Tool Library
             </Link>
             <span className="text-slate-600">/</span>
-            <span className="text-slate-300 line-clamp-1">{config.title}</span>
+            <span className="text-slate-300 line-clamp-1">
+              {config.title}
+            </span>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 text-[11px] text-emerald-400/90">
@@ -72,6 +82,7 @@ export default async function ToolPage({
           </div>
         </div>
 
+        {/* Title */}
         <header className="mb-6">
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
             {config.title}
@@ -81,13 +92,16 @@ export default async function ToolPage({
           </p>
         </header>
 
+        {/* Tool container */}
         <section className="rounded-3xl border border-white/10 bg-slate-900/70 backdrop-blur shadow-xl shadow-purple-500/25 p-4 sm:p-6 lg:p-8">
           <div className="mb-4 flex justify-end">
             <div className="flex flex-col items-end text-[11px] text-slate-400">
               <span className="uppercase tracking-wide text-slate-500">
                 Mode
               </span>
-              <span className="font-mono text-xs text-slate-200">{slug}</span>
+              <span className="font-mono text-xs text-slate-200">
+                {slug}
+              </span>
             </div>
           </div>
 
@@ -95,7 +109,7 @@ export default async function ToolPage({
             slug={config.slug}
             inputLabel={config.inputLabel}
             outputLabel={config.outputLabel}
-            features={config.features} // <-- pass features down
+            features={config.features}
           />
 
           <div className="mt-6 border-t border-white/5 pt-4 text-[11px] sm:text-xs text-slate-500 flex justify-end">

@@ -1,0 +1,13 @@
+{
+  "slug": "podcaster-sponsorship-pitch-optimizer",
+  "title": "Podcaster Sponsorship Pitch Optimizer",
+  "description": "Enhance raw sponsorship pitch drafts and upload sponsor guidelines or campaign briefs to generate polished, persuasive sponsorship proposals tailored for podcast hosts to secure brand deals effectively.",
+  "inputLabel": "Enter your sponsorship pitch draft",
+  "outputLabel": "Optimized sponsorship pitch",
+  "systemPrompt": "You are a skilled marketing copywriter who specializes in crafting clear, engaging, and persuasive sponsorship pitches for podcast hosts. Using the input pitch draft and any uploaded sponsor guidelines or campaign briefs, rewrite and improve the pitch to better align with the sponsor’s goals, emphasize podcast value, and increase chances of partnership.",
+  "temperature": 0.7,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

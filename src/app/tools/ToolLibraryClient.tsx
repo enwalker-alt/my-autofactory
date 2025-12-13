@@ -9,7 +9,11 @@ type ToolMeta = {
   slug: string;
   title: string;
   description: string;
+
+  // support either naming (prevents mismatches from breaking UI)
   avgRating?: number | null;
+  ratingAvg?: number | null;
+
   ratingCount?: number | null;
 };
 
@@ -30,6 +34,7 @@ const SORT_OPTIONS = [
 
 type SortId = (typeof SORT_OPTIONS)[number]["id"];
 
+// ... keep your CATEGORY_RULES exactly as-is (unchanged)
 const CATEGORY_RULES: Record<
   string,
   {
@@ -78,7 +83,6 @@ const CATEGORY_RULES: Record<
     weak: ["clarify", "summarize", "concise", "professional", "polished"],
     minScore: 3,
   },
-
   research: {
     label: "Learning & Research",
     phrases: [
@@ -110,7 +114,6 @@ const CATEGORY_RULES: Record<
     weak: ["simplify", "breakdown", "overview", "interpret", "clarification"],
     minScore: 3,
   },
-
   productivity: {
     label: "Workflows & Productivity",
     phrases: ["standard operating procedure", "to-do list", "step by step"],
@@ -133,7 +136,6 @@ const CATEGORY_RULES: Record<
     weak: ["improve", "streamline", "efficient", "structure", "track"],
     minScore: 3,
   },
-
   planning: {
     label: "Planning & Events",
     phrases: ["run of show", "event plan", "meeting agenda"],
@@ -156,7 +158,6 @@ const CATEGORY_RULES: Record<
     weak: ["checklist", "coordination", "logistics", "setup"],
     minScore: 3,
   },
-
   data: {
     label: "Data & Finance",
     phrases: ["cash flow", "financial model", "valuation", "income statement"],
@@ -185,7 +186,6 @@ const CATEGORY_RULES: Record<
     weak: ["compare", "summary", "insights", "estimate", "projection"],
     minScore: 3,
   },
-
   marketing: {
     label: "Marketing & Growth",
     phrases: ["landing page", "value proposition", "ad copy", "seo keywords"],
@@ -211,7 +211,6 @@ const CATEGORY_RULES: Record<
     weak: ["headline", "pitch", "post", "copy", "optimize"],
     minScore: 3,
   },
-
   creative: {
     label: "Creative & Media",
     phrases: ["short story", "comic script", "character bio"],
@@ -234,7 +233,6 @@ const CATEGORY_RULES: Record<
     weak: ["style", "voice", "funny", "humor", "generate"],
     minScore: 3,
   },
-
   compliance: {
     label: "Policy & Professional",
     phrases: ["terms of service", "privacy policy", "risk assessment"],
@@ -291,26 +289,38 @@ function StarsInline({
   const v = typeof value === "number" ? value : 0;
   const c = typeof count === "number" ? count : 0;
 
-  const full = Math.round(v); // simple display
-  const stars = Array.from({ length: 5 }, (_, i) => (i < full ? "★" : "☆")).join(
-    ""
-  );
+  const rounded = Math.round(v * 10) / 10;
+  const full = Math.floor(rounded);
+  const half = rounded - full >= 0.5;
 
   return (
     <div className="flex items-center gap-2 text-[12px] text-slate-300">
-      <span className="tracking-[0.2em] text-yellow-300/90">{stars}</span>
+      <div className="flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map((n) => {
+          const isFull = n <= full;
+          const isHalf = !isFull && half && n === full + 1;
+          return (
+            <span
+              key={n}
+              className={
+                isFull || isHalf ? "text-yellow-300/90" : "text-slate-600"
+              }
+              aria-hidden="true"
+            >
+              ★
+            </span>
+          );
+        })}
+      </div>
+
       <span className="text-slate-400">
-        {c > 0 ? `${v.toFixed(1)} (${c})` : "No ratings"}
+        {c > 0 ? `${rounded.toFixed(1)} (${c})` : "No ratings"}
       </span>
     </div>
   );
 }
 
-export default function ToolLibraryClient({
-  tools,
-  savedSlugs,
-  isSignedIn,
-}: Props) {
+export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -340,8 +350,7 @@ export default function ToolLibraryClient({
   const category = searchParams.get("category") || "";
   const categoryLabel = CATEGORY_RULES[category]?.label;
 
-  const sortParam = (searchParams.get("sort") ||
-    "rating-high") as SortId;
+  const sortParam = (searchParams.get("sort") || "rating-high") as SortId;
   const sort: SortId =
     SORT_OPTIONS.find((s) => s.id === sortParam)?.id ?? "rating-high";
 
@@ -432,7 +441,6 @@ export default function ToolLibraryClient({
       });
 
       flashStatus(savedValue ? "Saved ✅" : "Unsaved ✅");
-
       startTransition(() => router.refresh());
     } catch (err) {
       console.error("Save network error:", err);
@@ -472,11 +480,25 @@ export default function ToolLibraryClient({
     }
   }
 
+  const getAvg = (t: ToolMeta) => {
+    const v =
+      typeof t.avgRating === "number"
+        ? t.avgRating
+        : typeof t.ratingAvg === "number"
+          ? t.ratingAvg
+          : 0;
+    return v;
+  };
+
+  const getCount = (t: ToolMeta) => {
+    return typeof t.ratingCount === "number" ? t.ratingCount : 0;
+  };
+
   const sorted = [...filtered].sort((a, b) => {
-    const ar = typeof a.avgRating === "number" ? a.avgRating : 0;
-    const br = typeof b.avgRating === "number" ? b.avgRating : 0;
-    const ac = typeof a.ratingCount === "number" ? a.ratingCount : 0;
-    const bc = typeof b.ratingCount === "number" ? b.ratingCount : 0;
+    const ar = getAvg(a);
+    const br = getAvg(b);
+    const ac = getCount(a);
+    const bc = getCount(b);
 
     if (sort === "rating-high") {
       if (br !== ar) return br - ar;
@@ -586,6 +608,11 @@ export default function ToolLibraryClient({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mt-4">
           {pageItems.map((tool) => {
             const isSaved = localSaved.has(tool.slug);
+            const avg = (typeof tool.avgRating === "number"
+              ? tool.avgRating
+              : typeof tool.ratingAvg === "number"
+                ? tool.ratingAvg
+                : 0) as number;
 
             return (
               <Link
@@ -599,9 +626,8 @@ export default function ToolLibraryClient({
                       {tool.title}
                     </h2>
 
-                    {/* ⭐ Rating line */}
                     <div className="mb-2">
-                      <StarsInline value={tool.avgRating} count={tool.ratingCount} />
+                      <StarsInline value={avg} count={tool.ratingCount} />
                     </div>
 
                     <p className="text-xs md:text-sm text-gray-400 line-clamp-3">

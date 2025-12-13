@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 
 type ToolClientProps = {
@@ -49,6 +50,7 @@ export default function ToolClient({
   outputLabel,
   features,
 }: ToolClientProps) {
+  const router = useRouter();
   const { data: session } = useSession();
 
   const [input, setInput] = useState("");
@@ -103,7 +105,10 @@ export default function ToolClient({
             .join("\n\n")
         : "";
 
-    const combinedInput = [input.trim(), filesSection ? `\n\n${filesSection}` : ""]
+    const combinedInput = [
+      input.trim(),
+      filesSection ? `\n\n${filesSection}` : "",
+    ]
       .filter(Boolean)
       .join("\n\n");
 
@@ -122,8 +127,6 @@ export default function ToolClient({
 
       const data = await res.json().catch(() => ({} as any));
       setOutput(data.output || "");
-
-      // Only show rating row if we actually got output
       setJustGenerated(true);
     } catch (err: any) {
       console.error(err);
@@ -171,7 +174,8 @@ export default function ToolClient({
       const readFileAsText = (file: File) =>
         new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
-          reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+          reader.onload = () =>
+            resolve(typeof reader.result === "string" ? reader.result : "");
           reader.onerror = () => reject(new Error("Failed to read file"));
           reader.readAsText(file);
         });
@@ -192,13 +196,11 @@ export default function ToolClient({
   }
 
   async function submitRating(value: number) {
-    // If signed out, route to Google sign-in; user can click again after
     if (!session?.user) {
       await signIn("google", { callbackUrl: `/tools/${slug}` });
       return;
     }
 
-    // prevent double submits
     if (ratingSubmitting) return;
 
     setSelectedStars(value);
@@ -211,7 +213,7 @@ export default function ToolClient({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         cache: "no-store",
-        credentials: "include", // ✅ important for session cookies
+        credentials: "include",
         body: JSON.stringify({ value }),
       });
 
@@ -225,8 +227,8 @@ export default function ToolClient({
         throw new Error(txt || "Failed to submit rating");
       }
 
-      // Optional: if your API returns updated averages/counts you can read it here
-      // const json = await res.json().catch(() => null);
+      // ✅ IMPORTANT: refresh server components (top rating + anything else)
+      router.refresh();
 
       setRatingThanks(true);
       window.setTimeout(() => setRatingThanks(false), 1600);
@@ -243,7 +245,6 @@ export default function ToolClient({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-      {/* FILE UPLOAD FIRST (if supported) */}
       {supportsFileUpload && (
         <div className="space-y-1">
           <label className="block font-medium mb-1">
@@ -284,7 +285,6 @@ export default function ToolClient({
         </div>
       )}
 
-      {/* TEXT INPUT */}
       <div>
         <label className="block font-medium mb-1">{inputLabel}</label>
         <textarea
@@ -295,9 +295,7 @@ export default function ToolClient({
         />
       </div>
 
-      {/* Buttons row */}
       <div className="flex items-center justify-between gap-3">
-        {/* Generate */}
         <button
           type="submit"
           disabled={loading || !hasAnyInput}
@@ -307,9 +305,7 @@ export default function ToolClient({
           {loading ? "Generating..." : "Generate"}
         </button>
 
-        {/* Right side: rating + copy */}
         <div className="flex items-center gap-4">
-          {/* Inline rating (post-generation) */}
           {output && justGenerated && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-slate-300 hidden sm:inline">
@@ -327,7 +323,7 @@ export default function ToolClient({
                     className="inline-flex"
                   >
                     <Star
-                      sizeClass="text-2xl" // ✅ bigger stars
+                      sizeClass="text-2xl"
                       filled={n <= displayStars}
                       disabled={ratingSubmitting}
                       title={
@@ -353,7 +349,6 @@ export default function ToolClient({
             </div>
           )}
 
-          {/* Copy */}
           {output && (
             <button
               type="button"

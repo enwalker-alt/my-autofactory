@@ -48,25 +48,60 @@ export default async function ToolsPage({
 }) {
   let tools = getToolsFromConfigs();
 
-  // ✅ pull ratings from DB for these slugs
+  // ✅ Pull ratings from DB for these slugs, and ensure DB rows exist
   try {
     const slugs = tools.map((t) => t.slug);
+
+    // 1) Fetch existing tool rows with aggregates
     const rows = await prisma.tool.findMany({
       where: { slug: { in: slugs } },
       select: {
         slug: true,
+        ratingAvg: true,
+        ratingCount: true,
       },
     });
 
-    const map = new Map(rows.map((r) => [r.slug, r]));
+    const rowMap = new Map(rows.map((r) => [r.slug, r]));
+
+    // 2) OPTIONAL: create missing DB rows so ratings/saves always have a home
+    const missing = tools.filter((t) => !rowMap.has(t.slug));
+    if (missing.length > 0) {
+      // Create minimal rows; skipDuplicates supported on Postgres (Neon)
+      await prisma.tool.createMany({
+        data: missing.map((t) => ({
+          slug: t.slug,
+          title: t.title,
+          description: t.description ?? null,
+          inputLabel: null,
+          outputLabel: null,
+        })),
+        skipDuplicates: true,
+      });
+
+      // Re-fetch so rowMap is complete
+      const rows2 = await prisma.tool.findMany({
+        where: { slug: { in: slugs } },
+        select: {
+          slug: true,
+          ratingAvg: true,
+          ratingCount: true,
+        },
+      });
+      rows2.forEach((r) => rowMap.set(r.slug, r));
+    }
+
+    // 3) Merge DB aggregates into config tools
     tools = tools.map((t) => {
-      const r = map.get(t.slug);
+      const r = rowMap.get(t.slug);
       return {
         ...t,
+        avgRating: r?.ratingAvg ?? null,
+        ratingCount: r?.ratingCount ?? null,
       };
     });
   } catch {
-    // ignore — still render
+    // ignore — still render configs even if DB is down
   }
 
   const sp = await searchParams;
@@ -186,11 +221,7 @@ export default async function ToolsPage({
         </section>
 
         <section className="mt-6">
-          <ToolLibraryClient
-            tools={tools}
-            savedSlugs={savedSlugs}
-            isSignedIn={isSignedIn}
-          />
+          <ToolLibraryClient tools={tools} savedSlugs={savedSlugs} isSignedIn={isSignedIn} />
         </section>
       </div>
     </main>

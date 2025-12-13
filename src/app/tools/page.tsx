@@ -16,13 +16,13 @@ type ToolMeta = {
   slug: string;
   title: string;
   description: string;
+  avgRating?: number | null;
+  ratingCount?: number | null;
 };
 
 function getToolsFromConfigs(): ToolMeta[] {
   const configDir = path.join(process.cwd(), "tool-configs");
-  const files = fs
-    .readdirSync(configDir)
-    .filter((file) => file.endsWith(".json"));
+  const files = fs.readdirSync(configDir).filter((file) => file.endsWith(".json"));
 
   return files
     .map((file) => {
@@ -34,6 +34,8 @@ function getToolsFromConfigs(): ToolMeta[] {
         slug: json.slug,
         title: json.title,
         description: json.description,
+        avgRating: null,
+        ratingCount: null,
       } as ToolMeta;
     })
     .sort((a, b) => a.title.localeCompare(b.title));
@@ -46,15 +48,34 @@ export default async function ToolsPage({
 }) {
   let tools = getToolsFromConfigs();
 
+  // ✅ pull ratings from DB for these slugs
+  try {
+    const slugs = tools.map((t) => t.slug);
+    const rows = await prisma.tool.findMany({
+      where: { slug: { in: slugs } },
+      select: {
+        slug: true,
+      },
+    });
+
+    const map = new Map(rows.map((r) => [r.slug, r]));
+    tools = tools.map((t) => {
+      const r = map.get(t.slug);
+      return {
+        ...t,
+      };
+    });
+  } catch {
+    // ignore — still render
+  }
+
   const sp = await searchParams;
   const savedOn = sp?.saved === "1";
 
-  // Defaults that will never crash rendering
   let userId: string | undefined = undefined;
   let isSignedIn = false;
   let savedSlugs: string[] = [];
 
-  // ✅ Session (never let auth() crash the page)
   let session: any = null;
   try {
     session = await auth();
@@ -65,10 +86,8 @@ export default async function ToolsPage({
   const sessionUser = session?.user;
   const email = (sessionUser?.email as string | undefined) ?? undefined;
 
-  // ✅ Prefer id from session
   userId = (sessionUser?.id as string | undefined) ?? undefined;
 
-  // ✅ Fallback: lookup userId by email
   if (!userId && email) {
     try {
       const dbUser = await prisma.user.findUnique({
@@ -83,7 +102,6 @@ export default async function ToolsPage({
 
   isSignedIn = !!userId;
 
-  // ✅ Fetch saved slugs
   if (userId) {
     try {
       const saved = await prisma.savedTool.findMany({
@@ -100,10 +118,8 @@ export default async function ToolsPage({
     }
   }
 
-  // ✅ Server-side filter when ?saved=1
   if (savedOn) {
     if (!isSignedIn) {
-      // not signed in => show empty list (button will route to sign-in)
       tools = [];
     } else {
       const set = new Set(savedSlugs);
@@ -114,12 +130,10 @@ export default async function ToolsPage({
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#050816] via-[#020617] to-black text-gray-100">
       <div className="max-w-5xl mx-auto px-4 py-12 md:py-16">
-        {/* TOP RIGHT LOGIN */}
         <header className="mb-10 flex items-center justify-end">
           <AuthPill />
         </header>
 
-        {/* HEADER */}
         <section className="mb-10 md:mb-12">
           <div className="text-center">
             <p className="text-xs font-semibold tracking-[0.25em] text-purple-300/80 mb-3 uppercase">
@@ -156,7 +170,6 @@ export default async function ToolsPage({
             </p>
           </div>
 
-          {/* SEARCH + CATEGORIES + SAVED BUTTON */}
           <div className="mt-8 space-y-3">
             <SearchBar />
 
@@ -172,7 +185,6 @@ export default async function ToolsPage({
           </div>
         </section>
 
-        {/* TOOL GRID */}
         <section className="mt-6">
           <ToolLibraryClient
             tools={tools}

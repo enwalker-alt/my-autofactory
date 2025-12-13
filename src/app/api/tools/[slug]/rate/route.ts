@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(
-  req: NextRequest,
+  req: Request,
   context: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await context.params;
+
     const session = await auth();
     const email = (session as any)?.user?.email as string | undefined;
 
@@ -16,14 +18,12 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { slug } = await context.params;
-
-    const body = await req.json().catch(() => ({}));
+    const body = await req.json().catch(() => null);
     const valueRaw = body?.value;
 
     const value = Number(valueRaw);
     if (!Number.isFinite(value) || value < 1 || value > 5) {
-      return NextResponse.json({ error: "Invalid rating" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid rating (1..5)" }, { status: 400 });
     }
 
     const dbUser = await prisma.user.findUnique({
@@ -32,9 +32,10 @@ export async function POST(
     });
 
     if (!dbUser?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // ✅ ensure tool exists
     const tool = await prisma.tool.findUnique({
       where: { slug },
       select: { id: true },
@@ -44,43 +45,43 @@ export async function POST(
       return NextResponse.json({ error: "Tool not found" }, { status: 404 });
     }
 
-    // ✅ Upsert rating, then recompute aggregates
-    const result = await prisma.$transaction(async (tx) => {
-      await tx.toolRating.upsert({
-        where: { userId_toolId: { userId: dbUser.id, toolId: tool.id } },
-        update: { value },
-        create: { userId: dbUser.id, toolId: tool.id, value },
-      });
-
-      const agg = await tx.toolRating.aggregate({
-        where: { toolId: tool.id },
-        _avg: { value: true },
-        _count: { value: true },
-      });
-
-      const ratingAvg = agg._avg.value ?? 0;
-      const ratingCount = agg._count.value ?? 0;
-
-      await tx.tool.update({
-        where: { id: tool.id },
-        data: { ratingAvg, ratingCount },
-      });
-
-      return { ratingAvg, ratingCount };
+    // ✅ upsert user's rating for this tool
+    await prisma.toolRating.upsert({
+      where: { userId_toolId: { userId: dbUser.id, toolId: tool.id } },
+      update: { value },
+      create: { userId: dbUser.id, toolId: tool.id, value },
+      select: { id: true },
     });
 
-    revalidatePath("/tools");
-    revalidatePath(`/tools/${slug}`);
+    // ✅ recompute rollup and store on Tool for fast reads everywhere
+    const agg = await prisma.toolRating.aggregate({
+      where: { toolId: tool.id },
+      _avg: { value: true },
+      _count: { value: true },
+    });
+
+    const avg = Number(agg._avg.value ?? 0);
+    const count = Number(agg._count.value ?? 0);
+
+    const updated = await prisma.tool.update({
+      where: { id: tool.id },
+      data: {
+        ratingAvg: avg,
+        ratingCount: count,
+      },
+      select: { ratingAvg: true, ratingCount: true },
+    });
 
     return NextResponse.json({
       ok: true,
-      ratingAvg: result.ratingAvg,
-      ratingCount: result.ratingCount,
+      yourRating: value,
+      avgRating: updated.ratingAvg,
+      ratingCount: updated.ratingCount,
     });
   } catch (err: any) {
-    console.error("Rate route crashed:", err?.message || err);
+    console.error("rate route error:", err);
     return NextResponse.json(
-      { error: "Rate route crashed", detail: String(err?.message || err) },
+      { error: "Rate route crashed", detail: String(err?.message ?? err) },
       { status: 500 }
     );
   }

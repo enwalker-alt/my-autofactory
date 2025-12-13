@@ -21,13 +21,14 @@ type ToolConfig = {
 
 export const dynamic = "force-dynamic";
 
+/* ---------- Rating Stars (display only) ---------- */
 function Stars({ avg }: { avg: number }) {
   const rounded = Math.round(avg * 10) / 10;
   const full = Math.floor(rounded);
   const half = rounded - full >= 0.5;
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((n) => {
         const isFull = n <= full;
         const isHalf = !isFull && half && n === full + 1;
@@ -35,7 +36,9 @@ function Stars({ avg }: { avg: number }) {
         return (
           <span
             key={n}
-            className={isFull || isHalf ? "text-yellow-300" : "text-slate-600"}
+            className={
+              isFull || isHalf ? "text-yellow-300" : "text-slate-600"
+            }
             aria-hidden="true"
           >
             ★
@@ -77,31 +80,31 @@ export default async function ToolPage({
   const raw = fs.readFileSync(configPath, "utf-8");
   const config: ToolConfig = JSON.parse(raw);
 
-  // ✅ Auth (server)
+  /* ---------- Auth ---------- */
   const session = await auth();
   const email = (session as any)?.user?.email as string | undefined;
   const isSignedIn = !!email;
 
-  // ✅ Ensure tool row exists + keep aggregates available
+  /* ---------- Ensure tool exists + pull rating aggregates ---------- */
   const toolRow = await prisma.tool.upsert({
     where: { slug },
     update: {
       title: config.title,
       description: config.description ?? null,
-      inputLabel: config.inputLabel ?? null,
-      outputLabel: config.outputLabel ?? null,
     },
     create: {
       slug,
       title: config.title,
       description: config.description ?? null,
-      inputLabel: config.inputLabel ?? null,
-      outputLabel: config.outputLabel ?? null,
     },
-    select: { id: true, ratingAvg: true, ratingCount: true },
+    select: {
+      id: true,
+      ratingAvg: true,
+      ratingCount: true,
+    },
   });
 
-  // ✅ initial saved state (server)
+  /* ---------- Initial saved state ---------- */
   let initialSaved = false;
 
   if (email) {
@@ -112,7 +115,12 @@ export default async function ToolPage({
 
     if (dbUser?.id) {
       const existing = await prisma.savedTool.findUnique({
-        where: { userId_toolId: { userId: dbUser.id, toolId: toolRow.id } },
+        where: {
+          userId_toolId: {
+            userId: dbUser.id,
+            toolId: toolRow.id,
+          },
+        },
         select: { id: true },
       });
       initialSaved = !!existing;
@@ -125,7 +133,7 @@ export default async function ToolPage({
   return (
     <main className="min-h-screen bg-[#020617] text-slate-100">
       <div className="relative mx-auto max-w-5xl px-4 pt-20 pb-16 sm:px-6 lg:px-8">
-        {/* LOGIN PILL — top right */}
+        {/* LOGIN PILL */}
         <div className="absolute right-4 top-6 z-20">
           <AuthPill />
         </div>
@@ -140,11 +148,16 @@ export default async function ToolPage({
               Atlas
             </Link>
             <span className="text-slate-600">/</span>
-            <Link href="/tools" className="hover:text-slate-200 transition-colors">
+            <Link
+              href="/tools"
+              className="hover:text-slate-200 transition-colors"
+            >
               Tool Library
             </Link>
             <span className="text-slate-600">/</span>
-            <span className="text-slate-300 line-clamp-1">{config.title}</span>
+            <span className="text-slate-300 line-clamp-1">
+              {config.title}
+            </span>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 text-[11px] text-emerald-400/90">
@@ -160,14 +173,16 @@ export default async function ToolPage({
               {config.title}
             </h1>
 
-            {/* ✅ Rating display */}
+            {/* ⭐ Rating display */}
             <div className="flex items-center gap-3 mb-3">
               <Stars avg={ratingAvg} />
               <div className="text-xs text-slate-300/80">
                 <span className="font-semibold text-slate-200">
-                  {Math.round(ratingAvg * 10) / 10}
+                  {ratingAvg.toFixed(1)}
                 </span>{" "}
-                <span className="text-slate-500">({ratingCount} ratings)</span>
+                <span className="text-slate-500">
+                  ({ratingCount} ratings)
+                </span>
               </div>
             </div>
 
@@ -177,7 +192,11 @@ export default async function ToolPage({
           </div>
 
           <div className="shrink-0 pt-1">
-            <SaveButton slug={slug} initialSaved={initialSaved} isSignedIn={isSignedIn} />
+            <SaveButton
+              slug={slug}
+              initialSaved={initialSaved}
+              isSignedIn={isSignedIn}
+            />
           </div>
         </header>
 
@@ -185,8 +204,12 @@ export default async function ToolPage({
         <section className="relative rounded-3xl border border-white/10 bg-slate-900/70 backdrop-blur shadow-xl shadow-purple-500/25 p-4 sm:p-6 lg:p-8">
           <div className="mb-4 flex justify-end">
             <div className="flex flex-col items-end text-[11px] text-slate-400">
-              <span className="uppercase tracking-wide text-slate-500">Mode</span>
-              <span className="font-mono text-xs text-slate-200">{slug}</span>
+              <span className="uppercase tracking-wide text-slate-500">
+                Mode
+              </span>
+              <span className="font-mono text-xs text-slate-200">
+                {slug}
+              </span>
             </div>
           </div>
 

@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { signIn } from "next-auth/react";
 
 type ToolMeta = {
   slug: string;
   title: string;
   description: string;
+  avgRating?: number | null;
+  ratingCount?: number | null;
 };
 
 type Props = {
@@ -20,6 +22,8 @@ type Props = {
 const PER_PAGE = 20;
 
 const SORT_OPTIONS = [
+  { id: "rating-high", label: "Rating: High → Low" },
+  { id: "rating-low", label: "Rating: Low → High" },
   { id: "title-az", label: "A → Z" },
   { id: "title-za", label: "Z → A" },
 ] as const;
@@ -277,20 +281,48 @@ function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
 
-export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Props) {
+function StarsInline({
+  value,
+  count,
+}: {
+  value?: number | null;
+  count?: number | null;
+}) {
+  const v = typeof value === "number" ? value : 0;
+  const c = typeof count === "number" ? count : 0;
+
+  const full = Math.round(v); // simple display
+  const stars = Array.from({ length: 5 }, (_, i) => (i < full ? "★" : "☆")).join(
+    ""
+  );
+
+  return (
+    <div className="flex items-center gap-2 text-[12px] text-slate-300">
+      <span className="tracking-[0.2em] text-yellow-300/90">{stars}</span>
+      <span className="text-slate-400">
+        {c > 0 ? `${v.toFixed(1)} (${c})` : "No ratings"}
+      </span>
+    </div>
+  );
+}
+
+export default function ToolLibraryClient({
+  tools,
+  savedSlugs,
+  isSignedIn,
+}: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  // ✅ local set for instant UI updates
-  const [localSaved, setLocalSaved] = useState<Set<string>>(() => new Set(savedSlugs));
+  const [localSaved, setLocalSaved] = useState<Set<string>>(
+    () => new Set(savedSlugs)
+  );
 
-  // ✅ keep in sync when server refreshes savedSlugs
   useEffect(() => {
     setLocalSaved(new Set(savedSlugs));
   }, [savedSlugs]);
 
-  // ✅ tiny toast/status line so you can SEE response results
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const statusTimer = useRef<number | null>(null);
 
@@ -308,12 +340,15 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
   const category = searchParams.get("category") || "";
   const categoryLabel = CATEGORY_RULES[category]?.label;
 
-  const sortParam = (searchParams.get("sort") || "title-az") as SortId;
-  const sort: SortId = SORT_OPTIONS.find((s) => s.id === sortParam)?.id ?? "title-az";
+  const sortParam = (searchParams.get("sort") ||
+    "rating-high") as SortId;
+  const sort: SortId =
+    SORT_OPTIONS.find((s) => s.id === sortParam)?.id ?? "rating-high";
 
   const pageParamRaw = searchParams.get("page") || "1";
   const pageParsed = Number.parseInt(pageParamRaw, 10);
-  const requestedPage = Number.isFinite(pageParsed) && pageParsed > 0 ? pageParsed : 1;
+  const requestedPage =
+    Number.isFinite(pageParsed) && pageParsed > 0 ? pageParsed : 1;
 
   const setParam = (key: string, value?: string, resetPage = false) => {
     const current = new URLSearchParams(searchParams?.toString() || "");
@@ -334,7 +369,6 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
 
     const wasSaved = localSaved.has(slug);
 
-    // ✅ optimistic
     setLocalSaved((prev) => {
       const next = new Set(prev);
       if (wasSaved) next.delete(slug);
@@ -346,10 +380,9 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
       const res = await fetch(`/api/tools/${slug}/save`, {
         method: "POST",
         cache: "no-store",
-        credentials: "include", // ✅ IMPORTANT: send cookies/session
+        credentials: "include",
       });
 
-      // Always read body for debugging (json or text)
       let bodyText = "";
       let bodyJson: any = null;
 
@@ -369,14 +402,8 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
       }
 
       if (!res.ok) {
-        console.error("Save failed:", {
-          status: res.status,
-          slug,
-          bodyJson,
-          bodyText,
-        });
+        console.error("Save failed:", { status: res.status, slug, bodyJson, bodyText });
 
-        // revert
         setLocalSaved((prev) => {
           const next = new Set(prev);
           if (wasSaved) next.add(slug);
@@ -397,7 +424,6 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
       const savedValue =
         typeof bodyJson?.saved === "boolean" ? (bodyJson.saved as boolean) : !wasSaved;
 
-      // ✅ enforce server truth if provided
       setLocalSaved((prev) => {
         const next = new Set(prev);
         if (savedValue) next.add(slug);
@@ -407,12 +433,10 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
 
       flashStatus(savedValue ? "Saved ✅" : "Unsaved ✅");
 
-      // ✅ update top Saved(count) + saved list (server recompute)
       startTransition(() => router.refresh());
     } catch (err) {
       console.error("Save network error:", err);
 
-      // revert
       setLocalSaved((prev) => {
         const next = new Set(prev);
         if (wasSaved) next.add(slug);
@@ -426,13 +450,11 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
 
   let filtered = tools;
 
-  // ✅ Saved-only filter
   if (savedOn) {
     if (!isSignedIn) filtered = [];
     else filtered = filtered.filter((t) => localSaved.has(t.slug));
   }
 
-  // Free-text search
   if (query) {
     filtered = filtered.filter((tool) => {
       const haystack = normalize(tool.title + " " + tool.description);
@@ -440,7 +462,6 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
     });
   }
 
-  // Category filter
   if (category && category !== "all") {
     const rule = CATEGORY_RULES[category];
     if (rule) {
@@ -451,14 +472,29 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
     }
   }
 
-  // Sort
   const sorted = [...filtered].sort((a, b) => {
+    const ar = typeof a.avgRating === "number" ? a.avgRating : 0;
+    const br = typeof b.avgRating === "number" ? b.avgRating : 0;
+    const ac = typeof a.ratingCount === "number" ? a.ratingCount : 0;
+    const bc = typeof b.ratingCount === "number" ? b.ratingCount : 0;
+
+    if (sort === "rating-high") {
+      if (br !== ar) return br - ar;
+      if (bc !== ac) return bc - ac;
+      return normalize(a.title).localeCompare(normalize(b.title));
+    }
+
+    if (sort === "rating-low") {
+      if (ar !== br) return ar - br;
+      if (ac !== bc) return ac - bc;
+      return normalize(a.title).localeCompare(normalize(b.title));
+    }
+
     const at = normalize(a.title);
     const bt = normalize(b.title);
     return sort === "title-az" ? at.localeCompare(bt) : bt.localeCompare(at);
   });
 
-  // Pagination
   const totalFiltered = sorted.length;
   const totalPages = Math.max(1, Math.ceil(totalFiltered / PER_PAGE));
   const page = clamp(requestedPage, 1, totalPages);
@@ -472,7 +508,6 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
 
   return (
     <div>
-      {/* Debug/status line (small, centered) */}
       {saveStatus && (
         <div className="mb-4 flex justify-center">
           <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-200">
@@ -481,7 +516,6 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
         </div>
       )}
 
-      {/* Top line: status + sort only */}
       <div className="mb-4 flex flex-col gap-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="text-xs md:text-sm text-gray-400 flex flex-wrap items-center justify-center md:justify-start gap-2">
@@ -564,6 +598,12 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
                     <h2 className="text-sm md:text-base font-medium mb-1 group-hover:text-white truncate">
                       {tool.title}
                     </h2>
+
+                    {/* ⭐ Rating line */}
+                    <div className="mb-2">
+                      <StarsInline value={tool.avgRating} count={tool.ratingCount} />
+                    </div>
+
                     <p className="text-xs md:text-sm text-gray-400 line-clamp-3">
                       {tool.description}
                     </p>

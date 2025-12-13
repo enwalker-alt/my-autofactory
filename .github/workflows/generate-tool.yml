@@ -1,4 +1,4 @@
-name: Generate Tool Every 6 Hours
+name: Generate Tool Every 1 Hour
 
 on:
   schedule:

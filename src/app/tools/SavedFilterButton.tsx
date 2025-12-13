@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function SavedFilterButton({
   isSignedIn,
@@ -15,9 +16,10 @@ export default function SavedFilterButton({
 
   const savedOn = useMemo(() => sp.get("saved") === "1", [sp]);
 
-  function toggle() {
+  async function toggle() {
     if (!isSignedIn) {
-      router.push("/signin");
+      // ✅ send them to Google sign-in and bounce back to tools with saved selected
+      await signIn("google", { callbackUrl: "/tools?saved=1" });
       return;
     }
 
@@ -27,6 +29,7 @@ export default function SavedFilterButton({
 
     const qs = next.toString();
     router.push(qs ? `/tools?${qs}` : "/tools");
+    router.refresh(); // ✅ ensures server components re-fetch
   }
 
   return (

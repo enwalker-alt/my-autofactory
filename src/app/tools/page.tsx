@@ -39,8 +39,15 @@ function getToolsFromConfigs(): ToolMeta[] {
     .sort((a, b) => a.title.localeCompare(b.title));
 }
 
-export default async function ToolsPage() {
-  const tools = getToolsFromConfigs();
+export default async function ToolsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  let tools = getToolsFromConfigs();
+
+  const sp = await searchParams;
+  const savedOn = sp?.saved === "1";
 
   // Defaults that will never crash rendering
   let userId: string | undefined = undefined;
@@ -58,29 +65,25 @@ export default async function ToolsPage() {
   const sessionUser = session?.user;
   const email = (sessionUser?.email as string | undefined) ?? undefined;
 
-  // ✅ Prefer id from session (best)
+  // ✅ Prefer id from session
   userId = (sessionUser?.id as string | undefined) ?? undefined;
 
-  // ✅ Fallback: if session has no id, try lookup by email — BUT ONLY if prisma.user exists
+  // ✅ Fallback: lookup userId by email
   if (!userId && email) {
     try {
-      const prismaAny = prisma as any;
-      if (prismaAny?.user?.findUnique) {
-        const dbUser = await prismaAny.user.findUnique({
-          where: { email },
-          select: { id: true },
-        });
-        userId = dbUser?.id;
-      }
+      const dbUser = await prisma.user.findUnique({
+        where: { email },
+        select: { id: true },
+      });
+      userId = dbUser?.id;
     } catch {
-      // swallow error, we’ll just treat as signed out on server
       userId = undefined;
     }
   }
 
   isSignedIn = !!userId;
 
-  // ✅ Fetch saved tools (never crash page)
+  // ✅ Fetch saved slugs
   if (userId) {
     try {
       const saved = await prisma.savedTool.findMany({
@@ -94,6 +97,17 @@ export default async function ToolsPage() {
         .filter((slug): slug is string => !!slug);
     } catch {
       savedSlugs = [];
+    }
+  }
+
+  // ✅ Server-side filter when ?saved=1
+  if (savedOn) {
+    if (!isSignedIn) {
+      // not signed in => show empty list (button will route to sign-in)
+      tools = [];
+    } else {
+      const set = new Set(savedSlugs);
+      tools = tools.filter((t) => set.has(t.slug));
     }
   }
 

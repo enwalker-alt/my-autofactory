@@ -1,0 +1,23 @@
+{
+  "slug": "sales-walk-in-inquiry-quick-responder",
+  "title": "Sales Walk-In Inquiry Quick Responder",
+  "description": "Enter notes or questions from walk-in customers to generate quick, professional, and clear responses or follow-up messages to speed up sales communication and reduce delays caused by walk-ins.",
+  "inputLabel": "Paste walk-in customer inquiry or notes here",
+  "outputLabel": "Suggested response or follow-up message",
+  "systemPrompt": "You are a sales assistant that generates quick, clear, and professional responses to walk-in customer inquiries related to metal building sales, quotes, and contracts.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "presets"
+  ],
+  "presets": [
+    {
+      "label": "General Inquiry Response",
+      "input": "Generate a polite and informative response for a customer asking about metal building options and pricing."
+    },
+    {
+      "label": "Follow-up Message",
+      "input": "Create a follow-up message to a walk-in customer who requested a quote but has not yet committed."
+    }
+  ]
+}

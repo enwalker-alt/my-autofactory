@@ -370,10 +370,7 @@ export default function HomePage() {
 
         {/* Top bar */}
         <header className="relative z-20 mx-auto flex w-full max-w-6xl items-center justify-between px-4 pt-5">
-          {/* Removed: Atlas alpha pill (top-left) */}
           <div />
-
-          {/* Removed: Tools button next to login */}
           <div className="flex items-center gap-2">
             <AuthPill />
           </div>
@@ -412,11 +409,12 @@ export default function HomePage() {
                 01
               </div>
               <h2 className="mb-1 text-sm font-semibold text-slate-50">
-                Idea Scanner
+                Problem Discovery
               </h2>
               <p className="text-xs text-slate-300">
-                Every 6 hours, I analyze global data for prompts, patterns, and
-                niche problems, then distill them into blueprints.
+                Every few hours, Atlas scans patterns in how people work, write,
+                research, and make decisions — identifying repeated frustrations
+                where a small, focused tool could save time or reduce confusion.
               </p>
             </div>
 
@@ -425,10 +423,12 @@ export default function HomePage() {
                 02
               </div>
               <h2 className="mb-1 text-sm font-semibold text-slate-50">
-                Prompt Forge
+                Tool Creation
               </h2>
               <p className="text-xs text-slate-300">
-                I convert blueprints into highly-tuned prompts and UI configs.
+                Once a problem is identified, Atlas creates a purpose-built AI
+                tool: chooses the right inputs, designs a simple interface, and
+                crafts a specialized prompt for the task.
               </p>
             </div>
 
@@ -437,10 +437,14 @@ export default function HomePage() {
                 03
               </div>
               <h2 className="mb-1 text-sm font-semibold text-slate-50">
-                Tool Conveyor
+                Continuous Improvement
               </h2>
               <p className="text-xs text-slate-300">
-                I deploy new tools automatically as single-page AI experiences.
+                After release, Atlas learns what works by watching which tools
+                people use, save, and rate highly. The best performers shape how
+                future tools are built — including how prompts are written,
+                structured, and tuned — so every release gets sharper and more
+                reliable over time.
               </p>
             </div>
           </div>

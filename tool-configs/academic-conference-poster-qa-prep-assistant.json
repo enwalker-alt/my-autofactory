@@ -15,16 +15,24 @@
   ],
   "presets": [
     {
-      "label": "Poster on Machine Learning Model",
-      "input": "Title: Predicting Urban Traffic Flows Using Deep Learning\nAbstract: We present a novel deep learning model that predicts urban traffic patterns based on real-time sensor data. Our model outperforms traditional methods in accuracy and speed."
+      "label": "Make it clearer",
+      "prompt": "Rewrite/produce the output with maximum clarity. Reduce ambiguity, define terms briefly, and avoid jargon unless necessary.",
+      "hint": "Improve clarity"
     },
     {
-      "label": "Poster on Environmental Microbiology",
-      "input": "Title: Microbial Degradation of Plastic Waste in Marine Environments\nAbstract: This study investigates microbial communities capable of degrading polyethylene in ocean samples, highlighting potential bioremediation strategies."
+      "label": "More structured",
+      "prompt": "Use a clean structure with headings and bullet points. Make the output scannable and logically ordered.",
+      "hint": "Add structure"
     },
     {
-      "label": "Poster on Social Psychology Experiment",
-      "input": "Title: Effects of Social Media Use on Adolescent Self-Esteem\nAbstract: We explore correlations between social media engagement and self-esteem levels in teenagers through surveys and behavioral analysis."
+      "label": "More critical",
+      "prompt": "Be more rigorous. Identify weak spots, missing assumptions, contradictions, and any risks or limitations.",
+      "hint": "Pressure-test"
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Add concrete next steps, checklists, or recommendations. Prioritize what to do first and why.",
+      "hint": "Make it usable"
     }
   ],
   "outputFormatDefault": "json",

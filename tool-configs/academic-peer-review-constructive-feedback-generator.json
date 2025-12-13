@@ -14,16 +14,24 @@
   ],
   "presets": [
     {
-      "label": "Review notes on a psychology manuscript",
-      "input": "The introduction is well-written but lacks recent references on cognitive bias. Methods section is detailed; however, sample size appears small. Results are promising but would benefit from clearer statistical explanations. Discussion overstates findings without addressing limitations."
+      "label": "Make it clearer",
+      "prompt": "Rewrite/produce the output with maximum clarity. Reduce ambiguity, define terms briefly, and avoid jargon unless necessary.",
+      "hint": "Improve clarity"
     },
     {
-      "label": "Manuscript excerpt from a biology paper",
-      "input": "This study investigates gene expression in response to environmental stress. The methodology uses RNA-seq data but does not clarify normalization steps. Figures are informative but captions lack detail. The conclusion is concise but could discuss broader implications."
+      "label": "More structured",
+      "prompt": "Use a clean structure with headings and bullet points. Make the output scannable and logically ordered.",
+      "hint": "Add structure"
     },
     {
-      "label": "Raw reviewer notes on a social sciences article",
-      "input": "Literature review is comprehensive but some key theories are missing. Data analysis is appropriate but the interpretation seems biased towards expected outcomes. Writing style is dense and could be clearer in parts."
+      "label": "More critical",
+      "prompt": "Be more rigorous. Identify weak spots, missing assumptions, contradictions, and any risks or limitations.",
+      "hint": "Pressure-test"
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Add concrete next steps, checklists, or recommendations. Prioritize what to do first and why.",
+      "hint": "Make it usable"
     }
   ],
   "outputFormatDefault": "json",

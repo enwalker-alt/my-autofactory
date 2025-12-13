@@ -20,7 +20,9 @@ type ToolMeta = {
 
 function getToolsFromConfigs(): ToolMeta[] {
   const configDir = path.join(process.cwd(), "tool-configs");
-  const files = fs.readdirSync(configDir).filter((file) => file.endsWith(".json"));
+  const files = fs
+    .readdirSync(configDir)
+    .filter((file) => file.endsWith(".json"));
 
   return files
     .map((file) => {
@@ -40,11 +42,28 @@ function getToolsFromConfigs(): ToolMeta[] {
 export default async function ToolsPage() {
   const tools = getToolsFromConfigs();
 
-  // ✅ fetch saved slugs for this user (for Saved filter + card buttons)
+  // ✅ Session
   const session = await auth();
-  const userId = (session as any)?.user?.id as string | undefined;
+
+  // ✅ IMPORTANT:
+  // NextAuth often does NOT include user.id in session unless you add it in callbacks.
+  // So we fallback to email -> lookup user id in Prisma.
+  const sessionUser = (session as any)?.user;
+  const email = (sessionUser?.email as string | undefined) ?? undefined;
+
+  let userId = (sessionUser?.id as string | undefined) ?? undefined;
+
+  if (!userId && email) {
+    const dbUser = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+    userId = dbUser?.id;
+  }
+
   const isSignedIn = !!userId;
 
+  // ✅ Fetch saved tool slugs for this user
   let savedSlugs: string[] = [];
   if (userId) {
     const saved = await prisma.savedTool.findMany({
@@ -52,7 +71,10 @@ export default async function ToolsPage() {
       select: { tool: { select: { slug: true } } },
       orderBy: { createdAt: "desc" },
     });
-    savedSlugs = saved.map((s) => s.tool.slug);
+
+    savedSlugs = saved
+      .map((s) => s.tool?.slug)
+      .filter((slug): slug is string => !!slug);
   }
 
   return (

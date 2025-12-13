@@ -8,7 +8,9 @@ import SaveButton from "./SaveButton";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type ToolPreset = { label: string; input: string };
+type ToolPreset =
+  | { label: string; input: string }
+  | { label: string; prompt: string; hint?: string };
 
 type ToolConfig = {
   slug: string;
@@ -64,6 +66,38 @@ function safeFeatures(maybe: any): string[] {
   return cleaned.length ? cleaned : ["text-input"];
 }
 
+function normalizePresets(presets: any): ToolPreset[] | undefined {
+  if (!Array.isArray(presets)) return undefined;
+
+  const cleaned = presets
+    .map((p: any) => {
+      const label = typeof p?.label === "string" ? p.label.trim().slice(0, 80) : "";
+      if (!label) return null;
+
+      // Lens preset
+      if (typeof p?.prompt === "string" && p.prompt.trim()) {
+        return {
+          label,
+          prompt: p.prompt.trim().slice(0, 2000),
+          hint: typeof p?.hint === "string" ? p.hint.trim().slice(0, 200) : undefined,
+        } as ToolPreset;
+      }
+
+      // Legacy preset
+      if (typeof p?.input === "string" && p.input.trim()) {
+        return {
+          label,
+          input: p.input.trim().slice(0, 2000),
+        } as ToolPreset;
+      }
+
+      return null;
+    })
+    .filter(Boolean) as ToolPreset[];
+
+  return cleaned.length ? cleaned : undefined;
+}
+
 export default async function ToolPage({
   params,
 }: {
@@ -99,8 +133,11 @@ export default async function ToolPage({
   const normalized: ToolConfig = {
     ...config,
     features: safeFeatures(config.features),
-    outputFormatDefault: config.outputFormatDefault ?? "plain",
-    presets: Array.isArray(config.presets) ? config.presets : undefined,
+
+    // ✅ Force plain on load for everyone
+    outputFormatDefault: "plain",
+
+    presets: normalizePresets(config.presets),
     jsonSchemaHint: typeof config.jsonSchemaHint === "string" ? config.jsonSchemaHint : undefined,
     clarifyPrompt: typeof config.clarifyPrompt === "string" ? config.clarifyPrompt : undefined,
     finalizePrompt: typeof config.finalizePrompt === "string" ? config.finalizePrompt : undefined,

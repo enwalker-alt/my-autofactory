@@ -5,9 +5,13 @@ import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 
 /**
- * Backwards compatible:
- * - Old: { label, input } (fills textarea)
+ * Backwards compatible incoming preset shapes:
+ * - Old: { label, input }  (used to fill textarea)
  * - New: { label, prompt, hint? } (refinement lens / focus)
+ *
+ * NEW BEHAVIOR:
+ * - We NEVER fill the textarea from presets.
+ * - Legacy {input} gets converted into a lens prompt automatically.
  */
 type ToolPreset =
   | { label: string; input: string }
@@ -96,7 +100,6 @@ function isSimpleDisplayObject(x: any) {
   const keys = Object.keys(x);
   if (keys.length === 0 || keys.length > 14) return false;
 
-  // allow string | number | boolean | null | string[]
   for (const k of keys) {
     const v = (x as any)[k];
     if (
@@ -121,13 +124,34 @@ function titleCaseKey(k: string) {
     .replace(/^\w/, (c) => c.toUpperCase());
 }
 
+function normalizeToLens(p: ToolPreset): { label: string; prompt: string; hint?: string } {
+  const label = safeStr((p as any)?.label).trim() || "Refine";
+  // Preferred: prompt lens
+  if ("prompt" in p && safeStr((p as any)?.prompt).trim()) {
+    return {
+      label,
+      prompt: safeStr((p as any)?.prompt).trim(),
+      hint: safeStr((p as any)?.hint).trim() || undefined,
+    };
+  }
+
+  // Legacy: convert input into a lens instruction
+  const legacy = safeStr((p as any)?.input).trim();
+  return {
+    label,
+    prompt: legacy
+      ? `Apply this refinement lens while generating: ${legacy}`
+      : "Apply a refinement lens to improve quality and specificity.",
+    hint: "Converted from legacy preset",
+  };
+}
+
 export default function ToolClient({
   slug,
   inputLabel,
   outputLabel,
   features,
   presets,
-  outputFormatDefault = "plain",
   jsonSchemaHint,
 }: ToolClientProps) {
   const router = useRouter();
@@ -145,13 +169,10 @@ export default function ToolClient({
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const [output, setOutput] = useState("");
-  const [outputFormat, setOutputFormat] = useState<"plain" | "json">(
-    outputFormatDefault
-  );
 
-  const [serverOutputFormat, setServerOutputFormat] = useState<"plain" | "json">(
-    outputFormatDefault
-  );
+  // ✅ Always start in Plain mode on load
+  const [outputFormat, setOutputFormat] = useState<"plain" | "json">("plain");
+  const [serverOutputFormat, setServerOutputFormat] = useState<"plain" | "json">("plain");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -171,7 +192,7 @@ export default function ToolClient({
   // QoL
   const [copied, setCopied] = useState(false);
 
-  // Focus lens (NEW)
+  // Focus lens (active preset)
   const [focusLabel, setFocusLabel] = useState<string>("");
   const [focusPrompt, setFocusPrompt] = useState<string>("");
 
@@ -180,6 +201,12 @@ export default function ToolClient({
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // ✅ When you navigate between tools, reset to plain
+  useEffect(() => {
+    setOutputFormat("plain");
+    setServerOutputFormat("plain");
+  }, [slug]);
 
   const hasAnyInput = useMemo(() => {
     return input.trim().length > 0 || fileTexts.some((t) => t.trim().length > 0);
@@ -282,27 +309,20 @@ export default function ToolClient({
   }, [fileNames]);
 
   // ----- presets / focus -----
-  function applyPreset(p: ToolPreset) {
-    // NEW lens preset: { label, prompt }
-    if ("prompt" in p) {
-      const newLabel = safeStr(p.label).trim();
-      const newPrompt = safeStr(p.prompt).trim();
+  const lensPresets = useMemo(() => {
+    if (!supportsPresets || !Array.isArray(presets)) return [];
+    return presets.slice(0, 10).map(normalizeToLens);
+  }, [supportsPresets, presets]);
 
-      // toggle off if clicked again
-      const nextActive = focusLabel === newLabel ? "" : newLabel;
-      setFocusLabel(nextActive);
-      setFocusPrompt(nextActive ? newPrompt : "");
+  function applyLens(p: { label: string; prompt: string }) {
+    const newLabel = safeStr(p.label).trim();
+    const newPrompt = safeStr(p.prompt).trim();
 
-      setError(null);
-      // do NOT edit input
-      // keep clarify flow but reset its state so they can regenerate with lens
-      setClarify(null);
-      setTimeout(() => textareaRef.current?.focus(), 50);
-      return;
-    }
+    // toggle off if clicked again
+    const nextActive = focusLabel === newLabel ? "" : newLabel;
+    setFocusLabel(nextActive);
+    setFocusPrompt(nextActive ? newPrompt : "");
 
-    // LEGACY: old preset fills input
-    setInput(p.input || "");
     setError(null);
     setClarify(null);
     setTimeout(() => textareaRef.current?.focus(), 50);
@@ -374,17 +394,14 @@ export default function ToolClient({
         jsonSchemaHint: supportsStructured ? jsonSchemaHint || "" : "",
         mode: supportsClarify ? "auto" : "simple",
 
-        // NEW: focus lens (does not change input)
         focusLabel: focusLabel || "",
         focusPrompt: focusPrompt || "",
       });
 
-      // If server returns format explicitly, respect it
       const serverFmt =
         data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
       setServerOutputFormat(serverFmt);
 
-      // New route may return clarify step
       if (
         data?.step === "clarify" &&
         Array.isArray(data?.questions) &&
@@ -404,7 +421,6 @@ export default function ToolClient({
         return;
       }
 
-      // Otherwise final output
       const out = String(data.output || "");
       setOutput(out);
       setJustGenerated(true);
@@ -433,7 +449,9 @@ export default function ToolClient({
     const answeredCount = answers.filter(Boolean).length;
 
     if (answeredCount === 0) {
-      setError("Please answer at least one question (or click Back and revise your input).");
+      setError(
+        "Please answer at least one question (or click Back and revise your input)."
+      );
       return;
     }
 
@@ -460,7 +478,6 @@ export default function ToolClient({
         jsonSchemaHint: supportsStructured ? jsonSchemaHint || "" : "",
         mode: "auto",
 
-        // NEW: keep lens during finalize
         focusLabel: focusLabel || "",
         focusPrompt: focusPrompt || "",
       });
@@ -562,48 +579,34 @@ export default function ToolClient({
     return output;
   }, [output, serverOutputFormat]);
 
-  const hasLensPresets = useMemo(() => {
-    if (!supportsPresets || !Array.isArray(presets) || presets.length === 0) return false;
-    return presets.some((p: any) => typeof p?.prompt === "string");
-  }, [supportsPresets, presets]);
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-      {/* PRESETS -> Review focus (lens) or legacy quick start */}
-      {supportsPresets && Array.isArray(presets) && presets.length > 0 && (
+      {/* PRESETS -> Always refinement lenses */}
+      {supportsPresets && lensPresets.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-sm font-medium text-slate-200">
-              {hasLensPresets ? "Review focus (optional)" : "Quick start"}
-            </div>
+            <div className="text-sm font-medium text-slate-200">Quick refine (optional)</div>
             <div className="text-[11px] text-slate-500">
-              {hasLensPresets
-                ? "Select a lens — it refines the evaluation criteria"
-                : "Click a preset to fill the input"}
+              Pick a lens — it improves results without changing your input
             </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {presets.slice(0, 10).map((p: any) => {
-              const isLens = typeof p?.prompt === "string";
-              const active = isLens && focusLabel === p.label;
+            {lensPresets.map((p) => {
+              const active = focusLabel === p.label;
 
               return (
                 <button
                   key={p.label}
                   type="button"
-                  onClick={() => applyPreset(p)}
+                  onClick={() => applyLens(p)}
                   className={[
                     "rounded-full border px-3 py-1.5 text-xs transition",
                     active
                       ? "border-white/30 bg-white/10 text-slate-100"
                       : "border-white/10 bg-slate-900/50 text-slate-200 hover:border-white/25 hover:bg-slate-900",
                   ].join(" ")}
-                  title={
-                    isLens
-                      ? "Applies a refinement lens (does not change your input)"
-                      : "Apply preset (fills input)"
-                  }
+                  title={p.hint || "Applies a refinement lens (does not change your input)"}
                 >
                   {p.label}
                 </button>
@@ -611,9 +614,9 @@ export default function ToolClient({
             })}
           </div>
 
-          {hasLensPresets && focusLabel && (
+          {focusLabel && (
             <div className="text-[11px] text-slate-400">
-              Active focus:{" "}
+              Active refine:{" "}
               <span className="text-slate-200 font-medium">{focusLabel}</span>
               <button
                 type="button"
@@ -622,7 +625,7 @@ export default function ToolClient({
                   setFocusLabel("");
                   setFocusPrompt("");
                 }}
-                title="Clear focus"
+                title="Clear refine lens"
               >
                 (clear)
               </button>
@@ -636,12 +639,11 @@ export default function ToolClient({
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-3">
           <div className="space-y-0.5">
             <div className="text-sm font-medium text-slate-200">Output format</div>
-            {outputFormat === "json" && (
+            {outputFormat === "json" ? (
               <div className="text-[11px] text-slate-400">
                 JSON mode on{jsonSchemaHint ? ` — ${jsonSchemaHint}` : ""}
               </div>
-            )}
-            {outputFormat === "plain" && (
+            ) : (
               <div className="text-[11px] text-slate-400">Plain text mode</div>
             )}
           </div>
@@ -725,19 +727,6 @@ export default function ToolClient({
                 {fileNames.length} file{fileNames.length > 1 ? "s" : ""} ready
               </span>
             </div>
-          )}
-
-          {fileNames.length > 0 && (
-            <ul className="text-[11px] text-slate-400 space-y-0.5">
-              {fileNames.slice(0, 6).map((name) => (
-                <li key={name} className="truncate">
-                  {name}
-                </li>
-              ))}
-              {fileNames.length > 6 && (
-                <li className="text-slate-500">+ {fileNames.length - 6} more</li>
-              )}
-            </ul>
           )}
         </div>
       )}
@@ -855,7 +844,7 @@ export default function ToolClient({
                   <span key={n} onMouseEnter={() => setHoverStars(n)} className="inline-flex">
                     <Star
                       sizeClass="text-2xl"
-                      filled={n <= displayStars}
+                      filled={n <= (hoverStars ?? selectedStars ?? 0)}
                       disabled={ratingSubmitting}
                       title={
                         session?.user
@@ -899,7 +888,6 @@ export default function ToolClient({
             )}
           </div>
 
-          {/* Cleaner structured JSON rendering */}
           {serverOutputFormat === "json" && parsedJson && isSimpleDisplayObject(parsedJson) ? (
             <div className="rounded-xl border border-black/10 bg-white text-black p-4 space-y-4">
               {Object.keys(parsedJson).map((k) => {

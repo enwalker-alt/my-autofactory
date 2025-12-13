@@ -26,7 +26,7 @@ const client = new OpenAI({
  * Keep extending this list over time.
  *
  * v1 upgrades:
- * - presets: curated example inputs / starting modes
+ * - presets: refinement lenses (NOT example-fill) to help users get better results faster
  * - structured-output: tool can request output in "plain" or "json"
  * - clarify-first: two-step flow (ask questions, then finalize)
  * - saved-history: store recent runs (start client-side/localStorage)
@@ -71,9 +71,11 @@ AVAILABLE FEATURES (capabilities you can choose from for each tool):
    - Only include if core value depends on analyzing documents.
 
 3) "presets"
-   - Provide 2–5 clickable example presets that fill the input box (and optionally suggest a file type).
-   - Each preset must be relevant to the niche and moment-of-use.
-   - Presets reduce blank-page friction. Use this often.
+   - Provide 2–6 clickable REFINEMENT LENSES that DO NOT fill the input box.
+   - Each preset has: {label, prompt, hint?}
+   - The "prompt" is a short instruction that refines evaluation criteria or output style
+     (e.g. "Be brutally concise", "Flag risks", "Use executive tone", "Assume skeptical reviewer", etc.).
+   - These presets should help the user get better results faster without needing example text.
 
 4) "structured-output"
    - The tool may request output format: "plain" or "json".
@@ -104,7 +106,7 @@ IMPORTANT FEATURE RULES:
 - "features" may only contain feature names from the list above.
 - If using "structured-output", include an "outputFormatDefault": "plain" or "json".
 - If using "structured-output" with "json", include a "jsonSchemaHint" describing keys (in plain English).
-- If using "presets", include a "presets" array (2–5 items).
+- If using "presets", include a "presets" array (2–6 items) with {label, prompt, hint?}.
 - If using "clarify-first", include a "clarifyPrompt" (what to ask) and "finalizePrompt" (how to produce final output).
 
 SYSTEM PROMPT QUALITY BAR:
@@ -134,7 +136,7 @@ Return ONLY strict JSON with this exact shape:
   "features": string[],
 
   // optional, only if feature enabled:
-  "presets"?: [{"label": string, "input": string}],
+  "presets"?: [{"label": string, "prompt": string, "hint"?: string}],
   "outputFormatDefault"?: "plain" | "json",
   "jsonSchemaHint"?: string,
 
@@ -192,7 +194,8 @@ async function generateToolConfig(existingTools) {
           "Generate ONE new tool config JSON now for a niche that is clearly different from ALL of the above. " +
           "Avoid overlapping the same user role or type of input text.\n\n" +
           "Prefer combining multiple features meaningfully (e.g., presets + structured-output, or file-upload + presets). " +
-          "Use clarify-first when the workflow often has missing info.",
+          "Use clarify-first when the workflow often has missing info.\n\n" +
+          'If you include "presets", they MUST be refinement lenses (label + prompt + optional hint), not example inputs.',
       },
     ],
     temperature: 0.7,
@@ -211,20 +214,60 @@ async function generateToolConfig(existingTools) {
 
   // ---- normalize optional fields based on features ----
   let presets = config.presets;
+
   if (features.includes("presets")) {
     if (!Array.isArray(presets)) presets = [];
+
     presets = presets
-      .slice(0, 5)
-      .map((p) => ({
-        label: typeof p?.label === "string" ? p.label.trim().slice(0, 60) : "Example",
-        input: typeof p?.input === "string" ? p.input.trim().slice(0, 2000) : "",
-      }))
-      .filter((p) => p.input.length > 0);
-    // If model forgot presets, add a minimal fallback
+      .slice(0, 6)
+      .map((p) => {
+        const label =
+          typeof p?.label === "string" ? p.label.trim().slice(0, 60) : "Refine";
+
+        // Preferred: lens preset
+        if (typeof p?.prompt === "string" && p.prompt.trim()) {
+          return {
+            label,
+            prompt: p.prompt.trim().slice(0, 1200),
+            hint: typeof p?.hint === "string" ? p.hint.trim().slice(0, 160) : undefined,
+          };
+        }
+
+        // Back-compat: if model returns {input}, convert to a lens prompt (do NOT fill textarea)
+        if (typeof p?.input === "string" && p.input.trim()) {
+          const input = p.input.trim().slice(0, 400);
+          return {
+            label,
+            prompt:
+              `Use this lens while generating: ${input}`.slice(0, 1200),
+            hint: "Refinement lens (converted from legacy preset)",
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+
+    // If model forgot presets, add strong defaults
     if (presets.length < 2) {
       presets = [
-        { label: "Example 1", input: "Paste a realistic sample input for this tool here." },
-        { label: "Example 2", input: "Paste a second realistic sample input for this tool here." },
+        {
+          label: "Brutally concise",
+          prompt: "Produce the shortest correct output possible. Remove filler. Prefer bullets.",
+          hint: "Fast, high-signal",
+        },
+        {
+          label: "Skeptical reviewer",
+          prompt:
+            "Assume the reader is skeptical. Highlight assumptions, gaps, and what evidence would strengthen the claim.",
+          hint: "Pressure-test quality",
+        },
+        {
+          label: "Actionable next steps",
+          prompt:
+            "End with a prioritized list of next actions, each with an owner role and an expected outcome.",
+          hint: "Make it usable",
+        },
       ];
     }
   } else {

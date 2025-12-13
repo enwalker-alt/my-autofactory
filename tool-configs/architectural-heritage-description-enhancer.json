@@ -1,0 +1,13 @@
+{
+  "slug": "architectural-heritage-description-enhancer",
+  "title": "Architectural Heritage Description Enhancer",
+  "description": "Upload heritage building descriptions, historical reports, or paste rough text to generate polished, vivid, and engaging narratives that highlight architectural features and historical significance for cultural heritage professionals and tour guides.",
+  "inputLabel": "Paste or upload heritage building descriptions or historical notes",
+  "outputLabel": "Enhanced heritage description text",
+  "systemPrompt": "You are a cultural heritage writing assistant. Given rough, technical, or fragmented descriptions of architectural heritage sites, historical reports, or notes, generate clear, engaging, and vivid narratives. Emphasize architectural features, historical context, and cultural significance in a style suitable for brochures, guided tours, or heritage site websites.",
+  "temperature": 0.7,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

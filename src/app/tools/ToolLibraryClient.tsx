@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { signIn } from "next-auth/react";
 
 type ToolMeta = {
   slug: string;
@@ -12,18 +13,12 @@ type ToolMeta = {
 
 type Props = {
   tools: ToolMeta[];
-
-  // ✅ add these so ToolsPage can pass them in without TS errors
-  savedSlugs?: string[];
-  isSignedIn?: boolean;
-
-  // (optional) if you want ToolsPage to control saving
-  onToggleSave?: (slug: string) => void;
+  savedSlugs: string[];
+  isSignedIn: boolean;
 };
 
 const PER_PAGE = 20;
 
-// ✅ dropdown only these two
 const SORT_OPTIONS = [
   { id: "title-az", label: "A → Z" },
   { id: "title-za", label: "Z → A" },
@@ -282,19 +277,22 @@ function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
 
-export default function ToolLibraryClient({
-  tools,
-  savedSlugs = [],
-  isSignedIn = false,
-  onToggleSave,
-}: Props) {
+export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
-  // local state so the "Saved" UI updates instantly
-  const [localSaved, setLocalSaved] = useState<string[]>(savedSlugs);
+  // ✅ local set for instant UI updates
+  const [localSaved, setLocalSaved] = useState<Set<string>>(
+    () => new Set(savedSlugs)
+  );
 
-  const savedSet = useMemo(() => new Set(localSaved), [localSaved]);
+  // ✅ keep in sync when server refreshes savedSlugs
+  useEffect(() => {
+    setLocalSaved(new Set(savedSlugs));
+  }, [savedSlugs]);
+
+  const savedOn = searchParams.get("saved") === "1";
 
   const qRaw = searchParams.get("q") || "";
   const query = normalize(qRaw);
@@ -321,15 +319,86 @@ export default function ToolLibraryClient({
     router.push(qs ? `/tools?${qs}` : "/tools", { scroll: true });
   };
 
-  const toggleSaveLocal = (slug: string) => {
+  async function toggleSave(slug: string) {
+    if (!isSignedIn) {
+      await signIn("google", { callbackUrl: "/tools" });
+      return;
+    }
+
+    const wasSaved = localSaved.has(slug);
+
+    // ✅ optimistic
     setLocalSaved((prev) => {
-      const has = prev.includes(slug);
-      if (has) return prev.filter((s) => s !== slug);
-      return [...prev, slug];
+      const next = new Set(prev);
+      if (wasSaved) next.delete(slug);
+      else next.add(slug);
+      return next;
     });
-  };
+
+    try {
+      const res = await fetch(`/api/tools/${slug}/save`, {
+        method: "POST",
+        cache: "no-store",
+      });
+
+      if (res.status === 401) {
+        // revert
+        setLocalSaved((prev) => {
+          const next = new Set(prev);
+          if (wasSaved) next.add(slug);
+          else next.delete(slug);
+          return next;
+        });
+        await signIn("google", { callbackUrl: "/tools" });
+        return;
+      }
+
+      if (!res.ok) {
+        // revert
+        setLocalSaved((prev) => {
+          const next = new Set(prev);
+          if (wasSaved) next.add(slug);
+          else next.delete(slug);
+          return next;
+        });
+        return;
+      }
+
+      const data = (await res.json()) as { saved?: boolean };
+
+      // ✅ enforce server truth
+      if (typeof data.saved === "boolean") {
+        setLocalSaved((prev) => {
+          const next = new Set(prev);
+          if (data.saved) next.add(slug);
+          else next.delete(slug);
+          return next;
+        });
+      }
+
+      // ✅ update top Saved(count) + saved list (server recompute)
+      startTransition(() => router.refresh());
+    } catch {
+      // revert
+      setLocalSaved((prev) => {
+        const next = new Set(prev);
+        if (wasSaved) next.add(slug);
+        else next.delete(slug);
+        return next;
+      });
+    }
+  }
 
   let filtered = tools;
+
+  // ✅ Saved-only filter
+  if (savedOn) {
+    if (!isSignedIn) {
+      filtered = [];
+    } else {
+      filtered = filtered.filter((t) => localSaved.has(t.slug));
+    }
+  }
 
   // Free-text search
   if (query) {
@@ -339,7 +408,7 @@ export default function ToolLibraryClient({
     });
   }
 
-  // Category filter (scoring-based)
+  // Category filter
   if (category && category !== "all") {
     const rule = CATEGORY_RULES[category];
     if (rule) {
@@ -369,41 +438,11 @@ export default function ToolLibraryClient({
   const showingFrom = totalFiltered === 0 ? 0 : start + 1;
   const showingTo = Math.min(end, totalFiltered);
 
-  // Pagination window like Google-ish
-  const getPageWindow = () => {
-    if (totalPages <= 7)
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-
-    const windowSize = 5; // center window
-    const half = Math.floor(windowSize / 2);
-    let left = page - half;
-    let right = page + half;
-
-    if (left < 2) {
-      left = 2;
-      right = left + windowSize - 1;
-    }
-    if (right > totalPages - 1) {
-      right = totalPages - 1;
-      left = right - windowSize + 1;
-    }
-
-    const mid = [];
-    for (let p = left; p <= right; p++) mid.push(p);
-
-    return [1, ...mid, totalPages];
-  };
-
-  const pageWindow = getPageWindow();
-
-  const goPage = (p: number) => setParam("page", String(clamp(p, 1, totalPages)));
-
   return (
     <div>
       {/* Top line: status + sort only */}
       <div className="mb-4 flex flex-col gap-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          {/* Status */}
           <div className="text-xs md:text-sm text-gray-400 flex flex-wrap items-center justify-center md:justify-start gap-2">
             <span>
               Showing{" "}
@@ -414,32 +453,30 @@ export default function ToolLibraryClient({
               <span className="text-purple-200 font-medium">{totalFiltered}</span>
             </span>
 
-            {(qRaw.trim() || categoryLabel) && (
+            {(qRaw.trim() || categoryLabel || savedOn) && (
               <>
                 <span className="hidden sm:inline-block text-gray-600">•</span>
                 <span className="flex flex-wrap items-center gap-1">
+                  {savedOn && (
+                    <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-xs border border-purple-400/40 text-purple-100">
+                      Saved
+                    </span>
+                  )}
                   {qRaw.trim() && (
-                    <>
-                      for
-                      <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs border border-white/10">
-                        “{qRaw}”
-                      </span>
-                    </>
+                    <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs border border-white/10">
+                      “{qRaw}”
+                    </span>
                   )}
                   {categoryLabel && (
-                    <>
-                      {qRaw.trim() ? "in" : "for"}
-                      <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-xs border border-purple-400/40 text-purple-100">
-                        {categoryLabel}
-                      </span>
-                    </>
+                    <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-xs border border-purple-400/40 text-purple-100">
+                      {categoryLabel}
+                    </span>
                   )}
                 </span>
               </>
             )}
           </div>
 
-          {/* Sort */}
           <div className="flex items-center justify-center md:justify-end gap-2">
             <div className="relative">
               <select
@@ -462,22 +499,19 @@ export default function ToolLibraryClient({
         </div>
       </div>
 
-      {/* Empty state */}
       {totalFiltered === 0 && (
         <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center text-xs md:text-sm text-gray-400">
           No tools match your current filters.
           <div className="mt-2">
-            Try clearing the search, picking a different category, or browsing all
-            tools.
+            Try clearing the search, picking a different category, or browsing all tools.
           </div>
         </div>
       )}
 
-      {/* Grid */}
       {totalFiltered > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mt-4">
           {pageItems.map((tool) => {
-            const isSaved = savedSet.has(tool.slug);
+            const isSaved = localSaved.has(tool.slug);
 
             return (
               <Link
@@ -495,26 +529,18 @@ export default function ToolLibraryClient({
                     </p>
                   </div>
 
-                  {/* ✅ Save control */}
                   <button
                     type="button"
                     onClick={(e) => {
-                      e.preventDefault(); // don't navigate
+                      e.preventDefault();
                       e.stopPropagation();
-
-                      if (!isSignedIn) {
-                        // you can swap this for your sign-in modal/route
-                        router.push("/api/auth/signin");
-                        return;
-                      }
-
-                      toggleSaveLocal(tool.slug);
-                      onToggleSave?.(tool.slug);
+                      toggleSave(tool.slug);
                     }}
+                    disabled={isPending}
                     className={
                       isSaved
-                        ? "shrink-0 rounded-full border border-purple-400/40 bg-purple-500/15 px-3 py-1 text-[11px] text-purple-100 hover:bg-purple-500/20 transition"
-                        : "shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-200 hover:bg-white/10 hover:border-purple-400/40 transition"
+                        ? "shrink-0 rounded-full border border-purple-400/40 bg-purple-500/15 px-3 py-1 text-[11px] text-purple-100 hover:bg-purple-500/20 transition disabled:opacity-60"
+                        : "shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-200 hover:bg-white/10 hover:border-purple-400/40 transition disabled:opacity-60"
                     }
                     aria-label={isSaved ? "Unsave tool" : "Save tool"}
                     title={isSaved ? "Saved" : "Save"}
@@ -529,78 +555,6 @@ export default function ToolLibraryClient({
               </Link>
             );
           })}
-        </div>
-      )}
-
-      {/* ✅ Bottom-centered pagination (Google-ish) */}
-      {totalFiltered > 0 && totalPages > 1 && (
-        <div className="mt-10 flex flex-col items-center justify-center gap-3">
-          <div className="text-xs md:text-sm text-gray-400">
-            Showing:{" "}
-            <span className="text-purple-200 font-medium">
-              {showingFrom}-{showingTo}
-            </span>{" "}
-            of{" "}
-            <span className="text-purple-200 font-medium">{totalFiltered}</span>
-          </div>
-
-          <nav className="flex items-center justify-center gap-1.5" aria-label="Pagination">
-            {/* Prev */}
-            <button
-              type="button"
-              onClick={() => goPage(page - 1)}
-              disabled={page <= 1}
-              className="h-9 w-9 grid place-items-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-400/40 transition disabled:opacity-40 disabled:hover:bg-white/5 disabled:hover:border-white/10"
-              aria-label="Previous page"
-            >
-              ‹
-            </button>
-
-            {/* Pages */}
-            {pageWindow.map((p, idx) => {
-              const prev = pageWindow[idx - 1];
-              const gap = prev && p - prev > 1;
-
-              return (
-                <span key={p} className="flex items-center gap-1.5">
-                  {gap && <span className="px-1 text-gray-500 select-none">…</span>}
-
-                  <button
-                    type="button"
-                    onClick={() => goPage(p)}
-                    aria-current={p === page ? "page" : undefined}
-                    className={
-                      p === page
-                        ? "h-9 w-9 rounded-xl bg-white/10 border border-white/10 text-white text-sm font-medium"
-                        : "h-9 w-9 rounded-xl bg-transparent border border-transparent text-gray-300 text-sm hover:bg-white/5 hover:border-white/10 transition"
-                    }
-                  >
-                    {p}
-                  </button>
-                </span>
-              );
-            })}
-
-            {/* Next */}
-            <button
-              type="button"
-              onClick={() => goPage(page + 1)}
-              disabled={page >= totalPages}
-              className="h-9 w-9 grid place-items-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-400/40 transition disabled:opacity-40 disabled:hover:bg-white/5 disabled:hover:border-white/10"
-              aria-label="Next page"
-            >
-              ›
-            </button>
-          </nav>
-
-          {/* Small UX improvement: jump to top on page change */}
-          <button
-            type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="mt-1 text-[11px] text-gray-500 hover:text-gray-300 transition"
-          >
-            Back to top ↑
-          </button>
         </div>
       )}
     </div>

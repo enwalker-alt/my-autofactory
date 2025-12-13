@@ -1,263 +1,131 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { useState } from "react";
 
-type ToolMeta = {
+type ToolClientProps = {
   slug: string;
-  title: string;
-  description: string;
+  inputLabel: string;
+  outputLabel: string;
+  features?: string[];
 };
 
-type Props = {
-  tools: ToolMeta[];
-  savedSlugs: string[];
-  isSignedIn: boolean;
-};
+export default function ToolClient({
+  slug,
+  inputLabel,
+  outputLabel,
+  features = [],
+}: ToolClientProps) {
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-const PER_PAGE = 20;
-
-const SORT_OPTIONS = [
-  { id: "title-az", label: "A → Z" },
-  { id: "title-za", label: "Z → A" },
-] as const;
-
-type SortId = (typeof SORT_OPTIONS)[number]["id"];
-
-export default function ToolLibraryClient({
-  tools,
-  savedSlugs,
-  isSignedIn,
-}: Props) {
-  const router = useRouter();
-  const sp = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-
-  // ✅ local set for instant UI updates
-  const [savedSet, setSavedSet] = useState<Set<string>>(
-    () => new Set(savedSlugs)
-  );
-
-  // ✅ keep local set in sync after router.refresh updates props
-  useEffect(() => {
-    setSavedSet(new Set(savedSlugs));
-  }, [savedSlugs]);
-
-  const q = sp.get("q")?.trim().toLowerCase() ?? "";
-  const sortId = (sp.get("sort") as SortId) ?? "title-az";
-  const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
-
-  const filtered = useMemo(() => {
-    let list = tools;
-
-    if (q) {
-      list = list.filter((t) => {
-        const hay = `${t.title} ${t.description}`.toLowerCase();
-        return hay.includes(q);
-      });
-    }
-
-    const sorted = [...list].sort((a, b) =>
-      a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
-    );
-
-    if (sortId === "title-za") sorted.reverse();
-    return sorted;
-  }, [tools, q, sortId]);
-
-  const total = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-  const safePage = Math.min(page, totalPages);
-  const start = (safePage - 1) * PER_PAGE;
-  const pageItems = filtered.slice(start, start + PER_PAGE);
-
-  function setQueryParam(key: string, value?: string) {
-    const next = new URLSearchParams(sp.toString());
-    if (!value) next.delete(key);
-    else next.set(key, value);
-    if (key !== "page") next.delete("page");
-    const qs = next.toString();
-    router.push(qs ? `/tools?${qs}` : "/tools");
-  }
-
-  async function toggleSave(slug: string) {
-    if (!isSignedIn) {
-      await signIn("google", { callbackUrl: "/tools" });
-      return;
-    }
-
-    const wasSaved = savedSet.has(slug);
-
-    // ✅ optimistic UI update
-    setSavedSet((prev) => {
-      const next = new Set(prev);
-      if (wasSaved) next.delete(slug);
-      else next.add(slug);
-      return next;
-    });
+  async function runTool() {
+    setErrorMsg(null);
+    setLoading(true);
+    setOutput("");
 
     try {
-      const res = await fetch(`/api/tools/${slug}/save`, {
+      const res = await fetch(`/api/tools/${slug}/run`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         cache: "no-store",
+        body: JSON.stringify({ input }),
       });
-
-      if (res.status === 401) {
-        // revert
-        setSavedSet((prev) => {
-          const next = new Set(prev);
-          if (wasSaved) next.add(slug);
-          else next.delete(slug);
-          return next;
-        });
-        await signIn("google", { callbackUrl: "/tools" });
-        return;
-      }
 
       if (!res.ok) {
-        // revert
-        setSavedSet((prev) => {
-          const next = new Set(prev);
-          if (wasSaved) next.add(slug);
-          else next.delete(slug);
-          return next;
-        });
-        return;
+        const text = await res.text().catch(() => "");
+        throw new Error(text || `Request failed (${res.status})`);
       }
 
-      const data = (await res.json()) as { saved?: boolean };
+      const data = (await res.json()) as { output?: string };
+      setOutput(data.output ?? "");
+    } catch (e: any) {
+      setErrorMsg(e?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-      // ✅ enforce server truth
-      if (typeof data.saved === "boolean") {
-        setSavedSet((prev) => {
-          const next = new Set(prev);
-          if (data.saved) next.add(slug);
-          else next.delete(slug);
-          return next;
-        });
-      }
-
-      // ✅ refresh server data so Saved (count) updates + Saved page reflects it
-      startTransition(() => {
-        router.refresh();
-      });
+  async function copyOutput() {
+    try {
+      await navigator.clipboard.writeText(output || "");
     } catch {
-      // revert on network errors
-      setSavedSet((prev) => {
-        const next = new Set(prev);
-        if (wasSaved) next.add(slug);
-        else next.delete(slug);
-        return next;
-      });
+      // ignore
     }
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="text-xs text-slate-300/80">
-          Showing {total === 0 ? 0 : start + 1}-{Math.min(start + PER_PAGE, total)}{" "}
-          of {total}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-300/70">Sort:</span>
-          <select
-            value={sortId}
-            onChange={(e) => setQueryParam("sort", e.target.value)}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-100 backdrop-blur hover:bg-white/10"
-          >
-            {SORT_OPTIONS.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {pageItems.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-sm text-slate-300/80">
-          No tools match your current filters.
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {pageItems.map((t) => {
-            const saved = savedSet.has(t.slug);
-            return (
-              <div
-                key={t.slug}
-                className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur transition hover:bg-white/7"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-sm font-semibold text-slate-100">
-                      {t.title}
-                    </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-300/80">
-                      {t.description}
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => toggleSave(t.slug)}
-                    disabled={isPending}
-                    className={[
-                      "shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition",
-                      saved
-                        ? "border-purple-400/40 bg-purple-500/15 text-purple-100 hover:bg-purple-500/20"
-                        : "border-white/10 bg-white/5 text-slate-100 hover:bg-white/10",
-                      isPending ? "opacity-70 cursor-not-allowed" : "",
-                    ].join(" ")}
-                  >
-                    {saved ? "Saved ✓" : "Save"}
-                  </button>
-                </div>
-
-                <div className="mt-4">
-                  <Link
-                    href={`/tools/${t.slug}`}
-                    className="text-xs font-semibold text-purple-200/90 hover:text-purple-200"
-                  >
-                    Open tool →
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
+    <div className="max-w-4xl mx-auto px-4 py-10">
+      {/* Features (optional) */}
+      {features.length > 0 && (
+        <div className="mb-6 flex flex-wrap gap-2">
+          {features.map((f) => (
+            <span
+              key={f}
+              className="text-[11px] px-2 py-1 rounded-full border border-white/10 bg-white/5 text-slate-200"
+            >
+              {f}
+            </span>
+          ))}
         </div>
       )}
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => setQueryParam("page", String(Math.max(1, safePage - 1)))}
-            disabled={safePage <= 1}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-100 hover:bg-white/10 disabled:opacity-50"
-          >
-            Prev
-          </button>
-
-          <div className="text-xs text-slate-300/80">
-            Page {safePage} / {totalPages}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* INPUT */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+          <div className="text-xs font-semibold text-slate-200 mb-2">
+            {inputLabel}
           </div>
 
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            rows={12}
+            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-purple-400/40"
+            placeholder="Paste or type here…"
+          />
+
           <button
             type="button"
-            onClick={() =>
-              setQueryParam("page", String(Math.min(totalPages, safePage + 1)))
-            }
-            disabled={safePage >= totalPages}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-100 hover:bg-white/10 disabled:opacity-50"
+            onClick={runTool}
+            disabled={loading || !input.trim()}
+            className={[
+              "mt-4 w-full rounded-xl px-4 py-3 text-sm font-semibold transition",
+              "border border-purple-400/30 bg-purple-500/15 text-purple-100 hover:bg-purple-500/20",
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+            ].join(" ")}
           >
-            Next
+            {loading ? "Running…" : "Run"}
           </button>
+
+          {errorMsg && (
+            <div className="mt-3 text-xs text-red-300">{errorMsg}</div>
+          )}
         </div>
-      )}
+
+        {/* OUTPUT */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="text-xs font-semibold text-slate-200">
+              {outputLabel}
+            </div>
+
+            <button
+              type="button"
+              onClick={copyOutput}
+              disabled={!output}
+              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-100 hover:bg-white/10 disabled:opacity-50"
+            >
+              Copy
+            </button>
+          </div>
+
+          <div className="min-h-[280px] rounded-xl border border-white/10 bg-white text-black px-3 py-3 text-sm leading-relaxed whitespace-pre-wrap">
+            {output || <span className="text-slate-500">Output will appear here…</span>}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -2,18 +2,14 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { signIn } from "next-auth/react";
 
 type ToolMeta = {
   slug: string;
   title: string;
   description: string;
-
-  // support either naming (prevents mismatches from breaking UI)
   avgRating?: number | null;
-  ratingAvg?: number | null;
-
   ratingCount?: number | null;
 };
 
@@ -34,7 +30,6 @@ const SORT_OPTIONS = [
 
 type SortId = (typeof SORT_OPTIONS)[number]["id"];
 
-// ... keep your CATEGORY_RULES exactly as-is (unchanged)
 const CATEGORY_RULES: Record<
   string,
   {
@@ -83,6 +78,7 @@ const CATEGORY_RULES: Record<
     weak: ["clarify", "summarize", "concise", "professional", "polished"],
     minScore: 3,
   },
+
   research: {
     label: "Learning & Research",
     phrases: [
@@ -114,6 +110,7 @@ const CATEGORY_RULES: Record<
     weak: ["simplify", "breakdown", "overview", "interpret", "clarification"],
     minScore: 3,
   },
+
   productivity: {
     label: "Workflows & Productivity",
     phrases: ["standard operating procedure", "to-do list", "step by step"],
@@ -136,6 +133,7 @@ const CATEGORY_RULES: Record<
     weak: ["improve", "streamline", "efficient", "structure", "track"],
     minScore: 3,
   },
+
   planning: {
     label: "Planning & Events",
     phrases: ["run of show", "event plan", "meeting agenda"],
@@ -158,6 +156,7 @@ const CATEGORY_RULES: Record<
     weak: ["checklist", "coordination", "logistics", "setup"],
     minScore: 3,
   },
+
   data: {
     label: "Data & Finance",
     phrases: ["cash flow", "financial model", "valuation", "income statement"],
@@ -186,6 +185,7 @@ const CATEGORY_RULES: Record<
     weak: ["compare", "summary", "insights", "estimate", "projection"],
     minScore: 3,
   },
+
   marketing: {
     label: "Marketing & Growth",
     phrases: ["landing page", "value proposition", "ad copy", "seo keywords"],
@@ -211,6 +211,7 @@ const CATEGORY_RULES: Record<
     weak: ["headline", "pitch", "post", "copy", "optimize"],
     minScore: 3,
   },
+
   creative: {
     label: "Creative & Media",
     phrases: ["short story", "comic script", "character bio"],
@@ -233,6 +234,7 @@ const CATEGORY_RULES: Record<
     weak: ["style", "voice", "funny", "humor", "generate"],
     minScore: 3,
   },
+
   compliance: {
     label: "Policy & Professional",
     phrases: ["terms of service", "privacy policy", "risk assessment"],
@@ -289,38 +291,52 @@ function StarsInline({
   const v = typeof value === "number" ? value : 0;
   const c = typeof count === "number" ? count : 0;
 
-  const rounded = Math.round(v * 10) / 10;
-  const full = Math.floor(rounded);
-  const half = rounded - full >= 0.5;
+  const full = Math.round(v);
+  const stars = Array.from({ length: 5 }, (_, i) =>
+    i < full ? "★" : "☆"
+  ).join("");
 
   return (
     <div className="flex items-center gap-2 text-[12px] text-slate-300">
-      <div className="flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map((n) => {
-          const isFull = n <= full;
-          const isHalf = !isFull && half && n === full + 1;
-          return (
-            <span
-              key={n}
-              className={
-                isFull || isHalf ? "text-yellow-300/90" : "text-slate-600"
-              }
-              aria-hidden="true"
-            >
-              ★
-            </span>
-          );
-        })}
-      </div>
-
+      <span className="tracking-[0.2em] text-yellow-300/90">{stars}</span>
       <span className="text-slate-400">
-        {c > 0 ? `${rounded.toFixed(1)} (${c})` : "No ratings"}
+        {c > 0 ? `${v.toFixed(1)} (${c})` : "No ratings"}
       </span>
     </div>
   );
 }
 
-export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Props) {
+/** Google-ish pagination numbers: 1 … 4 5 6 … 20 */
+function buildPageModel(page: number, totalPages: number) {
+  const items: Array<number | "…"> = [];
+
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) items.push(i);
+    return items;
+  }
+
+  // Always include first & last
+  const showLeft = Math.max(2, page - 1);
+  const showRight = Math.min(totalPages - 1, page + 1);
+
+  items.push(1);
+
+  if (showLeft > 2) items.push("…");
+
+  for (let i = showLeft; i <= showRight; i++) items.push(i);
+
+  if (showRight < totalPages - 1) items.push("…");
+
+  items.push(totalPages);
+
+  return items;
+}
+
+export default function ToolLibraryClient({
+  tools,
+  savedSlugs,
+  isSignedIn,
+}: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -369,6 +385,15 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
     router.push(qs ? `/tools?${qs}` : "/tools", { scroll: true });
   };
 
+  const setPage = (nextPage: number) => {
+    const current = new URLSearchParams(searchParams?.toString() || "");
+    current.set("page", String(nextPage));
+    const qs = current.toString();
+    router.push(qs ? `/tools?${qs}` : "/tools", { scroll: true });
+    // subtle UX: scroll to top of results
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   async function toggleSave(slug: string) {
     if (!isSignedIn) {
       flashStatus("Sign in required to save.");
@@ -411,7 +436,12 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
       }
 
       if (!res.ok) {
-        console.error("Save failed:", { status: res.status, slug, bodyJson, bodyText });
+        console.error("Save failed:", {
+          status: res.status,
+          slug,
+          bodyJson,
+          bodyText,
+        });
 
         setLocalSaved((prev) => {
           const next = new Set(prev);
@@ -431,7 +461,9 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
       }
 
       const savedValue =
-        typeof bodyJson?.saved === "boolean" ? (bodyJson.saved as boolean) : !wasSaved;
+        typeof bodyJson?.saved === "boolean"
+          ? (bodyJson.saved as boolean)
+          : !wasSaved;
 
       setLocalSaved((prev) => {
         const next = new Set(prev);
@@ -456,66 +488,58 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
     }
   }
 
-  let filtered = tools;
+  // ---------- Filter + sort ----------
+  const sorted = useMemo(() => {
+    let filtered = tools;
 
-  if (savedOn) {
-    if (!isSignedIn) filtered = [];
-    else filtered = filtered.filter((t) => localSaved.has(t.slug));
-  }
+    if (savedOn) {
+      filtered = !isSignedIn
+        ? []
+        : filtered.filter((t) => localSaved.has(t.slug));
+    }
 
-  if (query) {
-    filtered = filtered.filter((tool) => {
-      const haystack = normalize(tool.title + " " + tool.description);
-      return haystack.includes(query);
-    });
-  }
-
-  if (category && category !== "all") {
-    const rule = CATEGORY_RULES[category];
-    if (rule) {
+    if (query) {
       filtered = filtered.filter((tool) => {
         const haystack = normalize(tool.title + " " + tool.description);
-        return scoreCategory(haystack, category) >= rule.minScore;
+        return haystack.includes(query);
       });
     }
-  }
 
-  const getAvg = (t: ToolMeta) => {
-    const v =
-      typeof t.avgRating === "number"
-        ? t.avgRating
-        : typeof t.ratingAvg === "number"
-          ? t.ratingAvg
-          : 0;
-    return v;
-  };
-
-  const getCount = (t: ToolMeta) => {
-    return typeof t.ratingCount === "number" ? t.ratingCount : 0;
-  };
-
-  const sorted = [...filtered].sort((a, b) => {
-    const ar = getAvg(a);
-    const br = getAvg(b);
-    const ac = getCount(a);
-    const bc = getCount(b);
-
-    if (sort === "rating-high") {
-      if (br !== ar) return br - ar;
-      if (bc !== ac) return bc - ac;
-      return normalize(a.title).localeCompare(normalize(b.title));
+    if (category && category !== "all") {
+      const rule = CATEGORY_RULES[category];
+      if (rule) {
+        filtered = filtered.filter((tool) => {
+          const haystack = normalize(tool.title + " " + tool.description);
+          return scoreCategory(haystack, category) >= rule.minScore;
+        });
+      }
     }
 
-    if (sort === "rating-low") {
-      if (ar !== br) return ar - br;
-      if (ac !== bc) return ac - bc;
-      return normalize(a.title).localeCompare(normalize(b.title));
-    }
+    const next = [...filtered].sort((a, b) => {
+      const ar = typeof a.avgRating === "number" ? a.avgRating : 0;
+      const br = typeof b.avgRating === "number" ? b.avgRating : 0;
+      const ac = typeof a.ratingCount === "number" ? a.ratingCount : 0;
+      const bc = typeof b.ratingCount === "number" ? b.ratingCount : 0;
 
-    const at = normalize(a.title);
-    const bt = normalize(b.title);
-    return sort === "title-az" ? at.localeCompare(bt) : bt.localeCompare(at);
-  });
+      if (sort === "rating-high") {
+        if (br !== ar) return br - ar;
+        if (bc !== ac) return bc - ac;
+        return normalize(a.title).localeCompare(normalize(b.title));
+      }
+
+      if (sort === "rating-low") {
+        if (ar !== br) return ar - br;
+        if (ac !== bc) return ac - bc;
+        return normalize(a.title).localeCompare(normalize(b.title));
+      }
+
+      const at = normalize(a.title);
+      const bt = normalize(b.title);
+      return sort === "title-az" ? at.localeCompare(bt) : bt.localeCompare(at);
+    });
+
+    return next;
+  }, [tools, savedOn, isSignedIn, localSaved, query, category, sort]);
 
   const totalFiltered = sorted.length;
   const totalPages = Math.max(1, Math.ceil(totalFiltered / PER_PAGE));
@@ -527,6 +551,8 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
 
   const showingFrom = totalFiltered === 0 ? 0 : start + 1;
   const showingTo = Math.min(end, totalFiltered);
+
+  const pageModel = buildPageModel(page, totalPages);
 
   return (
     <div>
@@ -546,7 +572,8 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
               <span className="text-purple-200 font-medium">
                 {showingFrom}-{showingTo}
               </span>{" "}
-              of <span className="text-purple-200 font-medium">{totalFiltered}</span>
+              of{" "}
+              <span className="text-purple-200 font-medium">{totalFiltered}</span>
             </span>
 
             {(qRaw.trim() || categoryLabel || savedOn) && (
@@ -605,63 +632,127 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
       )}
 
       {totalFiltered > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mt-4">
-          {pageItems.map((tool) => {
-            const isSaved = localSaved.has(tool.slug);
-            const avg = (typeof tool.avgRating === "number"
-              ? tool.avgRating
-              : typeof tool.ratingAvg === "number"
-                ? tool.ratingAvg
-                : 0) as number;
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mt-4">
+            {pageItems.map((tool) => {
+              const isSaved = localSaved.has(tool.slug);
 
-            return (
-              <Link
-                key={tool.slug}
-                href={`/tools/${tool.slug}`}
-                className="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-400/40 transition duration-200 p-4 flex flex-col justify-between"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="text-sm md:text-base font-medium mb-1 group-hover:text-white truncate">
-                      {tool.title}
-                    </h2>
+              return (
+                <Link
+                  key={tool.slug}
+                  href={`/tools/${tool.slug}`}
+                  className="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-400/40 transition duration-200 p-4 flex flex-col justify-between"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h2 className="text-sm md:text-base font-medium mb-1 group-hover:text-white truncate">
+                        {tool.title}
+                      </h2>
 
-                    <div className="mb-2">
-                      <StarsInline value={avg} count={tool.ratingCount} />
+                      <div className="mb-2">
+                        <StarsInline value={tool.avgRating} count={tool.ratingCount} />
+                      </div>
+
+                      <p className="text-xs md:text-sm text-gray-400 line-clamp-3">
+                        {tool.description}
+                      </p>
                     </div>
 
-                    <p className="text-xs md:text-sm text-gray-400 line-clamp-3">
-                      {tool.description}
-                    </p>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleSave(tool.slug);
+                      }}
+                      disabled={isPending}
+                      className={
+                        isSaved
+                          ? "shrink-0 rounded-full border border-purple-400/40 bg-purple-500/15 px-3 py-1 text-[11px] text-purple-100 hover:bg-purple-500/20 transition disabled:opacity-60"
+                          : "shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-200 hover:bg-white/10 hover:border-purple-400/40 transition disabled:opacity-60"
+                      }
+                      aria-label={isSaved ? "Unsave tool" : "Save tool"}
+                      title={isSaved ? "Saved" : "Save"}
+                    >
+                      {isSaved ? "Saved ✓" : "Save"}
+                    </button>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      toggleSave(tool.slug);
-                    }}
-                    disabled={isPending}
-                    className={
-                      isSaved
-                        ? "shrink-0 rounded-full border border-purple-400/40 bg-purple-500/15 px-3 py-1 text-[11px] text-purple-100 hover:bg-purple-500/20 transition disabled:opacity-60"
-                        : "shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-200 hover:bg-white/10 hover:border-purple-400/40 transition disabled:opacity-60"
+                  <div className="mt-3 text-[11px] text-purple-300/90 group-hover:text-purple-200">
+                    Open tool →
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* ✅ Google-ish pagination */}
+          {totalPages > 1 && (
+            <div className="mt-10 flex items-center justify-center">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-2 backdrop-blur">
+                {/* Prev */}
+                <button
+                  type="button"
+                  onClick={() => setPage(Math.max(1, page - 1))}
+                  disabled={page === 1}
+                  className="rounded-full px-3 py-1 text-xs text-gray-200 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                >
+                  ← Prev
+                </button>
+
+                <div className="mx-1 h-5 w-px bg-white/10" />
+
+                {/* Page pills */}
+                <div className="flex items-center gap-1">
+                  {pageModel.map((item, idx) => {
+                    if (item === "…") {
+                      return (
+                        <span
+                          key={`dots-${idx}`}
+                          className="px-2 text-xs text-gray-500 select-none"
+                        >
+                          …
+                        </span>
+                      );
                     }
-                    aria-label={isSaved ? "Unsave tool" : "Save tool"}
-                    title={isSaved ? "Saved" : "Save"}
-                  >
-                    {isSaved ? "Saved ✓" : "Save"}
-                  </button>
+
+                    const n = item;
+                    const active = n === page;
+
+                    return (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => setPage(n)}
+                        className={
+                          active
+                            ? "min-w-[34px] rounded-full px-3 py-1 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40 shadow-sm"
+                            : "min-w-[34px] rounded-full px-3 py-1 text-xs text-gray-200 hover:bg-white/10 border border-transparent transition"
+                        }
+                        aria-current={active ? "page" : undefined}
+                        aria-label={`Go to page ${n}`}
+                      >
+                        {n}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                <div className="mt-3 text-[11px] text-purple-300/90 group-hover:text-purple-200">
-                  Open tool →
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                <div className="mx-1 h-5 w-px bg-white/10" />
+
+                {/* Next */}
+                <button
+                  type="button"
+                  onClick={() => setPage(Math.min(totalPages, page + 1))}
+                  disabled={page === totalPages}
+                  className="rounded-full px-3 py-1 text-xs text-gray-200 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                >
+                  Next →
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

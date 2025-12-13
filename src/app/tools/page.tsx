@@ -36,7 +36,7 @@ function getToolsFromConfigs(): ToolMeta[] {
         description: json.description,
         avgRating: null,
         ratingCount: null,
-      } as ToolMeta;
+      };
     })
     .sort((a, b) => a.title.localeCompare(b.title));
 }
@@ -44,15 +44,20 @@ function getToolsFromConfigs(): ToolMeta[] {
 export default async function ToolsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{
+    saved?: string;
+    page?: string;
+    sort?: string;
+    q?: string;
+    category?: string;
+  }>;
 }) {
   let tools = getToolsFromConfigs();
 
-  // ✅ Pull ratings from DB for these slugs, and ensure DB rows exist
+  // ✅ Pull ratings + ensure DB rows exist
   try {
     const slugs = tools.map((t) => t.slug);
 
-    // 1) Fetch existing tool rows with aggregates
     const rows = await prisma.tool.findMany({
       where: { slug: { in: slugs } },
       select: {
@@ -64,10 +69,8 @@ export default async function ToolsPage({
 
     const rowMap = new Map(rows.map((r) => [r.slug, r]));
 
-    // 2) OPTIONAL: create missing DB rows so ratings/saves always have a home
     const missing = tools.filter((t) => !rowMap.has(t.slug));
     if (missing.length > 0) {
-      // Create minimal rows; skipDuplicates supported on Postgres (Neon)
       await prisma.tool.createMany({
         data: missing.map((t) => ({
           slug: t.slug,
@@ -79,7 +82,6 @@ export default async function ToolsPage({
         skipDuplicates: true,
       });
 
-      // Re-fetch so rowMap is complete
       const rows2 = await prisma.tool.findMany({
         where: { slug: { in: slugs } },
         select: {
@@ -91,7 +93,6 @@ export default async function ToolsPage({
       rows2.forEach((r) => rowMap.set(r.slug, r));
     }
 
-    // 3) Merge DB aggregates into config tools
     tools = tools.map((t) => {
       const r = rowMap.get(t.slug);
       return {
@@ -101,65 +102,50 @@ export default async function ToolsPage({
       };
     });
   } catch {
-    // ignore — still render configs even if DB is down
+    // DB failure should never break browsing
   }
 
   const sp = await searchParams;
   const savedOn = sp?.saved === "1";
 
-  let userId: string | undefined = undefined;
+  let userId: string | undefined;
   let isSignedIn = false;
   let savedSlugs: string[] = [];
 
   let session: any = null;
   try {
     session = await auth();
-  } catch {
-    session = null;
-  }
+  } catch {}
 
-  const sessionUser = session?.user;
-  const email = (sessionUser?.email as string | undefined) ?? undefined;
-
-  userId = (sessionUser?.id as string | undefined) ?? undefined;
+  const email = session?.user?.email as string | undefined;
+  userId = session?.user?.id as string | undefined;
 
   if (!userId && email) {
-    try {
-      const dbUser = await prisma.user.findUnique({
-        where: { email },
-        select: { id: true },
-      });
-      userId = dbUser?.id;
-    } catch {
-      userId = undefined;
-    }
+    const dbUser = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+    userId = dbUser?.id;
   }
 
   isSignedIn = !!userId;
 
   if (userId) {
-    try {
-      const saved = await prisma.savedTool.findMany({
-        where: { userId },
-        select: { tool: { select: { slug: true } } },
-        orderBy: { createdAt: "desc" },
-      });
+    const saved = await prisma.savedTool.findMany({
+      where: { userId },
+      select: { tool: { select: { slug: true } } },
+      orderBy: { createdAt: "desc" },
+    });
 
-      savedSlugs = saved
-        .map((s) => s.tool?.slug)
-        .filter((slug): slug is string => !!slug);
-    } catch {
-      savedSlugs = [];
-    }
+    savedSlugs = saved
+      .map((s) => s.tool?.slug)
+      .filter((slug): slug is string => !!slug);
   }
 
   if (savedOn) {
-    if (!isSignedIn) {
-      tools = [];
-    } else {
-      const set = new Set(savedSlugs);
-      tools = tools.filter((t) => set.has(t.slug));
-    }
+    tools = isSignedIn
+      ? tools.filter((t) => new Set(savedSlugs).has(t.slug))
+      : [];
   }
 
   return (
@@ -182,18 +168,7 @@ export default async function ToolsPage({
 
               <Link
                 href="/"
-                className="
-                  px-3 py-1.5
-                  text-xs font-medium
-                  rounded-lg
-                  bg-white/5
-                  border border-white/10
-                  backdrop-blur
-                  hover:bg-white/10
-                  transition
-                  duration-200
-                  whitespace-nowrap
-                "
+                className="px-3 py-1.5 text-xs font-medium rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition"
               >
                 ← Home
               </Link>
@@ -207,21 +182,22 @@ export default async function ToolsPage({
 
           <div className="mt-8 space-y-3">
             <SearchBar />
-
-            <div className="flex justify-center">
-              <div className="flex items-center gap-3">
-                <CategoryPicker />
-                <SavedFilterButton
-                  isSignedIn={isSignedIn}
-                  savedCount={savedSlugs.length}
-                />
-              </div>
+            <div className="flex justify-center gap-3">
+              <CategoryPicker />
+              <SavedFilterButton
+                isSignedIn={isSignedIn}
+                savedCount={savedSlugs.length}
+              />
             </div>
           </div>
         </section>
 
         <section className="mt-6">
-          <ToolLibraryClient tools={tools} savedSlugs={savedSlugs} isSignedIn={isSignedIn} />
+          <ToolLibraryClient
+            tools={tools}
+            savedSlugs={savedSlugs}
+            isSignedIn={isSignedIn}
+          />
         </section>
       </div>
     </main>

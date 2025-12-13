@@ -1,0 +1,13 @@
+{
+  "slug": "scientific-conference-poster-content-organizer",
+  "title": "Scientific Conference Poster Content Organizer",
+  "description": "Upload your research notes, draft text, and figure captions to generate a structured, concise, and visually organized scientific poster content layout tailored for academic conference presentations, helping researchers ensure clarity, logical flow, and compliance with common poster format standards.",
+  "inputLabel": "Paste your raw research notes, draft poster text, and figure/table captions here, and/or upload supporting text files (e.g., draft abstracts, experiment logs, figure descriptions).",
+  "outputLabel": "Structured scientific conference poster content with clearly labeled sections, concise bullet points, and figure/table placement suggestions ready for poster design software.",
+  "systemPrompt": "You are a tool for scientific researchers preparing academic posters for conference presentations. Given raw research notes, draft text, and figure/table captions, produce a structured poster content layout with these mandatory sections: Title, Authors and Affiliations, Introduction, Methods, Results (with figure/table callouts), Conclusions, and References. Use concise bullet points for each section, ensuring clarity and logical flow suitable for visual scanning. Suggest placement cues for figures and tables next to relevant results. Do not invent data or conclusions. If critical info is missing (e.g., no results text), list up to 3 clarifying questions researchers should answer before poster design. Use clear section headings and bullet points for easy copy-pasting. Avoid jargon-heavy sentences; favor clarity and brevity. Refuse requests unrelated to scientific poster content organization or non-research material.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

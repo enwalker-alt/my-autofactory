@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 
 type ToolClientProps = {
@@ -15,11 +15,13 @@ function Star({
   onClick,
   disabled,
   title,
+  sizeClass = "text-xl",
 }: {
   filled: boolean;
   onClick: () => void;
   disabled?: boolean;
   title?: string;
+  sizeClass?: string;
 }) {
   return (
     <button
@@ -28,9 +30,11 @@ function Star({
       disabled={disabled}
       title={title}
       className={[
-        "text-lg leading-none",
-        disabled ? "opacity-60 cursor-not-allowed" : "hover:scale-[1.06]",
+        sizeClass,
+        "leading-none",
+        disabled ? "opacity-60 cursor-not-allowed" : "hover:scale-[1.08]",
         "transition",
+        "select-none",
       ].join(" ")}
       aria-label={filled ? "Filled star" : "Empty star"}
     >
@@ -56,26 +60,36 @@ export default function ToolClient({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ rating (inline, post-generation)
+  // Rating UI state
   const [justGenerated, setJustGenerated] = useState(false);
   const [hoverStars, setHoverStars] = useState<number | null>(null);
   const [selectedStars, setSelectedStars] = useState<number | null>(null);
   const [ratingSubmitting, setRatingSubmitting] = useState(false);
   const [ratingThanks, setRatingThanks] = useState(false);
+  const [ratingError, setRatingError] = useState<string | null>(null);
 
   const supportsFileUpload = features?.includes("file-upload") ?? false;
 
+  const hasAnyInput = useMemo(() => {
+    return (
+      input.trim().length > 0 || fileTexts.some((t) => t.trim().length > 0)
+    );
+  }, [input, fileTexts]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!hasAnyInput) return;
+
     setLoading(true);
     setError(null);
     setOutput("");
 
-    // reset rating UI each generation
+    // Reset rating UI each generation
     setJustGenerated(false);
     setHoverStars(null);
     setSelectedStars(null);
     setRatingThanks(false);
+    setRatingError(null);
 
     const filesSection =
       fileTexts.length > 0
@@ -97,22 +111,23 @@ export default function ToolClient({
       const res = await fetch(`/api/tools/${slug}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        cache: "no-store",
         body: JSON.stringify({ input: combinedInput }),
       });
 
       if (!res.ok) {
-        const text = await res.text();
+        const text = await res.text().catch(() => "");
         throw new Error(text || "Request failed");
       }
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({} as any));
       setOutput(data.output || "");
 
-      // ✅ show rating row only after we actually have output
+      // Only show rating row if we actually got output
       setJustGenerated(true);
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Something went wrong");
+      setError(err?.message || "Something went wrong");
       setJustGenerated(false);
     } finally {
       setLoading(false);
@@ -121,9 +136,9 @@ export default function ToolClient({
 
   function handleCopy() {
     if (!output) return;
-    navigator.clipboard.writeText(output).catch((err) =>
-      console.error("Failed to copy:", err)
-    );
+    navigator.clipboard.writeText(output).catch((err) => {
+      console.error("Failed to copy:", err);
+    });
   }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -156,9 +171,7 @@ export default function ToolClient({
       const readFileAsText = (file: File) =>
         new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
-          reader.onload = () => {
-            resolve(typeof reader.result === "string" ? reader.result : "");
-          };
+          reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
           reader.onerror = () => reject(new Error("Failed to read file"));
           reader.readAsText(file);
         });
@@ -178,25 +191,27 @@ export default function ToolClient({
     }
   }
 
-  const hasAnyInput =
-    input.trim().length > 0 || fileTexts.some((t) => t.trim().length > 0);
-
   async function submitRating(value: number) {
-    // signed out => sign in, then they can click again
+    // If signed out, route to Google sign-in; user can click again after
     if (!session?.user) {
       await signIn("google", { callbackUrl: `/tools/${slug}` });
       return;
     }
 
+    // prevent double submits
+    if (ratingSubmitting) return;
+
     setSelectedStars(value);
     setRatingSubmitting(true);
     setRatingThanks(false);
+    setRatingError(null);
 
     try {
       const res = await fetch(`/api/tools/${slug}/rate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         cache: "no-store",
+        credentials: "include", // ✅ important for session cookies
         body: JSON.stringify({ value }),
       });
 
@@ -210,12 +225,14 @@ export default function ToolClient({
         throw new Error(txt || "Failed to submit rating");
       }
 
+      // Optional: if your API returns updated averages/counts you can read it here
+      // const json = await res.json().catch(() => null);
+
       setRatingThanks(true);
-      // tiny auto-hide "Thanks" after a moment (optional)
-      window.setTimeout(() => setRatingThanks(false), 1800);
-    } catch (e) {
+      window.setTimeout(() => setRatingThanks(false), 1600);
+    } catch (e: any) {
       console.error(e);
-      // don’t hard-fail the whole tool, just show a small message
+      setRatingError("Rating failed. Try again.");
       setRatingThanks(false);
     } finally {
       setRatingSubmitting(false);
@@ -290,17 +307,17 @@ export default function ToolClient({
           {loading ? "Generating..." : "Generate"}
         </button>
 
-        {/* Right side: inline rating (after generation) + copy */}
-        <div className="flex items-center gap-3">
-          {/* ✅ Inline rating prompt (NO POPUP) */}
+        {/* Right side: rating + copy */}
+        <div className="flex items-center gap-4">
+          {/* Inline rating (post-generation) */}
           {output && justGenerated && (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400 hidden sm:inline">
+              <span className="text-sm text-slate-300 hidden sm:inline">
                 Rate output:
               </span>
 
               <div
-                className="flex items-center gap-0.5"
+                className="flex items-center gap-1"
                 onMouseLeave={() => setHoverStars(null)}
               >
                 {[1, 2, 3, 4, 5].map((n) => (
@@ -310,6 +327,7 @@ export default function ToolClient({
                     className="inline-flex"
                   >
                     <Star
+                      sizeClass="text-2xl" // ✅ bigger stars
                       filled={n <= displayStars}
                       disabled={ratingSubmitting}
                       title={
@@ -324,10 +342,13 @@ export default function ToolClient({
               </div>
 
               {ratingSubmitting && (
-                <span className="text-[11px] text-slate-500">Saving...</span>
+                <span className="text-xs text-slate-400">Saving...</span>
               )}
               {ratingThanks && (
-                <span className="text-[11px] text-emerald-400">Thanks!</span>
+                <span className="text-xs text-emerald-400">Thanks!</span>
+              )}
+              {ratingError && (
+                <span className="text-xs text-red-400">{ratingError}</span>
               )}
             </div>
           )}

@@ -1,0 +1,32 @@
+{
+  "slug": "academic-conference-poster-qa-prep-assistant",
+  "title": "Academic Conference Poster Q&A Prep Assistant",
+  "description": "Help academic researchers prepare clear, concise, and well-structured answers to common and challenging questions likely to arise during their conference poster Q&A sessions by analyzing poster text or abstracts and researcher notes.",
+  "inputLabel": "Paste your poster text, abstract, or upload your poster content file, plus any notes on your research",
+  "outputLabel": "Prepared Q&A responses",
+  "systemPrompt": "You are an expert academic communication coach specialized in preparing researchers for conference poster Q&A sessions. Given the poster text, abstract, and any additional researcher notes, generate clear, concise, and precise answers to anticipated questions. Focus on explaining methodology, results, limitations, and implications clearly and confidently to a knowledgeable but not specialized academic audience. Format the output as a list of question-answer pairs or as structured JSON if requested.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Poster on Machine Learning Model",
+      "input": "Title: Predicting Urban Traffic Flows Using Deep Learning\nAbstract: We present a novel deep learning model that predicts urban traffic patterns based on real-time sensor data. Our model outperforms traditional methods in accuracy and speed."
+    },
+    {
+      "label": "Poster on Environmental Microbiology",
+      "input": "Title: Microbial Degradation of Plastic Waste in Marine Environments\nAbstract: This study investigates microbial communities capable of degrading polyethylene in ocean samples, highlighting potential bioremediation strategies."
+    },
+    {
+      "label": "Poster on Social Psychology Experiment",
+      "input": "Title: Effects of Social Media Use on Adolescent Self-Esteem\nAbstract: We explore correlations between social media engagement and self-esteem levels in teenagers through surveys and behavioral analysis."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of objects each containing 'question' (string) and 'answer' (string) representing anticipated Q&A pairs for the poster presentation."
+}

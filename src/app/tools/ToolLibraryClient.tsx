@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { signIn } from "next-auth/react";
 
 type ToolMeta = {
@@ -283,14 +283,22 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
   const [isPending, startTransition] = useTransition();
 
   // ✅ local set for instant UI updates
-  const [localSaved, setLocalSaved] = useState<Set<string>>(
-    () => new Set(savedSlugs)
-  );
+  const [localSaved, setLocalSaved] = useState<Set<string>>(() => new Set(savedSlugs));
 
   // ✅ keep in sync when server refreshes savedSlugs
   useEffect(() => {
     setLocalSaved(new Set(savedSlugs));
   }, [savedSlugs]);
+
+  // ✅ tiny toast/status line so you can SEE response results
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const statusTimer = useRef<number | null>(null);
+
+  function flashStatus(msg: string) {
+    setSaveStatus(msg);
+    if (statusTimer.current) window.clearTimeout(statusTimer.current);
+    statusTimer.current = window.setTimeout(() => setSaveStatus(null), 3500);
+  }
 
   const savedOn = searchParams.get("saved") === "1";
 
@@ -301,13 +309,11 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
   const categoryLabel = CATEGORY_RULES[category]?.label;
 
   const sortParam = (searchParams.get("sort") || "title-az") as SortId;
-  const sort: SortId =
-    SORT_OPTIONS.find((s) => s.id === sortParam)?.id ?? "title-az";
+  const sort: SortId = SORT_OPTIONS.find((s) => s.id === sortParam)?.id ?? "title-az";
 
   const pageParamRaw = searchParams.get("page") || "1";
   const pageParsed = Number.parseInt(pageParamRaw, 10);
-  const requestedPage =
-    Number.isFinite(pageParsed) && pageParsed > 0 ? pageParsed : 1;
+  const requestedPage = Number.isFinite(pageParsed) && pageParsed > 0 ? pageParsed : 1;
 
   const setParam = (key: string, value?: string, resetPage = false) => {
     const current = new URLSearchParams(searchParams?.toString() || "");
@@ -321,6 +327,7 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
 
   async function toggleSave(slug: string) {
     if (!isSignedIn) {
+      flashStatus("Sign in required to save.");
       await signIn("google", { callbackUrl: "/tools" });
       return;
     }
@@ -339,21 +346,36 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
       const res = await fetch(`/api/tools/${slug}/save`, {
         method: "POST",
         cache: "no-store",
+        credentials: "include", // ✅ IMPORTANT: send cookies/session
       });
 
-      if (res.status === 401) {
-        // revert
-        setLocalSaved((prev) => {
-          const next = new Set(prev);
-          if (wasSaved) next.add(slug);
-          else next.delete(slug);
-          return next;
-        });
-        await signIn("google", { callbackUrl: "/tools" });
-        return;
+      // Always read body for debugging (json or text)
+      let bodyText = "";
+      let bodyJson: any = null;
+
+      const ct = res.headers.get("content-type") || "";
+      if (ct.includes("application/json")) {
+        try {
+          bodyJson = await res.json();
+        } catch {
+          bodyJson = null;
+        }
+      } else {
+        try {
+          bodyText = await res.text();
+        } catch {
+          bodyText = "";
+        }
       }
 
       if (!res.ok) {
+        console.error("Save failed:", {
+          status: res.status,
+          slug,
+          bodyJson,
+          bodyText,
+        });
+
         // revert
         setLocalSaved((prev) => {
           const next = new Set(prev);
@@ -361,24 +383,35 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
           else next.delete(slug);
           return next;
         });
+
+        if (res.status === 401) {
+          flashStatus("401 Unauthorized — session not being sent.");
+          await signIn("google", { callbackUrl: "/tools" });
+          return;
+        }
+
+        flashStatus(`Save failed (${res.status}). Check console.`);
         return;
       }
 
-      const data = (await res.json()) as { saved?: boolean };
+      const savedValue =
+        typeof bodyJson?.saved === "boolean" ? (bodyJson.saved as boolean) : !wasSaved;
 
-      // ✅ enforce server truth
-      if (typeof data.saved === "boolean") {
-        setLocalSaved((prev) => {
-          const next = new Set(prev);
-          if (data.saved) next.add(slug);
-          else next.delete(slug);
-          return next;
-        });
-      }
+      // ✅ enforce server truth if provided
+      setLocalSaved((prev) => {
+        const next = new Set(prev);
+        if (savedValue) next.add(slug);
+        else next.delete(slug);
+        return next;
+      });
+
+      flashStatus(savedValue ? "Saved ✅" : "Unsaved ✅");
 
       // ✅ update top Saved(count) + saved list (server recompute)
       startTransition(() => router.refresh());
-    } catch {
+    } catch (err) {
+      console.error("Save network error:", err);
+
       // revert
       setLocalSaved((prev) => {
         const next = new Set(prev);
@@ -386,6 +419,8 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
         else next.delete(slug);
         return next;
       });
+
+      flashStatus("Network error — check console.");
     }
   }
 
@@ -393,11 +428,8 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
 
   // ✅ Saved-only filter
   if (savedOn) {
-    if (!isSignedIn) {
-      filtered = [];
-    } else {
-      filtered = filtered.filter((t) => localSaved.has(t.slug));
-    }
+    if (!isSignedIn) filtered = [];
+    else filtered = filtered.filter((t) => localSaved.has(t.slug));
   }
 
   // Free-text search
@@ -440,6 +472,15 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
 
   return (
     <div>
+      {/* Debug/status line (small, centered) */}
+      {saveStatus && (
+        <div className="mb-4 flex justify-center">
+          <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-200">
+            {saveStatus}
+          </div>
+        </div>
+      )}
+
       {/* Top line: status + sort only */}
       <div className="mb-4 flex flex-col gap-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -449,8 +490,7 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
               <span className="text-purple-200 font-medium">
                 {showingFrom}-{showingTo}
               </span>{" "}
-              of{" "}
-              <span className="text-purple-200 font-medium">{totalFiltered}</span>
+              of <span className="text-purple-200 font-medium">{totalFiltered}</span>
             </span>
 
             {(qRaw.trim() || categoryLabel || savedOn) && (

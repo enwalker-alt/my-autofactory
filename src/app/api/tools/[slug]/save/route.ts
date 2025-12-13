@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export async function POST(
-  _req: Request,
-  { params }: { params: { slug: string } }
+  _req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   // ✅ Get session
   const session = await auth();
@@ -26,7 +27,7 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { slug } = params;
+  const { slug } = await params;
 
   const tool = await prisma.tool.findUnique({ where: { slug } });
   if (!tool) {

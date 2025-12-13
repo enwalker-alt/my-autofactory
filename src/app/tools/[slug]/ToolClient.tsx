@@ -1,23 +1,52 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 type ToolClientProps = {
   slug: string;
   inputLabel: string;
   outputLabel: string;
   features?: string[];
-  isSignedIn?: boolean; // ✅ NEW (passed from page.tsx)
 };
+
+function Star({
+  filled,
+  onClick,
+  disabled,
+  title,
+}: {
+  filled: boolean;
+  onClick: () => void;
+  disabled?: boolean;
+  title?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      className={[
+        "text-lg leading-none",
+        disabled ? "opacity-60 cursor-not-allowed" : "hover:scale-[1.06]",
+        "transition",
+      ].join(" ")}
+      aria-label={filled ? "Filled star" : "Empty star"}
+    >
+      <span className={filled ? "text-yellow-400" : "text-slate-500"}>★</span>
+    </button>
+  );
+}
 
 export default function ToolClient({
   slug,
   inputLabel,
   outputLabel,
   features,
-  isSignedIn = false,
 }: ToolClientProps) {
+  const { data: session } = useSession();
+
   const [input, setInput] = useState("");
   const [fileTexts, setFileTexts] = useState<string[]>([]);
   const [fileNames, setFileNames] = useState<string[]>([]);
@@ -27,12 +56,12 @@ export default function ToolClient({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ Rating modal state
-  const [ratingOpen, setRatingOpen] = useState(false);
-  const [ratingHover, setRatingHover] = useState<number | null>(null);
-  const [ratingValue, setRatingValue] = useState<number | null>(null);
+  // ✅ rating (inline, post-generation)
+  const [justGenerated, setJustGenerated] = useState(false);
+  const [hoverStars, setHoverStars] = useState<number | null>(null);
+  const [selectedStars, setSelectedStars] = useState<number | null>(null);
   const [ratingSubmitting, setRatingSubmitting] = useState(false);
-  const [ratingMsg, setRatingMsg] = useState<string | null>(null);
+  const [ratingThanks, setRatingThanks] = useState(false);
 
   const supportsFileUpload = features?.includes("file-upload") ?? false;
 
@@ -42,7 +71,12 @@ export default function ToolClient({
     setError(null);
     setOutput("");
 
-    // Combine textarea + all file texts
+    // reset rating UI each generation
+    setJustGenerated(false);
+    setHoverStars(null);
+    setSelectedStars(null);
+    setRatingThanks(false);
+
     const filesSection =
       fileTexts.length > 0
         ? fileTexts
@@ -72,18 +106,14 @@ export default function ToolClient({
       }
 
       const data = await res.json();
-      const out = data.output || "";
-      setOutput(out);
+      setOutput(data.output || "");
 
-      // ✅ After successful generate, open rating prompt
-      // Reset rating state each time so it shows every Generate
-      setRatingValue(null);
-      setRatingHover(null);
-      setRatingMsg(null);
-      setRatingOpen(true);
+      // ✅ show rating row only after we actually have output
+      setJustGenerated(true);
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Something went wrong");
+      setJustGenerated(false);
     } finally {
       setLoading(false);
     }
@@ -152,13 +182,15 @@ export default function ToolClient({
     input.trim().length > 0 || fileTexts.some((t) => t.trim().length > 0);
 
   async function submitRating(value: number) {
-    if (!isSignedIn) {
-      setRatingMsg("Sign in to rate tools.");
+    // signed out => sign in, then they can click again
+    if (!session?.user) {
+      await signIn("google", { callbackUrl: `/tools/${slug}` });
       return;
     }
 
+    setSelectedStars(value);
     setRatingSubmitting(true);
-    setRatingMsg(null);
+    setRatingThanks(false);
 
     try {
       const res = await fetch(`/api/tools/${slug}/rate`, {
@@ -169,202 +201,161 @@ export default function ToolClient({
       });
 
       if (res.status === 401) {
-        setRatingMsg("Please sign in to rate tools.");
+        await signIn("google", { callbackUrl: `/tools/${slug}` });
         return;
       }
 
       if (!res.ok) {
-        const bodyText = await res.text().catch(() => "");
-        throw new Error(bodyText || "Rating failed");
+        const txt = await res.text().catch(() => "");
+        throw new Error(txt || "Failed to submit rating");
       }
 
-      setRatingMsg("Thanks — rating saved.");
-      // keep open briefly or close immediately — your call:
-      setTimeout(() => setRatingOpen(false), 650);
-    } catch (e: any) {
+      setRatingThanks(true);
+      // tiny auto-hide "Thanks" after a moment (optional)
+      window.setTimeout(() => setRatingThanks(false), 1800);
+    } catch (e) {
       console.error(e);
-      setRatingMsg(e?.message || "Rating failed.");
+      // don’t hard-fail the whole tool, just show a small message
+      setRatingThanks(false);
     } finally {
       setRatingSubmitting(false);
     }
   }
 
+  const displayStars = hoverStars ?? selectedStars ?? 0;
+
   return (
-    <>
-      <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-        {/* FILE UPLOAD FIRST (if supported) */}
-        {supportsFileUpload && (
-          <div className="space-y-1">
-            <label className="block font-medium mb-1">
-              Upload document (optional)
-            </label>
-            <input
-              type="file"
-              multiple
-              accept=".txt,.md,.csv,.json,.log,.html,.xml"
-              onChange={handleFileChange}
-              className="block w-full text-sm text-slate-200
+    <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+      {/* FILE UPLOAD FIRST (if supported) */}
+      {supportsFileUpload && (
+        <div className="space-y-1">
+          <label className="block font-medium mb-1">
+            Upload document (optional)
+          </label>
+          <input
+            type="file"
+            multiple
+            accept=".txt,.md,.csv,.json,.log,.html,.xml"
+            onChange={handleFileChange}
+            className="block w-full text-sm text-slate-200
                        file:mr-4 file:py-2 file:px-4
                        file:rounded-md file:border-0
                        file:bg-slate-800 file:text-slate-100
                        hover:file:bg-slate-700"
-            />
-
-            {uploadSuccess && fileNames.length > 0 && (
-              <div className="flex items-center gap-2 text-xs text-emerald-400 mt-1">
-                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] text-black">
-                  ✓
-                </span>
-                <span>
-                  {fileNames.length} file{fileNames.length > 1 ? "s" : ""} ready
-                </span>
-              </div>
-            )}
-
-            {fileNames.length > 0 && (
-              <ul className="mt-1 text-[11px] text-slate-400 space-y-0.5">
-                {fileNames.map((name) => (
-                  <li key={name} className="truncate">
-                    {name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-
-        {/* TEXT INPUT */}
-        <div>
-          <label className="block font-medium mb-1">{inputLabel}</label>
-          <textarea
-            className="w-full border rounded-md p-2 min-h-[160px] bg-slate-900/60 text-slate-100 placeholder:text-slate-500"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Paste or type your text here..."
           />
+
+          {uploadSuccess && fileNames.length > 0 && (
+            <div className="flex items-center gap-2 text-xs text-emerald-400 mt-1">
+              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] text-black">
+                ✓
+              </span>
+              <span>
+                {fileNames.length} file{fileNames.length > 1 ? "s" : ""} ready
+              </span>
+            </div>
+          )}
+
+          {fileNames.length > 0 && (
+            <ul className="mt-1 text-[11px] text-slate-400 space-y-0.5">
+              {fileNames.map((name) => (
+                <li key={name} className="truncate">
+                  {name}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
+      )}
 
-        {/* Buttons row */}
-        <div className="flex items-center justify-between gap-3">
-          <button
-            type="submit"
-            disabled={loading || !hasAnyInput}
-            className="rounded-md border px-4 py-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed
+      {/* TEXT INPUT */}
+      <div>
+        <label className="block font-medium mb-1">{inputLabel}</label>
+        <textarea
+          className="w-full border rounded-md p-2 min-h-[160px] bg-slate-900/60 text-slate-100 placeholder:text-slate-500"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Paste or type your text here..."
+        />
+      </div>
+
+      {/* Buttons row */}
+      <div className="flex items-center justify-between gap-3">
+        {/* Generate */}
+        <button
+          type="submit"
+          disabled={loading || !hasAnyInput}
+          className="rounded-md border px-4 py-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed
                      border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100"
-          >
-            {loading ? "Generating..." : "Generate"}
-          </button>
+        >
+          {loading ? "Generating..." : "Generate"}
+        </button>
 
+        {/* Right side: inline rating (after generation) + copy */}
+        <div className="flex items-center gap-3">
+          {/* ✅ Inline rating prompt (NO POPUP) */}
+          {output && justGenerated && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400 hidden sm:inline">
+                Rate output:
+              </span>
+
+              <div
+                className="flex items-center gap-0.5"
+                onMouseLeave={() => setHoverStars(null)}
+              >
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <span
+                    key={n}
+                    onMouseEnter={() => setHoverStars(n)}
+                    className="inline-flex"
+                  >
+                    <Star
+                      filled={n <= displayStars}
+                      disabled={ratingSubmitting}
+                      title={
+                        session?.user
+                          ? `Rate ${n} star${n > 1 ? "s" : ""}`
+                          : "Sign in to rate"
+                      }
+                      onClick={() => submitRating(n)}
+                    />
+                  </span>
+                ))}
+              </div>
+
+              {ratingSubmitting && (
+                <span className="text-[11px] text-slate-500">Saving...</span>
+              )}
+              {ratingThanks && (
+                <span className="text-[11px] text-emerald-400">Thanks!</span>
+              )}
+            </div>
+          )}
+
+          {/* Copy */}
           {output && (
             <button
               type="button"
               onClick={handleCopy}
               className="rounded-md border px-4 py-2 font-medium
-                       border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100"
+                         border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100"
             >
               Copy
             </button>
           )}
         </div>
+      </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && <p className="text-red-400 text-sm">{error}</p>}
 
-        {output && (
-          <div>
-            <h3 className="font-semibold mb-1">{outputLabel}</h3>
-            <div className="whitespace-pre-wrap border rounded-md p-3 bg-white text-black">
-              {output}
-            </div>
-          </div>
-        )}
-      </form>
-
-      {/* ✅ Rating modal (shows after each successful Generate) */}
-      {ratingOpen && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-4"
-          onMouseDown={() => {
-            if (!ratingSubmitting) setRatingOpen(false);
-          }}
-        >
-          <div
-            className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0b1220] p-5 shadow-2xl"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h4 className="text-base font-semibold text-slate-100">
-                  Rate this tool
-                </h4>
-                <p className="mt-1 text-xs text-slate-300/80">
-                  Quick feedback helps Atlas improve.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                className="text-slate-400 hover:text-slate-200"
-                onClick={() => setRatingOpen(false)}
-                disabled={ratingSubmitting}
-                aria-label="Close rating"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="mt-4 flex items-center justify-center gap-1">
-              {[1, 2, 3, 4, 5].map((n) => {
-                const active = (ratingHover ?? ratingValue ?? 0) >= n;
-                return (
-                  <button
-                    key={n}
-                    type="button"
-                    disabled={ratingSubmitting}
-                    onMouseEnter={() => setRatingHover(n)}
-                    onMouseLeave={() => setRatingHover(null)}
-                    onClick={() => setRatingValue(n)}
-                    className={[
-                      "text-2xl transition",
-                      active ? "text-yellow-300" : "text-slate-500",
-                      ratingSubmitting ? "opacity-60 cursor-not-allowed" : "hover:scale-[1.06]",
-                    ].join(" ")}
-                    aria-label={`${n} star`}
-                  >
-                    ★
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="mt-4 flex items-center justify-between gap-3">
-              {!isSignedIn ? (
-                <button
-                  type="button"
-                  onClick={() => signIn("google", { callbackUrl: `/tools/${slug}` })}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 hover:bg-white/10 transition"
-                >
-                  Sign in to rate
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  disabled={ratingSubmitting || !ratingValue}
-                  onClick={() => ratingValue && submitRating(ratingValue)}
-                  className="w-full rounded-xl border border-purple-400/30 bg-purple-500/15 px-4 py-2 text-sm font-semibold text-purple-100 hover:bg-purple-500/20 transition disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {ratingSubmitting ? "Saving..." : "Submit rating"}
-                </button>
-              )}
-            </div>
-
-            {ratingMsg && (
-              <div className="mt-3 text-center text-xs text-slate-300/80">
-                {ratingMsg}
-              </div>
-            )}
+      {output && (
+        <div>
+          <h3 className="font-semibold mb-1">{outputLabel}</h3>
+          <div className="whitespace-pre-wrap border rounded-md p-3 bg-white text-black">
+            {output}
           </div>
         </div>
       )}
-    </>
+    </form>
   );
 }

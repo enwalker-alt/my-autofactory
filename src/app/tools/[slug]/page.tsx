@@ -195,7 +195,6 @@ export default async function ToolPage({
             inputLabel={config.inputLabel}
             outputLabel={config.outputLabel}
             features={config.features}
-            isSignedIn={isSignedIn} // ✅ NEW
           />
 
           <div className="mt-6 border-t border-white/5 pt-4 flex items-center justify-between gap-3">

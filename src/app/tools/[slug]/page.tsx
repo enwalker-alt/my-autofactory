@@ -3,43 +3,7 @@ import path from "path";
 import Link from "next/link";
 import ToolClient from "./ToolClient";
 import AuthPill from "@/components/AuthPill";
-
-const ToolClientAny: any = ToolClient;
-
-const SaveButton = ({
-  slug,
-  initialSaved,
-  isSignedIn,
-}: {
-  slug: string;
-  initialSaved: boolean;
-  isSignedIn: boolean;
-}) => {
-  // simple non-interactive fallback to avoid missing-module errors;
-  // replace with the real interactive client component when available
-  return (
-    <button
-      className={[
-        "inline-flex items-center gap-2 rounded-full border px-4 py-2",
-        "text-sm sm:text-base font-medium",
-        "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/25",
-        "shadow-lg shadow-purple-500/10 hover:shadow-purple-500/20",
-        "transition",
-      ].join(" ")}
-      aria-pressed={initialSaved}
-      title={
-        isSignedIn
-          ? initialSaved
-            ? "Saved"
-            : "Save tool"
-          : "Sign in to save"
-      }
-    >
-      <span className="text-base leading-none">{initialSaved ? "★" : "☆"}</span>
-      <span>{initialSaved ? "Saved" : "Save"}</span>
-    </button>
-  );
-};
+import SaveButton from "./SaveButton";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -88,22 +52,39 @@ export default async function ToolPage({
   const raw = fs.readFileSync(configPath, "utf-8");
   const config: ToolConfig = JSON.parse(raw);
 
-  // ✅ server-side session + initial saved state
+  // ✅ Auth (server)
   const session = await auth();
-  const userId = (session as any)?.user?.id;
-  const isSignedIn = !!userId;
+  const email = (session as any)?.user?.email as string | undefined;
+  const isSignedIn = !!email;
 
+  // ✅ Ensure the tool row exists (since configs generate tools)
+  // If you already run a sync script, you can remove this block.
+  const toolRow = await prisma.tool.upsert({
+    where: { slug },
+    update: {
+      title: config.title,
+      description: config.description ?? null,
+    },
+    create: {
+      slug,
+      title: config.title,
+      description: config.description ?? null,
+    },
+    select: { id: true },
+  });
+
+  // ✅ initial saved state (server)
   let initialSaved = false;
 
-  if (userId) {
-    const toolRow = await prisma.tool.findUnique({
-      where: { slug },
+  if (email) {
+    const dbUser = await prisma.user.findUnique({
+      where: { email },
       select: { id: true },
     });
 
-    if (toolRow) {
+    if (dbUser?.id) {
       const existing = await prisma.savedTool.findUnique({
-        where: { userId_toolId: { userId, toolId: toolRow.id } },
+        where: { userId_toolId: { userId: dbUser.id, toolId: toolRow.id } },
         select: { id: true },
       });
       initialSaved = !!existing;
@@ -144,7 +125,7 @@ export default async function ToolPage({
           </div>
         </div>
 
-        {/* Title + Save button (top-right above Mode) */}
+        {/* Title + Save button */}
         <header className="mb-6 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
@@ -155,7 +136,6 @@ export default async function ToolPage({
             </p>
           </div>
 
-          {/* Save button moved here */}
           <div className="shrink-0 pt-1">
             <SaveButton
               slug={slug}
@@ -174,14 +154,13 @@ export default async function ToolPage({
             </div>
           </div>
 
-          <ToolClientAny
+          <ToolClient
             slug={config.slug}
             inputLabel={config.inputLabel}
             outputLabel={config.outputLabel}
             features={config.features}
           />
 
-          {/* Bottom row: back only (save removed from bottom) */}
           <div className="mt-6 border-t border-white/5 pt-4 flex items-center justify-between gap-3">
             <Link
               href="/tools"

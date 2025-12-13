@@ -1,0 +1,13 @@
+{
+  "slug": "technical-writer-jargon-simplifier",
+  "title": "Technical Writer Jargon Simplifier",
+  "description": "Upload technical manuals, product specifications, or paste technical text to transform complex jargon and terminology into clear, accessible language tailored for end-user documentation and non-technical audiences.",
+  "inputLabel": "Paste your technical text or upload technical documents",
+  "outputLabel": "Simplified, user-friendly text",
+  "systemPrompt": "You are a helpful assistant who simplifies complex technical writing. Convert jargon-heavy, complex sentences and terminology into clear, plain language that non-expert users can easily understand without losing important information. Maintain accuracy while improving readability and accessibility for end-user documentation.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

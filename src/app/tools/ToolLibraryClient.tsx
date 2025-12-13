@@ -292,9 +292,9 @@ function StarsInline({
   const c = typeof count === "number" ? count : 0;
 
   const full = Math.round(v);
-  const stars = Array.from({ length: 5 }, (_, i) =>
-    i < full ? "★" : "☆"
-  ).join("");
+  const stars = Array.from({ length: 5 }, (_, i) => (i < full ? "★" : "☆")).join(
+    ""
+  );
 
   return (
     <div className="flex items-center gap-2 text-[12px] text-slate-300">
@@ -315,21 +315,578 @@ function buildPageModel(page: number, totalPages: number) {
     return items;
   }
 
-  // Always include first & last
   const showLeft = Math.max(2, page - 1);
   const showRight = Math.min(totalPages - 1, page + 1);
 
   items.push(1);
-
   if (showLeft > 2) items.push("…");
-
   for (let i = showLeft; i <= showRight; i++) items.push(i);
-
   if (showRight < totalPages - 1) items.push("…");
-
   items.push(totalPages);
 
   return items;
+}
+
+type RecommendPayload = {
+  companyType: string;
+  industry: string;
+  teamSize: string;
+  roles: string;
+  normalWeek: string;
+  slowDowns: string;
+  documents: string;
+};
+
+type RecommendedTool = {
+  slug: string;
+  title: string;
+  reason: string;
+  moment: string;
+};
+
+type ToolIdea = {
+  title: string;
+  description: string;
+  whyDifferent: string;
+};
+
+function RecommendWizard({
+  open,
+  onClose,
+  isSignedIn,
+  onRequireSignIn,
+  onSavedSlugsLocalAdd,
+}: {
+  open: boolean;
+  onClose: () => void;
+  isSignedIn: boolean;
+  onRequireSignIn: () => Promise<void>;
+  onSavedSlugsLocalAdd: (slugs: string[]) => void;
+}) {
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+
+  const [form, setForm] = useState<RecommendPayload>({
+    companyType: "",
+    industry: "",
+    teamSize: "",
+    roles: "",
+    normalWeek: "",
+    slowDowns: "",
+    documents: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [recommendations, setRecommendations] = useState<RecommendedTool[]>([]);
+  const [ideas, setIdeas] = useState<ToolIdea[]>([]);
+  const [selectedRec, setSelectedRec] = useState<Record<string, boolean>>({});
+  const [selectedIdeas, setSelectedIdeas] = useState<Record<number, boolean>>(
+    {}
+  );
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<number | null>(null);
+
+  function flash(msg: string) {
+    setToast(msg);
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 3500);
+  }
+
+  useEffect(() => {
+    if (!open) return;
+    // reset each time opened
+    setStep(1);
+    setLoading(false);
+    setRecommendations([]);
+    setIdeas([]);
+    setSelectedRec({});
+    setSelectedIdeas({});
+    setToast(null);
+  }, [open]);
+
+  async function submitIntake() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/recommend", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        console.error("recommend error:", res.status, t);
+        flash(`Recommend failed (${res.status})`);
+        setLoading(false);
+        return;
+      }
+
+      const data = (await res.json()) as {
+        recommended: RecommendedTool[];
+        ideas: ToolIdea[];
+      };
+
+      const rec = Array.isArray(data.recommended) ? data.recommended : [];
+      const id = Array.isArray(data.ideas) ? data.ideas : [];
+
+      setRecommendations(rec);
+      setIdeas(id);
+
+      const initSel: Record<string, boolean> = {};
+      rec.forEach((r) => (initSel[r.slug] = true));
+      setSelectedRec(initSel);
+
+      const initIdeas: Record<number, boolean> = {};
+      id.forEach((_, i) => (initIdeas[i] = false));
+      setSelectedIdeas(initIdeas);
+
+      setStep(2);
+    } catch (e) {
+      console.error(e);
+      flash("Network error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function saveRecommended() {
+    const slugs = Object.entries(selectedRec)
+      .filter(([, v]) => v)
+      .map(([k]) => k);
+
+    if (slugs.length === 0) {
+      flash("Select at least 1 tool.");
+      return;
+    }
+
+    if (!isSignedIn) {
+      await onRequireSignIn();
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/tools/bulk-save", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ slugs }),
+      });
+
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        console.error("bulk-save error:", res.status, t);
+        flash(`Save failed (${res.status})`);
+        setLoading(false);
+        return;
+      }
+
+      onSavedSlugsLocalAdd(slugs);
+      flash("Saved selected tools ✅");
+      setStep(3);
+    } catch (e) {
+      console.error(e);
+      flash("Network error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function buildSelectedIdeas() {
+    const picked = Object.entries(selectedIdeas)
+      .filter(([, v]) => v)
+      .map(([idx]) => Number(idx))
+      .filter((n) => Number.isFinite(n));
+
+    if (picked.length === 0) {
+      flash("Pick 1–3 ideas first.");
+      return;
+    }
+
+    if (picked.length > 3) {
+      flash("Pick up to 3 ideas.");
+      return;
+    }
+
+    if (!isSignedIn) {
+      await onRequireSignIn();
+      return;
+    }
+
+    const selected = picked.map((i) => ideas[i]).filter(Boolean);
+    if (selected.length === 0) {
+      flash("No ideas selected.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/build-tools", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ideas: selected }),
+      });
+
+      const ct = res.headers.get("content-type") || "";
+      const body = ct.includes("application/json")
+        ? await res.json().catch(() => null)
+        : await res.text().catch(() => "");
+
+      if (!res.ok) {
+        console.error("build-tools error:", res.status, body);
+        flash(`Build failed (${res.status})`);
+        setLoading(false);
+        return;
+      }
+
+      const slugs: string[] = Array.isArray(body?.slugs) ? body.slugs : [];
+      if (slugs.length > 0) onSavedSlugsLocalAdd(slugs);
+
+      flash(
+        slugs.length > 0
+          ? `Built + saved ${slugs.length} new tools ✅`
+          : "Build requested ✅"
+      );
+      onClose();
+    } catch (e) {
+      console.error(e);
+      flash("Network error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 flex items-end sm:items-center justify-center p-3 sm:p-4">
+        <div className="relative w-full max-w-3xl rounded-2xl sm:rounded-3xl border border-white/10 bg-[#020617]/95 shadow-2xl shadow-purple-900/50 overflow-hidden">
+          <div className="max-h-[90vh] overflow-y-auto overscroll-contain">
+            <div className="sticky top-0 z-10 border-b border-white/10 bg-[#020617]/95 backdrop-blur">
+              <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold tracking-[0.25em] text-purple-300/80 uppercase">
+                    Atlas Recommendations
+                  </p>
+                  <h2 className="text-base sm:text-lg md:text-xl font-semibold leading-snug">
+                    Recommend tools for your workflow
+                  </h2>
+                  <p className="mt-1 text-[11px] sm:text-xs md:text-sm text-gray-400">
+                    {step === 1 && "Tell Atlas about your work/life. We map tasks → tools."}
+                    {step === 2 && "Pick the recommended tools to save."}
+                    {step === 3 && "Pick up to 3 new tool ideas to build + auto-save."}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="shrink-0 rounded-full bg-white/5 px-2.5 py-1.5 text-xs text-gray-300 hover:bg-white/10"
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {toast && (
+              <div className="px-4 sm:px-6 pt-4">
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[12px] text-gray-200">
+                  {toast}
+                </div>
+              </div>
+            )}
+
+            <div className="px-4 sm:px-6 pb-5 sm:pb-6 pt-4 sm:pt-5">
+              {/* STEP 1 */}
+              {step === 1 && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Field
+                      label="Company type"
+                      value={form.companyType}
+                      onChange={(v) => setForm((p) => ({ ...p, companyType: v }))}
+                      placeholder="Agency, SaaS, restaurant group…"
+                    />
+                    <Field
+                      label="Industry"
+                      value={form.industry}
+                      onChange={(v) => setForm((p) => ({ ...p, industry: v }))}
+                      placeholder="Healthcare, logistics, fintech…"
+                    />
+                    <Field
+                      label="Team size"
+                      value={form.teamSize}
+                      onChange={(v) => setForm((p) => ({ ...p, teamSize: v }))}
+                      placeholder="1, 5, 20, 200…"
+                    />
+                    <Field
+                      label="Key roles"
+                      value={form.roles}
+                      onChange={(v) => setForm((p) => ({ ...p, roles: v }))}
+                      placeholder="Sales, Ops, Support, Finance…"
+                    />
+                  </div>
+
+                  <TextArea
+                    label="Describe a normal day/week"
+                    value={form.normalWeek}
+                    onChange={(v) => setForm((p) => ({ ...p, normalWeek: v }))}
+                    placeholder="What happens repeatedly? What do you ship weekly?"
+                  />
+                  <TextArea
+                    label="What slows you down?"
+                    value={form.slowDowns}
+                    onChange={(v) => setForm((p) => ({ ...p, slowDowns: v }))}
+                    placeholder="Where do things break, get delayed, or feel manual?"
+                  />
+                  <TextArea
+                    label="What documents do you work with most?"
+                    value={form.documents}
+                    onChange={(v) => setForm((p) => ({ ...p, documents: v }))}
+                    placeholder="Proposals, contracts, invoices, SOPs, meeting notes…"
+                  />
+
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <div className="text-[11px] text-gray-500">
+                      You’re mapping workflows — not picking tools.
+                    </div>
+                    <button
+                      type="button"
+                      onClick={submitIntake}
+                      disabled={loading}
+                      className="rounded-full px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40 hover:opacity-90 transition disabled:opacity-60"
+                    >
+                      {loading ? "Analyzing…" : "Get recommendations →"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 2 */}
+              {step === 2 && (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                    <p className="text-xs text-gray-300 font-semibold">
+                      Recommended tools ({recommendations.length})
+                    </p>
+                    <p className="mt-1 text-[11px] text-gray-500">
+                      Each one includes *why* + the exact moment to use it.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    {recommendations.map((r) => (
+                      <div
+                        key={r.slug}
+                        className="rounded-2xl border border-white/10 bg-white/5 p-3"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <label className="flex items-start gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={!!selectedRec[r.slug]}
+                              onChange={(e) =>
+                                setSelectedRec((p) => ({
+                                  ...p,
+                                  [r.slug]: e.target.checked,
+                                }))
+                              }
+                              className="mt-1"
+                            />
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold text-gray-100">
+                                  {r.title}
+                                </span>
+                                <span className="text-[10px] text-gray-400">
+                                  ({r.slug})
+                                </span>
+                              </div>
+                              <p className="mt-1 text-[12px] text-gray-300">
+                                <span className="text-purple-200 font-semibold">
+                                  Why:
+                                </span>{" "}
+                                {r.reason}
+                              </p>
+                              <p className="mt-1 text-[12px] text-gray-400">
+                                <span className="text-purple-200 font-semibold">
+                                  Use it when:
+                                </span>{" "}
+                                {r.moment}
+                              </p>
+                            </div>
+                          </label>
+
+                          <Link
+                            href={`/tools/${r.slug}`}
+                            className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-gray-200 hover:bg-white/10 hover:border-purple-400/40 transition"
+                          >
+                            Open →
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="rounded-full px-3 py-2 text-xs text-gray-200 border border-white/10 bg-white/5 hover:bg-white/10 transition"
+                    >
+                      ← Back
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={saveRecommended}
+                      disabled={loading}
+                      className="rounded-full px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40 hover:opacity-90 transition disabled:opacity-60"
+                    >
+                      {loading ? "Saving…" : "Save selected →"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3 */}
+              {step === 3 && (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                    <p className="text-xs text-gray-300 font-semibold">
+                      New tool ideas just for you ({ideas.length})
+                    </p>
+                    <p className="mt-1 text-[11px] text-gray-500">
+                      These are explicitly non-overlapping with existing tools.
+                      Pick up to 3 — Atlas will build + auto-save them.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    {ideas.map((idea, i) => (
+                      <div
+                        key={`${idea.title}-${i}`}
+                        className="rounded-2xl border border-white/10 bg-white/5 p-3"
+                      >
+                        <label className="flex items-start gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={!!selectedIdeas[i]}
+                            onChange={(e) =>
+                              setSelectedIdeas((p) => ({
+                                ...p,
+                                [i]: e.target.checked,
+                              }))
+                            }
+                            className="mt-1"
+                          />
+                          <div className="min-w-0">
+                            <div className="text-sm font-semibold text-gray-100">
+                              {idea.title}
+                            </div>
+                            <p className="mt-1 text-[12px] text-gray-300">
+                              {idea.description}
+                            </p>
+                            <p className="mt-1 text-[12px] text-gray-400">
+                              <span className="text-purple-200 font-semibold">
+                                Why it’s different:
+                              </span>{" "}
+                              {idea.whyDifferent}
+                            </p>
+                          </div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="rounded-full px-3 py-2 text-xs text-gray-200 border border-white/10 bg-white/5 hover:bg-white/10 transition"
+                    >
+                      ← Back
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={buildSelectedIdeas}
+                      disabled={loading}
+                      className="rounded-full px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40 hover:opacity-90 transition disabled:opacity-60"
+                    >
+                      {loading ? "Building…" : "Build selected + save ✅"}
+                    </button>
+                  </div>
+
+                  <div className="pt-1 text-[11px] text-gray-500">
+                    Note: building commits new configs into your repo. Make sure env vars are set.
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* click outside to close */}
+      <button
+        type="button"
+        aria-label="Close overlay"
+        onClick={onClose}
+        className="absolute inset-0 -z-10"
+        tabIndex={-1}
+      />
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <label className="block">
+      <div className="mb-1 text-[11px] text-gray-400">{label}</div>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-gray-100 placeholder:text-gray-500 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
+      />
+    </label>
+  );
+}
+
+function TextArea({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <label className="block">
+      <div className="mb-1 text-[11px] text-gray-400">{label}</div>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={4}
+        className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-gray-100 placeholder:text-gray-500 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
+      />
+    </label>
+  );
 }
 
 export default function ToolLibraryClient({
@@ -341,16 +898,13 @@ export default function ToolLibraryClient({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const [localSaved, setLocalSaved] = useState<Set<string>>(
-    () => new Set(savedSlugs)
-  );
-
-  useEffect(() => {
-    setLocalSaved(new Set(savedSlugs));
-  }, [savedSlugs]);
+  const [localSaved, setLocalSaved] = useState<Set<string>>(() => new Set(savedSlugs));
+  useEffect(() => setLocalSaved(new Set(savedSlugs)), [savedSlugs]);
 
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const statusTimer = useRef<number | null>(null);
+
+  const [recOpen, setRecOpen] = useState(false);
 
   function flashStatus(msg: string) {
     setSaveStatus(msg);
@@ -359,7 +913,6 @@ export default function ToolLibraryClient({
   }
 
   const savedOn = searchParams.get("saved") === "1";
-
   const qRaw = searchParams.get("q") || "";
   const query = normalize(qRaw);
 
@@ -372,8 +925,7 @@ export default function ToolLibraryClient({
 
   const pageParamRaw = searchParams.get("page") || "1";
   const pageParsed = Number.parseInt(pageParamRaw, 10);
-  const requestedPage =
-    Number.isFinite(pageParsed) && pageParsed > 0 ? pageParsed : 1;
+  const requestedPage = Number.isFinite(pageParsed) && pageParsed > 0 ? pageParsed : 1;
 
   const setParam = (key: string, value?: string, resetPage = false) => {
     const current = new URLSearchParams(searchParams?.toString() || "");
@@ -390,14 +942,17 @@ export default function ToolLibraryClient({
     current.set("page", String(nextPage));
     const qs = current.toString();
     router.push(qs ? `/tools?${qs}` : "/tools", { scroll: true });
-    // subtle UX: scroll to top of results
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  async function requireSignIn() {
+    flashStatus("Sign in required.");
+    await signIn("google", { callbackUrl: "/tools" });
+  }
+
   async function toggleSave(slug: string) {
     if (!isSignedIn) {
-      flashStatus("Sign in required to save.");
-      await signIn("google", { callbackUrl: "/tools" });
+      await requireSignIn();
       return;
     }
 
@@ -451,8 +1006,7 @@ export default function ToolLibraryClient({
         });
 
         if (res.status === 401) {
-          flashStatus("401 Unauthorized — session not being sent.");
-          await signIn("google", { callbackUrl: "/tools" });
+          await requireSignIn();
           return;
         }
 
@@ -461,9 +1015,7 @@ export default function ToolLibraryClient({
       }
 
       const savedValue =
-        typeof bodyJson?.saved === "boolean"
-          ? (bodyJson.saved as boolean)
-          : !wasSaved;
+        typeof bodyJson?.saved === "boolean" ? (bodyJson.saved as boolean) : !wasSaved;
 
       setLocalSaved((prev) => {
         const next = new Set(prev);
@@ -493,9 +1045,7 @@ export default function ToolLibraryClient({
     let filtered = tools;
 
     if (savedOn) {
-      filtered = !isSignedIn
-        ? []
-        : filtered.filter((t) => localSaved.has(t.slug));
+      filtered = !isSignedIn ? [] : filtered.filter((t) => localSaved.has(t.slug));
     }
 
     if (query) {
@@ -556,6 +1106,21 @@ export default function ToolLibraryClient({
 
   return (
     <div>
+      <RecommendWizard
+        open={recOpen}
+        onClose={() => setRecOpen(false)}
+        isSignedIn={isSignedIn}
+        onRequireSignIn={requireSignIn}
+        onSavedSlugsLocalAdd={(slugs) => {
+          setLocalSaved((prev) => {
+            const next = new Set(prev);
+            slugs.forEach((s) => next.add(s));
+            return next;
+          });
+          startTransition(() => router.refresh());
+        }}
+      />
+
       {saveStatus && (
         <div className="mb-4 flex justify-center">
           <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-200">
@@ -600,7 +1165,16 @@ export default function ToolLibraryClient({
             )}
           </div>
 
-          <div className="flex items-center justify-center md:justify-end gap-2">
+          <div className="flex items-center justify-center md:justify-end gap-2 flex-wrap">
+            {/* ✅ NEW: Recommend button */}
+            <button
+              type="button"
+              onClick={() => setRecOpen(true)}
+              className="rounded-full px-3 py-2 text-xs md:text-sm font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40 hover:opacity-90 transition"
+            >
+              Recommend tools for me ✨
+            </button>
+
             <div className="relative">
               <select
                 value={sort}
@@ -686,11 +1260,9 @@ export default function ToolLibraryClient({
             })}
           </div>
 
-          {/* ✅ Google-ish pagination */}
           {totalPages > 1 && (
             <div className="mt-10 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-2 backdrop-blur">
-                {/* Prev */}
                 <button
                   type="button"
                   onClick={() => setPage(Math.max(1, page - 1))}
@@ -702,15 +1274,11 @@ export default function ToolLibraryClient({
 
                 <div className="mx-1 h-5 w-px bg-white/10" />
 
-                {/* Page pills */}
                 <div className="flex items-center gap-1">
                   {pageModel.map((item, idx) => {
                     if (item === "…") {
                       return (
-                        <span
-                          key={`dots-${idx}`}
-                          className="px-2 text-xs text-gray-500 select-none"
-                        >
+                        <span key={`dots-${idx}`} className="px-2 text-xs text-gray-500 select-none">
                           …
                         </span>
                       );
@@ -740,7 +1308,6 @@ export default function ToolLibraryClient({
 
                 <div className="mx-1 h-5 w-px bg-white/10" />
 
-                {/* Next */}
                 <button
                   type="button"
                   onClick={() => setPage(Math.min(totalPages, page + 1))}

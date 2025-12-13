@@ -143,26 +143,26 @@ export default async function ToolsPage({
   }
 
   if (savedOn) {
-    tools = isSignedIn
-      ? tools.filter((t) => new Set(savedSlugs).has(t.slug))
-      : [];
+    tools = isSignedIn ? tools.filter((t) => new Set(savedSlugs).has(t.slug)) : [];
   }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#050816] via-[#020617] to-black text-gray-100">
-      <div className="max-w-5xl mx-auto px-4 py-12 md:py-16">
-        <header className="mb-10 flex items-center justify-end">
-          <AuthPill />
-        </header>
+      {/* ✅ keep login top-right WITHOUT pushing content down */}
+      <div className="fixed top-4 right-4 z-50">
+        <AuthPill />
+      </div>
 
-        <section className="mb-10 md:mb-12">
+      {/* ✅ wider container + less top padding = less dead space */}
+      <div className="max-w-7xl mx-auto px-4 pt-8 pb-10 md:pt-10 md:pb-14">
+        <section className="mb-6 md:mb-8">
           <div className="text-center">
-            <p className="text-xs font-semibold tracking-[0.25em] text-purple-300/80 mb-3 uppercase">
+            <p className="text-[11px] font-semibold tracking-[0.25em] text-purple-300/80 mb-2 uppercase">
               AI Micro-Apps
             </p>
 
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight">
                 Tool Library
               </h1>
 
@@ -175,29 +175,24 @@ export default async function ToolsPage({
             </div>
 
             <p className="text-sm md:text-base text-gray-400 max-w-2xl mx-auto">
-              Browse all experimental tools in Atlas. Each card opens a focused,
-              single-page AI experience.
+              Browse all experimental tools in Atlas. Each card opens a focused, single-page AI
+              experience.
             </p>
           </div>
 
-          <div className="mt-8 space-y-3">
+          {/* ✅ tighter controls spacing */}
+          <div className="mt-5 space-y-3">
             <SearchBar />
-            <div className="flex justify-center gap-3">
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3">
               <CategoryPicker />
-              <SavedFilterButton
-                isSignedIn={isSignedIn}
-                savedCount={savedSlugs.length}
-              />
+              <SavedFilterButton isSignedIn={isSignedIn} savedCount={savedSlugs.length} />
             </div>
           </div>
         </section>
 
-        <section className="mt-6">
-          <ToolLibraryClient
-            tools={tools}
-            savedSlugs={savedSlugs}
-            isSignedIn={isSignedIn}
-          />
+        <section className="mt-4">
+          <ToolLibraryClient tools={tools} savedSlugs={savedSlugs} isSignedIn={isSignedIn} />
         </section>
       </div>
     </main>

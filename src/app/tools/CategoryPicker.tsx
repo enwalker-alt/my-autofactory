@@ -2,43 +2,80 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import type { LucideIcon } from "lucide-react";
+import {
+  PenLine,
+  BookOpen,
+  Briefcase,
+  CalendarDays,
+  Sparkles,
+  BarChart3,
+  Megaphone,
+  ShieldCheck,
+  LayoutGrid,
+} from "lucide-react";
 
 type Category = {
   id: string;
   label: string;
   description: string;
+  Icon: LucideIcon;
 };
 
 const CATEGORIES: Category[] = [
   {
     id: "writing",
-    label: "Writing & Communication",
-    description: "Emails, scripts, dialogue, and polished wording.",
+    label: "Writing & Messaging",
+    description: "Emails, rewrites, tone fixes, scripts, and clarity upgrades.",
+    Icon: PenLine,
   },
   {
-    id: "education",
+    id: "research",
     label: "Learning & Research",
-    description: "Academic abstracts, study helpers, and explanations.",
+    description: "Explain concepts, summarize sources, study help, Q&A support.",
+    Icon: BookOpen,
   },
   {
-    id: "business",
-    label: "Business & Operations",
-    description: "Checklists, planning, and structured workflows.",
+    id: "productivity",
+    label: "Workflows & Productivity",
+    description: "Checklists, SOPs, templates, decision helpers, time savers.",
+    Icon: Briefcase,
   },
   {
-    id: "events",
-    label: "Events & Planning",
-    description: "Event agendas, checklists, and preparation tools.",
+    id: "planning",
+    label: "Planning & Events",
+    description: "Agendas, itineraries, preparation plans, and run-of-show docs.",
+    Icon: CalendarDays,
+  },
+  {
+    id: "data",
+    label: "Data & Finance",
+    description: "Numbers, analysis, comparisons, summaries, and structured output.",
+    Icon: BarChart3,
+  },
+  {
+    id: "marketing",
+    label: "Marketing & Growth",
+    description: "Ads, landing copy, positioning, hooks, and content strategy.",
+    Icon: Megaphone,
   },
   {
     id: "creative",
     label: "Creative & Media",
-    description: "Stories, creative prompts, comics, and content.",
+    description: "Stories, prompts, social content, names, and idea generation.",
+    Icon: Sparkles,
+  },
+  {
+    id: "compliance",
+    label: "Policy & Professional",
+    description: "Safer wording, formal templates, and admin-style documentation.",
+    Icon: ShieldCheck,
   },
   {
     id: "all",
     label: "Show all tools",
     description: "Clear category filters and browse everything.",
+    Icon: LayoutGrid,
   },
 ];
 
@@ -50,11 +87,8 @@ export default function CategoryPicker() {
   const handleSelect = (category: Category) => {
     const current = new URLSearchParams(searchParams?.toString() || "");
 
-    if (category.id === "all") {
-      current.delete("category");
-    } else {
-      current.set("category", category.id);
-    }
+    if (category.id === "all") current.delete("category");
+    else current.set("category", category.id);
 
     const queryString = current.toString();
     const href = queryString ? `/tools?${queryString}` : "/tools";
@@ -84,6 +118,7 @@ export default function CategoryPicker() {
               type="button"
               onClick={() => setOpen(false)}
               className="absolute right-4 top-4 rounded-full bg-white/5 px-2 py-1 text-xs text-gray-300 hover:bg-white/10"
+              aria-label="Close"
             >
               ✕
             </button>
@@ -99,28 +134,39 @@ export default function CategoryPicker() {
 
               {/* Category grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                {CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => handleSelect(cat)}
-                    className="group text-left rounded-2xl border border-white/10 bg-white/5 hover:bg-purple-500/10 hover:border-purple-400/60 transition duration-200 p-4 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-2 mb-1.5">
-                        <span className="text-sm md:text-base font-medium">
-                          {cat.label}
-                        </span>
-                        <span className="text-[10px] uppercase tracking-wide text-purple-300/80 group-hover:text-purple-200">
-                          {cat.id === "all" ? "All tools" : "Category"}
-                        </span>
+                {CATEGORIES.map((cat) => {
+                  const Icon = cat.Icon;
+
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => handleSelect(cat)}
+                      className="group text-left rounded-2xl border border-white/10 bg-white/5 hover:bg-purple-500/10 hover:border-purple-400/60 transition duration-200 p-4 flex flex-col justify-between"
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* Icon bubble */}
+                        <div className="shrink-0 mt-0.5 h-9 w-9 rounded-xl border border-white/10 bg-white/5 grid place-items-center group-hover:border-purple-400/50 group-hover:bg-purple-500/10 transition">
+                          <Icon className="h-4.5 w-4.5 text-purple-200/90 group-hover:text-purple-100" />
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <span className="text-sm md:text-base font-medium truncate">
+                              {cat.label}
+                            </span>
+                            <span className="text-[10px] uppercase tracking-wide text-purple-300/80 group-hover:text-purple-200">
+                              {cat.id === "all" ? "All tools" : "Category"}
+                            </span>
+                          </div>
+                          <p className="text-xs md:text-sm text-gray-400">
+                            {cat.description}
+                          </p>
+                        </div>
                       </div>
-                      <p className="text-xs md:text-sm text-gray-400">
-                        {cat.description}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
 
               <p className="mt-4 text-[11px] text-gray-500">

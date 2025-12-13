@@ -4,7 +4,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 
-type ToolPreset = { label: string; input: string };
+/**
+ * Backwards compatible:
+ * - Old: { label, input } (fills textarea)
+ * - New: { label, prompt, hint? } (refinement lens / focus)
+ */
+type ToolPreset =
+  | { label: string; input: string }
+  | { label: string; prompt: string; hint?: string };
 
 type ToolClientProps = {
   slug: string;
@@ -25,6 +32,7 @@ type HistoryItem = {
   input: string;
   output: string;
   outputFormat: "plain" | "json";
+  focusLabel?: string;
 };
 
 type ClarifyState = {
@@ -65,17 +73,52 @@ function Star({
   );
 }
 
-function safeJsonPretty(s: string) {
+function safeStr(x: any) {
+  return typeof x === "string" ? x : "";
+}
+
+function safeJsonParse(s: string) {
   try {
-    const obj = JSON.parse(s);
-    return JSON.stringify(obj, null, 2);
+    return JSON.parse(s);
   } catch {
-    return s;
+    return null;
   }
 }
 
-function safeStr(x: any) {
-  return typeof x === "string" ? x : "";
+function safeJsonPretty(s: string) {
+  const parsed = safeJsonParse(s);
+  if (!parsed) return s;
+  return JSON.stringify(parsed, null, 2);
+}
+
+function isSimpleDisplayObject(x: any) {
+  if (!x || typeof x !== "object" || Array.isArray(x)) return false;
+  const keys = Object.keys(x);
+  if (keys.length === 0 || keys.length > 14) return false;
+
+  // allow string | number | boolean | null | string[]
+  for (const k of keys) {
+    const v = (x as any)[k];
+    if (
+      v === null ||
+      typeof v === "string" ||
+      typeof v === "number" ||
+      typeof v === "boolean"
+    ) {
+      continue;
+    }
+    if (Array.isArray(v) && v.every((a) => typeof a === "string")) continue;
+    return false;
+  }
+  return true;
+}
+
+function titleCaseKey(k: string) {
+  return k
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^\w/, (c) => c.toUpperCase());
 }
 
 export default function ToolClient({
@@ -102,10 +145,16 @@ export default function ToolClient({
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const [output, setOutput] = useState("");
+  const [outputFormat, setOutputFormat] = useState<"plain" | "json">(
+    outputFormatDefault
+  );
+
+  const [serverOutputFormat, setServerOutputFormat] = useState<"plain" | "json">(
+    outputFormatDefault
+  );
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [outputFormat, setOutputFormat] = useState<"plain" | "json">(outputFormatDefault);
 
   // Clarify-first UI state
   const [clarify, setClarify] = useState<ClarifyState | null>(null);
@@ -122,6 +171,10 @@ export default function ToolClient({
   // QoL
   const [copied, setCopied] = useState(false);
 
+  // Focus lens (NEW)
+  const [focusLabel, setFocusLabel] = useState<string>("");
+  const [focusPrompt, setFocusPrompt] = useState<string>("");
+
   // History (local)
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
@@ -131,6 +184,12 @@ export default function ToolClient({
   const hasAnyInput = useMemo(() => {
     return input.trim().length > 0 || fileTexts.some((t) => t.trim().length > 0);
   }, [input, fileTexts]);
+
+  const parsedJson = useMemo(() => {
+    if (!output) return null;
+    if (serverOutputFormat !== "json") return null;
+    return safeJsonParse(output);
+  }, [output, serverOutputFormat]);
 
   // ----- History storage -----
   const historyKey = `atlas_history_${slug}`;
@@ -197,7 +256,8 @@ export default function ToolClient({
       const readFileAsText = (file: File) =>
         new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
-          reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+          reader.onload = () =>
+            resolve(typeof reader.result === "string" ? reader.result : "");
           reader.onerror = () => reject(new Error("Failed to read file"));
           reader.readAsText(file);
         });
@@ -221,11 +281,29 @@ export default function ToolClient({
     return `${fileNames.length} files selected`;
   }, [fileNames]);
 
-  // ----- presets -----
+  // ----- presets / focus -----
   function applyPreset(p: ToolPreset) {
+    // NEW lens preset: { label, prompt }
+    if ("prompt" in p) {
+      const newLabel = safeStr(p.label).trim();
+      const newPrompt = safeStr(p.prompt).trim();
+
+      // toggle off if clicked again
+      const nextActive = focusLabel === newLabel ? "" : newLabel;
+      setFocusLabel(nextActive);
+      setFocusPrompt(nextActive ? newPrompt : "");
+
+      setError(null);
+      // do NOT edit input
+      // keep clarify flow but reset its state so they can regenerate with lens
+      setClarify(null);
+      setTimeout(() => textareaRef.current?.focus(), 50);
+      return;
+    }
+
+    // LEGACY: old preset fills input
     setInput(p.input || "");
     setError(null);
-    // Reset clarify state when user changes direction
     setClarify(null);
     setTimeout(() => textareaRef.current?.focus(), 50);
   }
@@ -288,16 +366,35 @@ export default function ToolClient({
     const combinedInput = buildCombinedInput();
 
     try {
+      const requestedFormat = supportsStructured ? outputFormat : "plain";
+
       const data = await callToolApi({
         input: combinedInput,
-        outputFormat: supportsStructured ? outputFormat : "plain",
+        outputFormat: requestedFormat,
         jsonSchemaHint: supportsStructured ? jsonSchemaHint || "" : "",
         mode: supportsClarify ? "auto" : "simple",
+
+        // NEW: focus lens (does not change input)
+        focusLabel: focusLabel || "",
+        focusPrompt: focusPrompt || "",
       });
 
+      // If server returns format explicitly, respect it
+      const serverFmt =
+        data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
+      setServerOutputFormat(serverFmt);
+
       // New route may return clarify step
-      if (data?.step === "clarify" && Array.isArray(data?.questions) && data.questions.length > 0) {
-        const qs = data.questions.map((q: any) => safeStr(q)).filter(Boolean).slice(0, 6);
+      if (
+        data?.step === "clarify" &&
+        Array.isArray(data?.questions) &&
+        data.questions.length > 0
+      ) {
+        const qs = data.questions
+          .map((q: any) => safeStr(q))
+          .filter(Boolean)
+          .slice(0, 6);
+
         setClarify({
           questions: qs,
           answers: qs.map(() => ""),
@@ -316,7 +413,8 @@ export default function ToolClient({
         ts: Date.now(),
         input: combinedInput,
         output: out,
-        outputFormat: supportsStructured ? outputFormat : "plain",
+        outputFormat: serverFmt,
+        focusLabel: focusLabel || "",
       });
     } catch (err: any) {
       console.error(err);
@@ -353,13 +451,23 @@ export default function ToolClient({
     const combinedInput = buildCombinedInput();
 
     try {
+      const requestedFormat = supportsStructured ? outputFormat : "plain";
+
       const data = await callToolApi({
         input: combinedInput,
         answers,
-        outputFormat: supportsStructured ? outputFormat : "plain",
+        outputFormat: requestedFormat,
         jsonSchemaHint: supportsStructured ? jsonSchemaHint || "" : "",
         mode: "auto",
+
+        // NEW: keep lens during finalize
+        focusLabel: focusLabel || "",
+        focusPrompt: focusPrompt || "",
       });
+
+      const serverFmt =
+        data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
+      setServerOutputFormat(serverFmt);
 
       const out = String(data.output || "");
       setOutput(out);
@@ -370,7 +478,8 @@ export default function ToolClient({
         ts: Date.now(),
         input: combinedInput,
         output: out,
-        outputFormat: supportsStructured ? outputFormat : "plain",
+        outputFormat: serverFmt,
+        focusLabel: focusLabel || "",
       });
     } catch (err: any) {
       console.error(err);
@@ -449,33 +558,76 @@ export default function ToolClient({
 
   const prettyOutput = useMemo(() => {
     if (!output) return "";
-    if (supportsStructured && outputFormat === "json") return safeJsonPretty(output);
+    if (serverOutputFormat === "json") return safeJsonPretty(output);
     return output;
-  }, [output, outputFormat, supportsStructured]);
+  }, [output, serverOutputFormat]);
+
+  const hasLensPresets = useMemo(() => {
+    if (!supportsPresets || !Array.isArray(presets) || presets.length === 0) return false;
+    return presets.some((p: any) => typeof p?.prompt === "string");
+  }, [supportsPresets, presets]);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-      {/* PRESETS */}
+      {/* PRESETS -> Review focus (lens) or legacy quick start */}
       {supportsPresets && Array.isArray(presets) && presets.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-sm font-medium text-slate-200">Quick start</div>
-            <div className="text-[11px] text-slate-500">Click a preset to fill the input</div>
+            <div className="text-sm font-medium text-slate-200">
+              {hasLensPresets ? "Review focus (optional)" : "Quick start"}
+            </div>
+            <div className="text-[11px] text-slate-500">
+              {hasLensPresets
+                ? "Select a lens — it refines the evaluation criteria"
+                : "Click a preset to fill the input"}
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {presets.slice(0, 6).map((p) => (
-              <button
-                key={p.label}
-                type="button"
-                onClick={() => applyPreset(p)}
-                className="rounded-full border border-white/10 bg-slate-900/50 px-3 py-1.5 text-xs text-slate-200 hover:border-white/25 hover:bg-slate-900 transition"
-                title="Apply preset"
-              >
-                {p.label}
-              </button>
-            ))}
+            {presets.slice(0, 10).map((p: any) => {
+              const isLens = typeof p?.prompt === "string";
+              const active = isLens && focusLabel === p.label;
+
+              return (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => applyPreset(p)}
+                  className={[
+                    "rounded-full border px-3 py-1.5 text-xs transition",
+                    active
+                      ? "border-white/30 bg-white/10 text-slate-100"
+                      : "border-white/10 bg-slate-900/50 text-slate-200 hover:border-white/25 hover:bg-slate-900",
+                  ].join(" ")}
+                  title={
+                    isLens
+                      ? "Applies a refinement lens (does not change your input)"
+                      : "Apply preset (fills input)"
+                  }
+                >
+                  {p.label}
+                </button>
+              );
+            })}
           </div>
+
+          {hasLensPresets && focusLabel && (
+            <div className="text-[11px] text-slate-400">
+              Active focus:{" "}
+              <span className="text-slate-200 font-medium">{focusLabel}</span>
+              <button
+                type="button"
+                className="ml-2 text-slate-400 hover:text-slate-200 transition"
+                onClick={() => {
+                  setFocusLabel("");
+                  setFocusPrompt("");
+                }}
+                title="Clear focus"
+              >
+                (clear)
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -600,8 +752,6 @@ export default function ToolClient({
           onChange={(e) => {
             setInput(e.target.value);
             if (error) setError(null);
-            // If user edits input while in clarify mode, keep clarify but don’t auto-reset;
-            // they can hit "Back" or re-generate.
           }}
           onKeyDown={(e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
@@ -744,14 +894,42 @@ export default function ToolClient({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <h3 className="font-semibold">{outputLabel}</h3>
-            {supportsStructured && outputFormat === "json" && (
-              <span className="text-[11px] text-slate-400">JSON pretty-printed</span>
+            {serverOutputFormat === "json" && (
+              <span className="text-[11px] text-slate-400">Structured view</span>
             )}
           </div>
 
-          <div className="whitespace-pre-wrap border rounded-md p-3 bg-white text-black">
-            {prettyOutput}
-          </div>
+          {/* Cleaner structured JSON rendering */}
+          {serverOutputFormat === "json" && parsedJson && isSimpleDisplayObject(parsedJson) ? (
+            <div className="rounded-xl border border-black/10 bg-white text-black p-4 space-y-4">
+              {Object.keys(parsedJson).map((k) => {
+                const v = (parsedJson as any)[k];
+                return (
+                  <div key={k} className="space-y-1">
+                    <div className="text-[12px] font-semibold uppercase tracking-wide text-slate-700">
+                      {titleCaseKey(k)}
+                    </div>
+
+                    {Array.isArray(v) ? (
+                      <ul className="list-disc pl-5 space-y-1 text-[14px] leading-relaxed">
+                        {v.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="text-[14px] leading-relaxed whitespace-pre-wrap">
+                        {String(v)}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <pre className="whitespace-pre-wrap border rounded-md p-3 bg-white text-black font-mono text-[13px] leading-relaxed overflow-x-auto">
+              {prettyOutput}
+            </pre>
+          )}
         </div>
       )}
 
@@ -781,6 +959,7 @@ export default function ToolClient({
                     setInput(h.input);
                     setOutput(h.output);
                     setOutputFormat(h.outputFormat);
+                    setServerOutputFormat(h.outputFormat);
                     setClarify(null);
                     setJustGenerated(false);
                     setError(null);
@@ -792,7 +971,10 @@ export default function ToolClient({
                     <div className="text-xs text-slate-200 truncate">
                       {new Date(h.ts).toLocaleString()}
                     </div>
-                    <div className="text-[11px] text-slate-500">{h.outputFormat}</div>
+                    <div className="text-[11px] text-slate-500">
+                      {h.outputFormat}
+                      {h.focusLabel ? ` • ${h.focusLabel}` : ""}
+                    </div>
                   </div>
                   <div className="mt-1 text-[11px] text-slate-400 line-clamp-2">
                     {h.input.slice(0, 180)}

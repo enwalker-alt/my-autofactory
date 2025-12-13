@@ -9,7 +9,14 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-type ToolPreset = { label: string; input: string };
+/**
+ * Backwards compatible:
+ * - Old: { label, input }
+ * - New: { label, prompt, hint? }
+ */
+type ToolPreset =
+  | { label: string; input: string }
+  | { label: string; prompt: string; hint?: string };
 
 type ToolConfig = {
   slug: string;
@@ -58,6 +65,26 @@ function isJsonValid(s: string) {
   }
 }
 
+function buildFocusBlock({
+  focusLabel,
+  focusPrompt,
+}: {
+  focusLabel?: string;
+  focusPrompt?: string;
+}) {
+  const label = safeStr(focusLabel).trim();
+  const prompt = safeStr(focusPrompt).trim();
+
+  if (!label && !prompt) return "";
+
+  return `
+FOCUS LENS (apply this lens to the behavior and evaluation criteria):
+Label: ${label || "(none)"}
+Instructions:
+${prompt || "- Use the label as light guidance if no prompt was provided."}
+`.trim();
+}
+
 /**
  * Attempts to coerce model output to valid JSON.
  * We keep it simple: if it's not valid, we run one repair attempt.
@@ -101,10 +128,9 @@ ${badJson}
   return stripCodeFences(completion.choices[0]?.message?.content ?? "");
 }
 
-function buildClarifySystemPrompt(config: ToolConfig) {
+function buildClarifySystemPrompt(config: ToolConfig, focusBlock: string) {
   const clarify = safeStr(config.clarifyPrompt).trim();
 
-  // If tool didn't provide clarifyPrompt, use a strong default that fits your platform
   const defaultClarify = `
 You are Atlas in "clarify-first" mode.
 
@@ -126,14 +152,21 @@ Rules:
 - Do NOT invent facts.
 `.trim();
 
-  return clarify.length ? clarify : defaultClarify;
+  // Focus should influence what you ask (e.g., "Methods lens" asks about sample size, stats, etc.)
+  return [clarify.length ? clarify : defaultClarify, focusBlock]
+    .filter(Boolean)
+    .join("\n\n---\n\n")
+    .trim();
 }
 
-function buildFinalizeSystemPrompt(config: ToolConfig, outputFormat: "plain" | "json") {
+function buildFinalizeSystemPrompt(
+  config: ToolConfig,
+  outputFormat: "plain" | "json",
+  focusBlock: string
+) {
   const base = safeStr(config.systemPrompt).trim();
   const finalizeAddon = safeStr(config.finalizePrompt).trim();
 
-  // If structured-output is requested, force JSON
   const structuredAddon =
     outputFormat === "json"
       ? `
@@ -144,7 +177,6 @@ IMPORTANT OUTPUT RULE:
 `
       : "";
 
-  // If tool provided finalizePrompt, append it (it should tell model how to use answers)
   const finalizeBlock = finalizeAddon
     ? `
 FINALIZE INSTRUCTIONS:
@@ -152,7 +184,11 @@ ${finalizeAddon}
 `
     : "";
 
-  return [base, finalizeBlock, structuredAddon].filter(Boolean).join("\n\n").trim();
+  // Focus should influence the final critique / response structure
+  return [base, focusBlock, finalizeBlock, structuredAddon]
+    .filter(Boolean)
+    .join("\n\n---\n\n")
+    .trim();
 }
 
 export async function POST(
@@ -168,6 +204,11 @@ export async function POST(
     const mode = safeStr(body?.mode); // "simple" | "auto" (from ToolClient)
     const outputFormat = asOutputFormat(body?.outputFormat);
     const answers = Array.isArray(body?.answers) ? body.answers : null;
+
+    // NEW: focus lens
+    const focusLabel = safeStr(body?.focusLabel);
+    const focusPrompt = safeStr(body?.focusPrompt);
+    const focusBlock = buildFocusBlock({ focusLabel, focusPrompt });
 
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
@@ -212,7 +253,7 @@ export async function POST(
     // STEP A: Clarify
     // -------------------------
     if (useClarify && !answers) {
-      const clarifySystem = buildClarifySystemPrompt(config);
+      const clarifySystem = buildClarifySystemPrompt(config, focusBlock);
 
       const completion = await client.chat.completions.create({
         model: "gpt-4.1-mini",
@@ -251,6 +292,7 @@ export async function POST(
         return NextResponse.json({
           step: "clarify" as Step,
           questions,
+          outputFormat: effectiveOutputFormat,
         });
       }
       // else continue to final (below)
@@ -259,7 +301,11 @@ export async function POST(
     // -------------------------
     // STEP B (or normal): Final generation
     // -------------------------
-    const finalSystem = buildFinalizeSystemPrompt(config, effectiveOutputFormat);
+    const finalSystem = buildFinalizeSystemPrompt(
+      config,
+      effectiveOutputFormat,
+      focusBlock
+    );
 
     // If answers are provided, include them in the user content
     const userContent = answers
@@ -293,7 +339,6 @@ ${answers.map((a: any, i: number) => `Q${i + 1}: ${String(a)}`).join("\n")}
         });
         output = stripCodeFences(repaired);
 
-        // If STILL not valid, return a 500 so you notice quickly
         if (!isJsonValid(output)) {
           return NextResponse.json(
             {

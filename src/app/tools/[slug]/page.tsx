@@ -21,6 +21,31 @@ type ToolConfig = {
 
 export const dynamic = "force-dynamic";
 
+function Stars({ avg }: { avg: number }) {
+  const rounded = Math.round(avg * 10) / 10;
+  const full = Math.floor(rounded);
+  const half = rounded - full >= 0.5;
+
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((n) => {
+        const isFull = n <= full;
+        const isHalf = !isFull && half && n === full + 1;
+
+        return (
+          <span
+            key={n}
+            className={isFull || isHalf ? "text-yellow-300" : "text-slate-600"}
+            aria-hidden="true"
+          >
+            ★
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 export default async function ToolPage({
   params,
 }: {
@@ -57,20 +82,23 @@ export default async function ToolPage({
   const email = (session as any)?.user?.email as string | undefined;
   const isSignedIn = !!email;
 
-  // ✅ Ensure the tool row exists (since configs generate tools)
-  // If you already run a sync script, you can remove this block.
+  // ✅ Ensure tool row exists + keep aggregates available
   const toolRow = await prisma.tool.upsert({
     where: { slug },
     update: {
       title: config.title,
       description: config.description ?? null,
+      inputLabel: config.inputLabel ?? null,
+      outputLabel: config.outputLabel ?? null,
     },
     create: {
       slug,
       title: config.title,
       description: config.description ?? null,
+      inputLabel: config.inputLabel ?? null,
+      outputLabel: config.outputLabel ?? null,
     },
-    select: { id: true },
+    select: { id: true, ratingAvg: true, ratingCount: true },
   });
 
   // ✅ initial saved state (server)
@@ -91,6 +119,9 @@ export default async function ToolPage({
     }
   }
 
+  const ratingAvg = toolRow.ratingAvg ?? 0;
+  const ratingCount = toolRow.ratingCount ?? 0;
+
   return (
     <main className="min-h-screen bg-[#020617] text-slate-100">
       <div className="relative mx-auto max-w-5xl px-4 pt-20 pb-16 sm:px-6 lg:px-8">
@@ -109,10 +140,7 @@ export default async function ToolPage({
               Atlas
             </Link>
             <span className="text-slate-600">/</span>
-            <Link
-              href="/tools"
-              className="hover:text-slate-200 transition-colors"
-            >
+            <Link href="/tools" className="hover:text-slate-200 transition-colors">
               Tool Library
             </Link>
             <span className="text-slate-600">/</span>
@@ -125,23 +153,31 @@ export default async function ToolPage({
           </div>
         </div>
 
-        {/* Title + Save button */}
-        <header className="mb-6 flex items-start justify-between gap-4">
+        {/* Title + Rating + Save */}
+        <header className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
               {config.title}
             </h1>
+
+            {/* ✅ Rating display */}
+            <div className="flex items-center gap-3 mb-3">
+              <Stars avg={ratingAvg} />
+              <div className="text-xs text-slate-300/80">
+                <span className="font-semibold text-slate-200">
+                  {Math.round(ratingAvg * 10) / 10}
+                </span>{" "}
+                <span className="text-slate-500">({ratingCount} ratings)</span>
+              </div>
+            </div>
+
             <p className="max-w-2xl text-sm sm:text-base text-slate-300 leading-relaxed">
               {config.description}
             </p>
           </div>
 
           <div className="shrink-0 pt-1">
-            <SaveButton
-              slug={slug}
-              initialSaved={initialSaved}
-              isSignedIn={isSignedIn}
-            />
+            <SaveButton slug={slug} initialSaved={initialSaved} isSignedIn={isSignedIn} />
           </div>
         </header>
 
@@ -159,6 +195,7 @@ export default async function ToolPage({
             inputLabel={config.inputLabel}
             outputLabel={config.outputLabel}
             features={config.features}
+            isSignedIn={isSignedIn} // ✅ NEW
           />
 
           <div className="mt-6 border-t border-white/5 pt-4 flex items-center justify-between gap-3">

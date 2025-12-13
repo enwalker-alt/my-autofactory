@@ -6,17 +6,16 @@ import { revalidatePath } from "next/cache";
 
 export async function POST(
   _req: NextRequest,
-  { params }: { params: { slug: string } } // ✅ NOT a Promise
+  context: { params: Promise<{ slug: string }> } // ✅ must be Promise in your setup
 ) {
   const session = await auth();
   const user = session?.user as any | undefined;
 
-  // if your session stores email, this is fine:
   if (!user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // ✅ Always resolve userId from DB (works even if session has no id)
+  // ✅ resolve userId from DB (works even if session has no id)
   const dbUser = await prisma.user.findUnique({
     where: { email: user.email as string },
     select: { id: true },
@@ -27,7 +26,7 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const slug = params.slug; // ✅ no await
+  const { slug } = await context.params; // ✅ await the params
 
   const tool = await prisma.tool.findUnique({ where: { slug } });
   if (!tool) {

@@ -42,39 +42,59 @@ function getToolsFromConfigs(): ToolMeta[] {
 export default async function ToolsPage() {
   const tools = getToolsFromConfigs();
 
-  // ✅ Session
-  const session = await auth();
+  // Defaults that will never crash rendering
+  let userId: string | undefined = undefined;
+  let isSignedIn = false;
+  let savedSlugs: string[] = [];
 
-  // ✅ IMPORTANT:
-  // NextAuth often does NOT include user.id in session unless you add it in callbacks.
-  // So we fallback to email -> lookup user id in Prisma.
-  const sessionUser = (session as any)?.user;
-  const email = (sessionUser?.email as string | undefined) ?? undefined;
-
-  let userId = (sessionUser?.id as string | undefined) ?? undefined;
-
-  if (!userId && email) {
-    const dbUser = await prisma.user.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-    userId = dbUser?.id;
+  // ✅ Session (never let auth() crash the page)
+  let session: any = null;
+  try {
+    session = await auth();
+  } catch {
+    session = null;
   }
 
-  const isSignedIn = !!userId;
+  const sessionUser = session?.user;
+  const email = (sessionUser?.email as string | undefined) ?? undefined;
 
-  // ✅ Fetch saved tool slugs for this user
-  let savedSlugs: string[] = [];
+  // ✅ Prefer id from session (best)
+  userId = (sessionUser?.id as string | undefined) ?? undefined;
+
+  // ✅ Fallback: if session has no id, try lookup by email — BUT ONLY if prisma.user exists
+  if (!userId && email) {
+    try {
+      const prismaAny = prisma as any;
+      if (prismaAny?.user?.findUnique) {
+        const dbUser = await prismaAny.user.findUnique({
+          where: { email },
+          select: { id: true },
+        });
+        userId = dbUser?.id;
+      }
+    } catch {
+      // swallow error, we’ll just treat as signed out on server
+      userId = undefined;
+    }
+  }
+
+  isSignedIn = !!userId;
+
+  // ✅ Fetch saved tools (never crash page)
   if (userId) {
-    const saved = await prisma.savedTool.findMany({
-      where: { userId },
-      select: { tool: { select: { slug: true } } },
-      orderBy: { createdAt: "desc" },
-    });
+    try {
+      const saved = await prisma.savedTool.findMany({
+        where: { userId },
+        select: { tool: { select: { slug: true } } },
+        orderBy: { createdAt: "desc" },
+      });
 
-    savedSlugs = saved
-      .map((s) => s.tool?.slug)
-      .filter((slug): slug is string => !!slug);
+      savedSlugs = saved
+        .map((s) => s.tool?.slug)
+        .filter((slug): slug is string => !!slug);
+    } catch {
+      savedSlugs = [];
+    }
   }
 
   return (
@@ -92,7 +112,6 @@ export default async function ToolsPage() {
               AI Micro-Apps
             </p>
 
-            {/* Title + Back Button */}
             <div className="flex items-center justify-center gap-3 mb-3">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold">
                 Tool Library

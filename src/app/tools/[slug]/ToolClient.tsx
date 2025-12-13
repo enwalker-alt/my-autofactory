@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
@@ -35,23 +35,14 @@ export default function ToolLibraryClient({
   const sp = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  // ✅ local saved state so the button updates instantly
+  // ✅ local set for instant UI updates
   const [savedSet, setSavedSet] = useState<Set<string>>(
     () => new Set(savedSlugs)
   );
 
-  // keep in sync if server refresh changes savedSlugs
-  // (we only set if changed to avoid flicker)
-  useMemo(() => {
-    const next = new Set(savedSlugs);
-    // simple sync: replace if sizes differ or any mismatch
-    if (
-      next.size !== savedSet.size ||
-      Array.from(next).some((x) => !savedSet.has(x))
-    ) {
-      setSavedSet(next);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // ✅ keep local set in sync after router.refresh updates props
+  useEffect(() => {
+    setSavedSet(new Set(savedSlugs));
   }, [savedSlugs]);
 
   const q = sp.get("q")?.trim().toLowerCase() ?? "";
@@ -86,7 +77,6 @@ export default function ToolLibraryClient({
     const next = new URLSearchParams(sp.toString());
     if (!value) next.delete(key);
     else next.set(key, value);
-    // reset paging when changing filters/sort/search
     if (key !== "page") next.delete("page");
     const qs = next.toString();
     router.push(qs ? `/tools?${qs}` : "/tools");
@@ -94,12 +84,13 @@ export default function ToolLibraryClient({
 
   async function toggleSave(slug: string) {
     if (!isSignedIn) {
-      await signIn("google", { callbackUrl: `/tools` });
+      await signIn("google", { callbackUrl: "/tools" });
       return;
     }
 
-    // optimistic UI
     const wasSaved = savedSet.has(slug);
+
+    // ✅ optimistic UI update
     setSavedSet((prev) => {
       const next = new Set(prev);
       if (wasSaved) next.delete(slug);
@@ -110,24 +101,23 @@ export default function ToolLibraryClient({
     try {
       const res = await fetch(`/api/tools/${slug}/save`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         cache: "no-store",
       });
 
       if (res.status === 401) {
-        // revert optimistic
+        // revert
         setSavedSet((prev) => {
           const next = new Set(prev);
           if (wasSaved) next.add(slug);
           else next.delete(slug);
           return next;
         });
-        await signIn("google", { callbackUrl: `/tools` });
+        await signIn("google", { callbackUrl: "/tools" });
         return;
       }
 
       if (!res.ok) {
-        // revert optimistic
+        // revert
         setSavedSet((prev) => {
           const next = new Set(prev);
           if (wasSaved) next.add(slug);
@@ -138,6 +128,8 @@ export default function ToolLibraryClient({
       }
 
       const data = (await res.json()) as { saved?: boolean };
+
+      // ✅ enforce server truth
       if (typeof data.saved === "boolean") {
         setSavedSet((prev) => {
           const next = new Set(prev);
@@ -147,12 +139,12 @@ export default function ToolLibraryClient({
         });
       }
 
-      // ✅ refresh server components so Saved count + savedSlugs update
+      // ✅ refresh server data so Saved (count) updates + Saved page reflects it
       startTransition(() => {
         router.refresh();
       });
     } catch {
-      // revert optimistic on network error
+      // revert on network errors
       setSavedSet((prev) => {
         const next = new Set(prev);
         if (wasSaved) next.add(slug);
@@ -164,7 +156,6 @@ export default function ToolLibraryClient({
 
   return (
     <div className="space-y-6">
-      {/* top row: showing + sort */}
       <div className="flex items-center justify-between gap-4">
         <div className="text-xs text-slate-300/80">
           Showing {total === 0 ? 0 : start + 1}-{Math.min(start + PER_PAGE, total)}{" "}
@@ -187,13 +178,9 @@ export default function ToolLibraryClient({
         </div>
       </div>
 
-      {/* grid */}
       {pageItems.length === 0 ? (
         <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-sm text-slate-300/80">
           No tools match your current filters.
-          <div className="mt-2 text-xs text-slate-400">
-            Try clearing the search, picking a different category, or browsing all tools.
-          </div>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
@@ -202,7 +189,7 @@ export default function ToolLibraryClient({
             return (
               <div
                 key={t.slug}
-                className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur hover:bg-white/7 transition"
+                className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur transition hover:bg-white/7"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -225,7 +212,6 @@ export default function ToolLibraryClient({
                         : "border-white/10 bg-white/5 text-slate-100 hover:bg-white/10",
                       isPending ? "opacity-70 cursor-not-allowed" : "",
                     ].join(" ")}
-                    title={saved ? "Remove from saved" : "Save this tool"}
                   >
                     {saved ? "Saved ✓" : "Save"}
                   </button>
@@ -245,7 +231,6 @@ export default function ToolLibraryClient({
         </div>
       )}
 
-      {/* pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
           <button

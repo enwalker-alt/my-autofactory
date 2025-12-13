@@ -1,9 +1,29 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import OpenAI from "openai";
 
-type ToolIdea = { title: string; description: string; whyDifferent?: string };
+export const runtime = "nodejs";
+
+type ToolPreset = { label: string; input: string };
+
+type ToolConfigIncoming = {
+  slug: string;
+  title: string;
+  description: string;
+  inputLabel: string;
+  outputLabel: string;
+  systemPrompt: string;
+  temperature: number;
+  features: string[];
+
+  presets?: ToolPreset[];
+  outputFormatDefault?: "plain" | "json";
+  jsonSchemaHint?: string;
+  clarifyPrompt?: string;
+  finalizePrompt?: string;
+
+  whyDifferent?: string;
+};
 
 function b64(s: string) {
   return Buffer.from(s, "utf8").toString("base64");
@@ -25,7 +45,9 @@ async function githubPutFile({
   message: string;
 }) {
   const token = process.env.GITHUB_TOKEN!;
-  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(
+    path
+  )}`;
 
   // check if exists (need sha to update)
   const getRes = await fetch(`${url}?ref=${branch}`, {
@@ -61,9 +83,7 @@ async function githubPutFile({
 
   const putJson = await putRes.json().catch(() => null);
   if (!putRes.ok) {
-    throw new Error(
-      `GitHub PUT failed (${putRes.status}): ${JSON.stringify(putJson)}`
-    );
+    throw new Error(`GitHub PUT failed (${putRes.status}): ${JSON.stringify(putJson)}`);
   }
 
   return putJson;
@@ -76,6 +96,49 @@ function slugify(s: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
+}
+
+function clamp(n: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, n));
+}
+
+function sanitizeTemperature(t: any) {
+  const n = Number(t);
+  if (!Number.isFinite(n)) return 0.5;
+  return clamp(n, 0, 1);
+}
+
+/**
+ * MUST match generateTool.mjs + recommend route
+ */
+const AVAILABLE_FEATURES = [
+  "text-input",
+  "file-upload",
+  "presets",
+  "structured-output",
+  "clarify-first",
+  "saved-history",
+] as const;
+
+function validateFeatures(maybe: any): string[] {
+  if (!Array.isArray(maybe)) return ["text-input"];
+  const cleaned = maybe
+    .map((x) => String(x))
+    .filter((f) => (AVAILABLE_FEATURES as readonly string[]).includes(f));
+  return cleaned.length ? cleaned : ["text-input"];
+}
+
+function normalizePresets(maybe: any): ToolPreset[] | undefined {
+  if (!Array.isArray(maybe)) return undefined;
+  const cleaned = maybe
+    .slice(0, 5)
+    .map((p) => ({
+      label: typeof p?.label === "string" ? p.label.trim().slice(0, 60) : "Example",
+      input: typeof p?.input === "string" ? p.input.trim().slice(0, 2500) : "",
+    }))
+    .filter((p) => p.input.length > 0);
+
+  return cleaned.length ? cleaned : undefined;
 }
 
 export async function POST(req: Request) {
@@ -95,9 +158,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!process.env.OPENAI_API_KEY) {
-    return NextResponse.json({ error: "OPENAI_API_KEY missing" }, { status: 500 });
-  }
   if (!process.env.GITHUB_TOKEN || !process.env.GITHUB_OWNER || !process.env.GITHUB_REPO) {
     return NextResponse.json(
       { error: "Missing GitHub env vars (GITHUB_TOKEN/GITHUB_OWNER/GITHUB_REPO)" },
@@ -105,8 +165,9 @@ export async function POST(req: Request) {
     );
   }
 
-  const body = (await req.json().catch(() => ({}))) as { ideas?: ToolIdea[] };
+  const body = (await req.json().catch(() => ({}))) as { ideas?: ToolConfigIncoming[] };
   const ideas = Array.isArray(body.ideas) ? body.ideas.slice(0, 3) : [];
+
   if (ideas.length === 0) {
     return NextResponse.json({ error: "No ideas provided" }, { status: 400 });
   }
@@ -115,86 +176,24 @@ export async function POST(req: Request) {
   const repo = process.env.GITHUB_REPO!;
   const branch = process.env.GITHUB_BRANCH || "main";
 
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-  // existing tools (for non-overlap)
-  const existingTools = await prisma.tool.findMany({
-    select: { slug: true, title: true, description: true },
-    orderBy: { title: "asc" },
-  });
-
-  const existingSummary =
-    existingTools.length === 0
-      ? "There are currently no existing tools."
-      : "Existing tools:\n" +
-        existingTools
-          .slice(0, 1200)
-          .map((t) => `- slug: ${t.slug}, title: ${t.title}, description: ${t.description ?? ""}`)
-          .join("\n");
-
-  const RUBRIC = `
-You generate ONE new Atlas tool config as strict JSON.
-
-Hard constraints:
-- Single-page tool.
-- Input is plain text (textarea) and/or file-upload.
-- Output is plain text.
-- Must be a specific moment-of-use tool (role + scenario).
-- Must not overlap existing tools (role+input+output purpose).
-- Avoid medical diagnosis, legal advice, unsafe/wrongdoing.
-- slug must be unique (kebab-case, lowercase).
-
-Return ONLY strict JSON with shape:
-{
-  "slug": string,
-  "title": string,
-  "description": string,
-  "inputLabel": string,
-  "outputLabel": string,
-  "systemPrompt": string,
-  "temperature": number 0..1,
-  "features": string[] // ["text-input"] or ["text-input","file-upload"]
-}
-  `.trim();
-
   const slugsBuilt: string[] = [];
 
-  for (const idea of ideas) {
-    const baseSlug = slugify(idea.title) || `tool-${Date.now()}`;
+  for (const incoming of ideas) {
+    // Basic validation
+    const title = String(incoming?.title || "").trim();
+    const description = String(incoming?.description || "").trim();
+    const systemPrompt = String(incoming?.systemPrompt || "").trim();
 
-    // create config via OpenAI
-    const completion = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        { role: "system", content: RUBRIC },
-        {
-          role: "user",
-          content: `
-${existingSummary}
-
-CUSTOM TOOL IDEA TO BUILD:
-Title: ${idea.title}
-Description: ${idea.description}
-
-Generate the tool config. It must be clearly different from all existing tools.
-          `.trim(),
-        },
-      ],
-      temperature: 0.7,
-    });
-
-    let raw = completion.choices[0]?.message?.content ?? "";
-    raw = raw.trim().replace(/```json/g, "").replace(/```/g, "");
-
-    let config: any;
-    try {
-      config = JSON.parse(raw);
-    } catch {
-      return NextResponse.json({ error: "Failed to parse tool JSON from OpenAI." }, { status: 500 });
+    if (!title || !description || !systemPrompt) {
+      return NextResponse.json(
+        { error: "Invalid tool config: missing title/description/systemPrompt" },
+        { status: 400 }
+      );
     }
 
-    // normalize slug + ensure uniqueness
-    let slug = slugify(config.slug || baseSlug) || baseSlug;
+    // normalize slug
+    const baseSlug = slugify(incoming?.slug || title) || `tool-${Date.now()}`;
+    let slug = baseSlug;
 
     // If slug exists in DB, suffix it
     const exists = await prisma.tool.findUnique({ where: { slug }, select: { id: true } });
@@ -211,7 +210,44 @@ Generate the tool config. It must be clearly different from all existing tools.
       }
     }
 
-    const finalConfig = { ...config, slug };
+    const features = validateFeatures(incoming?.features);
+    const presets = features.includes("presets") ? normalizePresets(incoming?.presets) : undefined;
+
+    const outputFormatDefault = features.includes("structured-output")
+      ? incoming?.outputFormatDefault === "json"
+        ? "json"
+        : "plain"
+      : undefined;
+
+    const jsonSchemaHint = features.includes("structured-output")
+      ? String(incoming?.jsonSchemaHint || "").trim()
+      : undefined;
+
+    const clarifyPrompt = features.includes("clarify-first")
+      ? String(incoming?.clarifyPrompt || "").trim()
+      : undefined;
+
+    const finalizePrompt = features.includes("clarify-first")
+      ? String(incoming?.finalizePrompt || "").trim()
+      : undefined;
+
+    const finalConfig = {
+      slug,
+      title,
+      description,
+      inputLabel: String(incoming?.inputLabel || "Paste your input text").trim(),
+      outputLabel: String(incoming?.outputLabel || "Generated output").trim(),
+      systemPrompt,
+      temperature: sanitizeTemperature(incoming?.temperature),
+      features,
+
+      ...(presets ? { presets } : {}),
+      ...(outputFormatDefault ? { outputFormatDefault } : {}),
+      ...(jsonSchemaHint ? { jsonSchemaHint } : {}),
+      ...(clarifyPrompt ? { clarifyPrompt } : {}),
+      ...(finalizePrompt ? { finalizePrompt } : {}),
+      ...(incoming?.whyDifferent ? { whyDifferent: String(incoming.whyDifferent).trim() } : {}),
+    };
 
     // commit JSON into tool-configs/
     const filePath = `tool-configs/${slug}.json`;
@@ -224,21 +260,21 @@ Generate the tool config. It must be clearly different from all existing tools.
       message: `Add tool: ${slug}`,
     });
 
-    // upsert Tool row so it appears immediately in DB-backed areas
+    // upsert Tool row so it appears immediately
     const toolRow = await prisma.tool.upsert({
       where: { slug },
       update: {
-        title: String(finalConfig.title || slug),
-        description: finalConfig.description ? String(finalConfig.description) : null,
-        inputLabel: finalConfig.inputLabel ? String(finalConfig.inputLabel) : null,
-        outputLabel: finalConfig.outputLabel ? String(finalConfig.outputLabel) : null,
+        title: finalConfig.title,
+        description: finalConfig.description ?? null,
+        inputLabel: finalConfig.inputLabel ?? null,
+        outputLabel: finalConfig.outputLabel ?? null,
       },
       create: {
         slug,
-        title: String(finalConfig.title || slug),
-        description: finalConfig.description ? String(finalConfig.description) : null,
-        inputLabel: finalConfig.inputLabel ? String(finalConfig.inputLabel) : null,
-        outputLabel: finalConfig.outputLabel ? String(finalConfig.outputLabel) : null,
+        title: finalConfig.title,
+        description: finalConfig.description ?? null,
+        inputLabel: finalConfig.inputLabel ?? null,
+        outputLabel: finalConfig.outputLabel ?? null,
       },
     });
 

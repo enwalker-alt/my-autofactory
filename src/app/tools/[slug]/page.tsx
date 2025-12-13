@@ -8,6 +8,8 @@ import SaveButton from "./SaveButton";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+type ToolPreset = { label: string; input: string };
+
 type ToolConfig = {
   slug: string;
   title: string;
@@ -16,7 +18,16 @@ type ToolConfig = {
   outputLabel: string;
   systemPrompt: string;
   temperature?: number;
+
   features?: string[];
+
+  // Optional feature-driven fields
+  presets?: ToolPreset[];
+  outputFormatDefault?: "plain" | "json";
+  jsonSchemaHint?: string;
+
+  clarifyPrompt?: string;
+  finalizePrompt?: string;
 };
 
 export const dynamic = "force-dynamic";
@@ -36,9 +47,7 @@ function Stars({ avg }: { avg: number }) {
         return (
           <span
             key={n}
-            className={
-              isFull || isHalf ? "text-yellow-300" : "text-slate-600"
-            }
+            className={isFull || isHalf ? "text-yellow-300" : "text-slate-600"}
             aria-hidden="true"
           >
             ★
@@ -47,6 +56,12 @@ function Stars({ avg }: { avg: number }) {
       })}
     </div>
   );
+}
+
+function safeFeatures(maybe: any): string[] {
+  if (!Array.isArray(maybe)) return ["text-input"]; // default baseline
+  const cleaned = maybe.map((x) => String(x)).filter(Boolean);
+  return cleaned.length ? cleaned : ["text-input"];
 }
 
 export default async function ToolPage({
@@ -80,6 +95,17 @@ export default async function ToolPage({
   const raw = fs.readFileSync(configPath, "utf-8");
   const config: ToolConfig = JSON.parse(raw);
 
+  // ✅ normalize defaults so old configs don't break
+  const normalized: ToolConfig = {
+    ...config,
+    features: safeFeatures(config.features),
+    outputFormatDefault: config.outputFormatDefault ?? "plain",
+    presets: Array.isArray(config.presets) ? config.presets : undefined,
+    jsonSchemaHint: typeof config.jsonSchemaHint === "string" ? config.jsonSchemaHint : undefined,
+    clarifyPrompt: typeof config.clarifyPrompt === "string" ? config.clarifyPrompt : undefined,
+    finalizePrompt: typeof config.finalizePrompt === "string" ? config.finalizePrompt : undefined,
+  };
+
   /* ---------- Auth ---------- */
   const session = await auth();
   const email = (session as any)?.user?.email as string | undefined;
@@ -89,13 +115,17 @@ export default async function ToolPage({
   const toolRow = await prisma.tool.upsert({
     where: { slug },
     update: {
-      title: config.title,
-      description: config.description ?? null,
+      title: normalized.title,
+      description: normalized.description ?? null,
+      inputLabel: normalized.inputLabel ?? null,
+      outputLabel: normalized.outputLabel ?? null,
     },
     create: {
       slug,
-      title: config.title,
-      description: config.description ?? null,
+      title: normalized.title,
+      description: normalized.description ?? null,
+      inputLabel: normalized.inputLabel ?? null,
+      outputLabel: normalized.outputLabel ?? null,
     },
     select: {
       id: true,
@@ -148,16 +178,11 @@ export default async function ToolPage({
               Atlas
             </Link>
             <span className="text-slate-600">/</span>
-            <Link
-              href="/tools"
-              className="hover:text-slate-200 transition-colors"
-            >
+            <Link href="/tools" className="hover:text-slate-200 transition-colors">
               Tool Library
             </Link>
             <span className="text-slate-600">/</span>
-            <span className="text-slate-300 line-clamp-1">
-              {config.title}
-            </span>
+            <span className="text-slate-300 line-clamp-1">{normalized.title}</span>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 text-[11px] text-emerald-400/90">
@@ -170,7 +195,7 @@ export default async function ToolPage({
         <header className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
-              {config.title}
+              {normalized.title}
             </h1>
 
             {/* ⭐ Rating display */}
@@ -180,23 +205,17 @@ export default async function ToolPage({
                 <span className="font-semibold text-slate-200">
                   {ratingAvg.toFixed(1)}
                 </span>{" "}
-                <span className="text-slate-500">
-                  ({ratingCount} ratings)
-                </span>
+                <span className="text-slate-500">({ratingCount} ratings)</span>
               </div>
             </div>
 
             <p className="max-w-2xl text-sm sm:text-base text-slate-300 leading-relaxed">
-              {config.description}
+              {normalized.description}
             </p>
           </div>
 
           <div className="shrink-0 pt-1">
-            <SaveButton
-              slug={slug}
-              initialSaved={initialSaved}
-              isSignedIn={isSignedIn}
-            />
+            <SaveButton slug={slug} initialSaved={initialSaved} isSignedIn={isSignedIn} />
           </div>
         </header>
 
@@ -204,20 +223,21 @@ export default async function ToolPage({
         <section className="relative rounded-3xl border border-white/10 bg-slate-900/70 backdrop-blur shadow-xl shadow-purple-500/25 p-4 sm:p-6 lg:p-8">
           <div className="mb-4 flex justify-end">
             <div className="flex flex-col items-end text-[11px] text-slate-400">
-              <span className="uppercase tracking-wide text-slate-500">
-                Mode
-              </span>
-              <span className="font-mono text-xs text-slate-200">
-                {slug}
-              </span>
+              <span className="uppercase tracking-wide text-slate-500">Mode</span>
+              <span className="font-mono text-xs text-slate-200">{slug}</span>
             </div>
           </div>
 
           <ToolClient
-            slug={config.slug}
-            inputLabel={config.inputLabel}
-            outputLabel={config.outputLabel}
-            features={config.features}
+            slug={normalized.slug}
+            inputLabel={normalized.inputLabel}
+            outputLabel={normalized.outputLabel}
+            features={normalized.features}
+            presets={normalized.presets}
+            outputFormatDefault={normalized.outputFormatDefault}
+            jsonSchemaHint={normalized.jsonSchemaHint}
+            clarifyPrompt={normalized.clarifyPrompt}
+            finalizePrompt={normalized.finalizePrompt}
           />
 
           <div className="mt-6 border-t border-white/5 pt-4 flex items-center justify-between gap-3">

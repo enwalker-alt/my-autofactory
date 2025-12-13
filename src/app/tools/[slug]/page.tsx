@@ -4,6 +4,8 @@ import Link from "next/link";
 import ToolClient from "./ToolClient";
 import AuthPill from "@/components/AuthPill";
 
+const ToolClientAny: any = ToolClient;
+
 const SaveButton = ({
   slug,
   initialSaved,
@@ -172,7 +174,7 @@ export default async function ToolPage({
             </div>
           </div>
 
-          <ToolClient
+          <ToolClientAny
             slug={config.slug}
             inputLabel={config.inputLabel}
             outputLabel={config.outputLabel}

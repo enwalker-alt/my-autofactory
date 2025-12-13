@@ -1,235 +1,278 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 
-type ToolClientProps = {
+type ToolMeta = {
   slug: string;
-  inputLabel: string;
-  outputLabel: string;
-  features?: string[];
+  title: string;
+  description: string;
 };
 
-export default function ToolClient({
-  slug,
-  inputLabel,
-  outputLabel,
-  features,
-}: ToolClientProps) {
-  const [input, setInput] = useState("");
-  const [fileTexts, setFileTexts] = useState<string[]>([]);
-  const [fileNames, setFileNames] = useState<string[]>([]);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
+type Props = {
+  tools: ToolMeta[];
+  savedSlugs: string[];
+  isSignedIn: boolean;
+};
 
-  const [output, setOutput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+const PER_PAGE = 20;
 
-  const supportsFileUpload = features?.includes("file-upload") ?? false;
+const SORT_OPTIONS = [
+  { id: "title-az", label: "A → Z" },
+  { id: "title-za", label: "Z → A" },
+] as const;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setOutput("");
+type SortId = (typeof SORT_OPTIONS)[number]["id"];
 
-    // Combine textarea + all file texts
-    const filesSection =
-      fileTexts.length > 0
-        ? fileTexts
-            .map((text, idx) =>
-              text.trim()
-                ? `--- Uploaded document ${idx + 1} ---\n\n${text.trim()}`
-                : ""
-            )
-            .filter(Boolean)
-            .join("\n\n")
-        : "";
+export default function ToolLibraryClient({
+  tools,
+  savedSlugs,
+  isSignedIn,
+}: Props) {
+  const router = useRouter();
+  const sp = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
-    const combinedInput = [
-      input.trim(),
-      filesSection ? `\n\n${filesSection}` : "",
-    ]
-      .filter(Boolean)
-      .join("\n\n");
+  // ✅ local saved state so the button updates instantly
+  const [savedSet, setSavedSet] = useState<Set<string>>(
+    () => new Set(savedSlugs)
+  );
+
+  // keep in sync if server refresh changes savedSlugs
+  // (we only set if changed to avoid flicker)
+  useMemo(() => {
+    const next = new Set(savedSlugs);
+    // simple sync: replace if sizes differ or any mismatch
+    if (
+      next.size !== savedSet.size ||
+      Array.from(next).some((x) => !savedSet.has(x))
+    ) {
+      setSavedSet(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [savedSlugs]);
+
+  const q = sp.get("q")?.trim().toLowerCase() ?? "";
+  const sortId = (sp.get("sort") as SortId) ?? "title-az";
+  const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
+
+  const filtered = useMemo(() => {
+    let list = tools;
+
+    if (q) {
+      list = list.filter((t) => {
+        const hay = `${t.title} ${t.description}`.toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    const sorted = [...list].sort((a, b) =>
+      a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+    );
+
+    if (sortId === "title-za") sorted.reverse();
+    return sorted;
+  }, [tools, q, sortId]);
+
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+  const safePage = Math.min(page, totalPages);
+  const start = (safePage - 1) * PER_PAGE;
+  const pageItems = filtered.slice(start, start + PER_PAGE);
+
+  function setQueryParam(key: string, value?: string) {
+    const next = new URLSearchParams(sp.toString());
+    if (!value) next.delete(key);
+    else next.set(key, value);
+    // reset paging when changing filters/sort/search
+    if (key !== "page") next.delete("page");
+    const qs = next.toString();
+    router.push(qs ? `/tools?${qs}` : "/tools");
+  }
+
+  async function toggleSave(slug: string) {
+    if (!isSignedIn) {
+      await signIn("google", { callbackUrl: `/tools` });
+      return;
+    }
+
+    // optimistic UI
+    const wasSaved = savedSet.has(slug);
+    setSavedSet((prev) => {
+      const next = new Set(prev);
+      if (wasSaved) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
 
     try {
-      const res = await fetch(`/api/tools/${slug}`, {
+      const res = await fetch(`/api/tools/${slug}/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: combinedInput }),
+        cache: "no-store",
       });
 
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Request failed");
+      if (res.status === 401) {
+        // revert optimistic
+        setSavedSet((prev) => {
+          const next = new Set(prev);
+          if (wasSaved) next.add(slug);
+          else next.delete(slug);
+          return next;
+        });
+        await signIn("google", { callbackUrl: `/tools` });
+        return;
       }
 
-      const data = await res.json();
-      setOutput(data.output || "");
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function handleCopy() {
-    if (!output) return;
-    navigator.clipboard.writeText(output).catch((err) =>
-      console.error("Failed to copy:", err)
-    );
-  }
-
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-
-    if (!files.length) {
-      setFileTexts([]);
-      setFileNames([]);
-      setUploadSuccess(false);
-      return;
-    }
-
-    // Guard: only allow text-like files
-    const nonText = files.filter(
-      (f) =>
-        !f.type.startsWith("text/") &&
-        !["application/json", "text/html", "application/xml"].includes(f.type)
-    );
-
-    if (nonText.length > 0) {
-      setError(
-        "Right now this tool only supports text-based files (e.g. .txt, .md, .csv). Please convert your PDF or Word document to text first."
-      );
-      setFileTexts([]);
-      setFileNames([]);
-      setUploadSuccess(false);
-      return;
-    }
-
-    try {
-      const readFileAsText = (file: File) =>
-        new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            resolve(typeof reader.result === "string" ? reader.result : "");
-          };
-          reader.onerror = () => reject(new Error("Failed to read file"));
-          reader.readAsText(file);
+      if (!res.ok) {
+        // revert optimistic
+        setSavedSet((prev) => {
+          const next = new Set(prev);
+          if (wasSaved) next.add(slug);
+          else next.delete(slug);
+          return next;
         });
+        return;
+      }
 
-      const texts = await Promise.all(files.map(readFileAsText));
+      const data = (await res.json()) as { saved?: boolean };
+      if (typeof data.saved === "boolean") {
+        setSavedSet((prev) => {
+          const next = new Set(prev);
+          if (data.saved) next.add(slug);
+          else next.delete(slug);
+          return next;
+        });
+      }
 
-      setFileTexts(texts);
-      setFileNames(files.map((f) => f.name));
-      setUploadSuccess(true);
-      setError(null);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to read one or more files. Please try again.");
-      setFileTexts([]);
-      setFileNames([]);
-      setUploadSuccess(false);
+      // ✅ refresh server components so Saved count + savedSlugs update
+      startTransition(() => {
+        router.refresh();
+      });
+    } catch {
+      // revert optimistic on network error
+      setSavedSet((prev) => {
+        const next = new Set(prev);
+        if (wasSaved) next.add(slug);
+        else next.delete(slug);
+        return next;
+      });
     }
   }
-
-  const hasAnyInput =
-    input.trim().length > 0 || fileTexts.some((t) => t.trim().length > 0);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-      {/* FILE UPLOAD FIRST (if supported) */}
-      {supportsFileUpload && (
-        <div className="space-y-1">
-          <label className="block font-medium mb-1">
-            Upload document (optional)
-          </label>
-          <input
-            type="file"
-            multiple
-            // text-ish formats only for now
-            accept=".txt,.md,.csv,.json,.log,.html,.xml"
-            onChange={handleFileChange}
-            className="block w-full text-sm text-slate-200
-                       file:mr-4 file:py-2 file:px-4
-                       file:rounded-md file:border-0
-                       file:bg-slate-800 file:text-slate-100
-                       hover:file:bg-slate-700"
-          />
-
-          {/* Tiny green check when files are successfully loaded */}
-          {uploadSuccess && fileNames.length > 0 && (
-            <div className="flex items-center gap-2 text-xs text-emerald-400 mt-1">
-              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] text-black">
-                ✓
-              </span>
-              <span>
-                {fileNames.length} file
-                {fileNames.length > 1 ? "s" : ""} ready
-              </span>
-            </div>
-          )}
-
-          {/* Optional: tiny list of filenames */}
-          {fileNames.length > 0 && (
-            <ul className="mt-1 text-[11px] text-slate-400 space-y-0.5">
-              {fileNames.map((name) => (
-                <li key={name} className="truncate">
-                  {name}
-                </li>
-              ))}
-            </ul>
-          )}
+    <div className="space-y-6">
+      {/* top row: showing + sort */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="text-xs text-slate-300/80">
+          Showing {total === 0 ? 0 : start + 1}-{Math.min(start + PER_PAGE, total)}{" "}
+          of {total}
         </div>
-      )}
 
-      {/* TEXT INPUT BELOW UPLOADER */}
-      <div>
-        <label className="block font-medium mb-1">{inputLabel}</label>
-        <textarea
-          className="w-full border rounded-md p-2 min-h-[160px] bg-slate-900/60 text-slate-100 placeholder:text-slate-500"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Paste or type your text here..."
-        />
-      </div>
-
-      {/* Buttons row */}
-      <div className="flex items-center justify-between gap-3">
-        {/* Generate button (left) */}
-        <button
-          type="submit"
-          disabled={loading || !hasAnyInput}
-          className="rounded-md border px-4 py-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed
-                     border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100"
-        >
-          {loading ? "Generating..." : "Generate"}
-        </button>
-
-        {/* Copy button (right) – only shows once output exists */}
-        {output && (
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="rounded-md border px-4 py-2 font-medium disabled:opacity-50
-                       border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100"
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-300/70">Sort:</span>
+          <select
+            value={sortId}
+            onChange={(e) => setQueryParam("sort", e.target.value)}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-100 backdrop-blur hover:bg-white/10"
           >
-            Copy
-          </button>
-        )}
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {error && <p className="text-red-400 text-sm">{error}</p>}
-
-      {output && (
-        <div>
-          <h3 className="font-semibold mb-1">{outputLabel}</h3>
-          <div className="whitespace-pre-wrap border rounded-md p-3 bg-white text-black">
-            {output}
+      {/* grid */}
+      {pageItems.length === 0 ? (
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-sm text-slate-300/80">
+          No tools match your current filters.
+          <div className="mt-2 text-xs text-slate-400">
+            Try clearing the search, picking a different category, or browsing all tools.
           </div>
         </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {pageItems.map((t) => {
+            const saved = savedSet.has(t.slug);
+            return (
+              <div
+                key={t.slug}
+                className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur hover:bg-white/7 transition"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-100">
+                      {t.title}
+                    </h3>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-300/80">
+                      {t.description}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => toggleSave(t.slug)}
+                    disabled={isPending}
+                    className={[
+                      "shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition",
+                      saved
+                        ? "border-purple-400/40 bg-purple-500/15 text-purple-100 hover:bg-purple-500/20"
+                        : "border-white/10 bg-white/5 text-slate-100 hover:bg-white/10",
+                      isPending ? "opacity-70 cursor-not-allowed" : "",
+                    ].join(" ")}
+                    title={saved ? "Remove from saved" : "Save this tool"}
+                  >
+                    {saved ? "Saved ✓" : "Save"}
+                  </button>
+                </div>
+
+                <div className="mt-4">
+                  <Link
+                    href={`/tools/${t.slug}`}
+                    className="text-xs font-semibold text-purple-200/90 hover:text-purple-200"
+                  >
+                    Open tool →
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
-    </form>
+
+      {/* pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={() => setQueryParam("page", String(Math.max(1, safePage - 1)))}
+            disabled={safePage <= 1}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-100 hover:bg-white/10 disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <div className="text-xs text-slate-300/80">
+            Page {safePage} / {totalPages}
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setQueryParam("page", String(Math.min(totalPages, safePage + 1)))
+            }
+            disabled={safePage >= totalPages}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-100 hover:bg-white/10 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

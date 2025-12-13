@@ -20,8 +20,12 @@ model User {
   emailVerified DateTime?
   image         String?
 
-  accounts      Account[]
-  sessions      Session[]
+  accounts Account[]
+  sessions Session[]
+
+  // ✅ Added: opposite relation fields
+  savedTools  SavedTool[]
+  toolRatings ToolRating[]
 }
 
 model Account {
@@ -58,4 +62,54 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Tool {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  title       String
+  description String?
+  category    String?
+  // Optional: if your tool configs have this
+  inputLabel  String?
+  outputLabel String?
+
+  // Rating aggregates (fast to read)
+  ratingAvg   Float @default(0)
+  ratingCount Int   @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  saves   SavedTool[]
+  ratings ToolRating[]
+}
+
+model SavedTool {
+  id        String   @id @default(cuid())
+  userId    String
+  toolId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool Tool @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId]) // user can only save a tool once
+  @@index([userId])
+  @@index([toolId])
+}
+
+model ToolRating {
+  id        String   @id @default(cuid())
+  userId    String
+  toolId    String
+  value     Int // 1..5
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool Tool @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId]) // one rating per user per tool (edit-able)
+  @@index([toolId])
 }

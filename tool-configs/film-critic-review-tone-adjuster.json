@@ -1,0 +1,13 @@
+{
+  "slug": "film-critic-review-tone-adjuster",
+  "title": "Film Critic Review Tone Adjuster",
+  "description": "Upload your draft film reviews and/or paste your text to adjust the tone—making it more analytical, conversational, enthusiastic, or neutral—tailored specifically for film critics and reviewers to better engage their target audience.",
+  "inputLabel": "Paste your film review draft or upload review files",
+  "outputLabel": "Tone-adjusted film review text",
+  "systemPrompt": "You are a skilled film critic assistant. Given a draft film review text, adjust the tone according to the user's desired tone style (analytical, conversational, enthusiastic, or neutral) while preserving the original meaning and film critique insights. Output the revised review text in clear, engaging prose suitable for publication or blogging.",
+  "temperature": 0.7,
+  "features": [
+    "text-input",
+    "file-upload"
+  ]
+}

@@ -4,7 +4,11 @@ import Link from "next/link";
 import SearchBar from "./SearchBar";
 import ToolLibraryClient from "./ToolLibraryClient";
 import CategoryPicker from "./CategoryPicker";
-import AuthPill from "@/components/AuthPill"; // ✅ same login pill (client component)
+import SavedFilterButton from "./SavedFilterButton";
+import AuthPill from "@/components/AuthPill";
+
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +20,7 @@ type ToolMeta = {
 
 function getToolsFromConfigs(): ToolMeta[] {
   const configDir = path.join(process.cwd(), "tool-configs");
-  const files = fs
-    .readdirSync(configDir)
-    .filter((file) => file.endsWith(".json"));
+  const files = fs.readdirSync(configDir).filter((file) => file.endsWith(".json"));
 
   return files
     .map((file) => {
@@ -35,13 +37,28 @@ function getToolsFromConfigs(): ToolMeta[] {
     .sort((a, b) => a.title.localeCompare(b.title));
 }
 
-export default function ToolsPage() {
+export default async function ToolsPage() {
   const tools = getToolsFromConfigs();
+
+  // ✅ fetch saved slugs for this user (for Saved filter + card buttons)
+  const session = await auth();
+  const userId = (session as any)?.user?.id as string | undefined;
+  const isSignedIn = !!userId;
+
+  let savedSlugs: string[] = [];
+  if (userId) {
+    const saved = await prisma.savedTool.findMany({
+      where: { userId },
+      select: { tool: { select: { slug: true } } },
+      orderBy: { createdAt: "desc" },
+    });
+    savedSlugs = saved.map((s) => s.tool.slug);
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#050816] via-[#020617] to-black text-gray-100">
       <div className="max-w-5xl mx-auto px-4 py-12 md:py-16">
-        {/* TOP RIGHT LOGIN (same spot vibe as homepage) */}
+        {/* TOP RIGHT LOGIN */}
         <header className="mb-10 flex items-center justify-end">
           <AuthPill />
         </header>
@@ -53,7 +70,7 @@ export default function ToolsPage() {
               AI Micro-Apps
             </p>
 
-            {/* Title + Back Button on same row */}
+            {/* Title + Back Button */}
             <div className="flex items-center justify-center gap-3 mb-3">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold">
                 Tool Library
@@ -84,19 +101,29 @@ export default function ToolsPage() {
             </p>
           </div>
 
-          {/* LIVE SEARCH BAR + CATEGORIES */}
+          {/* SEARCH + CATEGORIES + SAVED BUTTON */}
           <div className="mt-8 space-y-3">
             <SearchBar />
 
             <div className="flex justify-center">
-              <CategoryPicker />
+              <div className="flex items-center gap-3">
+                <CategoryPicker />
+                <SavedFilterButton
+                  isSignedIn={isSignedIn}
+                  savedCount={savedSlugs.length}
+                />
+              </div>
             </div>
           </div>
         </section>
 
-        {/* CLIENT FILTERING + TOOL GRID */}
+        {/* TOOL GRID */}
         <section className="mt-6">
-          <ToolLibraryClient tools={tools} />
+          <ToolLibraryClient
+            tools={tools}
+            savedSlugs={savedSlugs}
+            isSignedIn={isSignedIn}
+          />
         </section>
       </div>
     </main>

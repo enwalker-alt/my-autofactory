@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 
 type ToolMeta = {
   slug: string;
@@ -11,6 +12,13 @@ type ToolMeta = {
 
 type Props = {
   tools: ToolMeta[];
+
+  // ✅ add these so ToolsPage can pass them in without TS errors
+  savedSlugs?: string[];
+  isSignedIn?: boolean;
+
+  // (optional) if you want ToolsPage to control saving
+  onToggleSave?: (slug: string) => void;
 };
 
 const PER_PAGE = 20;
@@ -274,9 +282,19 @@ function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
 
-export default function ToolLibraryClient({ tools }: Props) {
+export default function ToolLibraryClient({
+  tools,
+  savedSlugs = [],
+  isSignedIn = false,
+  onToggleSave,
+}: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // local state so the "Saved" UI updates instantly
+  const [localSaved, setLocalSaved] = useState<string[]>(savedSlugs);
+
+  const savedSet = useMemo(() => new Set(localSaved), [localSaved]);
 
   const qRaw = searchParams.get("q") || "";
   const query = normalize(qRaw);
@@ -290,7 +308,8 @@ export default function ToolLibraryClient({ tools }: Props) {
 
   const pageParamRaw = searchParams.get("page") || "1";
   const pageParsed = Number.parseInt(pageParamRaw, 10);
-  const requestedPage = Number.isFinite(pageParsed) && pageParsed > 0 ? pageParsed : 1;
+  const requestedPage =
+    Number.isFinite(pageParsed) && pageParsed > 0 ? pageParsed : 1;
 
   const setParam = (key: string, value?: string, resetPage = false) => {
     const current = new URLSearchParams(searchParams?.toString() || "");
@@ -300,6 +319,14 @@ export default function ToolLibraryClient({ tools }: Props) {
 
     const qs = current.toString();
     router.push(qs ? `/tools?${qs}` : "/tools", { scroll: true });
+  };
+
+  const toggleSaveLocal = (slug: string) => {
+    setLocalSaved((prev) => {
+      const has = prev.includes(slug);
+      if (has) return prev.filter((s) => s !== slug);
+      return [...prev, slug];
+    });
   };
 
   let filtered = tools;
@@ -344,7 +371,8 @@ export default function ToolLibraryClient({ tools }: Props) {
 
   // Pagination window like Google-ish
   const getPageWindow = () => {
-    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (totalPages <= 7)
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
 
     const windowSize = 5; // center window
     const half = Math.floor(windowSize / 2);
@@ -439,7 +467,8 @@ export default function ToolLibraryClient({ tools }: Props) {
         <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center text-xs md:text-sm text-gray-400">
           No tools match your current filters.
           <div className="mt-2">
-            Try clearing the search, picking a different category, or browsing all tools.
+            Try clearing the search, picking a different category, or browsing all
+            tools.
           </div>
         </div>
       )}
@@ -447,25 +476,59 @@ export default function ToolLibraryClient({ tools }: Props) {
       {/* Grid */}
       {totalFiltered > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mt-4">
-          {pageItems.map((tool) => (
-            <Link
-              key={tool.slug}
-              href={`/tools/${tool.slug}`}
-              className="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-400/40 transition duration-200 p-4 flex flex-col justify-between"
-            >
-              <div>
-                <h2 className="text-sm md:text-base font-medium mb-1 group-hover:text-white">
-                  {tool.title}
-                </h2>
-                <p className="text-xs md:text-sm text-gray-400 line-clamp-3">
-                  {tool.description}
-                </p>
-              </div>
-              <div className="mt-3 text-[11px] text-purple-300/90 group-hover:text-purple-200">
-                Open tool →
-              </div>
-            </Link>
-          ))}
+          {pageItems.map((tool) => {
+            const isSaved = savedSet.has(tool.slug);
+
+            return (
+              <Link
+                key={tool.slug}
+                href={`/tools/${tool.slug}`}
+                className="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-400/40 transition duration-200 p-4 flex flex-col justify-between"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="text-sm md:text-base font-medium mb-1 group-hover:text-white truncate">
+                      {tool.title}
+                    </h2>
+                    <p className="text-xs md:text-sm text-gray-400 line-clamp-3">
+                      {tool.description}
+                    </p>
+                  </div>
+
+                  {/* ✅ Save control */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault(); // don't navigate
+                      e.stopPropagation();
+
+                      if (!isSignedIn) {
+                        // you can swap this for your sign-in modal/route
+                        router.push("/api/auth/signin");
+                        return;
+                      }
+
+                      toggleSaveLocal(tool.slug);
+                      onToggleSave?.(tool.slug);
+                    }}
+                    className={
+                      isSaved
+                        ? "shrink-0 rounded-full border border-purple-400/40 bg-purple-500/15 px-3 py-1 text-[11px] text-purple-100 hover:bg-purple-500/20 transition"
+                        : "shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-200 hover:bg-white/10 hover:border-purple-400/40 transition"
+                    }
+                    aria-label={isSaved ? "Unsave tool" : "Save tool"}
+                    title={isSaved ? "Saved" : "Save"}
+                  >
+                    {isSaved ? "Saved ✓" : "Save"}
+                  </button>
+                </div>
+
+                <div className="mt-3 text-[11px] text-purple-300/90 group-hover:text-purple-200">
+                  Open tool →
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
 
@@ -477,13 +540,11 @@ export default function ToolLibraryClient({ tools }: Props) {
             <span className="text-purple-200 font-medium">
               {showingFrom}-{showingTo}
             </span>{" "}
-            of <span className="text-purple-200 font-medium">{totalFiltered}</span>
+            of{" "}
+            <span className="text-purple-200 font-medium">{totalFiltered}</span>
           </div>
 
-          <nav
-            className="flex items-center justify-center gap-1.5"
-            aria-label="Pagination"
-          >
+          <nav className="flex items-center justify-center gap-1.5" aria-label="Pagination">
             {/* Prev */}
             <button
               type="button"
@@ -502,9 +563,7 @@ export default function ToolLibraryClient({ tools }: Props) {
 
               return (
                 <span key={p} className="flex items-center gap-1.5">
-                  {gap && (
-                    <span className="px-1 text-gray-500 select-none">…</span>
-                  )}
+                  {gap && <span className="px-1 text-gray-500 select-none">…</span>}
 
                   <button
                     type="button"

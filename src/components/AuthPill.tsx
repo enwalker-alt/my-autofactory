@@ -97,12 +97,13 @@ export default function AuthPill() {
                 )}
 
                 <div className="mt-3 grid gap-2">
+                  {/* ✅ Saved Tools -> Tool library with saved selected */}
                   <Link
-                    href="/tools"
+                    href="/tools?saved=1"
                     onClick={() => setOpen(false)}
                     className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:border-white/20 hover:bg-white/10"
                   >
-                    Go to Tools
+                    Saved Tools
                   </Link>
 
                   <button
@@ -113,9 +114,7 @@ export default function AuthPill() {
                   </button>
                 </div>
 
-                <div className="mt-3 text-[0.65rem] text-slate-400">
-                  Atlas identity layer • v0
-                </div>
+                {/* ✅ removed "Atlas identity layer • v0" */}
               </div>
             </div>
           )}

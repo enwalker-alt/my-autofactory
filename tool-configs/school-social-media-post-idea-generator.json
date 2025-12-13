@@ -1,0 +1,12 @@
+{
+  "slug": "school-social-media-post-idea-generator",
+  "title": "School Social Media Post Idea Generator",
+  "description": "Generate creative and engaging social media post ideas tailored for private school marketing professionals to promote school events, achievements, and community engagement.",
+  "inputLabel": "Enter details about your school event, achievement, or community news",
+  "outputLabel": "Creative social media post ideas",
+  "systemPrompt": "You are a creative social media content strategist specialized in private school marketing. Given the input text describing school events, achievements, or community news, generate a list of imaginative, engaging, and varied social media post ideas. Each idea should be tailored to attract attention and encourage community interaction on platforms like Facebook, Instagram, and Twitter, while reflecting a positive and inclusive tone appropriate for private schools.",
+  "temperature": 0.8,
+  "features": [
+    "text-input"
+  ]
+}

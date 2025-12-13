@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { prisma } from "@/lib/prisma";
 
+export const runtime = "nodejs";
+
 type Intake = {
   companyType?: string;
   industry?: string;
@@ -10,6 +12,33 @@ type Intake = {
   normalWeek?: string;
   slowDowns?: string;
   documents?: string;
+};
+
+type ToolRow = {
+  slug: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+};
+
+type RecommendItem = {
+  slug: string;
+  title: string;
+  reason: string;
+  moment: string;
+};
+
+type ToolIdeaConfig = {
+  slug: string;
+  title: string;
+  description: string;
+  inputLabel: string;
+  outputLabel: string;
+  systemPrompt: string;
+  temperature: number;
+  features: string[];
+  // Optional UI field (your modal uses this)
+  whyDifferent?: string;
 };
 
 function safeStr(x: any) {
@@ -25,6 +54,55 @@ function normalize(text: string) {
     .trim();
 }
 
+function toKebabSlug(s: string) {
+  return normalize(s)
+    .replace(/['"]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function clamp(n: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, n));
+}
+
+/**
+ * Match your generator’s feature list.
+ * (Later: import this from a shared file to avoid drift.)
+ */
+const AVAILABLE_FEATURES = ["text-input", "file-upload"] as const;
+type Feature = (typeof AVAILABLE_FEATURES)[number];
+
+function validateFeatures(maybe: any): Feature[] {
+  if (!Array.isArray(maybe)) return ["text-input"];
+  const cleaned = maybe
+    .map((x) => String(x))
+    .filter((f): f is Feature => (AVAILABLE_FEATURES as readonly string[]).includes(f));
+  return cleaned.length ? cleaned : ["text-input"];
+}
+
+/**
+ * Same “too simple” policy as generateTool.mjs (but deterministic-ish).
+ * When you add more global features later, this will start discouraging
+ * single-feature tools automatically.
+ */
+function generateTooSimpleBias(availableCount: number) {
+  // if few features exist, allow anything
+  if (availableCount <= 2) return 0; // 0 = no rejection
+  // else: reject single text-input ideas ~80% of the time (like your script)
+  return 0.8;
+}
+
+function sanitizeTemperature(t: any) {
+  const n = Number(t);
+  if (!Number.isFinite(n)) return 0.5;
+  return clamp(n, 0, 1);
+}
+
+function stripCodeFences(raw: string) {
+  return raw.trim().replace(/```json/gi, "").replace(/```/g, "").trim();
+}
+
 export async function POST(req: Request) {
   const body = (await req.json().catch(() => ({}))) as Intake;
 
@@ -38,16 +116,15 @@ export async function POST(req: Request) {
     documents: safeStr(body.documents),
   };
 
-  // Pull tools from DB (fast + already synced)
-  const tools = await prisma.tool.findMany({
+  // Pull tools from DB (already synced)
+  const tools: ToolRow[] = await prisma.tool.findMany({
     select: { slug: true, title: true, description: true, category: true },
     orderBy: { title: "asc" },
   });
 
-  const toolSummary = tools
-    .map((t) => `- ${t.slug}: ${t.title} — ${t.description ?? ""}`)
-    .slice(0, 1200)
-    .join("\n");
+  const toolMap = new Map(tools.map((t) => [t.slug, t]));
+  const existingSlugs = new Set(tools.map((t) => t.slug.toLowerCase()));
+  const existingTitles = new Set(tools.map((t) => (t.title || "").toLowerCase()));
 
   const intakeText = `
 Company type: ${intake.companyType}
@@ -65,7 +142,21 @@ Documents you work with:
 ${intake.documents}
   `.trim();
 
-  // ---- Fallback heuristic if no OpenAI key
+  const existingSummary =
+    tools.length === 0
+      ? "There are currently no existing tools."
+      : "Existing tools:\n" +
+        tools
+          .slice(0, 900) // keep prompt bounded
+          .map(
+            (t) =>
+              `- slug: ${t.slug}, title: ${t.title}, description: ${t.description ?? ""}`
+          )
+          .join("\n");
+
+  /**
+   * Fallback heuristic (no OpenAI key)
+   */
   if (!process.env.OPENAI_API_KEY) {
     const hay = normalize(intakeText);
 
@@ -73,10 +164,8 @@ ${intake.documents}
       .map((t) => {
         const h = normalize(`${t.title} ${t.description ?? ""}`);
         let score = 0;
-
-        // small heuristic matching
         const words = hay.split(" ").filter(Boolean);
-        for (const w of words.slice(0, 80)) {
+        for (const w of words.slice(0, 90)) {
           if (w.length < 4) continue;
           if (h.includes(w)) score += 1;
         }
@@ -86,101 +175,223 @@ ${intake.documents}
       .slice(0, 8)
       .filter((x) => x.score > 0);
 
-    const recommended = scored.map((x) => ({
+    const recommended: RecommendItem[] = scored.map((x) => ({
       slug: x.t.slug,
       title: x.t.title,
       reason: "Matches your described workflow/documents.",
-      moment: "Use it during the step where you currently do this manually.",
+      moment: "Use it at the exact step where you currently do this manually.",
     }));
 
-    const ideas = [
+    // Minimal buildable ideas in generator-like shape
+    const ideas: ToolIdeaConfig[] = [
       {
-        title: "Workflow Friction Spotter",
+        slug: "workflow-bottleneck-mapper",
+        title: "Workflow Bottleneck Mapper",
         description:
-          "Turns a week description into a ranked list of bottlenecks with suggested automations and templates.",
+          "Turns your week description into a ranked bottleneck list and outputs copy/paste SOP-grade checklists and templates for the top friction points.",
+        inputLabel: "Paste your workflow description + examples",
+        outputLabel: "Bottlenecks + SOP templates",
+        systemPrompt:
+          "You are a workflow analyst. Produce a prioritized bottleneck list and then produce SOP-grade templates for the top 3 bottlenecks. Use headings. Do not invent facts. Ask 3 clarifying questions if missing key details.",
+        temperature: 0.45,
+        features: ["text-input"],
         whyDifferent:
-          "It creates a prioritized bottleneck map (not just rewriting/summarizing).",
+          "It generates a prioritized bottleneck map plus SOP templates, not generic rewriting.",
       },
     ];
 
     return NextResponse.json({ recommended, ideas });
   }
 
-  // ---- OpenAI matching + novel ideas
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-  const SYSTEM = `
-You are Atlas, a workflow analyst + tool matcher.
+  /**
+   * This is the key change:
+   * We embed your generator RUBRIC (adapted) and require ideas to be FULL tool configs.
+   */
+  const RUBRIC = `
+You are Atlas: a workflow analyst + product designer for small, one-page AI tools.
 
-Input: a company/workflow intake + a list of existing Atlas tools (slug/title/description).
-Output: (1) a short list of recommended existing tools with tight reasoning AND the exact moment-of-use,
-(2) 1-3 NEW tool ideas that are clearly non-overlapping with existing tools.
+You will receive:
+1) A workflow intake
+2) A list of existing Atlas tools (slug/title/description)
+3) The list of AVAILABLE_FEATURES you are allowed to use
 
-Hard constraints:
-- Recommend ONLY tools that appear in the provided list.
-- Each recommendation must include: slug, title, reason, moment.
-- Ideas must not overlap existing tools: no similar role+input+output purpose.
-- Avoid medical diagnosis, legal advice, unsafe, wrongdoing instructions.
-Return ONLY strict JSON with this exact shape:
+Your job:
+(A) Recommend existing tools from the list that fit the workflow.
+(B) Propose 1–3 NEW tool ideas AS FULL TOOL CONFIG JSON (same schema used by our generator),
+    strictly buildable with AVAILABLE_FEATURES.
+
+HARD CONSTRAINTS (must follow):
+- Each tool must be usable as a single-page web app.
+- Input is plain text (textarea) and/or text extracted from uploaded files.
+- Output is plain text.
+- Target a specific niche (role + scenario), not a broad audience.
+- Must be actually useful, not a joke.
+- Avoid: medical diagnosis, legal advice, unsafe content, or instructions enabling wrongdoing.
+- NEW ideas must be clearly different from existing tools:
+  - No overlapping user role AND overlapping input text type AND overlapping output purpose.
+  - Superficial rewording or swapping job titles does NOT count as different.
+
+AVAILABLE FEATURES:
+1) "text-input" → textarea
+2) "file-upload" → users upload files; you only receive extracted TEXT
+
+SCALING & COMPLEXITY GUIDELINES:
+- Prefer combining multiple features meaningfully when it clearly helps.
+- With ONLY these two features, prefer ["text-input","file-upload"] when the value depends on analyzing a document;
+  otherwise keep ["text-input"].
+
+IMPORTANT FEATURE RULES:
+- For EVERY new tool idea, include a "features" array.
+- "features" may only contain names from AVAILABLE_FEATURES.
+- If only textarea is needed: ["text-input"]
+- If doc analysis helps: ["text-input","file-upload"]
+
+SYSTEM PROMPT QUALITY BAR:
+- The systemPrompt must clearly state:
+  - the niche user
+  - the exact artifact produced
+  - 3–6 hard rules (e.g. don’t invent facts, ask clarifying questions if missing info, concise bullets, etc.)
+- Must enforce structured output with headings/bullets.
+
+Return ONLY strict JSON with this exact top-level shape:
 
 {
   "recommended": [{"slug": "...", "title": "...", "reason": "...", "moment": "..."}],
-  "ideas": [{"title": "...", "description": "...", "whyDifferent": "..."}]
+  "ideas": [
+    {
+      "slug": "kebab-case",
+      "title": "...",
+      "description": "...",
+      "inputLabel": "...",
+      "outputLabel": "...",
+      "systemPrompt": "...",
+      "temperature": 0.0,
+      "features": ["text-input"],
+      "whyDifferent": "short explanation"
+    }
+  ]
 }
-  `.trim();
+`.trim();
 
   const USER = `
 WORKFLOW INTAKE:
 ${intakeText}
 
-EXISTING TOOLS:
-${toolSummary}
+${existingSummary}
 
-Pick 6-10 recommended tools max.
-Then generate 1-3 new tool ideas that are not similar to any existing tool.
-  `.trim();
+AVAILABLE_FEATURES: ${AVAILABLE_FEATURES.join(", ")}
+
+Tasks:
+1) Recommend 6–10 existing tools max (ONLY from the list). For each: slug, title, reason, moment.
+2) Generate 1–3 NEW tool ideas that are clearly non-overlapping with existing tools AND with each other.
+   IMPORTANT: NEW ideas MUST be returned as FULL TOOL CONFIG objects (slug/title/description/inputLabel/outputLabel/systemPrompt/temperature/features).
+   Features must ONLY use the allowed list.
+`.trim();
 
   const completion = await client.chat.completions.create({
     model: "gpt-4.1-mini",
     messages: [
-      { role: "system", content: SYSTEM },
+      { role: "system", content: RUBRIC },
       { role: "user", content: USER },
     ],
     temperature: 0.5,
   });
 
-  let raw = completion.choices[0]?.message?.content ?? "";
-  raw = raw.trim().replace(/```json/g, "").replace(/```/g, "");
-
-  let parsed: any = null;
+  let raw = stripCodeFences(completion.choices[0]?.message?.content ?? "");
+  let parsed: any;
   try {
     parsed = JSON.parse(raw);
   } catch {
-    // Last resort fallback
     parsed = { recommended: [], ideas: [] };
   }
 
-  // Safety: ensure slugs exist
-  const toolMap = new Map(tools.map((t) => [t.slug, t]));
-  const recommended = Array.isArray(parsed.recommended)
+  // ---------- sanitize recommended ----------
+  const recommended: RecommendItem[] = Array.isArray(parsed.recommended)
     ? parsed.recommended
         .filter((r: any) => r?.slug && toolMap.has(String(r.slug)))
         .slice(0, 10)
-        .map((r: any) => ({
-          slug: String(r.slug),
-          title: String(r.title || toolMap.get(String(r.slug))?.title || r.slug),
-          reason: String(r.reason || ""),
-          moment: String(r.moment || ""),
-        }))
+        .map((r: any) => {
+          const slug = String(r.slug);
+          const t = toolMap.get(slug);
+          return {
+            slug,
+            title: String(r.title || t?.title || slug),
+            reason: String(r.reason || ""),
+            moment: String(r.moment || ""),
+          };
+        })
     : [];
 
-  const ideas = Array.isArray(parsed.ideas)
-    ? parsed.ideas.slice(0, 3).map((x: any) => ({
-        title: String(x.title || ""),
-        description: String(x.description || ""),
-        whyDifferent: String(x.whyDifferent || ""),
-      }))
-    : [];
+  // ---------- sanitize ideas into FULL tool configs ----------
+  const tooSimpleRejectProb = generateTooSimpleBias(AVAILABLE_FEATURES.length);
 
-  return NextResponse.json({ recommended, ideas });
+  const ideasRaw: any[] = Array.isArray(parsed.ideas) ? parsed.ideas.slice(0, 3) : [];
+
+  const ideasSanitized: ToolIdeaConfig[] = [];
+  for (const x of ideasRaw) {
+    const title = safeStr(x?.title);
+    const description = safeStr(x?.description);
+    const inputLabel = safeStr(x?.inputLabel) || "Paste your input text";
+    const outputLabel = safeStr(x?.outputLabel) || "Generated output";
+    const systemPrompt = safeStr(x?.systemPrompt);
+    const whyDifferent = safeStr(x?.whyDifferent);
+
+    // slug rules
+    const proposedSlug = safeStr(x?.slug) || toKebabSlug(title);
+    let slug = toKebabSlug(proposedSlug);
+
+    // Ensure uniqueness vs existing + other ideas
+    if (!slug) slug = `new-tool-${ideasSanitized.length + 1}`;
+    if (existingSlugs.has(slug.toLowerCase())) {
+      let i = 1;
+      while (existingSlugs.has(`${slug}-${i}`.toLowerCase())) i++;
+      slug = `${slug}-${i}`;
+    }
+    const alreadyProposed = new Set(ideasSanitized.map((i) => i.slug.toLowerCase()));
+    if (alreadyProposed.has(slug.toLowerCase())) {
+      let i = 1;
+      while (alreadyProposed.has(`${slug}-${i}`.toLowerCase())) i++;
+      slug = `${slug}-${i}`;
+    }
+
+    // Validate features
+    const features = validateFeatures(x?.features);
+
+    // Encourage “not too simple” once feature set grows
+    if (
+      tooSimpleRejectProb > 0 &&
+      features.length === 1 &&
+      features[0] === "text-input"
+    ) {
+      // probabilistic rejection like your generator
+      if (Math.random() < tooSimpleRejectProb) {
+        continue;
+      }
+    }
+
+    // reject if title duplicates existing titles
+    if (existingTitles.has(title.toLowerCase())) continue;
+
+    // Require systemPrompt (because build-tools will need it)
+    if (!title || !description || !systemPrompt) continue;
+
+    ideasSanitized.push({
+      slug,
+      title,
+      description,
+      inputLabel,
+      outputLabel,
+      systemPrompt,
+      temperature: sanitizeTemperature(x?.temperature),
+      features,
+      whyDifferent: whyDifferent || "",
+    });
+  }
+
+  return NextResponse.json({
+    recommended,
+    ideas: ideasSanitized,
+  });
 }

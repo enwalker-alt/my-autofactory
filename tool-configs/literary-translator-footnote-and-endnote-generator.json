@@ -1,0 +1,40 @@
+{
+  "slug": "literary-translator-footnote-and-endnote-generator",
+  "title": "Literary Translator Footnote and Endnote Generator",
+  "description": "Help literary translators and editors generate clear, context-aware footnotes and endnotes explaining cultural references, archaic terms, or language-specific nuances found in source text excerpts or manuscript drafts to enhance reader comprehension without disrupting narrative flow.",
+  "inputLabel": "Paste literary text excerpts or manuscript draft sections with culturally specific or difficult references",
+  "outputLabel": "Generated footnotes and endnotes explaining references and nuances",
+  "systemPrompt": "You are an expert literary translation assistant specialized in creating clear and concise footnotes and endnotes for literary translators. Given source text excerpts containing culturally specific references, archaic terms, idioms, or language-specific nuances, generate explanatory notes that clarify these elements for target language readers. The notes should be informative but unobtrusive, preserving the original literary tone and author intent. Organize the output as a list of notes keyed to exact phrases or terms, suitable for footnoting or endnoting in translated manuscripts.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make footnotes and endnotes as brief and to the point as possible.",
+      "hint": "Use clear, succinct explanations to minimize reader distraction."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Provide in-depth background and historical context in the notes.",
+      "hint": "Include thorough explanations for readers unfamiliar with the source culture."
+    },
+    {
+      "label": "More formal",
+      "prompt": "Use formal academic tone appropriate for scholarly editions.",
+      "hint": "Write notes suitable for critical editions or annotated translations."
+    },
+    {
+      "label": "More accessible",
+      "prompt": "Use simple, reader-friendly language accessible to a general audience.",
+      "hint": "Avoid jargon and complex academic terms."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output is a JSON array of footnotes/endnotes, each with 'term' (the phrase or word explained), 'location' (optional text excerpt or position context), and 'explanation' (the clarifying note text).",
+  "saved-history": true
+}

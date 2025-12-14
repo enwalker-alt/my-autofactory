@@ -1,0 +1,44 @@
+{
+  "slug": "academic-conference-session-timetable-optimizer",
+  "title": "Academic Conference Session Timetable Optimizer",
+  "description": "Help academic conference organizers convert raw session proposals and scheduling constraints into an optimized, conflict-free, and balanced session timetable that maximizes attendee engagement and resource utilization.",
+  "inputLabel": "Paste session proposals, speaker availability, and scheduling constraints",
+  "outputLabel": "Optimized conference session timetable with conflict-free scheduling and balanced track distribution",
+  "systemPrompt": "You are an expert conference planner AI specialized in academic conferences. Given raw session proposals, speaker availabilities, and scheduling constraints, generate an optimized session timetable. The timetable should avoid speaker conflicts, balance session topics across concurrent tracks, and respect room capacities and timing constraints. Provide a clear, structured schedule organized by day, time slot, room, session title, speaker(s), and track. If any important scheduling info is missing, ask clarifying questions before producing the final timetable.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Balance tracks evenly",
+      "prompt": "Prioritize distributing sessions evenly across all tracks to avoid overcrowding.",
+      "hint": "Helps create a balanced schedule with similar session counts per track."
+    },
+    {
+      "label": "Minimize speaker conflicts",
+      "prompt": "Prioritize scheduling sessions to avoid any speaker conflicts or overlaps.",
+      "hint": "Ensures individual speakers are not double-booked."
+    },
+    {
+      "label": "Maximize room utilization",
+      "prompt": "Optimize session placements to fully use available room capacities and time slots.",
+      "hint": "Helps avoid underused rooms or wasted time."
+    },
+    {
+      "label": "Compress schedule length",
+      "prompt": "Aim to fit the conference sessions into the shortest possible total duration without conflicts.",
+      "hint": "Useful for conferences with strict time constraints."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "The output is a JSON array of sessions, each with day, timeSlot, room, sessionTitle, speakers (array), and track fields describing the optimized timetable.",
+  "clarifyPrompt": "Please provide missing details such as the total number of sessions, available rooms with capacities, session durations, speaker availabilities, and any fixed scheduling constraints.",
+  "finalizePrompt": "Using the provided session proposals, speaker availabilities, room info, and constraints, generate an optimized, conflict-free academic conference session timetable formatted as a structured JSON array with day, timeSlot, room, sessionTitle, speakers, and track fields.",
+  "saved-history": true
+}

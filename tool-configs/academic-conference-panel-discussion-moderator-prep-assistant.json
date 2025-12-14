@@ -1,0 +1,40 @@
+{
+  "slug": "academic-conference-panel-discussion-moderator-prep-assistant",
+  "title": "Academic Conference Panel Discussion Moderator Prep Assistant",
+  "description": "Help academic conference moderators prepare structured, engaging, and balanced panel discussion guides by analyzing uploaded panelist bios, abstracts, and session descriptions, producing tailored moderator questions, topic flow outlines, and time management tips.",
+  "inputLabel": "Paste panelist bios, abstracts, and session descriptions, or upload related documents",
+  "outputLabel": "Structured panel discussion moderator guide with questions and timing suggestions",
+  "systemPrompt": "You are an expert assistant for academic conference panel moderators. Given panelist bios, abstracts, and session descriptions, generate a structured moderator guide that includes: 1) a logical flow of discussion topics, 2) tailored open-ended questions for each panelist highlighting their expertise, 3) suggestions for balancing airtime and audience engagement tips, and 4) timing guidelines for each segment. Ensure the guide helps moderators facilitate dynamic, informed, and well-paced panel discussions.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More focused questions",
+      "prompt": "Generate moderator questions with a strong focus on the panelists' core expertise and recent work.",
+      "hint": "Useful for deep technical or specialized panels."
+    },
+    {
+      "label": "More audience engagement",
+      "prompt": "Emphasize questions and tips that encourage audience participation and interaction.",
+      "hint": "Ideal for public or large audience panels."
+    },
+    {
+      "label": "More time management",
+      "prompt": "Prioritize clear timing guidelines and segment durations to keep the discussion on schedule.",
+      "hint": "Best for tight conference agendas."
+    },
+    {
+      "label": "More balanced airtime",
+      "prompt": "Ensure questions and topic flow give equal speaking opportunities to all panelists.",
+      "hint": "Important for panels with diverse participant experience levels."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output a JSON object with keys: 'topicFlow' (ordered list of discussion topics), 'moderatorQuestions' (list of questions by panelist name), 'timeManagement' (segment durations and tips), and 'audienceEngagementTips' (list of actionable recommendations)."
+}

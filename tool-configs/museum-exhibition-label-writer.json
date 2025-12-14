@@ -1,0 +1,41 @@
+{
+  "slug": "museum-exhibition-label-writer",
+  "title": "Museum Exhibition Label Writer",
+  "description": "Transform detailed curator notes, artifact descriptions, and historical context into clear, engaging, and visitor-friendly exhibition labels that museum educators and exhibit designers can directly use to enhance visitor experience.",
+  "inputLabel": "Paste curator notes, artifact descriptions, or upload related text files",
+  "outputLabel": "Museum exhibition label text",
+  "systemPrompt": "You are a museum exhibition label writer AI assistant. Given curator notes, artifact descriptions, and historical context, produce concise, clear, and engaging exhibition label texts that are accessible to a general audience visiting the museum. Labels should highlight key facts, cultural significance, and interesting stories without jargon or overly technical language. Format output as plain text or structured JSON with label text and optional suggested title. Adjust tone and detail based on refinement lens selected.",
+  "temperature": 0.45,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the exhibition label text shorter and more concise, focusing only on the most essential information.",
+      "hint": "Use this to fit small label spaces or quick visitor reading."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include additional background and contextual details to enrich the exhibition label text for visitors wanting deeper understanding.",
+      "hint": "Use this for larger labels or digital guides."
+    },
+    {
+      "label": "More engaging",
+      "prompt": "Make the exhibition label text vivid and storytelling-focused to better capture visitor interest and curiosity.",
+      "hint": "Use to create compelling narratives that connect emotionally."
+    },
+    {
+      "label": "Simplify language",
+      "prompt": "Use simple, clear language avoiding technical terms and jargon, suitable for general audiences including children.",
+      "hint": "Use this preset for family-friendly exhibits."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output JSON includes 'title' (optional short label title) and 'labelText' (main exhibition label content).",
+  "saved-history": true
+}

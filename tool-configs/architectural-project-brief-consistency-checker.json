@@ -1,0 +1,41 @@
+{
+  "slug": "architectural-project-brief-consistency-checker",
+  "title": "Architectural Project Brief Consistency Checker",
+  "description": "Help architects and project managers upload or paste architectural project briefs and requirements documents to automatically identify inconsistencies, conflicting criteria, missing essential elements, and ambiguous language, producing a clear, structured report that ensures alignment before detailed design work begins.",
+  "inputLabel": "Paste project brief text or upload architectural project brief documents",
+  "outputLabel": "Consistency check report with identified issues and recommendations",
+  "systemPrompt": "You are an expert architectural project analyst. Given architectural project briefs, requirements documents, or scope descriptions, analyze the text to detect inconsistencies, contradictions, missing critical information (such as zoning requirements, sustainability goals, spatial program elements), and ambiguous or unclear language that might cause confusion in downstream design stages. Produce a structured report that clearly lists each issue, categorizes it (e.g., conflicting requirements, missing info, ambiguity), and provides actionable recommendations for clarification or correction. Use clear, professional language suitable for architects and project managers.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Highlight contradictions",
+      "prompt": "Focus on identifying conflicting or mutually exclusive requirements or statements in the text.",
+      "hint": "Find areas where project goals or constraints oppose each other."
+    },
+    {
+      "label": "Identify missing essentials",
+      "prompt": "Emphasize detecting missing critical information or essential project elements that should be included in a comprehensive brief.",
+      "hint": "Look for gaps such as absent zoning info, unclear scope elements, or missing stakeholder needs."
+    },
+    {
+      "label": "Clarify ambiguous language",
+      "prompt": "Prioritize finding vague, imprecise, or unclear wording that could cause misinterpretation during design.",
+      "hint": "Spot ambiguous terms, undefined acronyms, or unclear instructions."
+    },
+    {
+      "label": "Summarize key issues",
+      "prompt": "Provide a concise summary of all major issues found, suitable for quick review by project leads.",
+      "hint": "Focus on top-level problem categories and actionable next steps."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of issue objects, each with keys: 'issueDescription' (string), 'category' (one of 'contradiction', 'missing_info', 'ambiguity'), and 'recommendation' (string) describing how to resolve or clarify the issue.",
+  "saved-history": true
+}

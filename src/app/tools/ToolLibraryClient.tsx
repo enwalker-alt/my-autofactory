@@ -32,13 +32,7 @@ type SortId = (typeof SORT_OPTIONS)[number]["id"];
 
 const CATEGORY_RULES: Record<
   string,
-  {
-    label: string;
-    strong: string[];
-    weak: string[];
-    phrases: string[];
-    minScore: number;
-  }
+  { label: string; strong: string[]; weak: string[]; phrases: string[]; minScore: number }
 > = {
   writing: {
     label: "Writing & Messaging",
@@ -81,13 +75,7 @@ const CATEGORY_RULES: Record<
 
   research: {
     label: "Learning & Research",
-    phrases: [
-      "academic abstract",
-      "literature review",
-      "study guide",
-      "research question",
-      "explain like",
-    ],
+    phrases: ["academic abstract", "literature review", "study guide", "research question", "explain like"],
     strong: [
       "academic",
       "research",
@@ -238,20 +226,7 @@ const CATEGORY_RULES: Record<
   compliance: {
     label: "Policy & Professional",
     phrases: ["terms of service", "privacy policy", "risk assessment"],
-    strong: [
-      "policy",
-      "compliance",
-      "legal",
-      "terms",
-      "privacy",
-      "disclaimer",
-      "guidelines",
-      "risk",
-      "security",
-      "hr",
-      "regulation",
-      "contract",
-    ],
+    strong: ["policy", "compliance", "legal", "terms", "privacy", "disclaimer", "guidelines", "risk", "security", "hr", "regulation", "contract"],
     weak: ["professional", "formal", "review", "safe"],
     minScore: 3,
   },
@@ -281,27 +256,17 @@ function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
 
-function StarsInline({
-  value,
-  count,
-}: {
-  value?: number | null;
-  count?: number | null;
-}) {
+function StarsInline({ value, count }: { value?: number | null; count?: number | null }) {
   const v = typeof value === "number" ? value : 0;
   const c = typeof count === "number" ? count : 0;
 
   const full = Math.round(v);
-  const stars = Array.from({ length: 5 }, (_, i) => (i < full ? "★" : "☆")).join(
-    ""
-  );
+  const stars = Array.from({ length: 5 }, (_, i) => (i < full ? "★" : "☆")).join("");
 
   return (
     <div className="flex items-center gap-2 text-[12px] text-slate-300">
       <span className="tracking-[0.2em] text-yellow-300/90">{stars}</span>
-      <span className="text-slate-400">
-        {c > 0 ? `${v.toFixed(1)} (${c})` : "No ratings"}
-      </span>
+      <span className="text-slate-400">{c > 0 ? `${v.toFixed(1)} (${c})` : "No ratings"}</span>
     </div>
   );
 }
@@ -327,11 +292,30 @@ function buildPageModel(page: number, totalPages: number) {
   return items;
 }
 
+type WorkflowKind = "PERSONAL" | "BUSINESS";
+type WorkflowRow = {
+  id: string;
+  kind: WorkflowKind;
+  name: string;
+  data: any;
+  createdAt: string;
+  updatedAt: string;
+};
+
 type RecommendPayload = {
+  kind: WorkflowKind;
+
+  // “business-style”
   companyType: string;
   industry: string;
   teamSize: string;
   roles: string;
+
+  // “personal-style”
+  jobTitle: string;
+  functionArea: string;
+
+  // shared
   normalWeek: string;
   slowDowns: string;
   documents: string;
@@ -365,23 +349,33 @@ function RecommendWizard({
 }) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
+  const [workflows, setWorkflows] = useState<WorkflowRow[]>([]);
+  const [workflowsLoaded, setWorkflowsLoaded] = useState(false);
+  const [selectedWorkflowId, setSelectedWorkflowId] = useState<string>("");
+
   const [form, setForm] = useState<RecommendPayload>({
+    kind: "PERSONAL",
+
     companyType: "",
     industry: "",
     teamSize: "",
     roles: "",
+
+    jobTitle: "",
+    functionArea: "",
+
     normalWeek: "",
     slowDowns: "",
     documents: "",
   });
 
+  const [profileName, setProfileName] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<RecommendedTool[]>([]);
   const [ideas, setIdeas] = useState<ToolIdea[]>([]);
   const [selectedRec, setSelectedRec] = useState<Record<string, boolean>>({});
-  const [selectedIdeas, setSelectedIdeas] = useState<Record<number, boolean>>(
-    {}
-  );
+  const [selectedIdeas, setSelectedIdeas] = useState<Record<number, boolean>>({});
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<number | null>(null);
 
@@ -391,9 +385,50 @@ function RecommendWizard({
     toastTimer.current = window.setTimeout(() => setToast(null), 3500);
   }
 
+  async function loadWorkflowsOnce() {
+    if (!isSignedIn) {
+      setWorkflows([]);
+      setWorkflowsLoaded(true);
+      return;
+    }
+    try {
+      const res = await fetch("/api/workflows", { cache: "no-store" });
+      if (!res.ok) {
+        setWorkflows([]);
+        setWorkflowsLoaded(true);
+        return;
+      }
+      const body = await res.json().catch(() => null);
+      const rows = Array.isArray(body?.workflows) ? body.workflows : [];
+      setWorkflows(rows);
+    } catch {
+      setWorkflows([]);
+    } finally {
+      setWorkflowsLoaded(true);
+    }
+  }
+
+  function applyWorkflowData(w: WorkflowRow) {
+    const d = w.data ?? {};
+    setForm((p) => ({
+      ...p,
+      kind: w.kind,
+      companyType: String(d.companyType ?? ""),
+      industry: String(d.industry ?? ""),
+      teamSize: String(d.teamSize ?? ""),
+      roles: String(d.roles ?? ""),
+      jobTitle: String(d.jobTitle ?? ""),
+      functionArea: String(d.functionArea ?? ""),
+      normalWeek: String(d.normalWeek ?? ""),
+      slowDowns: String(d.slowDowns ?? ""),
+      documents: String(d.documents ?? ""),
+    }));
+  }
+
   useEffect(() => {
     if (!open) return;
-    // reset each time opened
+
+    // reset on open
     setStep(1);
     setLoading(false);
     setRecommendations([]);
@@ -401,6 +436,29 @@ function RecommendWizard({
     setSelectedRec({});
     setSelectedIdeas({});
     setToast(null);
+
+    setSelectedWorkflowId("");
+    setProfileName("");
+
+    setForm({
+      kind: "PERSONAL",
+      companyType: "",
+      industry: "",
+      teamSize: "",
+      roles: "",
+      jobTitle: "",
+      functionArea: "",
+      normalWeek: "",
+      slowDowns: "",
+      documents: "",
+    });
+
+    setWorkflows([]);
+    setWorkflowsLoaded(false);
+
+    // load workflows for autofill
+    loadWorkflowsOnce();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   async function submitIntake() {
@@ -420,10 +478,7 @@ function RecommendWizard({
         return;
       }
 
-      const data = (await res.json()) as {
-        recommended: RecommendedTool[];
-        ideas: ToolIdea[];
-      };
+      const data = (await res.json()) as { recommended: RecommendedTool[]; ideas: ToolIdea[] };
 
       const rec = Array.isArray(data.recommended) ? data.recommended : [];
       const id = Array.isArray(data.ideas) ? data.ideas : [];
@@ -440,6 +495,57 @@ function RecommendWizard({
       setSelectedIdeas(initIdeas);
 
       setStep(2);
+    } catch (e) {
+      console.error(e);
+      flash("Network error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function saveWorkflowProfile() {
+    if (!isSignedIn) {
+      await onRequireSignIn();
+      return;
+    }
+
+    const name = profileName.trim();
+    if (!name) {
+      flash("Give this workflow a name first.");
+      return;
+    }
+
+    const payload = {
+      name,
+      kind: form.kind,
+      data: {
+        kind: form.kind,
+        companyType: form.companyType,
+        industry: form.industry,
+        teamSize: form.teamSize,
+        roles: form.roles,
+        jobTitle: form.jobTitle,
+        functionArea: form.functionArea,
+        normalWeek: form.normalWeek,
+        slowDowns: form.slowDowns,
+        documents: form.documents,
+      },
+    };
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/workflows", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        flash(`Save workflow failed (${res.status})`);
+        return;
+      }
+      flash("Workflow saved ✅");
+      await loadWorkflowsOnce();
+      setProfileName("");
     } catch (e) {
       console.error(e);
       flash("Network error");
@@ -500,12 +606,10 @@ function RecommendWizard({
       flash("Pick 1–3 ideas first.");
       return;
     }
-
     if (picked.length > 3) {
       flash("Pick up to 3 ideas.");
       return;
     }
-
     if (!isSignedIn) {
       await onRequireSignIn();
       return;
@@ -537,14 +641,10 @@ function RecommendWizard({
         return;
       }
 
-      const slugs: string[] = Array.isArray(body?.slugs) ? body.slugs : [];
+      const slugs: string[] = Array.isArray((body as any)?.slugs) ? (body as any).slugs : [];
       if (slugs.length > 0) onSavedSlugsLocalAdd(slugs);
 
-      flash(
-        slugs.length > 0
-          ? `Built + saved ${slugs.length} new tools ✅`
-          : "Build requested ✅"
-      );
+      flash(slugs.length > 0 ? `Built + saved ${slugs.length} new tools ✅` : "Build requested ✅");
       onClose();
     } catch (e) {
       console.error(e);
@@ -555,6 +655,12 @@ function RecommendWizard({
   }
 
   if (!open) return null;
+
+  const isBusiness = form.kind === "BUSINESS";
+
+  const topHelp = isBusiness
+    ? "Business mode: describe your company and roles so Atlas can recommend tools across the team."
+    : "Personal mode: describe your own job + workflow so Atlas can recommend tools for you.";
 
   return (
     <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm" role="dialog" aria-modal="true">
@@ -568,12 +674,14 @@ function RecommendWizard({
                     Atlas Recommendations
                   </p>
                   <h2 className="text-base sm:text-lg md:text-xl font-semibold leading-snug">
-                    Recommend tools for your workflow
+                    {step === 1 && "Recommend tools for your workflow"}
+                    {step === 2 && "Your recommended tools"}
+                    {step === 3 && "Optional: build brand-new tools for you"}
                   </h2>
                   <p className="mt-1 text-[11px] sm:text-xs md:text-sm text-gray-400">
-                    {step === 1 && "Tell Atlas about your work/life. We map tasks → tools."}
-                    {step === 2 && "Pick the recommended tools to save."}
-                    {step === 3 && "Pick up to 3 new tool ideas to build + auto-save."}
+                    {step === 1 && "Start by choosing Personal vs Business, then describe the workflow."}
+                    {step === 2 && "These picks are tailored to what you wrote — save them to your account."}
+                    {step === 3 && "These are new tool ideas generated from your workflow that Atlas can auto-build for you."}
                   </p>
                 </div>
 
@@ -597,48 +705,163 @@ function RecommendWizard({
             )}
 
             <div className="px-4 sm:px-6 pb-5 sm:pb-6 pt-4 sm:pt-5">
-              {/* STEP 1 */}
               {step === 1 && (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <Field
-                      label="Company type"
-                      value={form.companyType}
-                      onChange={(v) => setForm((p) => ({ ...p, companyType: v }))}
-                      placeholder="Agency, SaaS, restaurant group…"
-                    />
-                    <Field
-                      label="Industry"
-                      value={form.industry}
-                      onChange={(v) => setForm((p) => ({ ...p, industry: v }))}
-                      placeholder="Healthcare, logistics, fintech…"
-                    />
-                    <Field
-                      label="Team size"
-                      value={form.teamSize}
-                      onChange={(v) => setForm((p) => ({ ...p, teamSize: v }))}
-                      placeholder="1, 5, 20, 200…"
-                    />
-                    <Field
-                      label="Key roles"
-                      value={form.roles}
-                      onChange={(v) => setForm((p) => ({ ...p, roles: v }))}
-                      placeholder="Sales, Ops, Support, Finance…"
-                    />
+                  {/* MODE + SAVED WORKFLOWS */}
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                      <div>
+                        <div className="text-xs font-semibold text-gray-200">1) Choose context</div>
+                        <div className="mt-1 text-[11px] text-gray-500">{topHelp}</div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setForm((p) => ({ ...p, kind: "PERSONAL" }))}
+                          className={
+                            form.kind === "PERSONAL"
+                              ? "rounded-full px-3 py-2 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40"
+                              : "rounded-full px-3 py-2 text-xs font-semibold text-gray-200 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-400/40 transition"
+                          }
+                        >
+                          Personal
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setForm((p) => ({ ...p, kind: "BUSINESS" }))}
+                          className={
+                            form.kind === "BUSINESS"
+                              ? "rounded-full px-3 py-2 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40"
+                              : "rounded-full px-3 py-2 text-xs font-semibold text-gray-200 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-400/40 transition"
+                          }
+                        >
+                          Business
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Saved workflow picker */}
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2">
+                      <div className="min-w-0">
+                        <div className="mb-1 text-[11px] text-gray-400">
+                          Saved workflows (autofill)
+                        </div>
+                        <select
+                          value={selectedWorkflowId}
+                          onChange={(e) => {
+                            const id = e.target.value;
+                            setSelectedWorkflowId(id);
+                            const w = workflows.find((x) => x.id === id);
+                            if (w) applyWorkflowData(w);
+                          }}
+                          className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-gray-100 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
+                        >
+                          <option value="" className="bg-[#020617]">
+                            {workflowsLoaded
+                              ? workflows.length > 0
+                                ? "Select a saved workflow…"
+                                : isSignedIn
+                                  ? "No saved workflows yet"
+                                  : "Sign in to use saved workflows"
+                              : "Loading…"}
+                          </option>
+                          {workflows.map((w) => (
+                            <option key={w.id} value={w.id} className="bg-[#020617]">
+                              {w.kind === "BUSINESS" ? "Business" : "Personal"} — {w.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <Link
+                        href="/workflows"
+                        onClick={(e) => {
+                          if (!isSignedIn) e.preventDefault();
+                        }}
+                        className="self-end rounded-full px-3 py-2.5 text-xs font-semibold text-gray-200 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-400/40 transition text-center"
+                        title={isSignedIn ? "Manage saved workflows" : "Sign in to manage workflows"}
+                      >
+                        Manage →
+                      </Link>
+                    </div>
                   </div>
 
+                  {/* FIELDS */}
+                  {isBusiness ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <Field
+                        label="Company type"
+                        value={form.companyType}
+                        onChange={(v) => setForm((p) => ({ ...p, companyType: v }))}
+                        placeholder="Agency, SaaS, restaurant group…"
+                      />
+                      <Field
+                        label="Industry"
+                        value={form.industry}
+                        onChange={(v) => setForm((p) => ({ ...p, industry: v }))}
+                        placeholder="Healthcare, logistics, fintech…"
+                      />
+                      <Field
+                        label="Team size"
+                        value={form.teamSize}
+                        onChange={(v) => setForm((p) => ({ ...p, teamSize: v }))}
+                        placeholder="1, 5, 20, 200…"
+                      />
+                      <Field
+                        label="Key roles"
+                        value={form.roles}
+                        onChange={(v) => setForm((p) => ({ ...p, roles: v }))}
+                        placeholder="Sales, Ops, Support, Finance…"
+                      />
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <Field
+                        label="Your job title"
+                        value={form.jobTitle}
+                        onChange={(v) => setForm((p) => ({ ...p, jobTitle: v }))}
+                        placeholder="Analyst, Sales rep, Nurse, Student…"
+                      />
+                      <Field
+                        label="Function / focus"
+                        value={form.functionArea}
+                        onChange={(v) => setForm((p) => ({ ...p, functionArea: v }))}
+                        placeholder="Support, Finance, Ops, Writing, Engineering…"
+                      />
+                      <Field
+                        label="Industry (optional)"
+                        value={form.industry}
+                        onChange={(v) => setForm((p) => ({ ...p, industry: v }))}
+                        placeholder="Fintech, healthcare, retail…"
+                      />
+                      <Field
+                        label="Team context (optional)"
+                        value={form.teamSize}
+                        onChange={(v) => setForm((p) => ({ ...p, teamSize: v }))}
+                        placeholder="Solo, 3-person team, 40-person dept…"
+                      />
+                    </div>
+                  )}
+
                   <TextArea
-                    label="Describe a normal day/week"
+                    label={isBusiness ? "Describe a normal week (company)" : "Describe a normal week (you)"}
                     value={form.normalWeek}
                     onChange={(v) => setForm((p) => ({ ...p, normalWeek: v }))}
-                    placeholder="What happens repeatedly? What do you ship weekly?"
+                    placeholder={
+                      isBusiness
+                        ? "What does the company do weekly? What repeats across teams?"
+                        : "What do you do repeatedly? What are the common tasks you handle?"
+                    }
                   />
+
                   <TextArea
                     label="What slows you down?"
                     value={form.slowDowns}
                     onChange={(v) => setForm((p) => ({ ...p, slowDowns: v }))}
                     placeholder="Where do things break, get delayed, or feel manual?"
                   />
+
                   <TextArea
                     label="What documents do you work with most?"
                     value={form.documents}
@@ -646,9 +869,34 @@ function RecommendWizard({
                     placeholder="Proposals, contracts, invoices, SOPs, meeting notes…"
                   />
 
+                  {/* SAVE WORKFLOW */}
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                    <div className="text-xs font-semibold text-gray-200">2) Save this workflow (optional)</div>
+                    <div className="mt-1 text-[11px] text-gray-500">
+                      Save your Personal/Business profile so you can autofill next time and keep iterating.
+                    </div>
+
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2">
+                      <input
+                        value={profileName}
+                        onChange={(e) => setProfileName(e.target.value)}
+                        placeholder={isBusiness ? "Name this business workflow (e.g., My Agency Ops)" : "Name this personal workflow (e.g., My Day Job)"}
+                        className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-gray-100 placeholder:text-gray-500 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
+                      />
+                      <button
+                        type="button"
+                        onClick={saveWorkflowProfile}
+                        disabled={loading}
+                        className="rounded-full px-4 py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40 hover:opacity-90 transition disabled:opacity-60"
+                      >
+                        Save workflow
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="flex items-center justify-between gap-3 pt-1">
                     <div className="text-[11px] text-gray-500">
-                      You’re mapping workflows — not picking tools.
+                      You’re mapping your workflow — Atlas handles the tool matching.
                     </div>
                     <button
                       type="button"
@@ -662,68 +910,44 @@ function RecommendWizard({
                 </div>
               )}
 
-              {/* STEP 2 */}
               {step === 2 && (
                 <div className="space-y-4">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                    <p className="text-xs text-gray-300 font-semibold">
+                    <p className="text-xs text-gray-200 font-semibold">
                       Recommended tools ({recommendations.length})
                     </p>
                     <p className="mt-1 text-[11px] text-gray-500">
-                      Each one includes *why* + the exact moment to use it.
+                      These recommendations are generated from your workflow description. Save the ones you want in your account.
                     </p>
                   </div>
 
                   <div className="space-y-2">
                     {recommendations.map((r) => (
-                      <div
-                        key={r.slug}
-                        className="rounded-2xl border border-white/10 bg-white/5 p-3"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <label className="flex items-start gap-3 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={!!selectedRec[r.slug]}
-                              onChange={(e) =>
-                                setSelectedRec((p) => ({
-                                  ...p,
-                                  [r.slug]: e.target.checked,
-                                }))
-                              }
-                              className="mt-1"
-                            />
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold text-gray-100">
-                                  {r.title}
-                                </span>
-                                <span className="text-[10px] text-gray-400">
-                                  ({r.slug})
-                                </span>
-                              </div>
-                              <p className="mt-1 text-[12px] text-gray-300">
-                                <span className="text-purple-200 font-semibold">
-                                  Why:
-                                </span>{" "}
-                                {r.reason}
-                              </p>
-                              <p className="mt-1 text-[12px] text-gray-400">
-                                <span className="text-purple-200 font-semibold">
-                                  Use it when:
-                                </span>{" "}
-                                {r.moment}
-                              </p>
+                      <div key={r.slug} className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                        <label className="flex items-start gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={!!selectedRec[r.slug]}
+                            onChange={(e) =>
+                              setSelectedRec((p) => ({ ...p, [r.slug]: e.target.checked }))
+                            }
+                            className="mt-1"
+                          />
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-gray-100">{r.title}</span>
+                              <span className="text-[10px] text-gray-400">({r.slug})</span>
                             </div>
-                          </label>
+                            <p className="mt-1 text-[12px] text-gray-300">
+                              <span className="text-purple-200 font-semibold">Why:</span> {r.reason}
+                            </p>
+                            <p className="mt-1 text-[12px] text-gray-400">
+                              <span className="text-purple-200 font-semibold">Use it when:</span> {r.moment}
+                            </p>
+                          </div>
+                        </label>
 
-                          <Link
-                            href={`/tools/${r.slug}`}
-                            className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-gray-200 hover:bg-white/10 hover:border-purple-400/40 transition"
-                          >
-                            Open →
-                          </Link>
-                        </div>
+                        {/* ✅ REMOVED: Open button on the right */}
                       </div>
                     ))}
                   </div>
@@ -749,48 +973,35 @@ function RecommendWizard({
                 </div>
               )}
 
-              {/* STEP 3 */}
               {step === 3 && (
                 <div className="space-y-4">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                    <p className="text-xs text-gray-300 font-semibold">
-                      New tool ideas just for you ({ideas.length})
+                    <p className="text-xs text-gray-200 font-semibold">
+                      3 new tools Atlas can build for you ({ideas.length})
                     </p>
                     <p className="mt-1 text-[11px] text-gray-500">
-                      These are explicitly non-overlapping with existing tools.
-                      Pick up to 3 — Atlas will build + auto-save them.
+                      These ideas are generated *from your workflow* and are intended to fill gaps that aren’t covered by existing tools.
+                      Pick up to 3 — Atlas will build them and auto-save them to your account.
                     </p>
                   </div>
 
                   <div className="space-y-2">
                     {ideas.map((idea, i) => (
-                      <div
-                        key={`${idea.title}-${i}`}
-                        className="rounded-2xl border border-white/10 bg-white/5 p-3"
-                      >
+                      <div key={`${idea.title}-${i}`} className="rounded-2xl border border-white/10 bg-white/5 p-3">
                         <label className="flex items-start gap-3 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={!!selectedIdeas[i]}
                             onChange={(e) =>
-                              setSelectedIdeas((p) => ({
-                                ...p,
-                                [i]: e.target.checked,
-                              }))
+                              setSelectedIdeas((p) => ({ ...p, [i]: e.target.checked }))
                             }
                             className="mt-1"
                           />
                           <div className="min-w-0">
-                            <div className="text-sm font-semibold text-gray-100">
-                              {idea.title}
-                            </div>
-                            <p className="mt-1 text-[12px] text-gray-300">
-                              {idea.description}
-                            </p>
+                            <div className="text-sm font-semibold text-gray-100">{idea.title}</div>
+                            <p className="mt-1 text-[12px] text-gray-300">{idea.description}</p>
                             <p className="mt-1 text-[12px] text-gray-400">
-                              <span className="text-purple-200 font-semibold">
-                                Why it’s different:
-                              </span>{" "}
+                              <span className="text-purple-200 font-semibold">Why it’s different:</span>{" "}
                               {idea.whyDifferent}
                             </p>
                           </div>
@@ -828,14 +1039,7 @@ function RecommendWizard({
         </div>
       </div>
 
-      {/* click outside to close */}
-      <button
-        type="button"
-        aria-label="Close overlay"
-        onClick={onClose}
-        className="absolute inset-0 -z-10"
-        tabIndex={-1}
-      />
+      <button type="button" aria-label="Close overlay" onClick={onClose} className="absolute inset-0 -z-10" tabIndex={-1} />
     </div>
   );
 }
@@ -889,11 +1093,7 @@ function TextArea({
   );
 }
 
-export default function ToolLibraryClient({
-  tools,
-  savedSlugs,
-  isSignedIn,
-}: Props) {
+export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -920,8 +1120,7 @@ export default function ToolLibraryClient({
   const categoryLabel = CATEGORY_RULES[category]?.label;
 
   const sortParam = (searchParams.get("sort") || "rating-high") as SortId;
-  const sort: SortId =
-    SORT_OPTIONS.find((s) => s.id === sortParam)?.id ?? "rating-high";
+  const sort: SortId = SORT_OPTIONS.find((s) => s.id === sortParam)?.id ?? "rating-high";
 
   const pageParamRaw = searchParams.get("page") || "1";
   const pageParsed = Number.parseInt(pageParamRaw, 10);
@@ -991,12 +1190,7 @@ export default function ToolLibraryClient({
       }
 
       if (!res.ok) {
-        console.error("Save failed:", {
-          status: res.status,
-          slug,
-          bodyJson,
-          bodyText,
-        });
+        console.error("Save failed:", { status: res.status, slug, bodyJson, bodyText });
 
         setLocalSaved((prev) => {
           const next = new Set(prev);
@@ -1014,8 +1208,7 @@ export default function ToolLibraryClient({
         return;
       }
 
-      const savedValue =
-        typeof bodyJson?.saved === "boolean" ? (bodyJson.saved as boolean) : !wasSaved;
+      const savedValue = typeof bodyJson?.saved === "boolean" ? (bodyJson.saved as boolean) : !wasSaved;
 
       setLocalSaved((prev) => {
         const next = new Set(prev);
@@ -1040,7 +1233,6 @@ export default function ToolLibraryClient({
     }
   }
 
-  // ---------- Filter + sort ----------
   const sorted = useMemo(() => {
     let filtered = tools;
 
@@ -1049,10 +1241,7 @@ export default function ToolLibraryClient({
     }
 
     if (query) {
-      filtered = filtered.filter((tool) => {
-        const haystack = normalize(tool.title + " " + tool.description);
-        return haystack.includes(query);
-      });
+      filtered = filtered.filter((tool) => normalize(tool.title + " " + tool.description).includes(query));
     }
 
     if (category && category !== "all") {
@@ -1133,11 +1322,7 @@ export default function ToolLibraryClient({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="text-xs md:text-sm text-gray-400 flex flex-wrap items-center justify-center md:justify-start gap-2">
             <span>
-              Showing{" "}
-              <span className="text-purple-200 font-medium">
-                {showingFrom}-{showingTo}
-              </span>{" "}
-              of{" "}
+              Showing <span className="text-purple-200 font-medium">{showingFrom}-{showingTo}</span> of{" "}
               <span className="text-purple-200 font-medium">{totalFiltered}</span>
             </span>
 
@@ -1166,7 +1351,6 @@ export default function ToolLibraryClient({
           </div>
 
           <div className="flex items-center justify-center md:justify-end gap-2 flex-wrap">
-            {/* ✅ NEW: Recommend button */}
             <button
               type="button"
               onClick={() => setRecOpen(true)}
@@ -1199,9 +1383,7 @@ export default function ToolLibraryClient({
       {totalFiltered === 0 && (
         <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center text-xs md:text-sm text-gray-400">
           No tools match your current filters.
-          <div className="mt-2">
-            Try clearing the search, picking a different category, or browsing all tools.
-          </div>
+          <div className="mt-2">Try clearing the search, picking a different category, or browsing all tools.</div>
         </div>
       )}
 
@@ -1227,9 +1409,7 @@ export default function ToolLibraryClient({
                         <StarsInline value={tool.avgRating} count={tool.ratingCount} />
                       </div>
 
-                      <p className="text-xs md:text-sm text-gray-400 line-clamp-3">
-                        {tool.description}
-                      </p>
+                      <p className="text-xs md:text-sm text-gray-400 line-clamp-3">{tool.description}</p>
                     </div>
 
                     <button

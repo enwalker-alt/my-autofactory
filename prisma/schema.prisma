@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -11,6 +8,11 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum WorkflowKind {
+  PERSONAL
+  BUSINESS
 }
 
 model User {
@@ -23,9 +25,12 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  // ✅ Added: opposite relation fields
-  savedTools  SavedTool[]
-  toolRatings ToolRating[]
+  // ✅ Existing
+  savedTools   SavedTool[]
+  toolRatings  ToolRating[]
+
+  // ✅ NEW: saved workflow profiles
+  workflows    WorkflowProfile[]
 }
 
 model Account {
@@ -70,7 +75,6 @@ model Tool {
   title       String
   description String?
   category    String?
-  // Optional: if your tool configs have this
   inputLabel  String?
   outputLabel String?
 
@@ -112,4 +116,20 @@ model ToolRating {
 
   @@unique([userId, toolId]) // one rating per user per tool (edit-able)
   @@index([toolId])
+}
+
+model WorkflowProfile {
+  id        String       @id @default(cuid())
+  userId    String
+  kind      WorkflowKind @default(PERSONAL)
+  name      String
+  data      Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, kind])
 }

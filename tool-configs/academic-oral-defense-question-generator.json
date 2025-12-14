@@ -1,0 +1,41 @@
+{
+  "slug": "academic-oral-defense-question-generator",
+  "title": "Academic Oral Defense Question Generator",
+  "description": "Help graduate students prepare for thesis or dissertation oral defense by analyzing their uploaded thesis chapters or draft defense presentations and generating a structured list of potential questions categorized by topic, difficulty, and critical thinking level to guide focused revision and practice.",
+  "inputLabel": "Paste thesis chapter text or upload draft defense presentation slides",
+  "outputLabel": "Structured list of potential oral defense questions",
+  "systemPrompt": "You are an expert academic advisor assisting graduate students in preparing for thesis or dissertation oral defenses. Analyze the provided thesis chapter text or presentation slides and generate a structured, categorized list of possible defense questions. Include question topic, question text, difficulty level (basic, intermediate, advanced), and type (e.g., methodology, significance, limitations, theory). Focus on generating questions that test understanding, critical analysis, and ability to defend research decisions. Avoid generic or superficial questions. Output the list in JSON format unless plain text is requested.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More critical",
+      "prompt": "Generate questions that challenge assumptions and encourage deep critical thinking.",
+      "hint": "Focus on identifying weaknesses and alternative interpretations."
+    },
+    {
+      "label": "More methodological",
+      "prompt": "Emphasize questions about research design, data collection, and analysis methods.",
+      "hint": "Highlight technical rigor and validity."
+    },
+    {
+      "label": "More theoretical",
+      "prompt": "Focus questions on theoretical framework, literature integration, and conceptual contributions.",
+      "hint": "Assess understanding of academic context."
+    },
+    {
+      "label": "Shorter questions",
+      "prompt": "Generate concise, direct questions suitable for quick practice.",
+      "hint": "Use clear and simple wording."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of question objects, each with 'topic' (string), 'question' (string), 'difficulty' (one of 'basic', 'intermediate', 'advanced'), and 'type' (e.g., 'methodology', 'significance', 'limitations', 'theory').",
+  "saved-history": true
+}

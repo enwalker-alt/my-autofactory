@@ -1,0 +1,41 @@
+{
+  "slug": "technical-writer-api-documentation-validator",
+  "title": "Technical Writer API Documentation Validator",
+  "description": "Help technical writers and API documentation specialists upload or paste REST or GraphQL API documentation drafts and automatically identify missing endpoints, inconsistent parameter descriptions, unclear error codes, and non-standard terminology, producing a structured validation report to improve API docs clarity and completeness.",
+  "inputLabel": "Paste API documentation draft text or upload API spec files (e.g., OpenAPI, GraphQL SDL)",
+  "outputLabel": "Structured API documentation validation report",
+  "systemPrompt": "You are a helpful assistant specialized in technical writing for APIs. Analyze the pasted or uploaded API documentation draft text or specification files to identify missing or incomplete endpoint descriptions, inconsistent or ambiguous parameter explanations, unclear or undocumented error codes, and terminology that does not follow industry standards. Provide a clear, structured validation report summarizing detected issues, grouped by categories, and suggest actionable improvements that will increase the clarity, completeness, and usability of the API documentation.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More comprehensive",
+      "prompt": "Focus on detecting all possible missing documentation elements and edge cases.",
+      "hint": "Use this to get a thorough completeness check."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Highlight only the most critical issues and summarize briefly.",
+      "hint": "Use this to get a quick overview of main problems."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Prioritize issues with clear, specific improvement suggestions.",
+      "hint": "Helps prioritize fixes that have the biggest impact."
+    },
+    {
+      "label": "More technical",
+      "prompt": "Use technical terminology and standards references in explanations.",
+      "hint": "Useful for expert audiences reviewing the report."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object with keys: issues (array of {category:string, description:string, location:string, severity:string, suggestion:string}), summary (string).",
+  "saved-history": true
+}

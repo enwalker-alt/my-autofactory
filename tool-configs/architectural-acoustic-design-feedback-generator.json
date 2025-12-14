@@ -1,0 +1,41 @@
+{
+  "slug": "architectural-acoustic-design-feedback-generator",
+  "title": "Architectural Acoustic Design Feedback Generator",
+  "description": "Help architectural acousticians and building designers analyze textual descriptions of room layouts, material specifications, and acoustic treatment plans to generate structured, expert feedback highlighting potential acoustic issues, improvement suggestions, and compliance with acoustic standards.",
+  "inputLabel": "Paste acoustic design notes, room descriptions, or upload related specification documents",
+  "outputLabel": "Structured acoustic feedback report",
+  "systemPrompt": "You are an expert architectural acoustician. Analyze the provided textual descriptions of room geometry, materials, and acoustic treatment plans. Generate a structured feedback report that identifies potential acoustic problems (e.g., echoes, reverberation, sound leakage), suggests practical improvements, and assesses compliance with common acoustic design standards. Provide clear, actionable recommendations tailored for architects and acoustic engineers.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More detailed",
+      "prompt": "Provide more in-depth technical explanations and elaborate on acoustic principles involved.",
+      "hint": "Great for technical review or academic use."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Summarize feedback into brief, high-level points focusing on key issues and recommendations.",
+      "hint": "Good for quick stakeholder review."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Focus on clear, practical steps and prioritized improvements that can be implemented easily.",
+      "hint": "Ideal for project managers and on-site teams."
+    },
+    {
+      "label": "More standards-focused",
+      "prompt": "Emphasize compliance with common acoustic standards and building codes relevant to architectural acoustics.",
+      "hint": "Useful for regulatory submissions."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output a JSON object with keys: 'identifiedIssues' (list of acoustic problems), 'suggestedImprovements' (list of recommendations), 'standardsCompliance' (summary of compliance status), and 'notes' (optional additional observations).",
+  "saved-history": true
+}

@@ -1,0 +1,41 @@
+{
+  "slug": "museum-acquisition-proposal-evaluation-assistant",
+  "title": "Museum Acquisition Proposal Evaluation Assistant",
+  "description": "Help museum acquisitions committees analyze and evaluate acquisition proposal documents by extracting key artifact details, provenance, condition risks, and cultural significance, producing a structured evaluation summary to guide acquisition decisions.",
+  "inputLabel": "Paste acquisition proposal text or upload related documents",
+  "outputLabel": "Structured acquisition evaluation summary",
+  "systemPrompt": "You are an expert museum acquisitions assistant. Analyze the provided acquisition proposal text and any uploaded documents to extract and summarize key artifact details, provenance information, condition risks, cultural and historical significance, and any ethical or legal considerations. Produce a clear, concise, and structured evaluation summary to aid the acquisitions committee in assessing the proposal's merits and risks. Use professional museum collection management terminology and ensure the evaluation is objective and informative.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Produce a briefer, more concise evaluation summary focusing on essential points.",
+      "hint": "Useful for quick committee reviews."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Provide a more detailed evaluation with expanded provenance and condition risk analysis.",
+      "hint": "Helpful for in-depth review sessions."
+    },
+    {
+      "label": "More critical",
+      "prompt": "Emphasize potential risks, concerns, and uncertainties in the acquisition proposal.",
+      "hint": "Focus on identifying red flags and issues."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the evaluation into clearly labeled sections with bullet points.",
+      "hint": "Improves readability and clarity."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "JSON object with keys: artifactDetails (string), provenanceSummary (string), conditionRisks (string), culturalSignificance (string), ethicalLegalConsiderations (string), overallRecommendation (string). Each value is a concise text summary for that category.",
+  "saved-history": true
+}

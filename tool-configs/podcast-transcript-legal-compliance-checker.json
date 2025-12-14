@@ -1,0 +1,41 @@
+{
+  "slug": "podcast-transcript-legal-compliance-checker",
+  "title": "Podcast Transcript Legal Compliance Checker",
+  "description": "Help podcast producers and legal compliance officers analyze podcast episode transcripts or uploaded transcript files to identify potential legal risks such as copyright infringement, defamatory content, or disclosure omissions, producing a structured compliance risk report with actionable recommendations.",
+  "inputLabel": "Paste or upload podcast episode transcript text",
+  "outputLabel": "Legal compliance risk report for podcast transcripts",
+  "systemPrompt": "You are a legal compliance assistant specialized in reviewing podcast episode transcripts for potential legal risks. Analyze the provided transcript text or uploaded transcript files to identify issues such as copyright infringement risks, defamatory or libelous statements, missing required disclosures (e.g., sponsorships), or other legal red flags relevant to podcast publishing. Provide a clear, structured summary of each identified risk with explanations and practical recommendations to mitigate or address them. Use a professional, clear, and concise tone suitable for podcast producers and legal reviewers.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Focus on copyright issues",
+      "prompt": "Prioritize identifying potential copyright infringement and fair use concerns in the transcript.",
+      "hint": "Highlight any quoted or referenced content that may require clearance or licensing."
+    },
+    {
+      "label": "Check for defamatory content",
+      "prompt": "Emphasize detection of statements that could be legally defamatory or libelous.",
+      "hint": "Flag potentially harmful or false statements about identifiable individuals or entities."
+    },
+    {
+      "label": "Verify sponsorship disclosures",
+      "prompt": "Focus on identifying missing or unclear sponsorship or advertising disclosures required by law.",
+      "hint": "Ensure compliance with FTC guidelines on endorsements and sponsorship transparency."
+    },
+    {
+      "label": "General legal risk overview",
+      "prompt": "Provide a broad overview of all potential legal risks present in the transcript.",
+      "hint": "Cover copyright, defamation, disclosures, privacy, and any other relevant legal concerns."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of identified legal risks; each item includes 'riskType' (e.g., copyright, defamation), 'transcriptExcerpt' illustrating the issue, 'riskExplanation' describing the concern, and 'recommendation' for mitigation or correction.",
+  "saved-history": true
+}

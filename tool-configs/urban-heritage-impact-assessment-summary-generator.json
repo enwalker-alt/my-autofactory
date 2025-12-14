@@ -1,0 +1,40 @@
+{
+  "slug": "urban-heritage-impact-assessment-summary-generator",
+  "title": "Urban Heritage Impact Assessment Summary Generator",
+  "description": "Help urban planners and heritage consultants convert detailed heritage impact assessment reports or draft texts into concise, structured summaries that highlight potential impacts on historic sites and recommended mitigation measures, facilitating communication with stakeholders and regulatory bodies.",
+  "inputLabel": "Paste heritage impact assessment text or upload related report files",
+  "outputLabel": "Structured summary of heritage impacts and mitigation recommendations",
+  "systemPrompt": "You are an expert urban heritage impact analyst. Given detailed heritage impact assessment texts or related report files, generate a clear, concise, and structured summary highlighting the key potential impacts on historic sites, cultural significance considerations, and recommended mitigation strategies. Use language accessible to planners, heritage consultants, and regulatory reviewers. Avoid jargon and focus on actionable insights.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Summarize the information more briefly, focusing only on critical points.",
+      "hint": "Use this to get a sharper, shorter summary."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include additional context and nuanced description of impacts and mitigations.",
+      "hint": "Use for deeper stakeholder presentations."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Emphasize clear, prioritized mitigation recommendations and next steps.",
+      "hint": "Useful for project managers and decision makers."
+    },
+    {
+      "label": "Simplify language",
+      "prompt": "Use plain, non-technical language suitable for non-specialist audiences.",
+      "hint": "Ideal for community engagement materials."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "JSON object with keys: 'summary' (concise text of key heritage impacts), 'culturalSignificance' (description of affected heritage values), 'mitigationRecommendations' (list of recommended actions), and 'notes' (optional additional remarks)."
+}

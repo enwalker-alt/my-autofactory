@@ -1,0 +1,41 @@
+{
+  "slug": "marketing-email-compliance-checker",
+  "title": "Marketing Email Compliance Checker",
+  "description": "Help marketing professionals and copywriters verify that their marketing email drafts comply with major email marketing regulations (e.g., CAN-SPAM, GDPR, CASL) by analyzing pasted email text or uploaded email campaign files and generating a detailed compliance report with actionable fix recommendations.",
+  "inputLabel": "Paste your marketing email text or upload email campaign files",
+  "outputLabel": "Compliance report with issues found and recommendations",
+  "systemPrompt": "You are an expert compliance assistant specialized in email marketing regulations. Analyze the provided marketing email text or email campaign files for compliance with key regulations including CAN-SPAM (US), GDPR (EU), and CASL (Canada). Identify missing or inadequate elements such as unsubscribe options, sender identification, consent statements, privacy disclosures, and timing restrictions. Produce a detailed, clear, and actionable compliance report outlining detected issues and specific recommendations to fix each problem. Use plain language suitable for marketing professionals without legal training. Do not provide legal advice but focus on regulatory best practices for email marketing content.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More detailed",
+      "prompt": "Provide a thorough and comprehensive compliance analysis with detailed explanations and examples.",
+      "hint": "Get an in-depth report covering all compliance nuances."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Summarize compliance issues and recommendations briefly and clearly.",
+      "hint": "Good for quick checks and overviews."
+    },
+    {
+      "label": "Focus on unsubscribe compliance",
+      "prompt": "Emphasize analysis of unsubscribe mechanisms and related legal requirements.",
+      "hint": "Ensure opt-out options meet regulations."
+    },
+    {
+      "label": "Focus on data privacy compliance",
+      "prompt": "Highlight consent, privacy disclosures, and personal data handling compliance.",
+      "hint": "Check GDPR and related privacy rules carefully."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "JSON object with keys: 'issues' (array of detected compliance issues with 'type', 'description', and 'recommendation'), 'summary' (overall compliance status summary), and 'suggestedActions' (list of prioritized next steps).",
+  "saved-history": true
+}

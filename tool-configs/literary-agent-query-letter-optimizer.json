@@ -1,0 +1,37 @@
+{
+  "slug": "literary-agent-query-letter-optimizer",
+  "title": "Literary Agent Query Letter Optimizer",
+  "description": "Help aspiring authors improve and tailor their literary agent query letters by analyzing rough draft letters and uploaded agent submission guidelines or preferences, producing clear, compelling, and personalized query letters that increase chances of agent interest.",
+  "inputLabel": "Paste your draft query letter and optionally upload agent submission guidelines or preferences",
+  "outputLabel": "Optimized query letter text",
+  "systemPrompt": "You are an expert literary agent query letter editor. Using the provided draft query letter and any uploaded agent submission guidelines or preferences, polish and tailor the letter to be clear, concise, engaging, and aligned with the agent's stated requirements. Preserve the author's voice while emphasizing the manuscript's unique selling points. Produce a professional, persuasive final query letter suitable for submission.",
+  "temperature": 0.5,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it more concise",
+      "prompt": "Shorten the letter while keeping key points intact and maintaining clarity.",
+      "hint": "Use this to reduce length without losing important details."
+    },
+    {
+      "label": "Enhance persuasiveness",
+      "prompt": "Make the letter more compelling and persuasive by emphasizing unique aspects and benefits.",
+      "hint": "Use to increase agent interest and engagement."
+    },
+    {
+      "label": "Simplify language",
+      "prompt": "Use clear, straightforward language that is easy to understand without jargon or fluff.",
+      "hint": "Ideal for making the letter accessible to all readers."
+    },
+    {
+      "label": "Align with agent guidelines",
+      "prompt": "Tailor the letter to explicitly reflect the uploaded agent submission guidelines and preferences.",
+      "hint": "Use when you want the letter to fit specific agent criteria."
+    }
+  ]
+}

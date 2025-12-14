@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client"
@@ -8,11 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-}
-
-enum WorkflowKind {
-  PERSONAL
-  BUSINESS
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -25,12 +20,9 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  // ✅ Existing
-  savedTools   SavedTool[]
-  toolRatings  ToolRating[]
-
-  // ✅ NEW: saved workflow profiles
-  workflows    WorkflowProfile[]
+  // opposite relation fields
+  savedTools  SavedTool[]
+  toolRatings ToolRating[]
 }
 
 model Account {
@@ -50,6 +42,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -59,6 +52,8 @@ model Session {
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model VerificationToken {
@@ -75,10 +70,11 @@ model Tool {
   title       String
   description String?
   category    String?
+
   inputLabel  String?
   outputLabel String?
 
-  // Rating aggregates (fast to read)
+  // rating aggregates (fast reads)
   ratingAvg   Float @default(0)
   ratingCount Int   @default(0)
 
@@ -98,7 +94,7 @@ model SavedTool {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   tool Tool @relation(fields: [toolId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, toolId]) // user can only save a tool once
+  @@unique([userId, toolId])
   @@index([userId])
   @@index([toolId])
 }
@@ -114,22 +110,7 @@ model ToolRating {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   tool Tool @relation(fields: [toolId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, toolId]) // one rating per user per tool (edit-able)
+  @@unique([userId, toolId])
   @@index([toolId])
-}
-
-model WorkflowProfile {
-  id        String       @id @default(cuid())
-  userId    String
-  kind      WorkflowKind @default(PERSONAL)
-  name      String
-  data      Json
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@index([userId])
-  @@index([userId, kind])
 }

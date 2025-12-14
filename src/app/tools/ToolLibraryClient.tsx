@@ -264,9 +264,9 @@ function StarsInline({ value, count }: { value?: number | null; count?: number |
   const stars = Array.from({ length: 5 }, (_, i) => (i < full ? "★" : "☆")).join("");
 
   return (
-    <div className="flex items-center gap-2 text-[12px] text-slate-300">
+    <div className="flex items-center gap-2 text-[12px] text-slate-200/90">
       <span className="tracking-[0.2em] text-yellow-300/90">{stars}</span>
-      <span className="text-slate-400">{c > 0 ? `${v.toFixed(1)} (${c})` : "No ratings"}</span>
+      <span className="text-slate-300/80">{c > 0 ? `${v.toFixed(1)} (${c})` : "No ratings"}</span>
     </div>
   );
 }
@@ -305,13 +305,13 @@ type WorkflowRow = {
 type RecommendPayload = {
   kind: WorkflowKind;
 
-  // “business-style”
+  // business-style
   companyType: string;
   industry: string;
   teamSize: string;
   roles: string;
 
-  // “personal-style”
+  // personal-style
   jobTitle: string;
   functionArea: string;
 
@@ -334,6 +334,52 @@ type ToolIdea = {
   whyDifferent: string;
 };
 
+function SectionCard({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-sm sm:text-base font-semibold text-slate-100">{title}</div>
+          {subtitle && <div className="mt-1 text-[12px] sm:text-sm text-slate-300/70">{subtitle}</div>}
+        </div>
+      </div>
+      <div className="mt-4">{children}</div>
+    </div>
+  );
+}
+
+function Pill({
+  active,
+  children,
+  onClick,
+}: {
+  active?: boolean;
+  children: React.ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={
+        active
+          ? "rounded-full px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-500/80 to-blue-500/70 border border-purple-300/40 shadow-md shadow-purple-900/40"
+          : "rounded-full px-4 py-2 text-sm font-semibold text-slate-100 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-300/40 transition"
+      }
+    >
+      {children}
+    </button>
+  );
+}
+
 function RecommendWizard({
   open,
   onClose,
@@ -347,7 +393,8 @@ function RecommendWizard({
   onRequireSignIn: () => Promise<void>;
   onSavedSlugsLocalAdd: (slugs: string[]) => void;
 }) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  // step 0 = choose context, 1 = form, 2 = recommendations, 3 = build new tools
+  const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
 
   const [workflows, setWorkflows] = useState<WorkflowRow[]>([]);
   const [workflowsLoaded, setWorkflowsLoaded] = useState(false);
@@ -355,15 +402,12 @@ function RecommendWizard({
 
   const [form, setForm] = useState<RecommendPayload>({
     kind: "PERSONAL",
-
     companyType: "",
     industry: "",
     teamSize: "",
     roles: "",
-
     jobTitle: "",
     functionArea: "",
-
     normalWeek: "",
     slowDowns: "",
     documents: "",
@@ -429,7 +473,7 @@ function RecommendWizard({
     if (!open) return;
 
     // reset on open
-    setStep(1);
+    setStep(0);
     setLoading(false);
     setRecommendations([]);
     setIdeas([]);
@@ -456,12 +500,25 @@ function RecommendWizard({
     setWorkflows([]);
     setWorkflowsLoaded(false);
 
-    // load workflows for autofill
     loadWorkflowsOnce();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   async function submitIntake() {
+    // light validation: we want at least some signal
+    const hasAnySignal =
+      form.normalWeek.trim() ||
+      form.slowDowns.trim() ||
+      form.documents.trim() ||
+      (form.kind === "BUSINESS"
+        ? form.companyType.trim() || form.roles.trim()
+        : form.jobTitle.trim() || form.functionArea.trim());
+
+    if (!hasAnySignal) {
+      flash("Add a little detail first — even 1–2 sentences is enough.");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/recommend", {
@@ -659,28 +716,32 @@ function RecommendWizard({
   const isBusiness = form.kind === "BUSINESS";
 
   const topHelp = isBusiness
-    ? "Business mode: describe your company and roles so Atlas can recommend tools across the team."
+    ? "Business mode: describe your company + roles so Atlas can recommend tools across the team."
     : "Personal mode: describe your own job + workflow so Atlas can recommend tools for you.";
+
+  const chosenCount = Object.values(selectedRec).filter(Boolean).length;
 
   return (
     <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm" role="dialog" aria-modal="true">
       <div className="absolute inset-0 flex items-end sm:items-center justify-center p-3 sm:p-4">
         <div className="relative w-full max-w-3xl rounded-2xl sm:rounded-3xl border border-white/10 bg-[#020617]/95 shadow-2xl shadow-purple-900/50 overflow-hidden">
           <div className="max-h-[90vh] overflow-y-auto overscroll-contain">
-            <div className="sticky top-0 z-10 border-b border-white/10 bg-[#020617]/95 backdrop-blur">
-              <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-start justify-between gap-3">
+            <div className="sticky top-0 z-20 border-b border-white/10 bg-[#020617]/95 backdrop-blur">
+              <div className="px-4 sm:px-6 py-4 flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold tracking-[0.25em] text-purple-300/80 uppercase">
+                  <p className="text-[11px] font-semibold tracking-[0.28em] text-purple-300/80 uppercase">
                     Atlas Recommendations
                   </p>
-                  <h2 className="text-base sm:text-lg md:text-xl font-semibold leading-snug">
-                    {step === 1 && "Recommend tools for your workflow"}
+                  <h2 className="text-base sm:text-lg md:text-xl font-semibold leading-snug text-slate-50">
+                    {step === 0 && "Start with your context"}
+                    {step === 1 && "Describe your workflow"}
                     {step === 2 && "Your recommended tools"}
-                    {step === 3 && "Optional: build brand-new tools for you"}
+                    {step === 3 && "Optional: build brand-new tools"}
                   </h2>
-                  <p className="mt-1 text-[11px] sm:text-xs md:text-sm text-gray-400">
-                    {step === 1 && "Start by choosing Personal vs Business, then describe the workflow."}
-                    {step === 2 && "These picks are tailored to what you wrote — save them to your account."}
+                  <p className="mt-1 text-[12px] sm:text-sm text-slate-300/70">
+                    {step === 0 && "Pick Personal or Business. Then we’ll ask a few quick questions."}
+                    {step === 1 && "Write what you do, what breaks, and what docs you touch. Atlas matches tools."}
+                    {step === 2 && "Review and save the tools you want. You can also go back and edit inputs."}
                     {step === 3 && "These are new tool ideas generated from your workflow that Atlas can auto-build for you."}
                   </p>
                 </div>
@@ -688,65 +749,143 @@ function RecommendWizard({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="shrink-0 rounded-full bg-white/5 px-2.5 py-1.5 text-xs text-gray-300 hover:bg-white/10"
+                  className="shrink-0 rounded-full bg-white/5 px-3 py-2 text-xs text-slate-200 hover:bg-white/10"
                   aria-label="Close"
                 >
                   ✕
                 </button>
               </div>
+
+              {/* Step 2 sticky actions (top): SAVE SELECTED at the top */}
+              {step === 2 && (
+                <div className="px-4 sm:px-6 pb-4">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 px-3 sm:px-4 py-3 flex items-center justify-between gap-3">
+                    <div className="text-[12px] sm:text-sm text-slate-200">
+                      <span className="font-semibold text-slate-50">{chosenCount}</span>{" "}
+                      <span className="text-slate-300/80">selected</span>
+                      <span className="text-slate-500"> • </span>
+                      <span className="text-slate-300/80">{recommendations.length} recommended</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setStep(1)}
+                        className="rounded-full px-3 py-2 text-xs sm:text-sm text-slate-200 border border-white/10 bg-white/5 hover:bg-white/10 transition"
+                      >
+                        ← Edit inputs
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={saveRecommended}
+                        disabled={loading}
+                        className="rounded-full px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-purple-500/80 to-blue-500/70 border border-purple-300/40 hover:opacity-90 transition disabled:opacity-60"
+                      >
+                        {loading ? "Saving…" : "Save selected →"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {toast && (
               <div className="px-4 sm:px-6 pt-4">
-                <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[12px] text-gray-200">
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[12px] sm:text-sm text-slate-100">
                   {toast}
                 </div>
               </div>
             )}
 
-            <div className="px-4 sm:px-6 pb-5 sm:pb-6 pt-4 sm:pt-5">
-              {step === 1 && (
+            <div className="px-4 sm:px-6 pb-6 pt-4">
+              {step === 0 && (
                 <div className="space-y-4">
-                  {/* MODE + SAVED WORKFLOWS */}
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                      <div>
-                        <div className="text-xs font-semibold text-gray-200">1) Choose context</div>
-                        <div className="mt-1 text-[11px] text-gray-500">{topHelp}</div>
-                      </div>
+                  <SectionCard
+                    title="Choose your context"
+                    subtitle="This changes the questions we ask and how Atlas recommends tools."
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm((p) => ({ ...p, kind: "PERSONAL" }));
+                          setStep(1);
+                        }}
+                        className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-300/40 transition p-4 text-left"
+                      >
+                        <div className="text-base font-semibold text-slate-50">Personal</div>
+                        <div className="mt-1 text-sm text-slate-300/70">
+                          You describe <span className="text-slate-200 font-semibold">your job</span>, your tasks, and friction points.
+                        </div>
+                        <div className="mt-3 text-[12px] text-purple-200/90">
+                          Best for: solo productivity, day-job workflows, personal ops
+                        </div>
+                      </button>
 
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setForm((p) => ({ ...p, kind: "PERSONAL" }))}
-                          className={
-                            form.kind === "PERSONAL"
-                              ? "rounded-full px-3 py-2 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40"
-                              : "rounded-full px-3 py-2 text-xs font-semibold text-gray-200 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-400/40 transition"
-                          }
-                        >
-                          Personal
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setForm((p) => ({ ...p, kind: "BUSINESS" }))}
-                          className={
-                            form.kind === "BUSINESS"
-                              ? "rounded-full px-3 py-2 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40"
-                              : "rounded-full px-3 py-2 text-xs font-semibold text-gray-200 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-400/40 transition"
-                          }
-                        >
-                          Business
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm((p) => ({ ...p, kind: "BUSINESS" }));
+                          setStep(1);
+                        }}
+                        className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-300/40 transition p-4 text-left"
+                      >
+                        <div className="text-base font-semibold text-slate-50">Business</div>
+                        <div className="mt-1 text-sm text-slate-300/70">
+                          You describe <span className="text-slate-200 font-semibold">your company</span>, team roles, and operational bottlenecks.
+                        </div>
+                        <div className="mt-3 text-[12px] text-purple-200/90">
+                          Best for: teams, org workflows, cross-function tool stacks
+                        </div>
+                      </button>
                     </div>
 
-                    {/* Saved workflow picker */}
-                    <div className="mt-3 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2">
+                    <div className="mt-4 rounded-2xl border border-purple-300/20 bg-purple-500/10 p-3 text-sm text-slate-200">
+                      <span className="font-semibold text-purple-100">Tip:</span>{" "}
+                      You can save multiple “workflow profiles” and re-run recommendations later.
+                    </div>
+                  </SectionCard>
+
+                  <div className="flex items-center justify-end">
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className="rounded-full px-4 py-2 text-sm text-slate-200 border border-white/10 bg-white/5 hover:bg-white/10 transition"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {step === 1 && (
+                <div className="space-y-4">
+                  <SectionCard
+                    title={isBusiness ? "Business profile" : "Personal profile"}
+                    subtitle={topHelp}
+                  >
+                    {/* mode pills (still accessible, but now secondary) */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Pill active={form.kind === "PERSONAL"} onClick={() => setForm((p) => ({ ...p, kind: "PERSONAL" }))}>
+                        Personal
+                      </Pill>
+                      <Pill active={form.kind === "BUSINESS"} onClick={() => setForm((p) => ({ ...p, kind: "BUSINESS" }))}>
+                        Business
+                      </Pill>
+                      <button
+                        type="button"
+                        onClick={() => setStep(0)}
+                        className="ml-auto rounded-full px-3 py-2 text-xs sm:text-sm text-slate-200 border border-white/10 bg-white/5 hover:bg-white/10 transition"
+                      >
+                        Change context
+                      </button>
+                    </div>
+
+                    {/* saved workflow picker */}
+                    <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2">
                       <div className="min-w-0">
-                        <div className="mb-1 text-[11px] text-gray-400">
-                          Saved workflows (autofill)
-                        </div>
+                        <div className="mb-1 text-[12px] text-slate-300/70">Autofill from a saved workflow</div>
                         <select
                           value={selectedWorkflowId}
                           onChange={(e) => {
@@ -755,7 +894,7 @@ function RecommendWizard({
                             const w = workflows.find((x) => x.id === id);
                             if (w) applyWorkflowData(w);
                           }}
-                          className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-gray-100 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
+                          className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-500/40"
                         >
                           <option value="" className="bg-[#020617]">
                             {workflowsLoaded
@@ -779,228 +918,233 @@ function RecommendWizard({
                         onClick={(e) => {
                           if (!isSignedIn) e.preventDefault();
                         }}
-                        className="self-end rounded-full px-3 py-2.5 text-xs font-semibold text-gray-200 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-400/40 transition text-center"
+                        className="self-end rounded-full px-4 py-3 text-sm font-semibold text-slate-100 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-300/40 transition text-center"
                         title={isSignedIn ? "Manage saved workflows" : "Sign in to manage workflows"}
                       >
                         Manage →
                       </Link>
                     </div>
-                  </div>
+                  </SectionCard>
 
-                  {/* FIELDS */}
-                  {isBusiness ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Field
-                        label="Company type"
-                        value={form.companyType}
-                        onChange={(v) => setForm((p) => ({ ...p, companyType: v }))}
-                        placeholder="Agency, SaaS, restaurant group…"
+                  <SectionCard
+                    title="Quick details"
+                    subtitle="This helps Atlas narrow down the best tools."
+                  >
+                    {isBusiness ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <Field
+                          label="Company type"
+                          value={form.companyType}
+                          onChange={(v) => setForm((p) => ({ ...p, companyType: v }))}
+                          placeholder="Agency, SaaS, restaurant group…"
+                        />
+                        <Field
+                          label="Industry"
+                          value={form.industry}
+                          onChange={(v) => setForm((p) => ({ ...p, industry: v }))}
+                          placeholder="Healthcare, logistics, fintech…"
+                        />
+                        <Field
+                          label="Team size"
+                          value={form.teamSize}
+                          onChange={(v) => setForm((p) => ({ ...p, teamSize: v }))}
+                          placeholder="1, 5, 20, 200…"
+                        />
+                        <Field
+                          label="Key roles"
+                          value={form.roles}
+                          onChange={(v) => setForm((p) => ({ ...p, roles: v }))}
+                          placeholder="Sales, Ops, Support, Finance…"
+                        />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <Field
+                          label="Your job title"
+                          value={form.jobTitle}
+                          onChange={(v) => setForm((p) => ({ ...p, jobTitle: v }))}
+                          placeholder="Analyst, Sales rep, Nurse, Student…"
+                        />
+                        <Field
+                          label="Function / focus"
+                          value={form.functionArea}
+                          onChange={(v) => setForm((p) => ({ ...p, functionArea: v }))}
+                          placeholder="Support, Finance, Ops, Writing, Engineering…"
+                        />
+                        <Field
+                          label="Industry (optional)"
+                          value={form.industry}
+                          onChange={(v) => setForm((p) => ({ ...p, industry: v }))}
+                          placeholder="Fintech, healthcare, retail…"
+                        />
+                        <Field
+                          label="Team context (optional)"
+                          value={form.teamSize}
+                          onChange={(v) => setForm((p) => ({ ...p, teamSize: v }))}
+                          placeholder="Solo, 3-person team, 40-person dept…"
+                        />
+                      </div>
+                    )}
+                  </SectionCard>
+
+                  <SectionCard
+                    title="Your workflow"
+                    subtitle="Write naturally. Bullet points are great."
+                  >
+                    <div className="space-y-3">
+                      <TextArea
+                        label={isBusiness ? "Describe a normal week (company)" : "Describe a normal week (you)"}
+                        value={form.normalWeek}
+                        onChange={(v) => setForm((p) => ({ ...p, normalWeek: v }))}
+                        placeholder={
+                          isBusiness
+                            ? "What does the company do weekly? What repeats across teams?"
+                            : "What do you do repeatedly? What are the common tasks you handle?"
+                        }
+                        rows={5}
                       />
-                      <Field
-                        label="Industry"
-                        value={form.industry}
-                        onChange={(v) => setForm((p) => ({ ...p, industry: v }))}
-                        placeholder="Healthcare, logistics, fintech…"
+
+                      <TextArea
+                        label="What slows you down?"
+                        value={form.slowDowns}
+                        onChange={(v) => setForm((p) => ({ ...p, slowDowns: v }))}
+                        placeholder="Where do things break, get delayed, or feel manual?"
+                        rows={4}
                       />
-                      <Field
-                        label="Team size"
-                        value={form.teamSize}
-                        onChange={(v) => setForm((p) => ({ ...p, teamSize: v }))}
-                        placeholder="1, 5, 20, 200…"
-                      />
-                      <Field
-                        label="Key roles"
-                        value={form.roles}
-                        onChange={(v) => setForm((p) => ({ ...p, roles: v }))}
-                        placeholder="Sales, Ops, Support, Finance…"
+
+                      <TextArea
+                        label="What documents do you work with most?"
+                        value={form.documents}
+                        onChange={(v) => setForm((p) => ({ ...p, documents: v }))}
+                        placeholder="Proposals, contracts, invoices, SOPs, meeting notes…"
+                        rows={4}
                       />
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Field
-                        label="Your job title"
-                        value={form.jobTitle}
-                        onChange={(v) => setForm((p) => ({ ...p, jobTitle: v }))}
-                        placeholder="Analyst, Sales rep, Nurse, Student…"
-                      />
-                      <Field
-                        label="Function / focus"
-                        value={form.functionArea}
-                        onChange={(v) => setForm((p) => ({ ...p, functionArea: v }))}
-                        placeholder="Support, Finance, Ops, Writing, Engineering…"
-                      />
-                      <Field
-                        label="Industry (optional)"
-                        value={form.industry}
-                        onChange={(v) => setForm((p) => ({ ...p, industry: v }))}
-                        placeholder="Fintech, healthcare, retail…"
-                      />
-                      <Field
-                        label="Team context (optional)"
-                        value={form.teamSize}
-                        onChange={(v) => setForm((p) => ({ ...p, teamSize: v }))}
-                        placeholder="Solo, 3-person team, 40-person dept…"
-                      />
-                    </div>
-                  )}
 
-                  <TextArea
-                    label={isBusiness ? "Describe a normal week (company)" : "Describe a normal week (you)"}
-                    value={form.normalWeek}
-                    onChange={(v) => setForm((p) => ({ ...p, normalWeek: v }))}
-                    placeholder={
-                      isBusiness
-                        ? "What does the company do weekly? What repeats across teams?"
-                        : "What do you do repeatedly? What are the common tasks you handle?"
-                    }
-                  />
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-3">
+                      <div className="text-sm font-semibold text-slate-100">Save this workflow (optional)</div>
+                      <div className="mt-1 text-sm text-slate-300/70">
+                        Save a profile so you can autofill next time and keep iterating.
+                      </div>
 
-                  <TextArea
-                    label="What slows you down?"
-                    value={form.slowDowns}
-                    onChange={(v) => setForm((p) => ({ ...p, slowDowns: v }))}
-                    placeholder="Where do things break, get delayed, or feel manual?"
-                  />
-
-                  <TextArea
-                    label="What documents do you work with most?"
-                    value={form.documents}
-                    onChange={(v) => setForm((p) => ({ ...p, documents: v }))}
-                    placeholder="Proposals, contracts, invoices, SOPs, meeting notes…"
-                  />
-
-                  {/* SAVE WORKFLOW */}
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                    <div className="text-xs font-semibold text-gray-200">2) Save this workflow (optional)</div>
-                    <div className="mt-1 text-[11px] text-gray-500">
-                      Save your Personal/Business profile so you can autofill next time and keep iterating.
+                      <div className="mt-3 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2">
+                        <input
+                          value={profileName}
+                          onChange={(e) => setProfileName(e.target.value)}
+                          placeholder={
+                            isBusiness
+                              ? "Name this business workflow (e.g., My Agency Ops)"
+                              : "Name this personal workflow (e.g., My Day Job)"
+                          }
+                          className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-3 text-sm text-slate-100 placeholder:text-slate-400/60 outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-500/40"
+                        />
+                        <button
+                          type="button"
+                          onClick={saveWorkflowProfile}
+                          disabled={loading}
+                          className="rounded-full px-5 py-3 text-sm font-semibold text-white bg-gradient-to-r from-purple-500/80 to-blue-500/70 border border-purple-300/40 hover:opacity-90 transition disabled:opacity-60"
+                        >
+                          Save workflow
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="mt-3 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2">
-                      <input
-                        value={profileName}
-                        onChange={(e) => setProfileName(e.target.value)}
-                        placeholder={isBusiness ? "Name this business workflow (e.g., My Agency Ops)" : "Name this personal workflow (e.g., My Day Job)"}
-                        className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-gray-100 placeholder:text-gray-500 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
-                      />
+                    <div className="mt-4 flex items-center justify-between gap-3">
                       <button
                         type="button"
-                        onClick={saveWorkflowProfile}
-                        disabled={loading}
-                        className="rounded-full px-4 py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40 hover:opacity-90 transition disabled:opacity-60"
+                        onClick={() => setStep(0)}
+                        className="rounded-full px-4 py-2 text-sm text-slate-200 border border-white/10 bg-white/5 hover:bg-white/10 transition"
                       >
-                        Save workflow
+                        ← Back
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={submitIntake}
+                        disabled={loading}
+                        className="rounded-full px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-500/80 to-blue-500/70 border border-purple-300/40 hover:opacity-90 transition disabled:opacity-60"
+                      >
+                        {loading ? "Analyzing…" : "Get recommendations →"}
                       </button>
                     </div>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-3 pt-1">
-                    <div className="text-[11px] text-gray-500">
-                      You’re mapping your workflow — Atlas handles the tool matching.
-                    </div>
-                    <button
-                      type="button"
-                      onClick={submitIntake}
-                      disabled={loading}
-                      className="rounded-full px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40 hover:opacity-90 transition disabled:opacity-60"
-                    >
-                      {loading ? "Analyzing…" : "Get recommendations →"}
-                    </button>
-                  </div>
+                  </SectionCard>
                 </div>
               )}
 
               {step === 2 && (
-                <div className="space-y-4">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                    <p className="text-xs text-gray-200 font-semibold">
+                <div className="space-y-3">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-sm font-semibold text-slate-50">
                       Recommended tools ({recommendations.length})
                     </p>
-                    <p className="mt-1 text-[11px] text-gray-500">
-                      These recommendations are generated from your workflow description. Save the ones you want in your account.
+                    <p className="mt-1 text-sm text-slate-300/70">
+                      Toggle selections. Your “Save selected” button is at the top so you don’t lose it while scrolling.
                     </p>
                   </div>
 
                   <div className="space-y-2">
                     {recommendations.map((r) => (
-                      <div key={r.slug} className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                      <div key={r.slug} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                         <label className="flex items-start gap-3 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={!!selectedRec[r.slug]}
-                            onChange={(e) =>
-                              setSelectedRec((p) => ({ ...p, [r.slug]: e.target.checked }))
-                            }
-                            className="mt-1"
+                            onChange={(e) => setSelectedRec((p) => ({ ...p, [r.slug]: e.target.checked }))}
+                            className="mt-1.5"
                           />
                           <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-gray-100">{r.title}</span>
-                              <span className="text-[10px] text-gray-400">({r.slug})</span>
+                            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                              <span className="text-base font-semibold text-slate-50">{r.title}</span>
+                              <span className="text-[12px] text-slate-300/60">({r.slug})</span>
                             </div>
-                            <p className="mt-1 text-[12px] text-gray-300">
-                              <span className="text-purple-200 font-semibold">Why:</span> {r.reason}
-                            </p>
-                            <p className="mt-1 text-[12px] text-gray-400">
-                              <span className="text-purple-200 font-semibold">Use it when:</span> {r.moment}
-                            </p>
+
+                            <div className="mt-2 space-y-1.5">
+                              <p className="text-sm text-slate-200/90">
+                                <span className="text-purple-200 font-semibold">Why:</span>{" "}
+                                <span className="text-slate-200/90">{r.reason}</span>
+                              </p>
+                              <p className="text-sm text-slate-300/80">
+                                <span className="text-purple-200 font-semibold">Use it when:</span>{" "}
+                                <span className="text-slate-300/80">{r.moment}</span>
+                              </p>
+                            </div>
                           </div>
                         </label>
-
-                        {/* ✅ REMOVED: Open button on the right */}
                       </div>
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setStep(1)}
-                      className="rounded-full px-3 py-2 text-xs text-gray-200 border border-white/10 bg-white/5 hover:bg-white/10 transition"
-                    >
-                      ← Back
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={saveRecommended}
-                      disabled={loading}
-                      className="rounded-full px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40 hover:opacity-90 transition disabled:opacity-60"
-                    >
-                      {loading ? "Saving…" : "Save selected →"}
-                    </button>
+                  <div className="pt-2 text-[12px] text-slate-300/70">
+                    Want different results? Click <span className="text-slate-100 font-semibold">Edit inputs</span> at the top and add more detail.
                   </div>
                 </div>
               )}
 
               {step === 3 && (
                 <div className="space-y-4">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                    <p className="text-xs text-gray-200 font-semibold">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-sm font-semibold text-slate-50">
                       3 new tools Atlas can build for you ({ideas.length})
                     </p>
-                    <p className="mt-1 text-[11px] text-gray-500">
-                      These ideas are generated *from your workflow* and are intended to fill gaps that aren’t covered by existing tools.
-                      Pick up to 3 — Atlas will build them and auto-save them to your account.
+                    <p className="mt-1 text-sm text-slate-300/70">
+                      These are generated from your workflow to fill gaps. Pick up to 3 — Atlas will build and auto-save them.
                     </p>
                   </div>
 
                   <div className="space-y-2">
                     {ideas.map((idea, i) => (
-                      <div key={`${idea.title}-${i}`} className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                      <div key={`${idea.title}-${i}`} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                         <label className="flex items-start gap-3 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={!!selectedIdeas[i]}
-                            onChange={(e) =>
-                              setSelectedIdeas((p) => ({ ...p, [i]: e.target.checked }))
-                            }
-                            className="mt-1"
+                            onChange={(e) => setSelectedIdeas((p) => ({ ...p, [i]: e.target.checked }))}
+                            className="mt-1.5"
                           />
                           <div className="min-w-0">
-                            <div className="text-sm font-semibold text-gray-100">{idea.title}</div>
-                            <p className="mt-1 text-[12px] text-gray-300">{idea.description}</p>
-                            <p className="mt-1 text-[12px] text-gray-400">
+                            <div className="text-base font-semibold text-slate-50">{idea.title}</div>
+                            <p className="mt-2 text-sm text-slate-200/90">{idea.description}</p>
+                            <p className="mt-2 text-sm text-slate-300/80">
                               <span className="text-purple-200 font-semibold">Why it’s different:</span>{" "}
                               {idea.whyDifferent}
                             </p>
@@ -1014,7 +1158,7 @@ function RecommendWizard({
                     <button
                       type="button"
                       onClick={() => setStep(2)}
-                      className="rounded-full px-3 py-2 text-xs text-gray-200 border border-white/10 bg-white/5 hover:bg-white/10 transition"
+                      className="rounded-full px-4 py-2 text-sm text-slate-200 border border-white/10 bg-white/5 hover:bg-white/10 transition"
                     >
                       ← Back
                     </button>
@@ -1023,13 +1167,13 @@ function RecommendWizard({
                       type="button"
                       onClick={buildSelectedIdeas}
                       disabled={loading}
-                      className="rounded-full px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-purple-500/70 to-blue-500/60 border border-purple-400/40 hover:opacity-90 transition disabled:opacity-60"
+                      className="rounded-full px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-500/80 to-blue-500/70 border border-purple-300/40 hover:opacity-90 transition disabled:opacity-60"
                     >
                       {loading ? "Building…" : "Build selected + save ✅"}
                     </button>
                   </div>
 
-                  <div className="pt-1 text-[11px] text-gray-500">
+                  <div className="pt-1 text-[12px] text-slate-300/70">
                     Note: building commits new configs into your repo. Make sure env vars are set.
                   </div>
                 </div>
@@ -1057,12 +1201,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <div className="mb-1 text-[11px] text-gray-400">{label}</div>
+      <div className="mb-1 text-[12px] sm:text-sm text-slate-200/85 font-medium">{label}</div>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-gray-100 placeholder:text-gray-500 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
+        className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-3 text-sm text-slate-100 placeholder:text-slate-400/60 outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-500/40"
       />
     </label>
   );
@@ -1073,21 +1217,23 @@ function TextArea({
   value,
   onChange,
   placeholder,
+  rows = 4,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
+  rows?: number;
 }) {
   return (
     <label className="block">
-      <div className="mb-1 text-[11px] text-gray-400">{label}</div>
+      <div className="mb-1 text-[12px] sm:text-sm text-slate-200/85 font-medium">{label}</div>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        rows={4}
-        className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-gray-100 placeholder:text-gray-500 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
+        rows={rows}
+        className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-3 text-sm text-slate-100 placeholder:text-slate-400/60 outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-500/40"
       />
     </label>
   );

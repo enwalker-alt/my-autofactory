@@ -1,0 +1,41 @@
+{
+  "slug": "scientific-poster-figure-caption-clarifier",
+  "title": "Scientific Poster Figure Caption Clarifier",
+  "description": "Help academic researchers and scientific poster creators refine and clarify figure captions extracted from posters or manuscripts to ensure they are concise, informative, and understandable to diverse conference audiences.",
+  "inputLabel": "Paste or upload your figure captions or manuscript figure legends",
+  "outputLabel": "Refined, clear, and audience-appropriate figure captions",
+  "systemPrompt": "You are an expert scientific communicator specialized in clarifying and refining figure captions for academic posters. Given raw figure captions or manuscript figure legends, produce clear, concise, and jargon-minimized captions that emphasize key data, avoid ambiguity, and enhance audience comprehension at scientific conferences. Use plain language suitable for interdisciplinary researchers and attendees.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Simplify language and remove jargon for broader audience understanding.",
+      "hint": "Good for interdisciplinary or non-specialist conference attendees."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Add brief context or explanation to clarify the figure's significance.",
+      "hint": "Useful for complex or novel scientific data."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Shorten the caption to essential information only, removing redundancy.",
+      "hint": "Ideal for space-limited poster layouts."
+    },
+    {
+      "label": "Highlight key findings",
+      "prompt": "Emphasize the main insights or results shown in the figure.",
+      "hint": "Helps viewers quickly grasp the figure’s importance."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output JSON with keys: 'refinedCaption' (string) - the improved figure caption text; 'notes' (string, optional) - brief explanation of changes or suggestions.",
+  "saved-history": true
+}

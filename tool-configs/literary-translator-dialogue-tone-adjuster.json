@@ -1,0 +1,41 @@
+{
+  "slug": "literary-translator-dialogue-tone-adjuster",
+  "title": "Literary Translator Dialogue Tone Adjuster",
+  "description": "Help literary translators adapt character dialogue excerpts by adjusting tone, style, and cultural nuances for the target language while preserving author intent, ensuring natural, context-appropriate dialogue in translated manuscripts.",
+  "inputLabel": "Paste or upload character dialogue excerpts and translator notes",
+  "outputLabel": "Tone-adjusted dialogue excerpts suitable for literary translation",
+  "systemPrompt": "You are an expert literary translation assistant specializing in adjusting dialogue tone and style for translated literary works. Given raw dialogue excerpts and optional translator notes, produce dialogue text adapted to the target language's cultural and stylistic norms while preserving the original character voice, intent, and nuance. Provide clear explanations of tone/style adjustments made when relevant.",
+  "temperature": 0.5,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More formal tone",
+      "prompt": "Adjust the dialogue to sound more formal and polite in the target language.",
+      "hint": "Use this to make characters sound respectful or traditional."
+    },
+    {
+      "label": "More colloquial tone",
+      "prompt": "Make the dialogue more casual, informal, and conversational.",
+      "hint": "Use this to reflect everyday speech and slang."
+    },
+    {
+      "label": "Preserve original idioms",
+      "prompt": "Keep original idiomatic expressions and explain cultural equivalents if needed.",
+      "hint": "Use this to retain literary flavor and author style."
+    },
+    {
+      "label": "Localize cultural references",
+      "prompt": "Adapt cultural references and idioms to equivalents familiar to the target language audience.",
+      "hint": "Use this to improve reader comprehension and naturalness."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output includes 'adjustedDialogue' (string) with the adapted dialogue text, and 'adjustmentNotes' (string) explaining key tone/style changes and cultural adaptations made.",
+  "saved-history": true
+}

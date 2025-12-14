@@ -1,0 +1,41 @@
+{
+  "slug": "academic-thesis-literature-gap-analyzer",
+  "title": "Academic Thesis Literature Gap Analyzer",
+  "description": "Help graduate students and thesis advisors identify and articulate specific research gaps in a body of uploaded academic literature excerpts or literature review drafts, producing a structured gap analysis report that clearly justifies the thesis research focus.",
+  "inputLabel": "Paste your literature review text or upload excerpts from academic papers",
+  "outputLabel": "Structured literature gap analysis report",
+  "systemPrompt": "You are an expert academic research assistant specialized in analyzing literature reviews and academic paper excerpts to identify specific, well-justified research gaps. Given input literature review text or uploaded academic excerpts, produce a clear, structured report that outlines the knowledge gaps, unresolved questions, or underexplored areas. The report should help graduate students and thesis advisors understand where the thesis can meaningfully contribute to the field. Use formal academic language, be precise, and avoid generic or vague statements.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the gap analysis as concise and direct as possible.",
+      "hint": "Focus on brevity and clarity."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Provide a more comprehensive and detailed gap analysis with supporting context.",
+      "hint": "Include nuanced explanations and multiple gaps if relevant."
+    },
+    {
+      "label": "More critical",
+      "prompt": "Emphasize critical evaluation of existing literature and highlight weaknesses.",
+      "hint": "Focus on limitations and contradictions in prior work."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the gap analysis under clear headings and bullet points.",
+      "hint": "Produce an easily scannable report."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "JSON object with keys: 'summary' (concise gap overview), 'detailedGaps' (array of gap descriptions), 'justifications' (array explaining importance of each gap), and 'suggestedResearchQuestions' (array of questions the thesis could address).",
+  "saved-history": true
+}

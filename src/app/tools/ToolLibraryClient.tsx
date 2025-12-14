@@ -226,7 +226,20 @@ const CATEGORY_RULES: Record<
   compliance: {
     label: "Policy & Professional",
     phrases: ["terms of service", "privacy policy", "risk assessment"],
-    strong: ["policy", "compliance", "legal", "terms", "privacy", "disclaimer", "guidelines", "risk", "security", "hr", "regulation", "contract"],
+    strong: [
+      "policy",
+      "compliance",
+      "legal",
+      "terms",
+      "privacy",
+      "disclaimer",
+      "guidelines",
+      "risk",
+      "security",
+      "hr",
+      "regulation",
+      "contract",
+    ],
     weak: ["professional", "formal", "review", "safe"],
     minScore: 3,
   },
@@ -333,6 +346,14 @@ type ToolIdea = {
   description: string;
   whyDifferent: string;
 };
+
+function whyDifferentText(idea: ToolIdea) {
+  const w = (idea?.whyDifferent || "").trim();
+  if (w) return w;
+
+  // fallback so the UI is never blank here
+  return "Built specifically from your workflow details — more targeted than a generic template.";
+}
 
 function SectionCard({
   title,
@@ -720,6 +741,26 @@ function RecommendWizard({
     : "Personal mode: describe your own job + workflow so Atlas can recommend tools for you.";
 
   const chosenCount = Object.values(selectedRec).filter(Boolean).length;
+  const pickedIdeasCount = Object.values(selectedIdeas).filter(Boolean).length;
+
+  const stepTitle =
+    step === 0
+      ? "Start with your context"
+      : step === 1
+        ? "Describe your workflow"
+        : step === 2
+          ? "Your recommended tools"
+          : "Build new tools (optional)";
+
+  // ✅ removed the exact circled copy on step 0; tightened step 3 for clarity
+  const stepDesc =
+    step === 0
+      ? ""
+      : step === 1
+        ? "Write what you do, what breaks, and what docs you touch. Atlas matches tools."
+        : step === 2
+          ? "Review and save the tools you want. You can also go back and edit inputs."
+          : "Pick up to 3. Atlas will build and auto-save them.";
 
   return (
     <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm" role="dialog" aria-modal="true">
@@ -732,18 +773,14 @@ function RecommendWizard({
                   <p className="text-[11px] font-semibold tracking-[0.28em] text-purple-300/80 uppercase">
                     Atlas Recommendations
                   </p>
+
                   <h2 className="text-base sm:text-lg md:text-xl font-semibold leading-snug text-slate-50">
-                    {step === 0 && "Start with your context"}
-                    {step === 1 && "Describe your workflow"}
-                    {step === 2 && "Your recommended tools"}
-                    {step === 3 && "Optional: build brand-new tools"}
+                    {stepTitle}
                   </h2>
-                  <p className="mt-1 text-[12px] sm:text-sm text-slate-300/70">
-                    {step === 0 && "Pick Personal or Business. Then we’ll ask a few quick questions."}
-                    {step === 1 && "Write what you do, what breaks, and what docs you touch. Atlas matches tools."}
-                    {step === 2 && "Review and save the tools you want. You can also go back and edit inputs."}
-                    {step === 3 && "These are new tool ideas generated from your workflow that Atlas can auto-build for you."}
-                  </p>
+
+                  {stepDesc ? (
+                    <p className="mt-1 text-[12px] sm:text-sm text-slate-300/70">{stepDesc}</p>
+                  ) : null}
                 </div>
 
                 <button
@@ -801,10 +838,7 @@ function RecommendWizard({
             <div className="px-4 sm:px-6 pb-6 pt-4">
               {step === 0 && (
                 <div className="space-y-4">
-                  <SectionCard
-                    title="Choose your context"
-                    subtitle="This changes the questions we ask and how Atlas recommends tools."
-                  >
+                  <SectionCard title="Choose your context">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
                         type="button"
@@ -861,10 +895,7 @@ function RecommendWizard({
 
               {step === 1 && (
                 <div className="space-y-4">
-                  <SectionCard
-                    title={isBusiness ? "Business profile" : "Personal profile"}
-                    subtitle={topHelp}
-                  >
+                  <SectionCard title={isBusiness ? "Business profile" : "Personal profile"} subtitle={topHelp}>
                     {/* mode pills (still accessible, but now secondary) */}
                     <div className="flex items-center gap-2 flex-wrap">
                       <Pill active={form.kind === "PERSONAL"} onClick={() => setForm((p) => ({ ...p, kind: "PERSONAL" }))}>
@@ -926,10 +957,7 @@ function RecommendWizard({
                     </div>
                   </SectionCard>
 
-                  <SectionCard
-                    title="Quick details"
-                    subtitle="This helps Atlas narrow down the best tools."
-                  >
+                  <SectionCard title="Quick details" subtitle="This helps Atlas narrow down the best tools.">
                     {isBusiness ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <Field
@@ -987,10 +1015,7 @@ function RecommendWizard({
                     )}
                   </SectionCard>
 
-                  <SectionCard
-                    title="Your workflow"
-                    subtitle="Write naturally. Bullet points are great."
-                  >
+                  <SectionCard title="Your workflow" subtitle="Write naturally. Bullet points are great.">
                     <div className="space-y-3">
                       <TextArea
                         label={isBusiness ? "Describe a normal week (company)" : "Describe a normal week (you)"}
@@ -1074,9 +1099,7 @@ function RecommendWizard({
               {step === 2 && (
                 <div className="space-y-3">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-sm font-semibold text-slate-50">
-                      Recommended tools ({recommendations.length})
-                    </p>
+                    <p className="text-sm font-semibold text-slate-50">Recommended tools ({recommendations.length})</p>
                     <p className="mt-1 text-sm text-slate-300/70">
                       Toggle selections. Your “Save selected” button is at the top so you don’t lose it while scrolling.
                     </p>
@@ -1115,19 +1138,24 @@ function RecommendWizard({
                   </div>
 
                   <div className="pt-2 text-[12px] text-slate-300/70">
-                    Want different results? Click <span className="text-slate-100 font-semibold">Edit inputs</span> at the top and add more detail.
+                    Want different results? Click <span className="text-slate-100 font-semibold">Edit inputs</span> at the
+                    top and add more detail.
                   </div>
                 </div>
               )}
 
               {step === 3 && (
                 <div className="space-y-4">
+                  {/* ✅ simplified + faster to parse */}
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-sm font-semibold text-slate-50">
-                      3 new tools Atlas can build for you ({ideas.length})
-                    </p>
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-semibold text-slate-50">Pick up to 3 tools to auto-build</p>
+                      <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-slate-200">
+                        {pickedIdeasCount}/3 selected
+                      </span>
+                    </div>
                     <p className="mt-1 text-sm text-slate-300/70">
-                      These are generated from your workflow to fill gaps. Pick up to 3 — Atlas will build and auto-save them.
+                      Atlas generated these from your workflow. Select what you want and we’ll build + auto-save them.
                     </p>
                   </div>
 
@@ -1144,9 +1172,11 @@ function RecommendWizard({
                           <div className="min-w-0">
                             <div className="text-base font-semibold text-slate-50">{idea.title}</div>
                             <p className="mt-2 text-sm text-slate-200/90">{idea.description}</p>
+
+                            {/* ✅ never blank now */}
                             <p className="mt-2 text-sm text-slate-300/80">
                               <span className="text-purple-200 font-semibold">Why it’s different:</span>{" "}
-                              {idea.whyDifferent}
+                              {whyDifferentText(idea)}
                             </p>
                           </div>
                         </label>
@@ -1183,7 +1213,13 @@ function RecommendWizard({
         </div>
       </div>
 
-      <button type="button" aria-label="Close overlay" onClick={onClose} className="absolute inset-0 -z-10" tabIndex={-1} />
+      <button
+        type="button"
+        aria-label="Close overlay"
+        onClick={onClose}
+        className="absolute inset-0 -z-10"
+        tabIndex={-1}
+      />
     </div>
   );
 }
@@ -1578,9 +1614,7 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
                     </button>
                   </div>
 
-                  <div className="mt-3 text-[11px] text-purple-300/90 group-hover:text-purple-200">
-                    Open tool →
-                  </div>
+                  <div className="mt-3 text-[11px] text-purple-300/90 group-hover:text-purple-200">Open tool →</div>
                 </Link>
               );
             })}

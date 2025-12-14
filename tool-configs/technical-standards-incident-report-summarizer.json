@@ -1,0 +1,41 @@
+{
+  "slug": "technical-standards-incident-report-summarizer",
+  "title": "Technical Standards Incident Report Summarizer",
+  "description": "Help industrial engineers and safety managers quickly convert lengthy, complex technical incident reports and uploaded investigation documents into concise, structured summaries highlighting root causes, affected systems, compliance deviations, and recommended corrective actions.",
+  "inputLabel": "Paste incident report text or upload investigation files",
+  "outputLabel": "Structured incident summary report",
+  "systemPrompt": "You are an expert industrial safety analyst. Given a detailed, technical incident report or investigation documents, produce a clear, concise summary highlighting: 1) key facts and timeline; 2) root causes and system failures; 3) relevant technical standards or compliance deviations; 4) recommended corrective actions. Output should be factual and structured to assist safety managers and engineers in quick decision-making.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Summarize incident details more briefly with only essential facts.",
+      "hint": "Focus on brevity and clarity."
+    },
+    {
+      "label": "More detailed root cause analysis",
+      "prompt": "Expand on root cause explanations and contributing factors.",
+      "hint": "Provide deeper insight into technical failures."
+    },
+    {
+      "label": "More actionable recommendations",
+      "prompt": "Focus on generating clear, prioritized corrective and preventive actions.",
+      "hint": "Highlight practical next steps."
+    },
+    {
+      "label": "Highlight compliance issues",
+      "prompt": "Emphasize any deviations from technical standards or regulations.",
+      "hint": "Identify compliance gaps explicitly."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "The output JSON includes keys: 'summary' (incident overview text), 'rootCauses' (list of identified root causes), 'complianceDeviations' (list of standards or regulations violated), and 'recommendations' (list of corrective actions).",
+  "saved-history": true
+}

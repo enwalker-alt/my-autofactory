@@ -1,0 +1,43 @@
+{
+  "slug": "academic-grant-budget-category-allocator",
+  "title": "Academic Grant Budget Category Allocator",
+  "description": "Help academic researchers and grant administrators by analyzing uploaded detailed grant budget tables or pasted budget narratives and automatically allocating each expense line into standard budget categories (e.g., personnel, equipment, travel, indirect costs) with justifications, producing a clean, structured budget category mapping for proposal submission.",
+  "inputLabel": "Paste your grant budget narrative or upload detailed budget tables (CSV, TSV, or text) here",
+  "outputLabel": "Structured budget category allocation with justifications",
+  "systemPrompt": "You are an expert grant budget analyst specialized in academic research proposals. Given detailed budget tables or budget narratives, allocate each listed expense or line item into appropriate standard budget categories such as personnel, equipment, travel, supplies, subawards, and indirect costs. Provide a clear justification for each allocation. Output a structured JSON mapping each line item to a category and justification. If the input is ambiguous or missing key info, ask clarifying questions first before producing the final allocation.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More detailed justifications",
+      "prompt": "Provide more comprehensive explanations for each budget category allocation.",
+      "hint": "Use this to get deeper reasoning behind each classification."
+    },
+    {
+      "label": "Simplify explanations",
+      "prompt": "Use concise and plain language justifications for each budget allocation.",
+      "hint": "Good for quick review or non-expert readers."
+    },
+    {
+      "label": "Prioritize direct costs",
+      "prompt": "Emphasize and clearly separate direct cost allocations from indirect costs.",
+      "hint": "Useful for proposals with strict direct cost limits."
+    },
+    {
+      "label": "Highlight potential issues",
+      "prompt": "Flag any budget items that may be miscategorized or could raise funding agency concerns.",
+      "hint": "Helps identify risky or unclear budget allocations."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of objects each with keys: 'lineItem' (string), 'category' (string), and 'justification' (string) explaining the allocation.",
+  "clarifyPrompt": "Please provide any missing details about the funding agency's budget categories, restrictions, or any ambiguous expense descriptions so I can accurately allocate your budget items.",
+  "finalizePrompt": "Using the provided clarifications and the uploaded budget tables or narrative, produce a structured JSON mapping each budget line item to a standard category with a clear justification for each allocation."
+}

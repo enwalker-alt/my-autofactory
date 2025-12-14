@@ -7,7 +7,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -20,7 +19,6 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  // opposite relation fields
   savedTools  SavedTool[]
   toolRatings ToolRating[]
 }
@@ -74,7 +72,6 @@ model Tool {
   inputLabel  String?
   outputLabel String?
 
-  // rating aggregates (fast reads)
   ratingAvg   Float @default(0)
   ratingCount Int   @default(0)
 
@@ -103,7 +100,7 @@ model ToolRating {
   id        String   @id @default(cuid())
   userId    String
   toolId    String
-  value     Int // 1..5
+  value     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

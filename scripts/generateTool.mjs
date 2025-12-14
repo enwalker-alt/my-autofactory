@@ -40,6 +40,51 @@ const AVAILABLE_FEATURES = [
   "saved-history",
 ];
 
+// Default refinement lenses (generic, non-scenario, always useful)
+const DEFAULT_LENSES = [
+  {
+    label: "Make it clearer",
+    prompt:
+      "Rewrite/produce the output with maximum clarity. Reduce ambiguity, define terms briefly, and avoid jargon unless necessary.",
+    hint: "Improve clarity",
+  },
+  {
+    label: "More structured",
+    prompt:
+      "Use a clean structure with headings and bullet points. Make the output scannable and logically ordered.",
+    hint: "Add structure",
+  },
+  {
+    label: "More critical",
+    prompt:
+      "Be more rigorous. Identify weak spots, missing assumptions, contradictions, and any risks or limitations.",
+    hint: "Pressure-test",
+  },
+  {
+    label: "More actionable",
+    prompt:
+      "Add concrete next steps, checklists, or recommendations. Prioritize what to do first and why.",
+    hint: "Make it usable",
+  },
+  {
+    label: "Shorter",
+    prompt:
+      "Keep the output concise. Remove filler, keep only the highest-signal information, and use tight language.",
+    hint: "Concise",
+  },
+];
+
+// Labels that are too scenario-specific (we reject these)
+function isTooSpecificPresetLabel(label) {
+  const s = String(label || "").toLowerCase();
+  return (
+    /manuscript|paper|psychology|biology|social science|case study|example|notes on a|poster on|clinical|patient|contract|lawsuit|tax return|resume for/i.test(
+      s
+    ) ||
+    s.length > 60
+  );
+}
+
 const RUBRIC = `
 You are an expert product designer and idea generator for small, one-page AI tools.
 
@@ -73,9 +118,9 @@ AVAILABLE FEATURES (capabilities you can choose from for each tool):
 3) "presets"
    - Provide 2–6 clickable REFINEMENT LENSES that DO NOT fill the input box.
    - Each preset has: {label, prompt, hint?}
-   - The "prompt" is a short instruction that refines evaluation criteria or output style
-     (e.g. "Be brutally concise", "Flag risks", "Use executive tone", "Assume skeptical reviewer", etc.).
-   - These presets should help the user get better results faster without needing example text.
+   - The "prompt" is a short instruction that refines evaluation criteria or output style.
+   - Labels MUST be generic (e.g., "Make it clearer", "More structured", "More critical", "More actionable", "Shorter").
+   - DO NOT include scenario/example labels like "Review notes on a psychology manuscript".
 
 4) "structured-output"
    - The tool may request output format: "plain" or "json".
@@ -195,7 +240,8 @@ async function generateToolConfig(existingTools) {
           "Avoid overlapping the same user role or type of input text.\n\n" +
           "Prefer combining multiple features meaningfully (e.g., presets + structured-output, or file-upload + presets). " +
           "Use clarify-first when the workflow often has missing info.\n\n" +
-          'If you include "presets", they MUST be refinement lenses (label + prompt + optional hint), not example inputs.',
+          'If you include "presets", they MUST be refinement lenses (label + prompt + optional hint), not example inputs. ' +
+          "Labels MUST be generic (no domain examples).",
       },
     ],
     temperature: 0.7,
@@ -233,13 +279,12 @@ async function generateToolConfig(existingTools) {
           };
         }
 
-        // Back-compat: if model returns {input}, convert to a lens prompt (do NOT fill textarea)
+        // Back-compat: if model returns {input}, convert to a lens prompt
         if (typeof p?.input === "string" && p.input.trim()) {
           const input = p.input.trim().slice(0, 400);
           return {
             label,
-            prompt:
-              `Use this lens while generating: ${input}`.slice(0, 1200),
+            prompt: `Use this lens while generating: ${input}`.slice(0, 1200),
             hint: "Refinement lens (converted from legacy preset)",
           };
         }
@@ -248,27 +293,14 @@ async function generateToolConfig(existingTools) {
       })
       .filter(Boolean);
 
-    // If model forgot presets, add strong defaults
+    // De-specificity guard: if any label looks scenario-like, replace with defaults
+    if (presets.length && presets.some((p) => isTooSpecificPresetLabel(p.label))) {
+      presets = DEFAULT_LENSES.slice(0, 4);
+    }
+
+    // If model forgot presets, use strong generic defaults
     if (presets.length < 2) {
-      presets = [
-        {
-          label: "Brutally concise",
-          prompt: "Produce the shortest correct output possible. Remove filler. Prefer bullets.",
-          hint: "Fast, high-signal",
-        },
-        {
-          label: "Skeptical reviewer",
-          prompt:
-            "Assume the reader is skeptical. Highlight assumptions, gaps, and what evidence would strengthen the claim.",
-          hint: "Pressure-test quality",
-        },
-        {
-          label: "Actionable next steps",
-          prompt:
-            "End with a prioritized list of next actions, each with an owner role and an expected outcome.",
-          hint: "Make it usable",
-        },
-      ];
+      presets = DEFAULT_LENSES.slice(0, 4);
     }
   } else {
     presets = undefined;

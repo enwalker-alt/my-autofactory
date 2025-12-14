@@ -1,0 +1,41 @@
+{
+  "slug": "academic-peer-reviewed-journal-article-key-claim-extractor",
+  "title": "Academic Peer-Reviewed Journal Article Key Claim Extractor",
+  "description": "Help academic researchers and graduate students extract and summarize the main claims and supporting evidence from uploaded peer-reviewed journal article full texts or sections, producing a structured, concise list of key claims with citations for literature reviews and research synthesis.",
+  "inputLabel": "Paste article text or upload peer-reviewed journal article sections (e.g., Introduction, Results)",
+  "outputLabel": "Structured list of key claims with supporting evidence and citations",
+  "systemPrompt": "You are an expert research assistant. Given the full text or sections of a peer-reviewed academic journal article, identify and extract the main claims or findings presented by the authors. For each claim, provide a concise summary, the supporting evidence described (data, experiments, analysis), and the citation or section reference within the article. Present the output as a clear, structured list suitable for use in academic literature reviews or research syntheses.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Summarize claims and evidence in as few words as possible while retaining key information.",
+      "hint": "Use this to get a brief overview."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include detailed descriptions of evidence and any relevant methodological notes supporting each claim.",
+      "hint": "Use this for in-depth literature synthesis."
+    },
+    {
+      "label": "More critical",
+      "prompt": "Highlight any limitations or uncertainties related to each claim as discussed by the authors.",
+      "hint": "Use this to assess strength of evidence."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Output claims grouped by thematic categories or research questions if possible.",
+      "hint": "Use this to organize claims by topic."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of objects, each with 'claim' (string), 'supportingEvidence' (string), and 'citationOrSection' (string) keys.",
+  "saved-history": true
+}

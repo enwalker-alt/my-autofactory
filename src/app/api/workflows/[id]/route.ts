@@ -26,13 +26,13 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
     body?.kind === "BUSINESS" ? "BUSINESS" : body?.kind === "PERSONAL" ? "PERSONAL" : undefined;
   const data = body?.data ?? undefined;
 
-  const existing = await prisma.workflowProfile.findFirst({
+  const existing = await (prisma as any).workflowProfile.findFirst({
     where: { id, userId },
     select: { id: true },
   });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const updated = await prisma.workflowProfile.update({
+  const updated = await (prisma as any).workflowProfile.update({
     where: { id },
     data: {
       ...(name ? { name } : {}),
@@ -51,12 +51,12 @@ export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string 
 
   const { id } = await ctx.params;
 
-  const existing = await prisma.workflowProfile.findFirst({
+  const existing = await (prisma as any).workflowProfile.findFirst({
     where: { id, userId },
     select: { id: true },
   });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  await prisma.workflowProfile.delete({ where: { id } });
+  await (prisma as any).workflowProfile.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

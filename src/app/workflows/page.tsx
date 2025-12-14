@@ -23,7 +23,7 @@ export default async function WorkflowsPage() {
   const isSignedIn = !!userId;
 
   const workflows = userId
-    ? await prisma.workflowProfile.findMany({
+    ? await (prisma as any).workflowProfile.findMany({
         where: { userId },
         orderBy: { updatedAt: "desc" },
         select: {

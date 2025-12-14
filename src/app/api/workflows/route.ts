@@ -22,7 +22,7 @@ export async function GET() {
 
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const workflows = await prisma.workflowProfile.findMany({
+  const workflows = await (prisma as any).workflowProfile.findMany({
     where: { userId },
     orderBy: { updatedAt: "desc" },
     select: {
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing name or data" }, { status: 400 });
   }
 
-  const row = await prisma.workflowProfile.create({
+  const row = await (prisma as any).workflowProfile.create({
     data: { userId, name, kind, data },
     select: { id: true, kind: true, name: true, data: true, createdAt: true, updatedAt: true },
   });

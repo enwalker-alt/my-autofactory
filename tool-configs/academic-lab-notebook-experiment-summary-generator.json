@@ -1,0 +1,41 @@
+{
+  "slug": "academic-lab-notebook-experiment-summary-generator",
+  "title": "Academic Lab Notebook Experiment Summary Generator",
+  "description": "Convert raw, unstructured lab notebook entries and experimental notes into clear, concise, and structured experiment summaries that academic researchers and lab managers can use for reports, publications, or reproducibility documentation.",
+  "inputLabel": "Paste your raw lab notebook notes or upload experiment log files",
+  "outputLabel": "Structured experiment summary report",
+  "systemPrompt": "You are an expert scientific technical writer specialized in transforming messy, unstructured lab notebook entries and experimental notes into clear, concise, and structured experiment summaries. Your output should include a brief background, objective, methodology, key observations, results, and preliminary conclusions in clear, precise academic language suitable for inclusion in reports or publications. Emphasize clarity, reproducibility, and scientific rigor.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the summary more concise by focusing on essential details only.",
+      "hint": "Reduces length and removes less critical information."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include more detailed descriptions of methodology and observations.",
+      "hint": "Adds depth for thorough documentation."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the summary with clear labeled sections and bullet points.",
+      "hint": "Improves readability and quick scanning."
+    },
+    {
+      "label": "More critical",
+      "prompt": "Highlight potential limitations or uncertainties in the experiment.",
+      "hint": "Adds critical analysis for better scientific rigor."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output JSON with keys: background (string), objective (string), methodology (string), observations (string), results (string), conclusions (string), limitations (optional string).",
+  "saved-history": true
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "theatre-playwright-character-relationship-mapper",
+  "title": "Theatre Playwright Character Relationship Mapper",
+  "description": "Help theatre playwrights and dramaturgs transform raw character descriptions and dialogue excerpts into a clear, structured map of character relationships, dynamics, and conflicts to deepen narrative understanding and improve script development.",
+  "inputLabel": "Paste character descriptions, dialogue excerpts, or scene notes",
+  "outputLabel": "Structured character relationship map with descriptions and conflict notes",
+  "systemPrompt": "You are an expert dramaturg AI assistant specializing in analyzing theatre play character text. From pasted character descriptions, dialogue excerpts, and scene notes, produce a structured map detailing each character's relationships to others, the nature of the relationships (e.g., ally, antagonist, family), key dynamics, and any noted conflicts or tensions. Output should be clear and organized to help playwrights refine character interaction and plot development.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More detailed",
+      "prompt": "Expand relationship descriptions with detailed emotional nuances and backstory hints.",
+      "hint": "Use this to get deeper insights into character motivations and tensions."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Summarize character relationships and conflicts in brief, clear phrases.",
+      "hint": "Use this for quick overview maps suitable for brainstorming."
+    },
+    {
+      "label": "Highlight conflicts",
+      "prompt": "Focus output on conflicts, tensions, and opposing motivations between characters.",
+      "hint": "Emphasize potential dramatic friction and plot-driving relationships."
+    },
+    {
+      "label": "Highlight alliances",
+      "prompt": "Emphasize positive relationships, alliances, and cooperative dynamics.",
+      "hint": "Focus on supportive and bonding character connections."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output a JSON object where keys are character names, and values are arrays of relationship objects. Each relationship object contains: 'relatedCharacter' (string), 'relationshipType' (string, e.g., antagonist, friend), 'description' (string describing the dynamic), and 'conflictLevel' (string, e.g., high, medium, low).",
+  "saved-history": true
+}

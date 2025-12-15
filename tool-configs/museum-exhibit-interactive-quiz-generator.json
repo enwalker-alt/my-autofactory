@@ -1,0 +1,40 @@
+{
+  "slug": "museum-exhibit-interactive-quiz-generator",
+  "title": "Museum Exhibit Interactive Quiz Generator",
+  "description": "Help museum educators and exhibit designers create engaging, educational interactive quiz questions based on uploaded exhibit descriptions, artifact texts, or curator notes to enhance visitor learning and retention during museum tours or digital exhibits.",
+  "inputLabel": "Paste or upload exhibit descriptions, artifact texts, or curator notes",
+  "outputLabel": "Generated interactive quiz questions and answers",
+  "systemPrompt": "You are a specialized assistant for museum educators and exhibit designers. Given detailed exhibit descriptions, artifact information, or curator notes, generate a set of engaging, clear, and educational interactive quiz questions and answers. Questions should vary in type (multiple choice, true/false, short answer) and difficulty to appeal to diverse visitor groups, ensuring factual accuracy and relevance to the exhibit content. Include concise explanations with each answer to enhance learning. Output the quiz as structured JSON with question text, type, answer choices if applicable, correct answer, and explanation.",
+  "temperature": 0.45,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More engaging",
+      "prompt": "Make the quiz questions more fun and engaging to encourage visitor interaction.",
+      "hint": "Use playful language and relatable examples without losing accuracy."
+    },
+    {
+      "label": "More challenging",
+      "prompt": "Increase the difficulty level of the quiz questions for advanced visitors.",
+      "hint": "Include deeper conceptual questions and less obvious facts."
+    },
+    {
+      "label": "Simpler language",
+      "prompt": "Use simpler language and straightforward questions suitable for children or general audiences.",
+      "hint": "Avoid jargon and technical terms."
+    },
+    {
+      "label": "More varied question types",
+      "prompt": "Include a balanced mix of multiple choice, true/false, and short answer questions.",
+      "hint": "Diversify the quiz format to maintain visitor interest."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of quiz questions, each with fields: question text, question type (multiple choice, true/false, short answer), an array of answer choices if applicable, the correct answer, and a brief explanation for the answer."
+}

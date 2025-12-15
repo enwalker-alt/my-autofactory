@@ -18,9 +18,8 @@ export async function POST(request: Request) {
       body,
       request,
 
-      // This runs BEFORE the client gets a token
+      // Runs BEFORE the client gets a token
       onBeforeGenerateToken: async (pathname) => {
-        // Optional: you can validate pathname/file type here
         return {
           allowedContentTypes: [
             "audio/mpeg",

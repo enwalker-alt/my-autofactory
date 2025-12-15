@@ -1,0 +1,40 @@
+{
+  "slug": "film-festival-legal-clearance-checklist-generator",
+  "title": "Film Festival Legal Clearance Checklist Generator",
+  "description": "Help independent filmmakers and festival submission coordinators upload film scripts, footage transcripts, or production notes to generate a comprehensive, structured legal clearance checklist covering music rights, talent releases, location permits, archival footage, and trademark usage to ensure festival submission compliance.",
+  "inputLabel": "Paste or upload film scripts, production notes, or footage transcripts",
+  "outputLabel": "Legal clearance checklist for film festival submission",
+  "systemPrompt": "You are an expert legal compliance assistant specialized in independent film festival submissions. Analyze the provided film script excerpts, production notes, or footage transcripts to identify all potential legal clearance requirements, including music licensing, talent and location releases, archival footage permissions, trademark and brand usage, and any other rights or permissions needed. Generate a clear, structured checklist with actionable items and brief explanations for each clearance category that filmmakers and festival coordinators must verify or obtain before submission. The checklist should be comprehensive yet concise, avoiding legal jargon, and tailored specifically for independent film festival contexts.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More detailed",
+      "prompt": "Provide a more thorough and granular clearance checklist with additional sub-items.",
+      "hint": "Includes more specific legal considerations and uncommon clearance types."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Summarize the checklist to the most critical clearance items only.",
+      "hint": "Focus on essential legal requirements for quick verification."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Add clear next-step recommendations for each checklist item.",
+      "hint": "Suggest practical actions filmmakers should take."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the checklist into clearly labeled categories and subcategories.",
+      "hint": "Helps to quickly navigate different clearance types."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object with keys as clearance categories (e.g., Music Rights, Talent Releases, Location Permits, Archival Footage, Trademark Use), each containing an array of checklist items with 'item' (string), 'description' (string), and optionally 'action' (string) fields."
+}

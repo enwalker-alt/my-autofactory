@@ -287,28 +287,18 @@ export default function ToolClient({
   // This avoids serverless upload limits (the cause of 413s).
   const MAX_MEDIA_MB = 500; // adjust for your product / plan
 
-  async function uploadToBlob(file: File): Promise<string> {
-    // Get an upload token from your server (requires you to create /api/blob/token)
-    const tokenRes = await fetch("/api/blob/token", { method: "POST", cache: "no-store" });
-    const tokenJson = await tokenRes.json().catch(() => ({} as any));
-    if (!tokenRes.ok) {
-      throw new Error(tokenJson?.error || "Upload token failed");
-    }
+async function uploadToBlob(file: File): Promise<string> {
+  // Dynamic import keeps bundle smaller
+  const { upload } = await import("@vercel/blob/client");
 
-    const token = String(tokenJson?.token || "");
-    if (!token) throw new Error("Upload token missing");
+  // This calls your /api/blob/token route internally with the correct content-type/handshake
+  const blob = await upload(file.name, file, {
+    access: "public", // or "private"
+    handleUploadUrl: "/api/blob/token",
+  });
 
-    // Dynamic import keeps bundle smaller
-    const { put } = await import("@vercel/blob/client");
-
-    // Upload directly from the browser
-    const blob = await put(file.name, file, {
-      access: "public",
-      token,
-    });
-
-    return String(blob?.url || "");
-  }
+  return String(blob?.url || "");
+}
 
   async function transcribeMediaFile(file: File): Promise<string> {
     // 0) Client-side size guard

@@ -1,59 +1,50 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { handleUpload } from "@vercel/blob/client";
+import type { HandleUploadBody } from "@vercel/blob/client";
 
 export const runtime = "nodejs";
 
-export async function POST() {
+export async function POST(request: Request) {
+  const session = await auth().catch(() => null);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (request.body == null) {
+    return NextResponse.json({ error: "No request body" }, { status: 400 });
+  }
+
   try {
-    const session = await auth().catch(() => null);
-    if (!session?.user) {
-      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
-    }
-
-    const mod: any = await import("@vercel/blob");
-
-    // IMPORTANT: use the function that actually exists in your installed version
-    const createUploadToken =
-      mod.createUploadToken ?? mod.createUploadToken?.default ?? mod.createUploadToken;
-
-    if (!createUploadToken) {
-      return NextResponse.json(
-        { ok: false, error: "createUploadToken not found", keys: Object.keys(mod) },
-        { status: 500 }
-      );
-    }
-
-    const token = await createUploadToken({
-      // REQUIRED (don’t skip this)
-      pathname: "uploads/*",
-
-      allowedContentTypes: [
-        "audio/mpeg",
-        "audio/wav",
-        "audio/mp4",
-        "audio/x-m4a",
-        "video/mp4",
-        "video/quicktime",
-        "video/webm",
-        "application/pdf",
-        "text/plain",
-      ],
-
-      // NOTE: naming differences exist across versions
-      maximumSizeInBytes: 1024 * 1024 * 500,
+    const result = await handleUpload({
+      request,
+      body: request.body as unknown as HandleUploadBody,
+      onBeforeGenerateToken: async () => {
+        return {
+          allowedContentTypes: [
+            "audio/mpeg",
+            "audio/wav",
+            "audio/mp4",
+            "audio/x-m4a",
+            "video/mp4",
+            "video/quicktime",
+            "video/webm",
+            "application/pdf",
+            "text/plain",
+          ],
+          maximumSizeInBytes: 1024 * 1024 * 500, // 500MB
+        };
+      },
+      onUploadCompleted: async () => {
+        // optional: save blob.url to Prisma in the future
+      },
     });
 
-    return NextResponse.json({ ok: true, token });
+    return NextResponse.json(result);
   } catch (err: any) {
-    console.error("BLOB TOKEN ERROR:", err);
+    console.error("handleUpload error:", err);
     return NextResponse.json(
-      {
-        ok: false,
-        error: "Upload token failed",
-        message: err?.message ?? String(err),
-        name: err?.name,
-        stack: err?.stack,
-      },
+      { error: "Upload failed", details: err?.message ?? String(err) },
       { status: 500 }
     );
   }

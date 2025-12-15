@@ -151,6 +151,98 @@ function normalizeToLens(
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
+function looksLikeJson(s: string) {
+  const t = safeStr(s).trim();
+  if (!t) return false;
+  return t.startsWith("{") || t.startsWith("[");
+}
+
+function jsonToPlainText(x: any, opts?: { maxDepth?: number; maxLines?: number }) {
+  const maxDepth = opts?.maxDepth ?? 6;
+  const maxLines = opts?.maxLines ?? 260;
+
+  const lines: string[] = [];
+  const push = (line: string) => {
+    if (lines.length >= maxLines) return;
+    lines.push(line);
+  };
+
+  const isPrimitive = (v: any) =>
+    v === null || v === undefined || ["string", "number", "boolean"].includes(typeof v);
+
+  const formatPrimitive = (v: any) => {
+    if (v === null || v === undefined) return "";
+    if (typeof v === "string") return v;
+    return String(v);
+  };
+
+  const walk = (node: any, path: string[], depth: number) => {
+    if (lines.length >= maxLines) return;
+
+    if (depth > maxDepth) {
+      push(`${"  ".repeat(depth)}• (truncated)`);
+      return;
+    }
+
+    if (isPrimitive(node)) {
+      const key = path[path.length - 1] || "";
+      if (key) {
+        push(`${"  ".repeat(depth)}${titleCaseKey(key)}: ${formatPrimitive(node)}`.trim());
+      } else {
+        push(`${"  ".repeat(depth)}${formatPrimitive(node)}`.trim());
+      }
+      return;
+    }
+
+    if (Array.isArray(node)) {
+      const key = path[path.length - 1] || "";
+      if (key) push(`${"  ".repeat(depth)}${titleCaseKey(key)}:`);
+
+      // If array of primitives -> bullets
+      if (node.every(isPrimitive)) {
+        for (const item of node) {
+          if (lines.length >= maxLines) break;
+          push(`${"  ".repeat(depth + 1)}• ${formatPrimitive(item)}`);
+        }
+        return;
+      }
+
+      // Mixed/objects -> index headings
+      node.forEach((item, idx) => {
+        if (lines.length >= maxLines) return;
+        push(`${"  ".repeat(depth + 1)}- Item ${idx + 1}`);
+        walk(item, [], depth + 2);
+      });
+      return;
+    }
+
+    // object
+    const entries = Object.entries(node as Record<string, any>);
+    // If root-ish: add headings for top keys
+    for (const [k, v] of entries) {
+      if (lines.length >= maxLines) break;
+
+      if (isPrimitive(v)) {
+        push(`${"  ".repeat(depth)}${titleCaseKey(k)}: ${formatPrimitive(v)}`.trim());
+        continue;
+      }
+
+      // section heading
+      push(`${"  ".repeat(depth)}${titleCaseKey(k)}`);
+      push(`${"  ".repeat(depth)}${"-".repeat(Math.min(24, titleCaseKey(k).length))}`);
+      walk(v, [k], depth + 1);
+      push("");
+    }
+  };
+
+  walk(x, [], 0);
+
+  // Clean extra trailing blank lines
+  while (lines.length && lines[lines.length - 1].trim() === "") lines.pop();
+
+  return lines.join("\n");
+}
+
 export default function ToolClient({
   slug,
   inputLabel,
@@ -177,11 +269,19 @@ export default function ToolClient({
   const [transcribing, setTranscribing] = useState(false);
   const [transcribeNote, setTranscribeNote] = useState<string | null>(null);
 
-  const [output, setOutput] = useState("");
+  // Output
+  const [output, setOutput] = useState(""); // what we show in normal view
+  const [rawOutput, setRawOutput] = useState<string>(""); // what server returned (for debugging / raw JSON)
 
   // ✅ Always start in Plain mode on load
   const [outputFormat, setOutputFormat] = useState<"plain" | "json">("plain");
+
+  // What we *treat* the response as (for UI renderer)
   const [serverOutputFormat, setServerOutputFormat] = useState<"plain" | "json">("plain");
+
+  // If server returned JSON while user requested plain, we convert to plain and show an FYI banner
+  const [formatMismatch, setFormatMismatch] = useState(false);
+  const [showRaw, setShowRaw] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -215,17 +315,34 @@ export default function ToolClient({
   useEffect(() => {
     setOutputFormat("plain");
     setServerOutputFormat("plain");
+    setFormatMismatch(false);
+    setShowRaw(false);
+    setOutput("");
+    setRawOutput("");
   }, [slug]);
 
   const hasAnyInput = useMemo(() => {
     return input.trim().length > 0 || fileTexts.some((t) => t.trim().length > 0);
   }, [input, fileTexts]);
 
+  // Which text are we currently rendering?
+  const renderText = useMemo(() => {
+    return showRaw && rawOutput ? rawOutput : output;
+  }, [showRaw, rawOutput, output]);
+
+  const renderFormat = useMemo<"plain" | "json">(() => {
+    // If user toggles "show raw", try to treat it as json if it parses
+    if (showRaw && rawOutput) {
+      return safeJsonParse(rawOutput) ? "json" : "plain";
+    }
+    return serverOutputFormat;
+  }, [showRaw, rawOutput, serverOutputFormat]);
+
   const parsedJson = useMemo(() => {
-    if (!output) return null;
-    if (serverOutputFormat !== "json") return null;
-    return safeJsonParse(output);
-  }, [output, serverOutputFormat]);
+    if (!renderText) return null;
+    if (renderFormat !== "json") return null;
+    return safeJsonParse(renderText);
+  }, [renderText, renderFormat]);
 
   // ----- History storage -----
   const historyKey = `atlas_history_${slug}`;
@@ -476,6 +593,71 @@ export default function ToolClient({
     return (await res.json().catch(() => ({}))) as any;
   }
 
+  function applyServerOutput({
+    requestedFormat,
+    data,
+    combinedInput,
+  }: {
+    requestedFormat: "plain" | "json";
+    data: any;
+    combinedInput: string;
+  }) {
+    const serverReportedFmt = data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
+
+    // Clarify step is handled elsewhere, but keep safe
+    const outRaw = String(data?.output || "");
+    setRawOutput(outRaw);
+    setShowRaw(false);
+
+    // If the user requested PLAIN, we enforce plain rendering client-side:
+    // - If server claims JSON or output looks like JSON, we convert to readable plain text
+    if (requestedFormat === "plain") {
+      const parsed = safeJsonParse(outRaw);
+      const didReturnJson = serverReportedFmt === "json" || (looksLikeJson(outRaw) && !!parsed);
+
+      if (didReturnJson && parsed) {
+        const converted = jsonToPlainText(parsed);
+        setOutput(converted);
+        setServerOutputFormat("plain");
+        setFormatMismatch(true);
+      } else {
+        setOutput(outRaw);
+        setServerOutputFormat("plain");
+        setFormatMismatch(false);
+      }
+
+      pushHistory({
+        ts: Date.now(),
+        input: combinedInput,
+        output: didReturnJson && parsed ? jsonToPlainText(parsed) : outRaw,
+        outputFormat: "plain",
+        focusLabel: focusLabel || "",
+      });
+
+      setJustGenerated(true);
+      return;
+    }
+
+    // JSON mode requested → respect server format, but default to JSON rendering if it parses
+    setFormatMismatch(false);
+
+    const parsed = safeJsonParse(outRaw);
+    const effectiveFmt = parsed ? "json" : serverReportedFmt;
+
+    setServerOutputFormat(effectiveFmt);
+    setOutput(outRaw);
+
+    pushHistory({
+      ts: Date.now(),
+      input: combinedInput,
+      output: outRaw,
+      outputFormat: effectiveFmt,
+      focusLabel: focusLabel || "",
+    });
+
+    setJustGenerated(true);
+  }
+
   // ----- core submit -----
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -484,6 +666,9 @@ export default function ToolClient({
     setLoading(true);
     setError(null);
     setOutput("");
+    setRawOutput("");
+    setFormatMismatch(false);
+    setShowRaw(false);
 
     // Reset rating each generation
     setJustGenerated(false);
@@ -503,15 +688,15 @@ export default function ToolClient({
       const data = await callToolApi({
         input: combinedInput,
         outputFormat: requestedFormat,
+        // server should enforce, but client now also enforces in plain mode
+        enforceOutputFormat: true,
+
         jsonSchemaHint: supportsStructured ? jsonSchemaHint || "" : "",
         mode: supportsClarify ? "auto" : "simple",
 
         focusLabel: focusLabel || "",
         focusPrompt: focusPrompt || "",
       });
-
-      const serverFmt = data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
-      setServerOutputFormat(serverFmt);
 
       if (data?.step === "clarify" && Array.isArray(data?.questions) && data.questions.length > 0) {
         const qs = data.questions
@@ -524,21 +709,14 @@ export default function ToolClient({
           answers: qs.map(() => ""),
         });
         setOutput("");
+        setRawOutput("");
         setJustGenerated(false);
+        setFormatMismatch(false);
+        setShowRaw(false);
         return;
       }
 
-      const out = String(data.output || "");
-      setOutput(out);
-      setJustGenerated(true);
-
-      pushHistory({
-        ts: Date.now(),
-        input: combinedInput,
-        output: out,
-        outputFormat: serverFmt,
-        focusLabel: focusLabel || "",
-      });
+      applyServerOutput({ requestedFormat, data, combinedInput });
     } catch (err: any) {
       console.error(err);
       setError(err?.message || "Something went wrong");
@@ -563,7 +741,10 @@ export default function ToolClient({
     setClarifySubmitting(true);
     setError(null);
     setOutput("");
+    setRawOutput("");
     setJustGenerated(false);
+    setFormatMismatch(false);
+    setShowRaw(false);
 
     // Reset rating
     setHoverStars(null);
@@ -580,6 +761,8 @@ export default function ToolClient({
         input: combinedInput,
         answers,
         outputFormat: requestedFormat,
+        enforceOutputFormat: true,
+
         jsonSchemaHint: supportsStructured ? jsonSchemaHint || "" : "",
         mode: "auto",
 
@@ -587,21 +770,8 @@ export default function ToolClient({
         focusPrompt: focusPrompt || "",
       });
 
-      const serverFmt = data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
-      setServerOutputFormat(serverFmt);
-
-      const out = String(data.output || "");
-      setOutput(out);
-      setJustGenerated(true);
+      applyServerOutput({ requestedFormat, data, combinedInput });
       setClarify(null);
-
-      pushHistory({
-        ts: Date.now(),
-        input: combinedInput,
-        output: out,
-        outputFormat: serverFmt,
-        focusLabel: focusLabel || "",
-      });
     } catch (err: any) {
       console.error(err);
       setError(err?.message || "Something went wrong");
@@ -615,14 +785,18 @@ export default function ToolClient({
     setClarify(null);
     setError(null);
     setOutput("");
+    setRawOutput("");
+    setFormatMismatch(false);
+    setShowRaw(false);
     setJustGenerated(false);
     setTimeout(() => textareaRef.current?.focus(), 50);
   }
 
   async function handleCopy() {
-    if (!output) return;
+    const toCopy = renderText || "";
+    if (!toCopy) return;
     try {
-      await navigator.clipboard.writeText(output);
+      await navigator.clipboard.writeText(toCopy);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 900);
     } catch (err) {
@@ -676,10 +850,10 @@ export default function ToolClient({
   }
 
   const prettyOutput = useMemo(() => {
-    if (!output) return "";
-    if (serverOutputFormat === "json") return safeJsonPretty(output);
-    return output;
-  }, [output, serverOutputFormat]);
+    if (!renderText) return "";
+    if (renderFormat === "json") return safeJsonPretty(renderText);
+    return renderText;
+  }, [renderText, renderFormat]);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -879,8 +1053,8 @@ export default function ToolClient({
           placeholder="Paste or type your text here..."
         />
         <p className="mt-1 text-[11px] text-slate-500">
-          Tip: Press <span className="text-slate-300">Ctrl</span>+
-          <span className="text-slate-300">Enter</span> to generate.
+          Tip: Press <span className="text-slate-300">Ctrl</span>+<span className="text-slate-300">Enter</span>{" "}
+          to generate.
         </p>
       </div>
 
@@ -967,7 +1141,7 @@ export default function ToolClient({
         </button>
 
         <div className="flex items-center gap-4">
-          {output && justGenerated && (
+          {renderText && justGenerated && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-slate-300 hidden sm:inline">Rate output:</span>
 
@@ -979,9 +1153,7 @@ export default function ToolClient({
                       filled={n <= (hoverStars ?? selectedStars ?? 0)}
                       disabled={ratingSubmitting}
                       title={
-                        session?.user
-                          ? `Rate ${n} star${n > 1 ? "s" : ""}`
-                          : "Sign in to rate"
+                        session?.user ? `Rate ${n} star${n > 1 ? "s" : ""}` : "Sign in to rate"
                       }
                       onClick={() => submitRating(n)}
                     />
@@ -995,7 +1167,7 @@ export default function ToolClient({
             </div>
           )}
 
-          {output && (
+          {renderText && (
             <button
               type="button"
               onClick={handleCopy}
@@ -1011,16 +1183,36 @@ export default function ToolClient({
       {error && <p className="text-red-400 text-sm">{error}</p>}
 
       {/* OUTPUT */}
-      {output && (
+      {renderText && (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <h3 className="font-semibold">{outputLabel}</h3>
-            {serverOutputFormat === "json" && (
-              <span className="text-[11px] text-slate-400">Structured view</span>
-            )}
+
+            <div className="flex items-center gap-2">
+              {formatMismatch && (
+                <span className="text-[11px] text-amber-300">
+                  Returned JSON → converted to plain text
+                </span>
+              )}
+
+              {rawOutput && looksLikeJson(rawOutput) && (
+                <button
+                  type="button"
+                  onClick={() => setShowRaw((v) => !v)}
+                  className="text-[11px] text-slate-400 hover:text-slate-200 transition"
+                  title="Toggle raw output view"
+                >
+                  {showRaw ? "Hide raw" : "View raw"}
+                </button>
+              )}
+
+              {renderFormat === "json" && (
+                <span className="text-[11px] text-slate-400">Structured view</span>
+              )}
+            </div>
           </div>
 
-          {serverOutputFormat === "json" && parsedJson && isSimpleDisplayObject(parsedJson) ? (
+          {renderFormat === "json" && parsedJson && isSimpleDisplayObject(parsedJson) ? (
             <div className="rounded-xl border border-black/10 bg-white text-black p-4 space-y-4">
               {Object.keys(parsedJson).map((k) => {
                 const v = (parsedJson as any)[k];
@@ -1078,8 +1270,11 @@ export default function ToolClient({
                   onClick={() => {
                     setInput(h.input);
                     setOutput(h.output);
+                    setRawOutput(""); // history stores display output (plain or json). raw is per-run only
                     setOutputFormat(h.outputFormat);
                     setServerOutputFormat(h.outputFormat);
+                    setFormatMismatch(false);
+                    setShowRaw(false);
                     setClarify(null);
                     setJustGenerated(false);
                     setError(null);

@@ -1,0 +1,40 @@
+{
+  "slug": "museum-exhibit-accessibility-description-generator",
+  "title": "Museum Exhibit Accessibility Description Generator",
+  "description": "Help museum exhibit designers and accessibility coordinators convert detailed exhibit descriptions, artifact information, and spatial layout notes into clear, concise, and visitor-friendly accessibility descriptions. These descriptions highlight key accessibility features and potential barriers for visitors with disabilities, supporting inclusive exhibit design and compliance with accessibility standards.",
+  "inputLabel": "Paste or upload exhibit descriptions, artifact details, spatial layout notes, and accessibility-related observations",
+  "outputLabel": "Accessibility-focused exhibit description",
+  "systemPrompt": "You are an expert accessibility content writer specializing in museum exhibits. Given detailed exhibit descriptions, artifact information, spatial layout notes, and any accessibility observations, generate a clear, concise, and visitor-friendly accessibility description. Highlight key accessibility features (e.g., wheelchair access, tactile elements, audio descriptions) and potential barriers or challenges for visitors with disabilities. The output should support museum accessibility coordinators and exhibit designers in communicating inclusivity clearly and effectively to diverse audiences.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Rewrite the description to be simpler and easier to understand.",
+      "hint": "Use plain language suitable for general audiences."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Expand the description to include more specific accessibility features and potential barriers.",
+      "hint": "Include concrete examples and relevant accessibility standards."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Shorten the description while keeping all essential accessibility information.",
+      "hint": "Focus on brevity and clarity."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the description into clear sections with headings for features and barriers.",
+      "hint": "Use bullet points or numbered lists where appropriate."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "The output JSON includes: 'summary' (concise accessibility description), 'keyAccessibilityFeatures' (list of features), 'potentialBarriers' (list of barriers or challenges), and 'recommendations' (suggested improvements or notes)."
+}

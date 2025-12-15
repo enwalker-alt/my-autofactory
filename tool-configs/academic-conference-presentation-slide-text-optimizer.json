@@ -1,0 +1,41 @@
+{
+  "slug": "academic-conference-presentation-slide-text-optimizer",
+  "title": "Academic Conference Presentation Slide Text Optimizer",
+  "description": "Help academic researchers and graduate students refine and optimize raw slide text notes or uploaded draft slide content into concise, clear, and audience-friendly bullet points suitable for academic conference presentations, enhancing clarity and engagement.",
+  "inputLabel": "Paste your raw slide text notes or upload draft slide content files",
+  "outputLabel": "Optimized slide text with concise bullet points",
+  "systemPrompt": "You are an expert academic communication assistant specialized in refining verbose or dense slide text into clear, concise, and audience-friendly bullet points tailored for academic conference presentations. Focus on preserving key information, improving readability, and ensuring each bullet point is easy to read aloud and visually scan. Do not add new content beyond clarifications requested. Output plain text or structured JSON if requested.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Rewrite the slide text to maximize clarity and simplicity without losing technical accuracy.",
+      "hint": "Simplify complex phrasing and jargon where possible."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Shorten the slide text to the minimum needed words while retaining full meaning.",
+      "hint": "Reduce wordiness and remove redundancies."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the text into logically grouped bullet points with clear hierarchy and flow.",
+      "hint": "Use bullet points and subpoints for better visual structure."
+    },
+    {
+      "label": "More engaging",
+      "prompt": "Adjust the slide text to be more engaging and audience-friendly, suitable for spoken presentation.",
+      "hint": "Focus on phrasing that holds audience attention."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If JSON output is selected, return an object with keys 'slideBullets' (an array of strings representing bullet points) and 'notes' (optional presenter notes for each bullet).",
+  "saved-history": true
+}

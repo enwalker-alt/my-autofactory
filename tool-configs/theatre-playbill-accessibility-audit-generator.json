@@ -1,0 +1,40 @@
+{
+  "slug": "theatre-playbill-accessibility-audit-generator",
+  "title": "Theatre Playbill Accessibility Audit Generator",
+  "description": "Help theatre production assistants and accessibility coordinators upload or paste theatre playbill texts and promotional materials to generate a clear, structured accessibility audit report that identifies potential barriers for visually impaired and neurodiverse audience members, suggesting concrete improvements and compliance notes.",
+  "inputLabel": "Paste or upload theatre playbill text and promotional material",
+  "outputLabel": "Accessibility audit report",
+  "systemPrompt": "You are an expert in theatre accessibility and communications. Given the uploaded or pasted text from theatre playbills, programs, or promotional materials, generate a detailed accessibility audit report. Identify potential barriers for visually impaired audiences (such as unclear font descriptions, poor contrast, lack of alt text for images) and neurodiverse audiences (such as complex language, sensory overload warnings). Suggest clear, actionable improvements for each issue found. Present the audit in a structured format, categorizing issues by type, severity, and recommended fixes. Ensure the tone is professional and supportive, aimed at production assistants and accessibility coordinators seeking to improve their materials for inclusive audience engagement.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the accessibility audit report briefer and to the point, focusing on the highest priority issues only.",
+      "hint": "Ideal for quick reviews or summary reports."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Provide a thorough accessibility audit with detailed explanations and multiple improvement suggestions for each identified issue.",
+      "hint": "Useful for comprehensive accessibility compliance checks."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Focus the audit on concrete, practical steps that production teams can implement immediately to improve accessibility.",
+      "hint": "Helps prioritize fixable issues with clear guidance."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the audit report strictly by issue categories and severity levels for easy navigation and tracking.",
+      "hint": "Supports tracking and reporting progress on accessibility improvements."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with keys 'issues' (an array of objects each containing 'category' (e.g., visual, cognitive), 'description' of the issue, 'severity' (e.g., low, medium, high), and 'recommendedFix' (text instructions))."
+}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { signIn } from "next-auth/react";
+import { Building2, UserRound } from "lucide-react";
 
 type ToolMeta = {
   slug: string;
@@ -401,6 +402,30 @@ function Pill({
   );
 }
 
+function ProgressBar({
+  show,
+  progress,
+}: {
+  show: boolean;
+  progress: number; // 0..100
+}) {
+  return (
+    <div
+      className={`pointer-events-none absolute bottom-0 left-0 right-0 h-2 border-t border-white/10 bg-white/[0.03] ${
+        show ? "opacity-100" : "opacity-0"
+      } transition-opacity`}
+      aria-hidden={!show}
+    >
+      <div className="h-full w-full">
+        <div
+          className="h-full rounded-r-full bg-gradient-to-r from-purple-500/70 to-blue-500/60"
+          style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
 function RecommendWizard({
   open,
   onClose,
@@ -444,10 +469,47 @@ function RecommendWizard({
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<number | null>(null);
 
+  // analyzing-only progress bar (only for /api/recommend)
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzeProgress, setAnalyzeProgress] = useState(0);
+  const analyzeTimer = useRef<number | null>(null);
+
   function flash(msg: string) {
     setToast(msg);
     if (toastTimer.current) window.clearTimeout(toastTimer.current);
     toastTimer.current = window.setTimeout(() => setToast(null), 3500);
+  }
+
+  function startAnalyzeProgress() {
+    setAnalyzing(true);
+    setAnalyzeProgress(8);
+
+    if (analyzeTimer.current) window.clearInterval(analyzeTimer.current);
+    analyzeTimer.current = window.setInterval(() => {
+      setAnalyzeProgress((p) => {
+        // ease toward 92% while waiting
+        if (p >= 92) return p;
+        const bump = p < 40 ? 6 : p < 70 ? 3 : 1.5;
+        return Math.min(92, p + bump);
+      });
+    }, 220);
+  }
+
+  function stopAnalyzeProgress(success: boolean) {
+    if (analyzeTimer.current) window.clearInterval(analyzeTimer.current);
+    analyzeTimer.current = null;
+
+    if (success) {
+      setAnalyzeProgress(100);
+      window.setTimeout(() => {
+        setAnalyzing(false);
+        setAnalyzeProgress(0);
+      }, 350);
+      return;
+    }
+
+    setAnalyzing(false);
+    setAnalyzeProgress(0);
   }
 
   async function loadWorkflowsOnce() {
@@ -521,9 +583,21 @@ function RecommendWizard({
     setWorkflows([]);
     setWorkflowsLoaded(false);
 
+    setAnalyzing(false);
+    setAnalyzeProgress(0);
+    if (analyzeTimer.current) window.clearInterval(analyzeTimer.current);
+    analyzeTimer.current = null;
+
     loadWorkflowsOnce();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimer.current) window.clearTimeout(toastTimer.current);
+      if (analyzeTimer.current) window.clearInterval(analyzeTimer.current);
+    };
+  }, []);
 
   async function submitIntake() {
     // light validation: we want at least some signal
@@ -540,7 +614,9 @@ function RecommendWizard({
       return;
     }
 
+    startAnalyzeProgress();
     setLoading(true);
+
     try {
       const res = await fetch("/api/recommend", {
         method: "POST",
@@ -552,6 +628,7 @@ function RecommendWizard({
         const t = await res.text().catch(() => "");
         console.error("recommend error:", res.status, t);
         flash(`Recommend failed (${res.status})`);
+        stopAnalyzeProgress(false);
         setLoading(false);
         return;
       }
@@ -572,10 +649,12 @@ function RecommendWizard({
       id.forEach((_, i) => (initIdeas[i] = false));
       setSelectedIdeas(initIdeas);
 
+      stopAnalyzeProgress(true);
       setStep(2);
     } catch (e) {
       console.error(e);
       flash("Network error");
+      stopAnalyzeProgress(false);
     } finally {
       setLoading(false);
     }
@@ -848,12 +927,16 @@ function RecommendWizard({
                         }}
                         className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-300/40 transition p-4 text-left"
                       >
-                        <div className="text-base font-semibold text-slate-50">Personal</div>
-                        <div className="mt-1 text-sm text-slate-300/70">
-                          You describe <span className="text-slate-200 font-semibold">your job</span>, your tasks, and friction points.
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                            <UserRound className="h-4.5 w-4.5 text-purple-200/90" />
+                          </span>
+                          <div className="text-base font-semibold text-slate-50">Personal</div>
                         </div>
-                        <div className="mt-3 text-[12px] text-purple-200/90">
-                          Best for: solo productivity, day-job workflows, personal ops
+
+                        <div className="mt-2 text-sm text-slate-300/70">
+                          You describe <span className="text-slate-200 font-semibold">your job</span>, your tasks, and
+                          friction points.
                         </div>
                       </button>
 
@@ -865,12 +948,16 @@ function RecommendWizard({
                         }}
                         className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-300/40 transition p-4 text-left"
                       >
-                        <div className="text-base font-semibold text-slate-50">Business</div>
-                        <div className="mt-1 text-sm text-slate-300/70">
-                          You describe <span className="text-slate-200 font-semibold">your company</span>, team roles, and operational bottlenecks.
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                            <Building2 className="h-4.5 w-4.5 text-purple-200/90" />
+                          </span>
+                          <div className="text-base font-semibold text-slate-50">Business</div>
                         </div>
-                        <div className="mt-3 text-[12px] text-purple-200/90">
-                          Best for: teams, org workflows, cross-function tool stacks
+
+                        <div className="mt-2 text-sm text-slate-300/70">
+                          You describe <span className="text-slate-200 font-semibold">your company</span>, team roles,
+                          and operational bottlenecks.
                         </div>
                       </button>
                     </div>
@@ -1210,6 +1297,9 @@ function RecommendWizard({
               )}
             </div>
           </div>
+
+          {/* ✅ loading bar at the bottom (only during analysis) */}
+          <ProgressBar show={analyzing} progress={analyzeProgress} />
         </div>
       </div>
 

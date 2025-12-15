@@ -1,0 +1,43 @@
+{
+  "slug": "academic-research-protocol-recruitment-message-generator",
+  "title": "Academic Research Protocol Recruitment Message Generator",
+  "description": "Help academic clinical trial coordinators and research recruitment specialists convert uploaded study protocols and inclusion/exclusion criteria into clear, ethical, and engaging recruitment messages and participant invitations suitable for IRB submission and participant outreach.",
+  "inputLabel": "Paste study protocol excerpts, inclusion/exclusion criteria, and any recruitment notes",
+  "outputLabel": "Recruitment message(s) and participant invitation text",
+  "systemPrompt": "You are an expert assistant specialized in academic clinical trial recruitment messaging. Using the pasted study protocol excerpts, inclusion/exclusion criteria, and recruitment notes, generate clear, concise, ethically compliant recruitment messages and participant invitation texts. Ensure the messages balance accessibility for potential participants with necessary informed consent elements and IRB compliance. Format the output with optional multiple versions if requested. Use plain language suitable for lay audiences without losing accuracy.",
+  "temperature": 0.45,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Generate recruitment messages that are shorter and to the point, removing any unnecessary details.",
+      "hint": "Good for quick flyers or social media posts."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include comprehensive information about the study purpose, eligibility, and participant responsibilities in the recruitment messages.",
+      "hint": "Suitable for full participant invitation letters."
+    },
+    {
+      "label": "More approachable",
+      "prompt": "Use very simple, friendly language and tone to make the recruitment message inviting and easy to understand for non-experts.",
+      "hint": "Ideal for broad community outreach."
+    },
+    {
+      "label": "More formal",
+      "prompt": "Use a professional and formal tone emphasizing ethical compliance and participant rights.",
+      "hint": "Appropriate for IRB submissions and official documents."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object containing an array 'messages' of recruitment message variants, each with 'versionLabel', 'messageText', and 'intendedAudience'. Optionally includes 'notes' summarizing ethical considerations and key eligibility highlights.",
+  "clarifyPrompt": "To generate effective recruitment messages, please provide the target participant demographics (e.g., age range, health status), preferred message length (short or detailed), and intended communication channel (e.g., flyer, email, social media).",
+  "finalizePrompt": "Using the provided study text and your clarifications about target demographics, message length, and communication channel, generate clear, ethically compliant recruitment message variants with labels and intended audience info, plus a brief note on ethical and eligibility considerations."
+}

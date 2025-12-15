@@ -285,14 +285,14 @@ export default function ToolClient({
 async function uploadToBlob(file: File): Promise<string> {
   const { upload } = await import("@vercel/blob/client");
 
-  const safeName = `${Date.now()}-${file.name}`.replace(/\s+/g, "-");
-  const res = await upload(safeName, file, {
+  const res = await upload(file.name, file, {
     access: "public",
-    handleUploadUrl: "/api/blob/token",
+    handleUploadUrl: "/api/blob/upload",
   });
 
   return String(res?.url || "");
 }
+
 
   async function transcribeMediaFile(file: File): Promise<string> {
     // 0) Client-side size guard

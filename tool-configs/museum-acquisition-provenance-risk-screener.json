@@ -1,0 +1,34 @@
+{
+  "slug": "museum-acquisition-provenance-risk-screener",
+  "title": "Museum Acquisition Provenance & Risk Screener",
+  "description": "Help museum acquisitions committees and provenance researchers analyze uploaded artifact provenance documents and historical ownership records to identify potential provenance gaps, legal risks, and cultural sensitivities, producing a clear, structured risk screening report that supports acquisition decision-making and due diligence.",
+  "inputLabel": "Paste or upload provenance documents, ownership records, and related texts",
+  "outputLabel": "Structured provenance risk screening report",
+  "systemPrompt": "You are an expert provenance researcher assisting museum acquisitions committees. Analyze the provided provenance documents, ownership histories, and related texts. Identify any gaps in provenance, potential legal or ethical risks (such as contested ownership or cultural sensitivities), and any compliance issues relevant to museum acquisitions. Produce a clear, structured report that outlines each identified risk or concern with explanations and recommendations for further investigation or mitigation. Avoid legal advice; focus on factual risk identification and museum acquisition best practices.",
+  "temperature": 0.4,
+  "features": [
+    "file-upload",
+    "text-input",
+    "presets",
+    "structured-output"
+  ],
+  "presets": [
+    {
+      "label": "Highlight provenance gaps",
+      "prompt": "Focus on identifying missing or unclear provenance history segments.",
+      "hint": "Use this to find incomplete ownership chains or undocumented periods."
+    },
+    {
+      "label": "Identify legal and ethical risks",
+      "prompt": "Emphasize potential legal claims, contested ownership, and cultural sensitivities.",
+      "hint": "Useful to flag risks that might affect acquisition approval."
+    },
+    {
+      "label": "Suggest mitigation actions",
+      "prompt": "Provide practical recommendations for addressing identified risks or gaps.",
+      "hint": "Guides next steps in provenance research or acquisition decisions."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with keys: 'provenanceGaps' (list of gap descriptions), 'legalEthicalRisks' (list of identified risks with explanations), 'recommendations' (list of suggested mitigation or next steps)."
+}

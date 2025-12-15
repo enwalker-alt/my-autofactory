@@ -1,8 +1,8 @@
-// src/app/api/blob/token/route.ts
-
 import { NextResponse } from "next/server";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { auth } from "@/lib/auth";
+
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   const session = await auth().catch(() => null);
@@ -11,39 +11,49 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const userEmail = session.user.email;
+  try {
+    const body = (await request.json()) as HandleUploadBody;
 
-  const body = (await request.json()) as HandleUploadBody;
+    const jsonResponse = await handleUpload({
+      body,
+      request,
 
-  const jsonResponse = await handleUpload({
-    body,
-    request,
+      // This runs BEFORE the client gets a token
+      onBeforeGenerateToken: async (pathname) => {
+        // Optional: you can validate pathname/file type here
+        return {
+          allowedContentTypes: [
+            "audio/mpeg",
+            "audio/wav",
+            "audio/mp4",
+            "audio/x-m4a",
+            "video/mp4",
+            "video/quicktime",
+            "video/webm",
+            "application/pdf",
+            "text/plain",
+          ],
+          maximumSizeInBytes: 1024 * 1024 * 500, // 500MB
+          tokenPayload: JSON.stringify({
+            userEmail: session?.user?.email ?? "",
+            pathname,
+          }),
+        };
+      },
 
-    onBeforeGenerateToken: async () => {
-      return {
-        allowedContentTypes: [
-          "audio/mpeg",
-          "audio/wav",
-          "audio/mp4",
-          "audio/x-m4a",
-          "video/mp4",
-          "video/quicktime",
-          "video/webm",
-          "application/pdf",
-          "text/plain",
-        ],
-        maximumSizeInBytes: 1024 * 1024 * 500, // 500MB
-        tokenPayload: JSON.stringify({
-          userEmail: userEmail,
-        }),
-      };
-    },
+      // Optional: runs AFTER upload completes (Vercel calls this)
+      onUploadCompleted: async ({ blob, tokenPayload }) => {
+        // console.log("Upload complete:", blob.url, tokenPayload);
+        // TODO: optionally write blob.url to your DB
+      },
+    });
 
-    onUploadCompleted: async ({ blob, tokenPayload }) => {
-      console.log("Upload completed:", blob.url, tokenPayload);
-      // Optional: persist blob.url to DB
-    },
-  });
-
-  return NextResponse.json(jsonResponse);
+    return NextResponse.json(jsonResponse);
+  } catch (err: any) {
+    console.error("Blob token route error:", err);
+    return NextResponse.json(
+      { error: err?.message || "Blob token route failed" },
+      { status: 500 }
+    );
+  }
 }

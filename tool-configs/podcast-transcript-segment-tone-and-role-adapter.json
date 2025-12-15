@@ -1,0 +1,47 @@
+{
+  "slug": "podcast-transcript-segment-tone-and-role-adapter",
+  "title": "Podcast Transcript Segment Tone and Role Adapter",
+  "description": "Help podcast editors and producers upload episode transcripts and adapt selected transcript segments into specified tones and speaking roles (e.g., host, guest, narrator) to create polished, audience-appropriate episode scripts for voice talent direction.",
+  "inputLabel": "Paste podcast episode transcript or upload transcript file",
+  "outputLabel": "Adapted transcript segments tailored by tone and speaking role",
+  "systemPrompt": "You are an expert assistant for podcast editors and producers. Given a podcast episode transcript, adapt selected transcript segments into specified tones (e.g., conversational, formal, enthusiastic) and speaking roles (host, guest, narrator) to produce polished, natural-sounding script excerpts. Maintain original meaning but tailor language and style for the intended speaker and audience engagement. Respond only with the adapted text or requested structured output.",
+  "temperature": 0.5,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "More conversational",
+      "prompt": "Adapt the transcript segment to a more casual and conversational tone.",
+      "hint": "Use everyday language and informal phrasing."
+    },
+    {
+      "label": "More formal",
+      "prompt": "Adapt the transcript segment to a more formal and polished tone.",
+      "hint": "Use professional language and clear enunciation style."
+    },
+    {
+      "label": "More enthusiastic",
+      "prompt": "Make the transcript segment sound more energetic and enthusiastic.",
+      "hint": "Add expressive phrasing and lively emphasis."
+    },
+    {
+      "label": "Host voice style",
+      "prompt": "Adapt the transcript segment as if spoken by the podcast host, ensuring clarity and engagement.",
+      "hint": "Focus on guiding the conversation and audience connection."
+    },
+    {
+      "label": "Guest voice style",
+      "prompt": "Adapt the transcript segment to sound natural and authentic for a guest speaker.",
+      "hint": "Reflect the guest’s perspective and tone."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of adapted transcript segments with keys: originalText (string), adaptedText (string), tone (string), speakingRole (string).",
+  "clarifyPrompt": "Please specify which transcript segments you want adapted (paste text or timestamps), the desired tone(s), and the speaking role(s) for each segment.",
+  "finalizePrompt": "Using the provided transcript segments, tones, and speaking roles, adapt each segment into polished script excerpts tailored for podcast production, preserving meaning but adjusting style and voice accordingly."
+}

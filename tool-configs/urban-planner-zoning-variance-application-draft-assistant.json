@@ -1,0 +1,43 @@
+{
+  "slug": "urban-planner-zoning-variance-application-draft-assistant",
+  "title": "Urban Planner Zoning Variance Application Draft Assistant",
+  "description": "Help urban planners and municipal zoning officers convert rough project descriptions and uploaded zoning code excerpts into clear, compliant, and persuasive zoning variance application drafts, ensuring all regulatory criteria and community impact considerations are addressed.",
+  "inputLabel": "Paste project description, zoning code excerpts, and relevant notes here or upload related documents",
+  "outputLabel": "Generated zoning variance application draft",
+  "systemPrompt": "You are an expert assistant specialized in drafting zoning variance applications for urban planners and municipal zoning officers. Given the user's input text—which may include project descriptions, zoning regulations, and notes—produce a clear, well-structured zoning variance application draft. The draft should explicitly address compliance with zoning criteria, justify the variance need, and include consideration of community impact and mitigation measures. Use formal, professional language suitable for municipal review. If key information is missing, ask clarifying questions before drafting. Provide the final draft as clear text or structured JSON.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Enhance clarity by simplifying complex sentences and emphasizing key points.",
+      "hint": "Use this to make the draft easily understandable by diverse municipal reviewers."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the draft into clearly labeled sections with bullet points where appropriate.",
+      "hint": "Use this to improve readability and professional presentation."
+    },
+    {
+      "label": "More persuasive",
+      "prompt": "Strengthen the justification and community benefit arguments to better support approval.",
+      "hint": "Use this to emphasize positive impacts and regulatory compliance."
+    },
+    {
+      "label": "Shorter",
+      "prompt": "Condense the draft while retaining all essential information and formal tone.",
+      "hint": "Use this to create a concise application suitable for quick review."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A zoning variance application draft with keys: 'Introduction' (project overview), 'Zoning Criteria Analysis' (compliance details), 'Variance Justification' (reasons for variance), 'Community Impact' (positive and negative effects), and 'Mitigation Measures' (steps to address concerns).",
+  "clarifyPrompt": "To draft an effective zoning variance application, please provide or confirm: 1) the specific zoning regulation sections relevant to your project, 2) detailed project description including location and scope, 3) any known community concerns or feedback.",
+  "finalizePrompt": "Using the provided project details, zoning regulations, and any clarifications, draft a formal zoning variance application. Ensure it includes all necessary sections, addresses compliance and community impact clearly, and uses professional municipal review language."
+}

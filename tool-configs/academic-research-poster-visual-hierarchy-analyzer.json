@@ -1,0 +1,40 @@
+{
+  "slug": "academic-research-poster-visual-hierarchy-analyzer",
+  "title": "Academic Research Poster Visual Hierarchy Analyzer",
+  "description": "Help academic researchers and scientific poster designers analyze the textual content of their research posters (uploaded as text or transcription) to generate a structured critique of visual hierarchy and content emphasis, ensuring key messages and sections are optimally prioritized and clearly distinguishable for conference audiences.",
+  "inputLabel": "Paste or upload your research poster textual content (e.g., draft text, transcription of poster sections)",
+  "outputLabel": "Visual hierarchy analysis and prioritized content suggestions",
+  "systemPrompt": "You are an expert academic poster design consultant. Analyze the provided research poster text to evaluate the visual hierarchy and content emphasis. Identify which sections or messages stand out too little or too much, flag potential confusion in content prioritization, and suggest concrete textual or structural adjustments to improve clarity and audience engagement. Organize your output by poster section and provide actionable recommendations to ensure the poster communicates its key points effectively at a glance.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Focus on improving clarity and ease of understanding in visual content hierarchy.",
+      "hint": "Enhance readability and prominence of key messages."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Emphasize clear logical flow and organization of poster sections.",
+      "hint": "Strengthen section differentiation and sequence."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Suggest reductions or simplifications to avoid clutter and enhance focus.",
+      "hint": "Highlight opportunities to remove redundant or verbose content."
+    },
+    {
+      "label": "More engaging",
+      "prompt": "Prioritize elements that increase audience interest and visual appeal.",
+      "hint": "Identify where emphasis can draw attention effectively."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Keys: sectionName (string), currentEmphasis (description), issuesFound (list of strings), recommendations (list of actionable text suggestions)."
+}

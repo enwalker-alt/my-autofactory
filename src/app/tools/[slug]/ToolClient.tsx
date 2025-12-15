@@ -176,9 +176,7 @@ export default function ToolClient({
 
   // ✅ Always start in Plain mode on load
   const [outputFormat, setOutputFormat] = useState<"plain" | "json">("plain");
-  const [serverOutputFormat, setServerOutputFormat] = useState<"plain" | "json">(
-    "plain"
-  );
+  const [serverOutputFormat, setServerOutputFormat] = useState<"plain" | "json">("plain");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -267,7 +265,7 @@ export default function ToolClient({
 
   const isText = (f: File) =>
     f.type.startsWith("text/") ||
-    ["application/json", "text/html", "application/xml"].includes(f.type);
+    ["application/json", "text/html", "application/xml", "application/pdf"].includes(f.type);
 
   const isMedia = (f: File) => f.type.startsWith("audio/") || f.type.startsWith("video/");
 
@@ -280,25 +278,20 @@ export default function ToolClient({
     });
 
   // --------- LARGE MEDIA SUPPORT (Vercel Blob) ----------
-  // Key idea:
-  // - Upload big media directly to Vercel Blob (client-side) via an upload token.
-  // - Then call your existing /api/transcribe JSON route with { audioUrl }.
-  //
-  // This avoids serverless upload limits (the cause of 413s).
+  // ✅ Use upload() + handleUploadUrl (recommended).
+  // This avoids “manual token” headaches and serverless upload limits.
   const MAX_MEDIA_MB = 500; // adjust for your product / plan
 
-async function uploadToBlob(file: File): Promise<string> {
-  // Dynamic import keeps bundle smaller
-  const { upload } = await import("@vercel/blob/client");
+  async function uploadToBlob(file: File): Promise<string> {
+    const { upload } = await import("@vercel/blob/client");
 
-  // This calls your /api/blob/token route internally with the correct content-type/handshake
-  const blob = await upload(file.name, file, {
-    access: "public", // or "private"
-    handleUploadUrl: "/api/blob/token",
-  });
+    const res = await upload(file.name, file, {
+      access: "public",
+      handleUploadUrl: "/api/blob/upload",
+    });
 
-  return String(blob?.url || "");
-}
+    return String(res?.url || "");
+  }
 
   async function transcribeMediaFile(file: File): Promise<string> {
     // 0) Client-side size guard
@@ -340,7 +333,7 @@ async function uploadToBlob(file: File): Promise<string> {
 
     const invalid = files.filter((f) => !isText(f) && !isMedia(f));
     if (invalid.length > 0) {
-      setError("Unsupported file type. Upload text, audio, or video files only.");
+      setError("Unsupported file type. Upload text, audio, video, or PDF files only.");
       clearFiles();
       return;
     }
@@ -369,7 +362,6 @@ async function uploadToBlob(file: File): Promise<string> {
           texts.push(t);
         } else if (isMedia(f)) {
           const t = await transcribeMediaFile(f);
-          // Add a header so it's obvious this came from transcription
           const labeled = t.trim() ? `--- Transcription: ${f.name} ---\n\n${t.trim()}` : "";
           texts.push(labeled);
         }
@@ -385,7 +377,6 @@ async function uploadToBlob(file: File): Promise<string> {
       clearFiles();
     } finally {
       setTranscribing(false);
-      // keep success note visible; don't auto-clear
     }
   }
 
@@ -760,7 +751,7 @@ async function uploadToBlob(file: File): Promise<string> {
               id={`file-${slug}`}
               type="file"
               multiple
-              accept=".txt,.md,.csv,.json,.log,.html,.xml,.mp3,.wav,.m4a,.mp4,.mov,.webm"
+              accept=".txt,.md,.csv,.json,.log,.html,.xml,.pdf,.mp3,.wav,.m4a,.mp4,.mov,.webm"
               onChange={handleFileChange}
               className="sr-only"
             />
@@ -822,11 +813,9 @@ async function uploadToBlob(file: File): Promise<string> {
           )}
 
           <div className="text-[11px] text-slate-500">
-            Supports text files + audio/video (large media uploads supported via Vercel Blob).
+            Supports text/PDF + audio/video (large media uploads supported via Vercel Blob).
           </div>
-          <div className="text-[11px] text-slate-600">
-            Media max: {MAX_MEDIA_MB}MB per file (adjust in ToolClient).
-          </div>
+          <div className="text-[11px] text-slate-600">Media max: {MAX_MEDIA_MB}MB per file.</div>
         </div>
       )}
 

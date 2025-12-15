@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
@@ -124,7 +125,9 @@ function titleCaseKey(k: string) {
     .replace(/^\w/, (c) => c.toUpperCase());
 }
 
-function normalizeToLens(p: ToolPreset): { label: string; prompt: string; hint?: string } {
+function normalizeToLens(
+  p: ToolPreset
+): { label: string; prompt: string; hint?: string } {
   const label = safeStr((p as any)?.label).trim() || "Refine";
   // Preferred: prompt lens
   if ("prompt" in p && safeStr((p as any)?.prompt).trim()) {
@@ -145,6 +148,8 @@ function normalizeToLens(p: ToolPreset): { label: string; prompt: string; hint?:
     hint: "Converted from legacy preset",
   };
 }
+
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 export default function ToolClient({
   slug,
@@ -278,24 +283,21 @@ export default function ToolClient({
     });
 
   // --------- LARGE MEDIA SUPPORT (Vercel Blob) ----------
-  // ✅ Use upload() + handleUploadUrl (recommended).
-  // This avoids “manual token” headaches and serverless upload limits.
   const MAX_MEDIA_MB = 500; // adjust for your product / plan
 
-async function uploadToBlob(file: File): Promise<string> {
-  const { upload } = await import("@vercel/blob/client");
+  async function uploadToBlob(file: File): Promise<string> {
+    const { upload } = await import("@vercel/blob/client");
 
-  const safeName = file.name.replace(/\s+/g, "-");
-  const unique = `${Date.now()}-${Math.random().toString(16).slice(2)}-${safeName}`;
+    const safeName = file.name.replace(/\s+/g, "-");
+    const unique = `${Date.now()}-${Math.random().toString(16).slice(2)}-${safeName}`;
 
-  const res = await upload(unique, file, {
-    access: "public",
-    handleUploadUrl: "/api/blob/upload", // or "/api/blob/token"
-  });
+    const res = await upload(unique, file, {
+      access: "public",
+      handleUploadUrl: "/api/blob/upload", // or "/api/blob/token"
+    });
 
-  return String(res?.url || "");
-}
-
+    return String((res as any)?.url || "");
+  }
 
   async function transcribeMediaFile(file: File): Promise<string> {
     // 0) Client-side size guard
@@ -309,22 +311,54 @@ async function uploadToBlob(file: File): Promise<string> {
     const audioUrl = await uploadToBlob(file);
     if (!audioUrl) throw new Error("Upload failed (no URL returned)");
 
-    // 2) Ask server to transcribe via AssemblyAI using the URL
+    // 2) Start transcription job (returns an id)
     setTranscribeNote(`Transcribing ${file.name}…`);
 
     const res = await fetch("/api/transcribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       cache: "no-store",
-      body: JSON.stringify({ blobUrl: audioUrl }),
+      body: JSON.stringify({ blobUrl: audioUrl, mimeType: file.type }),
     });
 
-    const data = await res.json().catch(() => ({} as any));
+    const data = (await res.json().catch(() => ({} as any))) as any;
     if (!res.ok) {
       throw new Error(data?.error || "Transcription failed");
     }
 
-    return String(data?.text || "");
+    const id = String(data?.id || "");
+    if (!id) throw new Error("Transcription failed (no transcript id returned)");
+
+    // 3) Poll status until completed
+    const maxAttempts = 90; // 90 * 2s = 3 minutes
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      await sleep(2000);
+
+      const sres = await fetch(`/api/transcribe/status?id=${encodeURIComponent(id)}`, {
+        method: "GET",
+        cache: "no-store",
+      });
+
+      const sdata = (await sres.json().catch(() => ({} as any))) as any;
+      if (!sres.ok) {
+        throw new Error(sdata?.error || "Failed to check transcription status");
+      }
+
+      const status = String(sdata?.status || "");
+      if (status === "completed") {
+        const text = String(sdata?.text || "");
+        return text;
+      }
+
+      if (status === "error") {
+        throw new Error(String(sdata?.error || "AssemblyAI transcription error"));
+      }
+
+      // UI progress
+      setTranscribeNote(`Transcribing ${file.name}… (${status || "processing"})`);
+    }
+
+    throw new Error("Transcription timed out. Please try again.");
   }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {

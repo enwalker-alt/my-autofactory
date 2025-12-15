@@ -49,7 +49,6 @@ async function githubPutFile({
     path
   )}`;
 
-  // check if exists (need sha to update)
   const getRes = await fetch(`${url}?ref=${branch}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -110,6 +109,10 @@ function sanitizeTemperature(t: any) {
 
 /**
  * MUST match generateTool.mjs + recommend route
+ *
+ * NOTE:
+ * - "file-upload" includes text files and audio/video which are transcribed to text
+ *   before being passed into the tool prompt.
  */
 const AVAILABLE_FEATURES = [
   "text-input",
@@ -179,7 +182,6 @@ export async function POST(req: Request) {
   const slugsBuilt: string[] = [];
 
   for (const incoming of ideas) {
-    // Basic validation
     const title = String(incoming?.title || "").trim();
     const description = String(incoming?.description || "").trim();
     const systemPrompt = String(incoming?.systemPrompt || "").trim();
@@ -191,11 +193,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // normalize slug
     const baseSlug = slugify(incoming?.slug || title) || `tool-${Date.now()}`;
     let slug = baseSlug;
 
-    // If slug exists in DB, suffix it
     const exists = await prisma.tool.findUnique({ where: { slug }, select: { id: true } });
     if (exists) {
       let i = 1;
@@ -249,7 +249,6 @@ export async function POST(req: Request) {
       ...(incoming?.whyDifferent ? { whyDifferent: String(incoming.whyDifferent).trim() } : {}),
     };
 
-    // commit JSON into tool-configs/
     const filePath = `tool-configs/${slug}.json`;
     await githubPutFile({
       owner,
@@ -260,7 +259,6 @@ export async function POST(req: Request) {
       message: `Add tool: ${slug}`,
     });
 
-    // upsert Tool row so it appears immediately
     const toolRow = await prisma.tool.upsert({
       where: { slug },
       update: {
@@ -278,7 +276,6 @@ export async function POST(req: Request) {
       },
     });
 
-    // auto-save to user
     await prisma.savedTool.createMany({
       data: [{ userId, toolId: toolRow.id }],
       skipDuplicates: true,

@@ -168,6 +168,10 @@ export default function ToolClient({
   const [fileNames, setFileNames] = useState<string[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
+  // Media transcription UX
+  const [transcribing, setTranscribing] = useState(false);
+  const [transcribeNote, setTranscribeNote] = useState<string | null>(null);
+
   const [output, setOutput] = useState("");
 
   // ✅ Always start in Plain mode on load
@@ -254,7 +258,41 @@ export default function ToolClient({
     setFileTexts([]);
     setFileNames([]);
     setUploadSuccess(false);
+    setTranscribeNote(null);
+    setTranscribing(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  const isText = (f: File) =>
+    f.type.startsWith("text/") ||
+    ["application/json", "text/html", "application/xml"].includes(f.type);
+
+  const isMedia = (f: File) => f.type.startsWith("audio/") || f.type.startsWith("video/");
+
+  const readFileAsText = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsText(file);
+    });
+
+  async function transcribeMediaFile(file: File): Promise<string> {
+    // Server-side transcription (no keys in browser)
+    const form = new FormData();
+    form.append("file", file);
+
+    const res = await fetch("/api/transcribe", {
+      method: "POST",
+      cache: "no-store",
+      body: form,
+    });
+
+    const data = await res.json().catch(() => ({} as any));
+    if (!res.ok) {
+      throw new Error(data?.error || "Transcription failed");
+    }
+    return String(data?.text || "");
   }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -265,40 +303,58 @@ export default function ToolClient({
       return;
     }
 
-    const nonText = files.filter(
-      (f) =>
-        !f.type.startsWith("text/") &&
-        !["application/json", "text/html", "application/xml"].includes(f.type)
-    );
-
-    if (nonText.length > 0) {
-      setError(
-        "Right now this tool only supports text-based files (e.g. .txt, .md, .csv). Please convert your PDF or Word document to text first."
-      );
+    const invalid = files.filter((f) => !isText(f) && !isMedia(f));
+    if (invalid.length > 0) {
+      setError("Unsupported file type. Upload text, audio, or video files only.");
       clearFiles();
       return;
     }
 
-    try {
-      const readFileAsText = (file: File) =>
-        new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () =>
-            resolve(typeof reader.result === "string" ? reader.result : "");
-          reader.onerror = () => reject(new Error("Failed to read file"));
-          reader.readAsText(file);
-        });
+    setError(null);
+    setTranscribeNote(null);
 
-      const texts = await Promise.all(files.map(readFileAsText));
+    try {
+      const texts: string[] = [];
+      const names: string[] = files.map((f) => f.name);
+
+      const mediaFiles = files.filter(isMedia);
+      if (mediaFiles.length > 0) {
+        setTranscribing(true);
+        setTranscribeNote(
+          mediaFiles.length === 1
+            ? `Transcribing ${mediaFiles[0].name}…`
+            : `Transcribing ${mediaFiles.length} media files…`
+        );
+      }
+
+      // Process sequentially (safer for rate limits + large uploads)
+      for (const f of files) {
+        if (isText(f)) {
+          const t = await readFileAsText(f);
+          texts.push(t);
+        } else if (isMedia(f)) {
+          const t = await transcribeMediaFile(f);
+          // Add a header so it's obvious this came from transcription
+          const labeled = t.trim()
+            ? `--- Transcription: ${f.name} ---\n\n${t.trim()}`
+            : "";
+          texts.push(labeled);
+        }
+      }
 
       setFileTexts(texts);
-      setFileNames(files.map((f) => f.name));
+      setFileNames(names);
       setUploadSuccess(true);
-      setError(null);
-    } catch (err) {
+      setTranscribeNote(
+        mediaFiles.length > 0 ? "Transcription complete ✓" : "Files ready ✓"
+      );
+    } catch (err: any) {
       console.error(err);
-      setError("Failed to read one or more files. Please try again.");
+      setError(err?.message || "Failed to process one or more files. Please try again.");
       clearFiles();
+    } finally {
+      setTranscribing(false);
+      // keep success note visible; don't auto-clear
     }
   }
 
@@ -335,7 +391,7 @@ export default function ToolClient({
         ? fileTexts
             .map((text, idx) =>
               text.trim()
-                ? `--- Uploaded document ${idx + 1} ---\n\n${text.trim()}`
+                ? `--- Uploaded content ${idx + 1} ---\n\n${text.trim()}`
                 : ""
             )
             .filter(Boolean)
@@ -367,7 +423,7 @@ export default function ToolClient({
   // ----- core submit -----
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!hasAnyInput || loading) return;
+    if (!hasAnyInput || loading || transcribing) return;
 
     setLoading(true);
     setError(null);
@@ -443,15 +499,13 @@ export default function ToolClient({
 
   // ----- clarify submit -----
   async function submitClarifyAnswers() {
-    if (!clarify || clarifySubmitting || loading) return;
+    if (!clarify || clarifySubmitting || loading || transcribing) return;
 
     const answers = clarify.answers.map((a) => safeStr(a).trim());
     const answeredCount = answers.filter(Boolean).length;
 
     if (answeredCount === 0) {
-      setError(
-        "Please answer at least one question (or click Back and revise your input)."
-      );
+      setError("Please answer at least one question (or click Back and revise your input).");
       return;
     }
 
@@ -688,7 +742,7 @@ export default function ToolClient({
               id={`file-${slug}`}
               type="file"
               multiple
-              accept=".txt,.md,.csv,.json,.log,.html,.xml"
+              accept=".txt,.md,.csv,.json,.log,.html,.xml,.mp3,.wav,.m4a,.mp4,.mov,.webm"
               onChange={handleFileChange}
               className="sr-only"
             />
@@ -718,7 +772,27 @@ export default function ToolClient({
             )}
           </div>
 
-          {uploadSuccess && fileNames.length > 0 && (
+          {(transcribing || transcribeNote) && (
+            <div className="flex items-center gap-2 text-xs">
+              {transcribing ? (
+                <>
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-slate-500 text-[10px] text-black">
+                    …
+                  </span>
+                  <span className="text-slate-300">{transcribeNote || "Transcribing…"}</span>
+                </>
+              ) : (
+                <>
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] text-black">
+                    ✓
+                  </span>
+                  <span className="text-emerald-400">{transcribeNote}</span>
+                </>
+              )}
+            </div>
+          )}
+
+          {uploadSuccess && fileNames.length > 0 && !transcribing && (
             <div className="flex items-center gap-2 text-xs text-emerald-400">
               <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] text-black">
                 ✓
@@ -728,6 +802,10 @@ export default function ToolClient({
               </span>
             </div>
           )}
+
+          <div className="text-[11px] text-slate-500">
+            Supports text files + audio/video (Atlas will transcribe media automatically).
+          </div>
         </div>
       )}
 
@@ -745,7 +823,7 @@ export default function ToolClient({
           onKeyDown={(e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
               e.preventDefault();
-              if (hasAnyInput && !loading && !clarifySubmitting) {
+              if (hasAnyInput && !loading && !clarifySubmitting && !transcribing) {
                 (e.currentTarget.form as HTMLFormElement | null)?.requestSubmit();
               }
             }
@@ -807,7 +885,7 @@ export default function ToolClient({
             <button
               type="button"
               onClick={submitClarifyAnswers}
-              disabled={clarifySubmitting || loading}
+              disabled={clarifySubmitting || loading || transcribing}
               className={[
                 "rounded-md border px-4 py-2 font-medium",
                 "border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100",
@@ -824,14 +902,14 @@ export default function ToolClient({
       <div className="flex items-center justify-between gap-3">
         <button
           type="submit"
-          disabled={loading || clarifySubmitting || !hasAnyInput}
+          disabled={loading || clarifySubmitting || transcribing || !hasAnyInput}
           className={[
             "rounded-md border px-4 py-2 font-medium",
             "border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100",
             "disabled:opacity-50 disabled:cursor-not-allowed",
           ].join(" ")}
         >
-          {loading ? "Generating..." : supportsClarify ? "Generate (auto)" : "Generate"}
+          {transcribing ? "Transcribing..." : loading ? "Generating..." : supportsClarify ? "Generate (auto)" : "Generate"}
         </button>
 
         <div className="flex items-center gap-4">

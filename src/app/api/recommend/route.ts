@@ -40,14 +40,12 @@ type ToolIdeaConfig = {
   temperature: number;
   features: string[];
 
-  // New optional fields
   presets?: ToolPreset[];
   outputFormatDefault?: "plain" | "json";
   jsonSchemaHint?: string;
   clarifyPrompt?: string;
   finalizePrompt?: string;
 
-  // Optional UI field
   whyDifferent?: string;
 };
 
@@ -87,8 +85,11 @@ function stripCodeFences(raw: string) {
 }
 
 /**
- * MUST match generateTool.mjs
- * (Later: move to shared file to prevent drift.)
+ * MUST match generateTool.mjs + build-tools route
+ *
+ * NOTE:
+ * - "file-upload" includes text files AND audio/video uploads.
+ * - audio/video are transcribed to text by the client/server before being sent to the tool.
  */
 const AVAILABLE_FEATURES = [
   "text-input",
@@ -241,6 +242,9 @@ Your job:
 Hard constraints:
 - Single-page tool.
 - Input is plain text (textarea) and/or text extracted from uploaded files.
+  IMPORTANT: "file-upload" can include:
+  - text files (txt/md/csv/json/log/html/xml)
+  - audio/video files (mp3/wav/m4a/mp4/mov/webm) which are automatically transcribed to text before being passed to the tool.
 - Output is plain text OR valid JSON if structured-output is enabled.
 - Must be moment-of-use specific (role + scenario).
 - Must not overlap existing tools (role+input+output purpose).

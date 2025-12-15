@@ -30,6 +30,12 @@ const client = new OpenAI({
  * - structured-output: tool can request output in "plain" or "json"
  * - clarify-first: two-step flow (ask questions, then finalize)
  * - saved-history: store recent runs (start client-side/localStorage)
+ *
+ * NOTE ON FILE UPLOAD:
+ * - "file-upload" includes:
+ *   - text documents (txt, md, csv, json, etc.)
+ *   - audio/video files (mp3, wav, m4a, mp4, mov, webm, etc.)
+ *   - media is transcribed (AssemblyAI) -> text, then provided to the tool as input text.
  */
 const AVAILABLE_FEATURES = [
   "text-input",
@@ -80,9 +86,78 @@ function isTooSpecificPresetLabel(label) {
   return (
     /manuscript|paper|psychology|biology|social science|case study|example|notes on a|poster on|clinical|patient|contract|lawsuit|tax return|resume for/i.test(
       s
-    ) ||
-    s.length > 60
+    ) || s.length > 60
   );
+}
+
+function safeStr(x) {
+  return typeof x === "string" ? x : "";
+}
+
+function clamp(n, min, max) {
+  return Math.min(max, Math.max(min, n));
+}
+
+function sanitizeTemperature(t) {
+  const n = Number(t);
+  if (!Number.isFinite(n)) return 0.6;
+  return clamp(n, 0, 1);
+}
+
+function stripCodeFences(raw) {
+  return (raw || "")
+    .trim()
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
+}
+
+function toKebabSlug(s) {
+  const base = String(s || "")
+    .toLowerCase()
+    .replace(/[\u2019']/g, "") // remove apostrophes
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-+/g, "-")
+    .slice(0, 60);
+
+  return base || "new-tool";
+}
+
+function requireField(config, key, fallback) {
+  const v = safeStr(config?.[key]).trim();
+  if (v) return v;
+  return fallback;
+}
+
+async function repairJson(badJson) {
+  const system = `
+You are a JSON repair function.
+
+Rules:
+- Output ONLY valid JSON.
+- Do not include markdown fences.
+- Do not add commentary.
+- If information is missing, use empty strings/arrays or null rather than inventing facts.
+  `.trim();
+
+  const user = `
+Repair this into valid JSON that matches the expected schema for a tool config.
+
+BROKEN_JSON:
+${badJson}
+  `.trim();
+
+  const completion = await client.chat.completions.create({
+    model: "gpt-4.1-mini",
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ],
+    temperature: 0,
+  });
+
+  return stripCodeFences(completion.choices[0]?.message?.content ?? "");
 }
 
 const RUBRIC = `
@@ -96,6 +171,7 @@ Your goal: generate tools that are:
 HARD CONSTRAINTS (must follow):
 - Each tool must be usable as a single-page web app.
 - Input is plain text (textarea) and/or text extracted from uploaded files.
+  - If the user uploads audio/video, it is transcribed (AssemblyAI) into text first, then used as input text.
 - Output is plain text (but may also be valid JSON if "structured-output" is enabled).
 - Target a specific niche (role + scenario), not a broad audience.
 - Must be actually useful, not a joke.
@@ -111,48 +187,47 @@ AVAILABLE FEATURES (capabilities you can choose from for each tool):
    - Most tools should include this.
 
 2) "file-upload"
-   - User can upload one or more text-based files.
-   - The app will read the text content and feed it to the AI alongside any typed input.
-   - Only include if core value depends on analyzing documents.
+   - User can upload one or more files.
+   - Supported inputs include:
+     - text documents (txt, md, csv, json, html, xml, etc.)
+     - audio/video (mp3, wav, m4a, mp4, mov, webm, etc.) which will be transcribed into text.
+   - The app will feed extracted text and/or transcriptions to the AI alongside any typed input.
 
 3) "presets"
    - Provide 2–6 clickable REFINEMENT LENSES that DO NOT fill the input box.
    - Each preset has: {label, prompt, hint?}
    - The "prompt" is a short instruction that refines evaluation criteria or output style.
    - Labels MUST be generic (e.g., "Make it clearer", "More structured", "More critical", "More actionable", "Shorter").
-   - DO NOT include scenario/example labels like "Review notes on a psychology manuscript".
+   - DO NOT include scenario/example labels.
 
 4) "structured-output"
    - The tool may request output format: "plain" or "json".
    - If "json", output MUST be valid JSON (no markdown fences) that matches a small schema you define.
-   - This makes outputs more machine-usable later.
 
 5) "clarify-first"
    - Two-step flow:
      Step 1: Ask up to 3 clarifying questions if key info is missing.
      Step 2: Produce the final artifact using the user's answers.
-   - The tool config should include a short "clarifyPrompt" describing what questions to ask.
+   - The tool config should include a short "clarifyPrompt" and "finalizePrompt".
 
 6) "saved-history"
    - The client stores the last ~10 runs per tool (input + output + timestamp).
-   - This makes tools feel professional and sticky. Use this frequently.
 
 SCALING & COMPLEXITY GUIDELINES:
 - Prefer tools that combine 2–4 features in a meaningful way.
-- Single-feature tools should be rare (10–20%).
-- With this feature set, many good tools should combine:
-  ["text-input","presets"] OR ["text-input","file-upload","presets"]
+- Single-feature tools should be rare.
 - Use "clarify-first" for workflows with missing/variable info.
-- Use "structured-output" when the output is an artifact that could be parsed (checklists, KPI tables, risk flags, mappings).
+- Use "structured-output" when the output is an artifact that could be parsed.
 - Use "saved-history" for tools people will run repeatedly.
 
 IMPORTANT FEATURE RULES:
 - Every tool MUST include a "features" array listing which features it uses.
 - "features" may only contain feature names from the list above.
-- If using "structured-output", include an "outputFormatDefault": "plain" or "json".
-- If using "structured-output" with "json", include a "jsonSchemaHint" describing keys (in plain English).
-- If using "presets", include a "presets" array (2–6 items) with {label, prompt, hint?}.
-- If using "clarify-first", include a "clarifyPrompt" (what to ask) and "finalizePrompt" (how to produce final output).
+- If using "structured-output", include:
+  - "outputFormatDefault": "plain" or "json"
+  - "jsonSchemaHint" describing keys (in plain English)
+- If using "presets", include 2–6 presets with {label, prompt, hint?}.
+- If using "clarify-first", include a "clarifyPrompt" and "finalizePrompt".
 
 SYSTEM PROMPT QUALITY BAR:
 - Clearly state niche user + exact artifact produced.
@@ -247,16 +322,40 @@ async function generateToolConfig(existingTools) {
     temperature: 0.7,
   });
 
-  let raw = completion.choices[0]?.message?.content ?? "";
-  raw = raw.trim().replace(/```json/g, "").replace(/```/g, "");
+  let raw = stripCodeFences(completion.choices[0]?.message?.content ?? "");
 
-  const config = JSON.parse(raw);
+  // Parse JSON (with one repair attempt)
+  let config;
+  try {
+    config = JSON.parse(raw);
+  } catch {
+    const repaired = await repairJson(raw);
+    config = JSON.parse(repaired);
+  }
 
   // --- Safety: normalize / validate features ---
   let features = config.features;
   if (!Array.isArray(features)) features = ["text-input"];
-  features = features.filter((f) => AVAILABLE_FEATURES.includes(f));
+  features = features.map((f) => String(f)).filter((f) => AVAILABLE_FEATURES.includes(f));
   if (features.length === 0) features = ["text-input"];
+
+  // ---- normalize slug + required fields ----
+  const normalizedSlug = toKebabSlug(config.slug || config.title);
+  const title = requireField(config, "title", "Untitled Tool");
+  const description = requireField(
+    config,
+    "description",
+    "A one-page AI tool designed for a specific workflow."
+  );
+  const inputLabel = requireField(config, "inputLabel", "Paste your input text");
+  const outputLabel = requireField(config, "outputLabel", "Generated output");
+  const systemPrompt = requireField(
+    config,
+    "systemPrompt",
+    "You are Atlas. Produce a useful, safe, and structured output. Do not invent facts."
+  );
+
+  const temperature = sanitizeTemperature(config.temperature);
 
   // ---- normalize optional fields based on features ----
   let presets = config.presets;
@@ -337,13 +436,19 @@ async function generateToolConfig(existingTools) {
   }
 
   return {
-    ...config,
+    slug: normalizedSlug,
+    title,
+    description,
+    inputLabel,
+    outputLabel,
+    systemPrompt,
+    temperature,
     features,
-    presets,
-    outputFormatDefault,
-    jsonSchemaHint,
-    clarifyPrompt,
-    finalizePrompt,
+    ...(presets ? { presets } : {}),
+    ...(outputFormatDefault ? { outputFormatDefault } : {}),
+    ...(jsonSchemaHint ? { jsonSchemaHint } : {}),
+    ...(clarifyPrompt ? { clarifyPrompt } : {}),
+    ...(finalizePrompt ? { finalizePrompt } : {}),
   };
 }
 
@@ -362,11 +467,14 @@ function isTooSimple(config) {
 }
 
 async function generateUniqueToolConfig(existingTools, maxTries = 7) {
-  const existingSlugs = new Set(existingTools.map((t) => t.slug?.toLowerCase()));
-  const existingTitles = new Set(existingTools.map((t) => t.title?.toLowerCase()));
+  const existingSlugs = new Set(existingTools.map((t) => String(t.slug || "").toLowerCase()));
+  const existingTitles = new Set(existingTools.map((t) => String(t.title || "").toLowerCase()));
+
+  let last = null;
 
   for (let i = 0; i < maxTries; i++) {
     const config = await generateToolConfig(existingTools);
+    last = config;
 
     const slugLower = (config.slug || "").toLowerCase();
     const titleLower = (config.title || "").toLowerCase();
@@ -382,16 +490,17 @@ async function generateUniqueToolConfig(existingTools, maxTries = 7) {
   }
 
   console.warn("Retries exceeded; using last generated config as fallback.");
-  return await generateToolConfig(existingTools);
+  return last || (await generateToolConfig(existingTools));
 }
 
 function getUniqueSlugAndPath(baseSlug, configDir) {
-  let slug = baseSlug;
+  const base = toKebabSlug(baseSlug);
+  let slug = base;
   let counter = 1;
   let configPath = path.join(configDir, `${slug}.json`);
 
   while (fs.existsSync(configPath)) {
-    slug = `${baseSlug}-${counter}`;
+    slug = `${base}-${counter}`;
     configPath = path.join(configDir, `${slug}.json`);
     counter++;
   }

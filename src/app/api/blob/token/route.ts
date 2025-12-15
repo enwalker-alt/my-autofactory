@@ -1,25 +1,26 @@
-import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { handleUpload } from "@vercel/blob/client";
-import type { HandleUploadBody } from "@vercel/blob/client";
 
+// IMPORTANT: types differ across @vercel/blob versions.
+// We import dynamically and use `any` to avoid TS mismatch.
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   const session = await auth().catch(() => null);
   if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  if (request.body == null) {
-    return NextResponse.json({ error: "No request body" }, { status: 400 });
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   try {
-    const result = await handleUpload({
+    const mod: any = await import("@vercel/blob/client");
+    const handleUpload: any = mod.handleUpload;
+
+    // handleUpload returns a Response — do NOT wrap it in NextResponse.json()
+    return handleUpload({
       request,
-      body: request.body as unknown as HandleUploadBody,
-      onBeforeGenerateToken: async () => {
+      onBeforeGenerateToken: async (_pathname: string) => {
         return {
           allowedContentTypes: [
             "audio/mpeg",
@@ -33,19 +34,18 @@ export async function POST(request: Request) {
             "text/plain",
           ],
           maximumSizeInBytes: 1024 * 1024 * 500, // 500MB
+          tokenPayload: JSON.stringify({ userEmail: (session?.user as any)?.email ?? "" }),
         };
       },
-      onUploadCompleted: async () => {
-        // optional: save blob.url to Prisma in the future
+      onUploadCompleted: async (_evt: any) => {
+        // optional: persist _evt.blob?.url to DB later
       },
-    });
-
-    return NextResponse.json(result);
+    } as any);
   } catch (err: any) {
-    console.error("handleUpload error:", err);
-    return NextResponse.json(
-      { error: "Upload failed", details: err?.message ?? String(err) },
-      { status: 500 }
+    console.error("Blob token route error:", err);
+    return new Response(
+      JSON.stringify({ error: "Upload token failed", details: err?.message ?? String(err) }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }

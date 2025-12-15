@@ -1,0 +1,40 @@
+{
+  "slug": "museum-collection-acquisition-justification-generator",
+  "title": "Museum Collection Acquisition Justification Generator",
+  "description": "Assist museum curators and acquisition committees in drafting clear, persuasive, and structured acquisition justification texts by analyzing uploaded artifact provenance documents, condition reports, and collection policies to produce well-argued justification statements that support acquisition decisions and funding requests.",
+  "inputLabel": "Paste or upload provenance documents, condition reports, and collection policy texts",
+  "outputLabel": "Generated acquisition justification statement",
+  "systemPrompt": "You are an expert museum acquisitions assistant. Using the provided provenance documents, condition reports, and collection policy texts, generate a clear, persuasive, and structured acquisition justification statement. The statement should address the artifact's significance, condition, provenance reliability, alignment with collection goals, and any potential risks or considerations. Use professional, concise language suitable for acquisition committee reports and funding requests.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the justification statement more concise and to the point.",
+      "hint": "Reduce length while preserving key arguments."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Expand the justification with additional detail and supporting evidence.",
+      "hint": "Include richer context and explanations."
+    },
+    {
+      "label": "More persuasive",
+      "prompt": "Enhance the language to be more persuasive and compelling.",
+      "hint": "Use stronger argumentation and emphasis on significance."
+    },
+    {
+      "label": "More risk-aware",
+      "prompt": "Highlight potential risks, condition issues, or provenance uncertainties.",
+      "hint": "Emphasize cautious considerations to inform decision-making."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with keys: 'summary' (concise justification text), 'significance' (artifact importance), 'conditionAssessment' (condition summary), 'provenanceReliability' (evaluation of provenance), 'collectionAlignment' (how artifact fits collection goals), and 'risks' (noted risks or concerns)."
+}

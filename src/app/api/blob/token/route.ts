@@ -11,19 +11,20 @@ export async function POST() {
   }
 
   const token = await createUploadToken({
-    allowedContentTypes: [
-      "audio/mpeg",
-      "audio/wav",
-      "audio/mp4",
-      "audio/x-m4a",
-      "video/mp4",
-      "video/quicktime",
-      "video/webm",
-      "application/pdf",
-      "text/plain",
-    ],
-    maximumSizeInBytes: 1024 * 1024 * 500, // 500MB
-  });
+  pathname: "uploads/*", // REQUIRED
+  allowedContentTypes: [
+    "audio/mpeg",
+    "audio/wav",
+    "audio/mp4",
+    "audio/x-m4a",
+    "video/mp4",
+    "video/quicktime",
+    "video/webm",
+    "application/pdf",
+    "text/plain",
+  ],
+  maximumSizeInBytes: 1024 * 1024 * 500, // 500MB
+});
 
   return NextResponse.json({ token });
 }

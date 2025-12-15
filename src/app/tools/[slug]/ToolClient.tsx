@@ -316,7 +316,7 @@ async function uploadToBlob(file: File): Promise<string> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       cache: "no-store",
-      body: JSON.stringify({ audioUrl }),
+      body: JSON.stringify({ blobUrl: audioUrl }),
     });
 
     const data = await res.json().catch(() => ({} as any));

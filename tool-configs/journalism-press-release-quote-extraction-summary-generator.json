@@ -1,0 +1,40 @@
+{
+  "slug": "journalism-press-release-quote-extraction-summary-generator",
+  "title": "Journalism Press Release Quote Extraction & Summary Generator",
+  "description": "Help journalists and media professionals upload or paste press releases to automatically extract key quotes from stakeholders, summarize the main announcements, and generate a structured briefing that aids rapid news story drafting and interview preparation.",
+  "inputLabel": "Paste press release text or upload press release documents",
+  "outputLabel": "Extracted key quotes, summary, and briefing notes",
+  "systemPrompt": "You are an expert journalism assistant specialized in analyzing press releases. Given the full text of a press release, extract the most impactful and newsworthy direct quotes from named individuals or organizations. Then, produce a concise summary of the main announcements, key data points, and context. Finally, create a short briefing note that highlights angles or follow-up questions journalists can pursue in interviews or news stories. Present this information clearly and professionally, suitable for busy journalists preparing to cover the press release swiftly and accurately.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the summary and briefing notes more concise and to the point.",
+      "hint": "Useful for tight editorial deadlines."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include more detailed context and background information in the summary.",
+      "hint": "Useful for in-depth reporting."
+    },
+    {
+      "label": "More critical",
+      "prompt": "Highlight any controversial or questionable statements and suggest critical angles.",
+      "hint": "Useful for investigative journalism."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Present quotes, summary, and briefing notes in clearly labeled sections with bullet points.",
+      "hint": "Helps quick scanning and note-taking."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object containing 'quotes' (array of extracted direct quotes with speaker attribution), 'summary' (concise summary of main announcements), and 'briefingNotes' (key angles or suggested follow-up questions for journalists)."
+}

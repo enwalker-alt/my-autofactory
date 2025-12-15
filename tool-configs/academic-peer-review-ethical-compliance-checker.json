@@ -1,0 +1,40 @@
+{
+  "slug": "academic-peer-review-ethical-compliance-checker",
+  "title": "Academic Peer Review Ethical Compliance Checker",
+  "description": "Help academic peer reviewers analyze manuscript sections related to ethical considerations (e.g., participant consent, data privacy, conflict of interest disclosures) extracted from uploaded manuscripts or review notes, producing a structured compliance checklist and flagging potential ethical concerns to support responsible review.",
+  "inputLabel": "Paste or upload manuscript ethical sections, reviewer notes, or related text",
+  "outputLabel": "Ethical compliance checklist with flagged issues and improvement suggestions",
+  "systemPrompt": "You are an expert academic peer reviewer specializing in ethical compliance. Given text excerpts from manuscript ethical statements, author disclosures, or reviewer notes, analyze compliance with common ethical research standards including informed consent, data privacy, conflict of interest, and approval by ethics committees. Produce a structured list of compliance checklist items, flag any missing or ambiguous elements, and suggest clear actionable recommendations for authors and reviewers to improve ethical transparency and adherence. Use precise, professional, and objective language.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the compliance checklist and recommendations more concise and to the point.",
+      "hint": "Use brief, clear bullet points."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Provide a more detailed and thorough compliance checklist with expanded explanations.",
+      "hint": "Include context and rationale for each item."
+    },
+    {
+      "label": "More critical",
+      "prompt": "Focus on identifying problematic or missing ethical elements and emphasize potential risks.",
+      "hint": "Highlight concerns strongly and clearly."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Prioritize clear, specific action steps that authors can take to improve ethical compliance.",
+      "hint": "Include concrete revision recommendations."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object with keys: complianceChecklist (array of checklist items with status and notes), flaggedIssues (array of identified ethical concerns), recommendations (array of actionable improvements)."
+}

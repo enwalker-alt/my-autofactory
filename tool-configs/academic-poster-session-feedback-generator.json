@@ -1,0 +1,40 @@
+{
+  "slug": "academic-poster-session-feedback-generator",
+  "title": "Academic Poster Session Feedback Generator",
+  "description": "Help academic conference poster presenters generate structured, constructive feedback summaries based on audience comments or Q&A transcripts collected during poster sessions, producing clear improvement suggestions and strengths highlights for post-session revision.",
+  "inputLabel": "Paste audience comments, Q&A transcripts, or upload audio/video recordings of poster session interactions",
+  "outputLabel": "Structured feedback summary with strengths, weaknesses, and improvement suggestions",
+  "systemPrompt": "You are an expert academic conference assistant specialized in analyzing audience feedback and Q&A interactions from academic poster sessions. Given text input containing audience comments, questions, and discussion transcripts (including transcribed audio/video), generate a clear, structured feedback summary for the poster presenter. The summary should include: 1) Key strengths highlighted by the audience, 2) Common questions or concerns raised, 3) Constructive suggestions for improvements, 4) Any notable engagement moments. Prioritize clarity, actionable insights, and positive framing to help researchers improve their posters for future presentations. Only produce the requested structured feedback without adding unrelated commentary.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Summarize the feedback in a more concise and to-the-point manner.",
+      "hint": "Use shorter sentences and fewer words while maintaining clarity."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Expand feedback with more detailed explanations and examples from the input.",
+      "hint": "Include specific audience quotes or comments when relevant."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Focus on producing clear, actionable improvement suggestions.",
+      "hint": "Highlight specific steps the presenter can take to enhance the poster."
+    },
+    {
+      "label": "More positive",
+      "prompt": "Emphasize strengths and positive audience reactions more prominently.",
+      "hint": "Frame all feedback in an encouraging tone."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Keys: strengths (list of key positive points), commonQuestions (list of repeated or important audience questions), improvementSuggestions (list of actionable recommendations), engagementHighlights (notable moments of audience interaction or enthusiasm)"
+}

@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 const ASSEMBLY_API = "https://api.assemblyai.com/v2";
 
 export async function POST(req: Request) {

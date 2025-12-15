@@ -176,7 +176,9 @@ export default function ToolClient({
 
   // ✅ Always start in Plain mode on load
   const [outputFormat, setOutputFormat] = useState<"plain" | "json">("plain");
-  const [serverOutputFormat, setServerOutputFormat] = useState<"plain" | "json">("plain");
+  const [serverOutputFormat, setServerOutputFormat] = useState<"plain" | "json">(
+    "plain"
+  );
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -277,21 +279,64 @@ export default function ToolClient({
       reader.readAsText(file);
     });
 
+  // --------- LARGE MEDIA SUPPORT (Vercel Blob) ----------
+  // Key idea:
+  // - Upload big media directly to Vercel Blob (client-side) via an upload token.
+  // - Then call your existing /api/transcribe JSON route with { audioUrl }.
+  //
+  // This avoids serverless upload limits (the cause of 413s).
+  const MAX_MEDIA_MB = 500; // adjust for your product / plan
+
+  async function uploadToBlob(file: File): Promise<string> {
+    // Get an upload token from your server (requires you to create /api/blob/token)
+    const tokenRes = await fetch("/api/blob/token", { method: "POST", cache: "no-store" });
+    const tokenJson = await tokenRes.json().catch(() => ({} as any));
+    if (!tokenRes.ok) {
+      throw new Error(tokenJson?.error || "Upload token failed");
+    }
+
+    const token = String(tokenJson?.token || "");
+    if (!token) throw new Error("Upload token missing");
+
+    // Dynamic import keeps bundle smaller
+    const { put } = await import("@vercel/blob/client");
+
+    // Upload directly from the browser
+    const blob = await put(file.name, file, {
+      access: "public",
+      token,
+    });
+
+    return String(blob?.url || "");
+  }
+
   async function transcribeMediaFile(file: File): Promise<string> {
-    // Server-side transcription (no keys in browser)
-    const form = new FormData();
-    form.append("file", file);
+    // 0) Client-side size guard
+    const sizeMB = file.size / (1024 * 1024);
+    if (sizeMB > MAX_MEDIA_MB) {
+      throw new Error(`File too large (${sizeMB.toFixed(1)}MB). Max is ${MAX_MEDIA_MB}MB.`);
+    }
+
+    // 1) Upload media to Vercel Blob and get public URL
+    setTranscribeNote(`Uploading ${file.name}…`);
+    const audioUrl = await uploadToBlob(file);
+    if (!audioUrl) throw new Error("Upload failed (no URL returned)");
+
+    // 2) Ask server to transcribe via AssemblyAI using the URL
+    setTranscribeNote(`Transcribing ${file.name}…`);
 
     const res = await fetch("/api/transcribe", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       cache: "no-store",
-      body: form,
+      body: JSON.stringify({ audioUrl }),
     });
 
     const data = await res.json().catch(() => ({} as any));
     if (!res.ok) {
       throw new Error(data?.error || "Transcription failed");
     }
+
     return String(data?.text || "");
   }
 
@@ -322,8 +367,8 @@ export default function ToolClient({
         setTranscribing(true);
         setTranscribeNote(
           mediaFiles.length === 1
-            ? `Transcribing ${mediaFiles[0].name}…`
-            : `Transcribing ${mediaFiles.length} media files…`
+            ? `Preparing ${mediaFiles[0].name}…`
+            : `Preparing ${mediaFiles.length} media files…`
         );
       }
 
@@ -335,9 +380,7 @@ export default function ToolClient({
         } else if (isMedia(f)) {
           const t = await transcribeMediaFile(f);
           // Add a header so it's obvious this came from transcription
-          const labeled = t.trim()
-            ? `--- Transcription: ${f.name} ---\n\n${t.trim()}`
-            : "";
+          const labeled = t.trim() ? `--- Transcription: ${f.name} ---\n\n${t.trim()}` : "";
           texts.push(labeled);
         }
       }
@@ -345,9 +388,7 @@ export default function ToolClient({
       setFileTexts(texts);
       setFileNames(names);
       setUploadSuccess(true);
-      setTranscribeNote(
-        mediaFiles.length > 0 ? "Transcription complete ✓" : "Files ready ✓"
-      );
+      setTranscribeNote(mediaFiles.length > 0 ? "Transcription complete ✓" : "Files ready ✓");
     } catch (err: any) {
       console.error(err);
       setError(err?.message || "Failed to process one or more files. Please try again.");
@@ -390,17 +431,13 @@ export default function ToolClient({
       fileTexts.length > 0
         ? fileTexts
             .map((text, idx) =>
-              text.trim()
-                ? `--- Uploaded content ${idx + 1} ---\n\n${text.trim()}`
-                : ""
+              text.trim() ? `--- Uploaded content ${idx + 1} ---\n\n${text.trim()}` : ""
             )
             .filter(Boolean)
             .join("\n\n")
         : "";
 
-    return [input.trim(), filesSection ? `\n\n${filesSection}` : ""]
-      .filter(Boolean)
-      .join("\n\n");
+    return [input.trim(), filesSection ? `\n\n${filesSection}` : ""].filter(Boolean).join("\n\n");
   }
 
   // ----- API call helper -----
@@ -454,15 +491,10 @@ export default function ToolClient({
         focusPrompt: focusPrompt || "",
       });
 
-      const serverFmt =
-        data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
+      const serverFmt = data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
       setServerOutputFormat(serverFmt);
 
-      if (
-        data?.step === "clarify" &&
-        Array.isArray(data?.questions) &&
-        data.questions.length > 0
-      ) {
+      if (data?.step === "clarify" && Array.isArray(data?.questions) && data.questions.length > 0) {
         const qs = data.questions
           .map((q: any) => safeStr(q))
           .filter(Boolean)
@@ -536,8 +568,7 @@ export default function ToolClient({
         focusPrompt: focusPrompt || "",
       });
 
-      const serverFmt =
-        data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
+      const serverFmt = data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
       setServerOutputFormat(serverFmt);
 
       const out = String(data.output || "");
@@ -625,8 +656,6 @@ export default function ToolClient({
     }
   }
 
-  const displayStars = hoverStars ?? selectedStars ?? 0;
-
   const prettyOutput = useMemo(() => {
     if (!output) return "";
     if (serverOutputFormat === "json") return safeJsonPretty(output);
@@ -670,8 +699,7 @@ export default function ToolClient({
 
           {focusLabel && (
             <div className="text-[11px] text-slate-400">
-              Active refine:{" "}
-              <span className="text-slate-200 font-medium">{focusLabel}</span>
+              Active refine: <span className="text-slate-200 font-medium">{focusLabel}</span>
               <button
                 type="button"
                 className="ml-2 text-slate-400 hover:text-slate-200 transition"
@@ -779,7 +807,7 @@ export default function ToolClient({
                   <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-slate-500 text-[10px] text-black">
                     …
                   </span>
-                  <span className="text-slate-300">{transcribeNote || "Transcribing…"}</span>
+                  <span className="text-slate-300">{transcribeNote || "Working…"}</span>
                 </>
               ) : (
                 <>
@@ -804,7 +832,10 @@ export default function ToolClient({
           )}
 
           <div className="text-[11px] text-slate-500">
-            Supports text files + audio/video (Atlas will transcribe media automatically).
+            Supports text files + audio/video (large media uploads supported via Vercel Blob).
+          </div>
+          <div className="text-[11px] text-slate-600">
+            Media max: {MAX_MEDIA_MB}MB per file (adjust in ToolClient).
           </div>
         </div>
       )}
@@ -909,7 +940,13 @@ export default function ToolClient({
             "disabled:opacity-50 disabled:cursor-not-allowed",
           ].join(" ")}
         >
-          {transcribing ? "Transcribing..." : loading ? "Generating..." : supportsClarify ? "Generate (auto)" : "Generate"}
+          {transcribing
+            ? "Transcribing..."
+            : loading
+            ? "Generating..."
+            : supportsClarify
+            ? "Generate (auto)"
+            : "Generate"}
         </button>
 
         <div className="flex items-center gap-4">

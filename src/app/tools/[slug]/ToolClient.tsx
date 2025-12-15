@@ -282,16 +282,17 @@ export default function ToolClient({
   // This avoids “manual token” headaches and serverless upload limits.
   const MAX_MEDIA_MB = 500; // adjust for your product / plan
 
-  async function uploadToBlob(file: File): Promise<string> {
-    const { upload } = await import("@vercel/blob/client");
+async function uploadToBlob(file: File): Promise<string> {
+  const { upload } = await import("@vercel/blob/client");
 
-    const res = await upload(file.name, file, {
-      access: "public",
-      handleUploadUrl: "/api/blob/upload",
-    });
+  const safeName = `${Date.now()}-${file.name}`.replace(/\s+/g, "-");
+  const res = await upload(safeName, file, {
+    access: "public",
+    handleUploadUrl: "/api/blob/token",
+  });
 
-    return String(res?.url || "");
-  }
+  return String(res?.url || "");
+}
 
   async function transcribeMediaFile(file: File): Promise<string> {
     // 0) Client-side size guard

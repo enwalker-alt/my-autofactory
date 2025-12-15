@@ -1,56 +1,49 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+// src/app/api/blob/token/route.ts
 
-export const runtime = "nodejs";
+import { NextResponse } from "next/server";
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { auth } from "@/lib/auth";
 
 export async function POST(request: Request) {
-  const signature = request.headers.get("x-vercel-signature");
+  const session = await auth().catch(() => null);
 
-  // Client call (no signature) should require login
-  if (!signature) {
-    const session = await auth().catch(() => null);
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: HandleUploadBody;
-  try {
-    body = (await request.json()) as HandleUploadBody;
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-  }
+  const userEmail = session.user.email;
 
-  try {
-    const jsonResponse = await handleUpload({
-      body,
-      request,
-      onBeforeGenerateToken: async () => {
-        return {
-          allowedContentTypes: [
-            "audio/mpeg",
-            "audio/wav",
-            "audio/mp4",
-            "audio/x-m4a",
-            "video/mp4",
-            "video/quicktime",
-            "video/webm",
-            "application/pdf",
-            "text/plain",
-          ],
-          maximumSizeInBytes: 1024 * 1024 * 500, // 500MB
-        };
-      },
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
-        // optional: persist blob.url somewhere
-        console.log("Upload complete:", blob.url, tokenPayload);
-      },
-    });
+  const body = (await request.json()) as HandleUploadBody;
 
-    return NextResponse.json(jsonResponse);
-  } catch (error: any) {
-    console.error("Blob upload route error:", error);
-    return NextResponse.json({ error: error?.message || "Upload failed" }, { status: 500 });
-  }
+  const jsonResponse = await handleUpload({
+    body,
+    request,
+
+    onBeforeGenerateToken: async () => {
+      return {
+        allowedContentTypes: [
+          "audio/mpeg",
+          "audio/wav",
+          "audio/mp4",
+          "audio/x-m4a",
+          "video/mp4",
+          "video/quicktime",
+          "video/webm",
+          "application/pdf",
+          "text/plain",
+        ],
+        maximumSizeInBytes: 1024 * 1024 * 500, // 500MB
+        tokenPayload: JSON.stringify({
+          userEmail: userEmail,
+        }),
+      };
+    },
+
+    onUploadCompleted: async ({ blob, tokenPayload }) => {
+      console.log("Upload completed:", blob.url, tokenPayload);
+      // Optional: persist blob.url to DB
+    },
+  });
+
+  return NextResponse.json(jsonResponse);
 }

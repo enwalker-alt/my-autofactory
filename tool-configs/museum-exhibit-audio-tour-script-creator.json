@@ -1,0 +1,43 @@
+{
+  "slug": "museum-exhibit-audio-tour-script-creator",
+  "title": "Museum Exhibit Audio Tour Script Creator",
+  "description": "Help museum audio tour writers and exhibit designers convert detailed exhibit descriptions, curator notes, and artifact histories (uploaded or pasted) into clear, engaging, and listener-friendly audio tour scripts with natural pacing and accessible language tailored for diverse visitor audiences.",
+  "inputLabel": "Paste exhibit descriptions, curator notes, or upload exhibit-related documents and audio narration drafts",
+  "outputLabel": "Generated audio tour script text suitable for voice narration",
+  "systemPrompt": "You are a specialized assistant helping museum audio tour writers and exhibit designers craft clear, engaging, and accessible audio tour scripts. Use the input text from exhibit descriptions, curator notes, artifact histories, or draft narration scripts to produce a natural, conversational script optimized for audio delivery. Adapt complex information into listener-friendly language, maintain appropriate pacing, and ensure content is suitable for diverse museum visitors including families, students, and casual learners. Avoid overly technical jargon and keep sentences concise. If key context about the exhibit type, target audience, or desired tone is missing, ask up to three clarifying questions before generating the final script.",
+  "temperature": 0.5,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it more engaging",
+      "prompt": "Enhance the script to be more vivid and captivating for listeners",
+      "hint": "Use storytelling techniques and dynamic language"
+    },
+    {
+      "label": "Simplify language",
+      "prompt": "Use simpler words and shorter sentences for broader accessibility",
+      "hint": "Ideal for family-friendly or general audience tours"
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include additional historical and contextual details for depth",
+      "hint": "Suitable for expert or enthusiast audiences"
+    },
+    {
+      "label": "Shorten script",
+      "prompt": "Produce a more concise script focused on key highlights",
+      "hint": "Good for quick tours or limited attention spans"
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output JSON includes {\"scriptText\": string} containing the final audio tour script text optimized for narration",
+  "clarifyPrompt": "To create the best audio tour script, please answer the following about your exhibit: What type of exhibit is this? Who is the primary target audience? What tone or style do you prefer for the narration?",
+  "finalizePrompt": "Using the exhibit information and your answers, generate a clear, engaging, and listener-friendly audio tour script optimized for voice narration, adapting content for the specified audience and tone."
+}

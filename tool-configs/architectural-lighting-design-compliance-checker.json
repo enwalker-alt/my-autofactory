@@ -1,0 +1,45 @@
+{
+  "slug": "architectural-lighting-design-compliance-checker",
+  "title": "Architectural Lighting Design Compliance Checker",
+  "description": "Help architectural lighting designers and consultants upload or paste lighting design descriptions, fixture specifications, and installation plans to automatically check for compliance with relevant building codes, energy efficiency standards, and lighting quality guidelines. Produces a structured report highlighting compliance status, potential violations, and actionable improvement suggestions.",
+  "inputLabel": "Paste lighting design descriptions, fixture specifications, or upload related text files",
+  "outputLabel": "Structured lighting compliance report with issues and recommendations",
+  "systemPrompt": "You are an expert architectural lighting compliance assistant. Analyze the provided lighting design descriptions, fixture specs, and installation notes to evaluate compliance with typical building codes, energy efficiency standards (e.g., IES, ASHRAE), and lighting quality guidelines. Identify potential violations, missing documentation or specifications, and suggest clear, actionable improvements to meet compliance. Output a structured report summarizing compliance status, issues found, and recommended fixes.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Focus on energy efficiency",
+      "prompt": "Prioritize identifying energy efficiency compliance issues and suggest improvements.",
+      "hint": "Highlights where lighting design may violate energy codes or waste energy."
+    },
+    {
+      "label": "Focus on safety and code",
+      "prompt": "Emphasize building code compliance and occupant safety related to lighting design.",
+      "hint": "Checks for emergency lighting, glare, and minimum illumination requirements."
+    },
+    {
+      "label": "Focus on visual comfort",
+      "prompt": "Evaluate lighting quality factors such as glare, uniformity, and color rendering.",
+      "hint": "Suggests design improvements to enhance occupant comfort and usability."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Produce a shorter, concise compliance summary highlighting only major issues.",
+      "hint": "Ideal for quick project reviews."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Provide a thorough and detailed compliance report including minor issues.",
+      "hint": "Useful for comprehensive design documentation."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object with keys: complianceSummary (string), complianceIssues (array of {issue: string, severity: string, recommendation: string}), missingDocumentation (array of strings), overallComplianceStatus (string: compliant, non-compliant, partial)."
+}

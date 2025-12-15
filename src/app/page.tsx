@@ -438,7 +438,7 @@ function ProcessCard({
   const steps = [
     {
       Icon: UploadCloud,
-      title: "Save your workflow",
+      title: "Tell Atlas what you do",
       desc: "Describe your work (personal or business) so Atlas knows what “good” looks like.",
       glow: "from-fuchsia-500/25 via-violet-500/20 to-transparent",
       bar: "from-fuchsia-400 via-violet-300 to-cyan-200",

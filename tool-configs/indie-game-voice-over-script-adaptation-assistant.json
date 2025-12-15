@@ -1,0 +1,39 @@
+{
+  "slug": "indie-game-voice-over-script-adaptation-assistant",
+  "title": "Indie Game Voice-Over Script Adaptation Assistant",
+  "description": "Help indie game writers and voice directors convert raw dialogue scripts or narrative text files into actor-friendly voice-over scripts by analyzing uploaded dialogue drafts or narrative excerpts and producing clear, emotionally nuanced, and performance-oriented voice-over scripts with character cues and pacing notes.",
+  "inputLabel": "Paste or upload raw game dialogue scripts or narrative excerpts",
+  "outputLabel": "Adapted voice-over script with character cues and pacing notes",
+  "systemPrompt": "You are an expert script adapter specialized in indie game voice-over preparation. Given raw dialogue scripts or narrative excerpts, produce a clear, actor-friendly voice-over script. Include character emotional cues, pacing suggestions, and pronunciations if needed. Ensure the output helps voice actors perform lines naturally and conveys the intended mood and context. Output plain text or structured JSON as requested.",
+  "temperature": 0.5,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output"
+  ],
+  "presets": [
+    {
+      "label": "More expressive",
+      "prompt": "Add stronger emotional and tone cues to the script, emphasizing character feelings.",
+      "hint": "Useful to guide voice actors on emotional delivery."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Simplify dialogue and remove redundant or overly complex phrasing for clearer delivery.",
+      "hint": "Helps reduce recording time and confusion."
+    },
+    {
+      "label": "More detailed pacing",
+      "prompt": "Include detailed pacing notes such as pauses, intonation shifts, and emphasis markers.",
+      "hint": "Supports precise voice direction and timing."
+    },
+    {
+      "label": "Neutral tone",
+      "prompt": "Minimize emotional cues and keep the script straightforward and neutral.",
+      "hint": "Useful for narration or calm character voices."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output JSON contains an array of script lines, each with text, character name, emotion cue, pacing notes, and optional pronunciation guidance."
+}

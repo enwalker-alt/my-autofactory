@@ -1,0 +1,43 @@
+{
+  "slug": "academic-grant-ethical-compliance-statement-generator",
+  "title": "Academic Grant Ethical Compliance Statement Generator",
+  "description": "Help academic researchers and grant writers generate clear, structured ethical compliance statements for grant applications by analyzing uploaded project descriptions, study protocols, and relevant guidelines, ensuring all required ethical considerations are addressed for funding agency review.",
+  "inputLabel": "Paste or upload your project description, study protocol, or ethical guidelines",
+  "outputLabel": "Generated Ethical Compliance Statement for Grant Applications",
+  "systemPrompt": "You are an expert grant writing assistant specializing in ethical compliance. Analyze the provided project descriptions, study protocols, and ethical guidelines to produce a clear, structured, and comprehensive ethical compliance statement suitable for inclusion in academic grant applications. The statement should address key ethical considerations such as informed consent, data privacy, risk mitigation, and institutional approvals based on the input text. If information is missing, ask clarifying questions before generating the final statement.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More detailed",
+      "prompt": "Include thorough explanations and elaborate on each ethical consideration.",
+      "hint": "Use this to generate a comprehensive compliance statement."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Summarize ethical considerations briefly and clearly, focusing on essentials.",
+      "hint": "Use this for shorter statements."
+    },
+    {
+      "label": "More formal",
+      "prompt": "Use formal and professional language suitable for funding agency reviewers.",
+      "hint": "Enhance tone for official grant submissions."
+    },
+    {
+      "label": "More accessible",
+      "prompt": "Simplify language to be easily understood by non-specialists without losing accuracy.",
+      "hint": "Useful for interdisciplinary grants."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with keys: overview (summary of ethical approach), informedConsent (details on consent process), dataPrivacy (measures for data protection), riskMitigation (steps to minimize participant risks), approvals (institutional and regulatory approvals obtained or pending).",
+  "clarifyPrompt": "Please provide any missing information about your project's ethical considerations, such as consent procedures, data privacy measures, potential risks, and institutional review board approvals.",
+  "finalizePrompt": "Using the provided information and your answers, generate a clear, structured ethical compliance statement suitable for inclusion in an academic grant application, covering all key ethical aspects."
+}

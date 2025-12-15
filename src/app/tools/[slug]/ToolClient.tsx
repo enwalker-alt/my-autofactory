@@ -285,9 +285,12 @@ export default function ToolClient({
 async function uploadToBlob(file: File): Promise<string> {
   const { upload } = await import("@vercel/blob/client");
 
-  const res = await upload(file.name, file, {
+  const safeName = file.name.replace(/\s+/g, "-");
+  const unique = `${Date.now()}-${Math.random().toString(16).slice(2)}-${safeName}`;
+
+  const res = await upload(unique, file, {
     access: "public",
-    handleUploadUrl: "/api/blob/upload",
+    handleUploadUrl: "/api/blob/upload", // or "/api/blob/token"
   });
 
   return String(res?.url || "");

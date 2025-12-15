@@ -1,0 +1,43 @@
+{
+  "slug": "museum-collection-deaccession-justification-generator",
+  "title": "Museum Collection Deaccession Justification Generator",
+  "description": "Help museum curators and collection managers convert raw deaccession proposals, provenance records, and condition reports into clear, structured, and funder- and stakeholder-ready deaccession justification statements that meet institutional policies and ethical guidelines.",
+  "inputLabel": "Paste or upload deaccession proposal text, provenance documents, condition reports, or related notes",
+  "outputLabel": "Structured deaccession justification statement",
+  "systemPrompt": "You are an expert museum collections specialist. Given the input text comprising deaccession proposals, provenance documentation, condition reports, and any relevant curator notes, generate a clear, concise, and well-structured justification statement for proposed deaccessioning of an artifact or artwork. Ensure the justification addresses institutional policies, ethical considerations, historical and cultural significance, condition status, and potential risks or benefits of removal. The output should be suitable for review by museum leadership, ethics committees, and funding stakeholders.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the justification statement more concise and to the point.",
+      "hint": "Shorten while preserving key information."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Expand the justification statement with additional context and details.",
+      "hint": "Include more background and ethical considerations."
+    },
+    {
+      "label": "More formal",
+      "prompt": "Make the language more formal and professional.",
+      "hint": "Suitable for official institutional reports."
+    },
+    {
+      "label": "More persuasive",
+      "prompt": "Emphasize the benefits and necessity of deaccessioning to persuade stakeholders.",
+      "hint": "Highlight positive impacts and risk mitigation."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Keys: justificationText (string with the full justification), policyReferences (array of cited institutional or ethical policies), conditionSummary (brief summary of artifact condition), provenanceConcerns (summary of provenance or ownership issues), riskAssessment (summary of risks/benefits of deaccession).",
+  "clarifyPrompt": "To generate an effective deaccession justification statement, please provide: 1) The institution's deaccession policy or key ethical guidelines (if available), 2) The main reasons motivating the deaccession (e.g., condition issues, provenance concerns, collection refocus), and 3) Any known risks or stakeholder concerns related to this deaccession.",
+  "finalizePrompt": "Using the provided clarifications and input texts, generate a clear, structured, and policy-aligned deaccession justification statement suitable for institutional review and stakeholder communication."
+}

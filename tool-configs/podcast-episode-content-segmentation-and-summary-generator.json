@@ -1,0 +1,40 @@
+{
+  "slug": "podcast-episode-content-segmentation-and-summary-generator",
+  "title": "Podcast Episode Content Segmentation and Summary Generator",
+  "description": "Help podcast editors and producers upload full episode transcripts to automatically segment the episode into distinct thematic sections with concise summaries for each part, producing a structured episode breakdown that facilitates editing, promotion, and listener navigation.",
+  "inputLabel": "Paste or upload full podcast episode transcript text",
+  "outputLabel": "Structured episode segments with summaries",
+  "systemPrompt": "You are a podcast production assistant specialized in segmenting long podcast episode transcripts into clear, coherent thematic sections. Analyze the transcript to identify natural topic shifts or segment boundaries. For each segment, produce a brief summary that captures the key discussion points or themes covered. Output a structured list of segments with start/end timestamps if available, segment titles, and concise summaries. Ensure summaries are clear, concise, and suitable for use in show notes, episode navigation guides, or promotional materials.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make segment summaries shorter and more to the point.",
+      "hint": "Use this to generate brief, high-level summaries."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include more details and nuances in each segment summary.",
+      "hint": "Use this to capture deeper insights from each segment."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Format the output with clear segment titles and bullet-point summaries.",
+      "hint": "Use this to improve readability and organization."
+    },
+    {
+      "label": "More engaging",
+      "prompt": "Write segment summaries in an engaging, listener-friendly tone.",
+      "hint": "Use this to create promotional-friendly content."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of segments, each with 'title' (string), 'startTimestamp' (optional string), 'endTimestamp' (optional string), and 'summary' (string) describing the segment content."
+}

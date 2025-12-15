@@ -1,0 +1,43 @@
+{
+  "slug": "academic-research-data-collection-protocol-generator",
+  "title": "Academic Research Data Collection Protocol Generator",
+  "description": "Help academic researchers in social sciences and behavioral studies convert their raw study objectives, hypotheses, and uploaded preliminary notes into a clear, structured, and standardized data collection protocol document that ensures replicability and ethical compliance.",
+  "inputLabel": "Paste your study objectives, hypotheses, and upload any preliminary study notes or consent forms",
+  "outputLabel": "Structured Data Collection Protocol Document",
+  "systemPrompt": "You are an expert academic research assistant specialized in social sciences and behavioral research methods. Given the user's pasted study objectives, hypotheses, and uploaded preliminary notes and documents, generate a clear, structured data collection protocol. The protocol should include sections on study purpose, participant criteria, data collection methods, instruments used, ethical considerations including consent procedures, data management plan, and quality control steps. The output must be clear, methodologically sound, and follow common academic research standards for replicability and ethics.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Rewrite the protocol to use simpler, more accessible language without losing technical accuracy.",
+      "hint": "Use plain language suitable for interdisciplinary researchers."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Expand the protocol sections to include more detailed descriptions and justifications for each step.",
+      "hint": "Add depth to methodology and ethical considerations."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Condense the protocol to focus on essential information, removing redundant or overly technical details.",
+      "hint": "Keep it brief but comprehensive."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the protocol into clearly labeled sections with bullet points and numbered lists where appropriate.",
+      "hint": "Enhance readability and navigability."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "The output JSON includes keys: studyPurpose (string), participantCriteria (string), dataCollectionMethods (string), instrumentsUsed (string), ethicalConsiderations (string), dataManagementPlan (string), qualityControlSteps (string).",
+  "clarifyPrompt": "To generate a precise data collection protocol, please provide or confirm: 1) the primary objective(s) of your study, 2) the target participant demographics or inclusion/exclusion criteria, and 3) any specific data collection methods or instruments you plan to use (or upload related notes).",
+  "finalizePrompt": "Using the provided information and any uploaded notes, create a clear, methodologically sound, and ethically compliant academic research data collection protocol formatted as structured JSON."
+}

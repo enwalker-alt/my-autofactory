@@ -1,0 +1,40 @@
+{
+  "slug": "podcast-episode-technical-issue-troubleshooting-guide-genera",
+  "title": "Podcast Episode Technical Issue Troubleshooting Guide Generator",
+  "description": "Help podcast producers and audio engineers upload or paste technical incident logs, equipment notes, or audio issue descriptions from a podcast recording session to generate a clear, prioritized, and structured troubleshooting guide that outlines potential causes, diagnostic steps, and recommended fixes for common podcast production technical problems.",
+  "inputLabel": "Paste technical issue descriptions, incident logs, or upload session audio/video files (to transcribe technical notes)",
+  "outputLabel": "Structured troubleshooting guide with prioritized issues, diagnostics, and fixes",
+  "systemPrompt": "You are an expert podcast production technical troubleshooter. Given text describing technical problems encountered during podcast recording sessions—such as equipment logs, audio issue descriptions, or transcribed notes—analyze the input to identify and prioritize possible causes. Produce a clear, structured troubleshooting guide listing each issue with: (1) a concise description, (2) diagnostic steps to confirm the issue, and (3) actionable recommended fixes. The guide should be practical and easy to follow by audio engineers and podcast producers to efficiently resolve technical problems in podcast recordings.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the troubleshooting guide more concise and focused.",
+      "hint": "Shorten explanations and keep only essential steps."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Add more detailed diagnostic steps and technical explanations.",
+      "hint": "Include deeper technical insights and checks."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Prioritize clear, actionable recommendations with step-by-step instructions.",
+      "hint": "Focus on practical fixes over theory."
+    },
+    {
+      "label": "More user-friendly",
+      "prompt": "Use simple, non-technical language and clear formatting for non-expert users.",
+      "hint": "Make the guide accessible to less technical podcast hosts."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of troubleshooting issues, each with 'issueDescription' (string), 'diagnosticSteps' (array of strings), and 'recommendedFixes' (array of strings)."
+}

@@ -931,12 +931,13 @@ export default function HomePage() {
                 ref={titleRef}
                 className="mt-5 text-balance text-4xl font-semibold tracking-tight text-slate-50 sm:text-5xl lg:text-6xl"
               >
-                An always-growing library of{" "}
+                Atlas turns your{" "}
                 <span className="bg-gradient-to-r from-fuchsia-400 via-violet-300 to-cyan-200 bg-clip-text text-transparent">
-                  purpose-built AI tools
+                  real work
                 </span>{" "}
-                for real work.
+                into custom AI tools.
               </h1>
+
 
               <p className="mt-4 max-w-xl text-pretty text-sm leading-relaxed text-slate-300 sm:text-base">
                 Stop rewriting the same emails, rebuilding the same checklists, and reformatting messy notes. Atlas turns

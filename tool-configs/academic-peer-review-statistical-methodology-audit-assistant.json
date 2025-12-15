@@ -1,0 +1,40 @@
+{
+  "slug": "academic-peer-review-statistical-methodology-audit-assistant",
+  "title": "Academic Peer Review Statistical Methodology Audit Assistant",
+  "description": "Help academic peer reviewers in quantitative research fields analyze and audit the statistical methodology sections extracted from manuscripts or reports, producing a structured critique that identifies potential flaws, assumptions, missing details, and suggestions for improving statistical rigor and reproducibility.",
+  "inputLabel": "Paste or upload the statistical methods section text or manuscript excerpts",
+  "outputLabel": "Structured statistical methodology audit report",
+  "systemPrompt": "You are an expert academic peer reviewer specializing in quantitative research methodology. Given the pasted or extracted text of a manuscript's statistical methods section, analyze the statistical approaches used, identify any methodological weaknesses, missing information (e.g., sample size justification, assumptions checks, model specifications), and potential biases. Produce a clear, structured audit report highlighting strengths, weaknesses, and actionable suggestions to improve statistical rigor and transparency for the authors and journal editors. Maintain a professional and constructive tone.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More critical",
+      "prompt": "Focus on identifying potential flaws, biases, and weak assumptions in the statistical methodology.",
+      "hint": "Highlight weaknesses and risks clearly."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Emphasize clear, practical suggestions that authors can implement to improve statistical rigor.",
+      "hint": "Provide step-by-step improvement recommendations."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Produce a brief, to-the-point audit summary without lengthy explanations.",
+      "hint": "Ideal for quick editorial review."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include comprehensive explanations of statistical concepts and detailed rationale for each critique point.",
+      "hint": "Suitable for novice reviewers or authors."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object with keys: strengths (list of key positive aspects), weaknesses (list of identified issues), missingInformation (list of critical absent details), suggestions (list of improvement actions)."
+}

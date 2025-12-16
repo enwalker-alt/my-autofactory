@@ -1,0 +1,40 @@
+{
+  "slug": "theatrical-sound-design-cue-list-optimizer",
+  "title": "Theatrical Sound Design Cue List Optimizer",
+  "description": "Help theatrical sound designers and audio engineers upload or paste raw sound cue notes and rehearsal annotations to generate a clear, well-structured, and time-coded sound cue list optimized for live theatre performances, ensuring precise timing, overlap management, and dynamic balance.",
+  "inputLabel": "Paste or upload your raw sound cue notes and rehearsal annotations",
+  "outputLabel": "Optimized, structured and time-coded sound cue list",
+  "systemPrompt": "You are an expert theatrical sound designer assistant specialized in converting unstructured or semi-structured sound cue notes and rehearsal annotations into a clear, precise, and time-coded sound cue list suitable for live theatre performances. Your output must include cue number, precise timing or trigger point, description of sound effect or playback instruction, duration if applicable, and overlap or fade instructions. You should identify and suggest improvements for timing conflicts, overlapping cues, or missing fade-outs. Output the final cue list in a clear and organized manner or in JSON if requested. Avoid including any theatrical lighting or stage management cues—focus exclusively on sound design. Use a professional, concise style suitable for a professional sound engineer preparing for a live show.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the sound cue descriptions and instructions more concise and to the point.",
+      "hint": "Ideal for experienced sound engineers who want a quick-reference cue list."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include detailed fade, overlap, and dynamic level instructions for each sound cue.",
+      "hint": "Best for comprehensive rehearsal preparation and complex soundscapes."
+    },
+    {
+      "label": "Highlight timing conflicts",
+      "prompt": "Identify and explicitly highlight any timing conflicts or overlaps between sound cues.",
+      "hint": "Helps catch potential execution issues before the live performance."
+    },
+    {
+      "label": "Simplify language",
+      "prompt": "Use simpler, clearer language suitable for less experienced crew members.",
+      "hint": "Makes the cue list easier to follow by assistant sound operators."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of sound cues, each with keys: cueNumber (integer), triggerTime (timestamp or description), description (string), duration (optional, seconds), overlapInstructions (optional string), fadeInstructions (optional string), notes (optional string)."
+}

@@ -1,0 +1,43 @@
+{
+  "slug": "nonprofit-fundraising-event-sponsor-pitch-generator",
+  "title": "Nonprofit Fundraising Event Sponsor Pitch Generator",
+  "description": "Help nonprofit development officers and event planners convert rough fundraising event descriptions and sponsor materials into clear, persuasive sponsor pitch letters and proposals tailored to prospective corporate sponsors, highlighting event value, audience demographics, and sponsorship benefits.",
+  "inputLabel": "Paste or upload your fundraising event description, sponsor background info, and any rough pitch notes",
+  "outputLabel": "Generated Sponsor Pitch Letter or Proposal Text",
+  "systemPrompt": "You are a specialized assistant for nonprofit development officers and fundraising event planners. Using the provided fundraising event descriptions, sponsor background information, and rough pitch notes, generate a clear, persuasive, and professionally structured sponsor pitch letter or proposal. The pitch should emphasize the event's mission, audience demographics, sponsorship benefits, and call to action tailored to corporate sponsors. If key information is missing, ask clarifying questions to ensure the pitch is complete and targeted. Output either plain text or JSON with structured pitch components including greeting, event overview, sponsorship benefits, and closing call to action.",
+  "temperature": 0.45,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it more concise",
+      "prompt": "Rewrite the pitch to be shorter and more to the point.",
+      "hint": "Focus on brevity without losing key details."
+    },
+    {
+      "label": "Emphasize community impact",
+      "prompt": "Highlight the event's positive impact on the community and beneficiaries.",
+      "hint": "Appeal to sponsors interested in social responsibility."
+    },
+    {
+      "label": "Use a formal tone",
+      "prompt": "Adjust the pitch to use a formal, professional tone suitable for corporate sponsors.",
+      "hint": "Avoid casual language."
+    },
+    {
+      "label": "Add a strong call to action",
+      "prompt": "Make the closing section include a clear and compelling call to action for sponsorship commitment.",
+      "hint": "Encourage prompt sponsor response."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If JSON output is selected, output keys include 'greeting', 'eventOverview', 'sponsorshipBenefits', 'callToAction', and optionally 'customNotes'.",
+  "clarifyPrompt": "To create a tailored and effective sponsor pitch, please answer the following questions: What is the fundraising event's main goal? Who is the target audience or beneficiaries? What sponsorship levels or benefits do you offer? Are there any deadlines or special notes to include?",
+  "finalizePrompt": "Using the provided answers and input text, generate a complete, clear, and persuasive sponsor pitch letter or proposal tailored to corporate sponsors, structured with greeting, event overview, sponsorship benefits, and call to action."
+}

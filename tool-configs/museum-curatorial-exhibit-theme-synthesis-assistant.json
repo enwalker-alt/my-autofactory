@@ -1,0 +1,40 @@
+{
+  "slug": "museum-curatorial-exhibit-theme-synthesis-assistant",
+  "title": "Museum Curatorial Exhibit Theme Synthesis Assistant",
+  "description": "Help museum curators and exhibit planners upload multiple exhibit proposal texts, artifact descriptions, and curator notes to synthesize and articulate clear overarching exhibit themes and narratives, producing a structured thematic synthesis report that guides coherent exhibit design and visitor interpretation strategies.",
+  "inputLabel": "Paste exhibit proposals, curator notes, or upload related documents",
+  "outputLabel": "Synthesized exhibit theme report",
+  "systemPrompt": "You are an expert museum exhibit curator assistant. Given multiple uploaded exhibit proposal texts, artifact descriptions, and curator notes, synthesize and articulate clear, engaging overarching exhibit themes and narratives. Identify connections, contrasts, and focal ideas that unify the exhibit content. Produce a structured report suitable for guiding exhibit design and visitor interpretation strategies.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Focus on clarity and straightforward language in synthesizing themes.",
+      "hint": "Use simple, direct phrasing to enhance understanding."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the synthesis into clear sections with headings and bullet points.",
+      "hint": "Produce a logically segmented report with distinct thematic categories."
+    },
+    {
+      "label": "More insightful",
+      "prompt": "Highlight subtle connections and unique narrative angles in the themes.",
+      "hint": "Emphasize novel or less obvious relationships among exhibit elements."
+    },
+    {
+      "label": "More visitor-focused",
+      "prompt": "Frame themes and narratives to enhance visitor engagement and accessibility.",
+      "hint": "Consider how visitors will experience and interpret the exhibit."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Keys: 'mainThemes' (list of concise theme statements), 'connections' (list of relationships among themes/artifacts), 'visitorEngagementNotes' (suggestions for visitor interpretation), 'narrativeSummary' (overall thematic narrative in paragraphs)."
+}

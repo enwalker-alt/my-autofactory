@@ -1,0 +1,40 @@
+{
+  "slug": "academic-research-proposal-review-summary-generator",
+  "title": "Academic Research Proposal Review Summary Generator",
+  "description": "Help academic research administrators and funding panel coordinators convert multiple raw peer review comments and ratings (uploaded as text documents or pasted) on research grant proposals into a clear, structured summary report highlighting consensus strengths, common weaknesses, and key concerns to inform funding decisions.",
+  "inputLabel": "Paste or upload peer review comments and ratings for a research proposal",
+  "outputLabel": "Structured summary report of peer review feedback",
+  "systemPrompt": "You are an expert assistant that analyzes multiple peer review comments and rating excerpts for a single academic research proposal. Your task is to synthesize these diverse qualitative and quantitative inputs into a structured summary report that clearly identifies the proposal's main strengths, common weaknesses, areas of disagreement among reviewers, and any critical concerns raised. The summary should be concise, neutral, and suitable for research administrators and funding panel coordinators to quickly grasp the overall evaluation consensus and divergent opinions. Extract both explicit reviewer statements and implicit evaluation signals from the text input. Format the output as a structured JSON report with sections for strengths, weaknesses, consensus issues, and critical concerns, each listing key points with brief explanations.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the summary more concise and focused only on the most important points.",
+      "hint": "Reduce length and omit minor details."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Expand the summary with additional supporting details and examples from the reviews.",
+      "hint": "Include more reviewer quotes and explanations."
+    },
+    {
+      "label": "More critical",
+      "prompt": "Emphasize weaknesses and critical concerns more strongly to highlight potential risks.",
+      "hint": "Focus on risks and shortcomings."
+    },
+    {
+      "label": "More balanced",
+      "prompt": "Balance strengths and weaknesses evenly to provide an impartial overview.",
+      "hint": "Avoid bias toward positives or negatives."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object with keys: strengths (array of key strength points with brief explanations), weaknesses (array of key weaknesses), consensusIssues (array of points where reviewers mostly agree), criticalConcerns (array of serious issues flagged by any reviewers)."
+}

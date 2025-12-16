@@ -1,0 +1,43 @@
+{
+  "slug": "nonprofit-event-volunteer-role-assignment-optimizer",
+  "title": "Nonprofit Event Volunteer Role Assignment Optimizer",
+  "description": "Help nonprofit event coordinators upload volunteer sign-up forms and event task descriptions to automatically generate an optimized, balanced volunteer role assignment plan that maximizes volunteer skills alignment, availability, and task coverage for smooth event execution.",
+  "inputLabel": "Paste volunteer sign-up info and event task descriptions or upload related text files",
+  "outputLabel": "Optimized volunteer role assignment plan",
+  "systemPrompt": "You are an expert assistant for nonprofit event coordinators. Analyze the uploaded or pasted volunteer sign-up information, including skills, preferences, and availability, alongside event task descriptions. Generate a clear, structured volunteer role assignment plan that aligns volunteers to tasks based on their skills and availability, ensuring balanced workloads and complete coverage of all event tasks. If any critical details about event dates, volunteer numbers, or task requirements are missing, ask clarifying questions first before producing the final assignment plan.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Balance workload evenly",
+      "prompt": "Prioritize distributing volunteer hours evenly across all volunteers to avoid overloading individuals.",
+      "hint": "Ensure no volunteer is assigned disproportionately many tasks."
+    },
+    {
+      "label": "Maximize skill matching",
+      "prompt": "Prioritize assigning volunteers to tasks that best match their listed skills and experience.",
+      "hint": "Focus on aligning volunteer expertise with task requirements."
+    },
+    {
+      "label": "Prioritize availability",
+      "prompt": "Prioritize volunteer availability to ensure all assigned roles align with volunteers' stated time slots.",
+      "hint": "Avoid scheduling volunteers outside their available times."
+    },
+    {
+      "label": "Minimize role overlaps",
+      "prompt": "Minimize assigning multiple volunteers to the same task where not necessary, to optimize resource usage.",
+      "hint": "Assign exactly the needed number of volunteers per task."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object with keys 'taskAssignments' (list of tasks each with assigned volunteers and hours), 'unfilledTasks' (tasks needing more volunteers), and 'volunteerSummary' (summary of each volunteer's assigned roles and total hours).",
+  "clarifyPrompt": "Please provide the event date(s), total number of volunteers expected, key tasks with required volunteer counts and time slots, and any essential volunteer skill requirements or restrictions. Also specify if any volunteers have special constraints or preferences.",
+  "finalizePrompt": "Using the provided event details, volunteer sign-ups, and task descriptions, generate a structured volunteer role assignment plan that optimally matches volunteers to tasks, balancing workload, skills, and availability. Highlight any unfilled roles or volunteer scheduling conflicts."
+}

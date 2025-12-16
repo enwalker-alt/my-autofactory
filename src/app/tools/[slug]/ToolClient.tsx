@@ -5,15 +5,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 
-/**
- * Backwards compatible incoming preset shapes:
- * - Old: { label, input }  (used to fill textarea)
- * - New: { label, prompt, hint? } (refinement lens / focus)
- *
- * NEW BEHAVIOR:
- * - We NEVER fill the textarea from presets.
- * - Legacy {input} gets converted into a lens prompt automatically.
- */
 type ToolPreset =
   | { label: string; input: string }
   | { label: string; prompt: string; hint?: string };
@@ -78,6 +69,45 @@ function Star({
   );
 }
 
+function ProgressBar({
+  value,
+  label,
+  indeterminate,
+}: {
+  value?: number | null;
+  label?: string;
+  indeterminate?: boolean;
+}) {
+  const pct = typeof value === "number" ? Math.max(0, Math.min(100, value)) : null;
+
+  return (
+    <div className="space-y-1">
+      {label ? <div className="text-[11px] text-slate-400">{label}</div> : null}
+      <div className="h-2 w-full overflow-hidden rounded-full bg-white/10 border border-white/10">
+        {indeterminate || pct === null ? (
+          <div className="h-full w-1/3 animate-[slide_1.1s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-purple-400/80 via-fuchsia-300/80 to-cyan-200/80" />
+        ) : (
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-purple-400/80 via-fuchsia-300/80 to-cyan-200/80 transition-[width] duration-300"
+            style={{ width: `${pct}%` }}
+          />
+        )}
+      </div>
+
+      <style jsx>{`
+        @keyframes slide {
+          0% {
+            transform: translateX(-120%);
+          }
+          100% {
+            transform: translateX(360%);
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 function safeStr(x: any) {
   return typeof x === "string" ? x : "";
 }
@@ -129,7 +159,6 @@ function normalizeToLens(
   p: ToolPreset
 ): { label: string; prompt: string; hint?: string } {
   const label = safeStr((p as any)?.label).trim() || "Refine";
-  // Preferred: prompt lens
   if ("prompt" in p && safeStr((p as any)?.prompt).trim()) {
     return {
       label,
@@ -138,7 +167,6 @@ function normalizeToLens(
     };
   }
 
-  // Legacy: convert input into a lens instruction
   const legacy = safeStr((p as any)?.input).trim();
   return {
     label,
@@ -198,7 +226,6 @@ function jsonToPlainText(x: any, opts?: { maxDepth?: number; maxLines?: number }
       const key = path[path.length - 1] || "";
       if (key) push(`${"  ".repeat(depth)}${titleCaseKey(key)}:`);
 
-      // If array of primitives -> bullets
       if (node.every(isPrimitive)) {
         for (const item of node) {
           if (lines.length >= maxLines) break;
@@ -207,7 +234,6 @@ function jsonToPlainText(x: any, opts?: { maxDepth?: number; maxLines?: number }
         return;
       }
 
-      // Mixed/objects -> index headings
       node.forEach((item, idx) => {
         if (lines.length >= maxLines) return;
         push(`${"  ".repeat(depth + 1)}- Item ${idx + 1}`);
@@ -216,9 +242,7 @@ function jsonToPlainText(x: any, opts?: { maxDepth?: number; maxLines?: number }
       return;
     }
 
-    // object
     const entries = Object.entries(node as Record<string, any>);
-    // If root-ish: add headings for top keys
     for (const [k, v] of entries) {
       if (lines.length >= maxLines) break;
 
@@ -227,7 +251,6 @@ function jsonToPlainText(x: any, opts?: { maxDepth?: number; maxLines?: number }
         continue;
       }
 
-      // section heading
       push(`${"  ".repeat(depth)}${titleCaseKey(k)}`);
       push(`${"  ".repeat(depth)}${"-".repeat(Math.min(24, titleCaseKey(k).length))}`);
       walk(v, [k], depth + 1);
@@ -236,12 +259,21 @@ function jsonToPlainText(x: any, opts?: { maxDepth?: number; maxLines?: number }
   };
 
   walk(x, [], 0);
-
-  // Clean extra trailing blank lines
   while (lines.length && lines[lines.length - 1].trim() === "") lines.pop();
-
   return lines.join("\n");
 }
+
+// -------- Upload UX constants --------
+const MAX_MEDIA_MB = 500;
+const ACCEPT_ATTR =
+  ".txt,.md,.csv,.json,.log,.html,.xml,.pdf,.mp3,.wav,.m4a,.mp4,.mov,.webm";
+
+// label-only chips; full details live in title tooltip
+const TYPE_BADGES = [
+  { label: "Text", title: ".txt .md .csv .json .log .html .xml" },
+  { label: "Audio", title: ".mp3 .wav .m4a" },
+  { label: "Video", title: ".mp4 .mov .webm" },
+];
 
 export default function ToolClient({
   slug,
@@ -265,21 +297,22 @@ export default function ToolClient({
   const [fileNames, setFileNames] = useState<string[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
-  // Media transcription UX
+  // Upload/transcription UX
   const [transcribing, setTranscribing] = useState(false);
   const [transcribeNote, setTranscribeNote] = useState<string | null>(null);
+  const [uploadStage, setUploadStage] = useState<
+    "idle" | "reading" | "uploading" | "transcribing"
+  >("idle");
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   // Output
-  const [output, setOutput] = useState(""); // what we show in normal view
-  const [rawOutput, setRawOutput] = useState<string>(""); // what server returned (for debugging / raw JSON)
+  const [output, setOutput] = useState("");
+  const [rawOutput, setRawOutput] = useState<string>("");
 
-  // ✅ Always start in Plain mode on load
+  // Always start in Plain mode on load
   const [outputFormat, setOutputFormat] = useState<"plain" | "json">("plain");
-
-  // What we *treat* the response as (for UI renderer)
   const [serverOutputFormat, setServerOutputFormat] = useState<"plain" | "json">("plain");
 
-  // If server returned JSON while user requested plain, we convert to plain and show an FYI banner
   const [formatMismatch, setFormatMismatch] = useState(false);
   const [showRaw, setShowRaw] = useState(false);
 
@@ -301,17 +334,20 @@ export default function ToolClient({
   // QoL
   const [copied, setCopied] = useState(false);
 
-  // Focus lens (active preset)
+  // Focus lens
   const [focusLabel, setFocusLabel] = useState<string>("");
   const [focusPrompt, setFocusPrompt] = useState<string>("");
 
   // History (local)
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
+  // Dropzone state
+  const [dragOver, setDragOver] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  // ✅ When you navigate between tools, reset to plain
+  // Reset between tools
   useEffect(() => {
     setOutputFormat("plain");
     setServerOutputFormat("plain");
@@ -319,19 +355,29 @@ export default function ToolClient({
     setShowRaw(false);
     setOutput("");
     setRawOutput("");
+    setError(null);
+    setClarify(null);
+    setJustGenerated(false);
+
+    // upload UI reset
+    setUploadStage("idle");
+    setUploadProgress(null);
+    setTranscribeNote(null);
+    setTranscribing(false);
+    setUploadSuccess(false);
+    setFileTexts([]);
+    setFileNames([]);
   }, [slug]);
 
   const hasAnyInput = useMemo(() => {
     return input.trim().length > 0 || fileTexts.some((t) => t.trim().length > 0);
   }, [input, fileTexts]);
 
-  // Which text are we currently rendering?
   const renderText = useMemo(() => {
     return showRaw && rawOutput ? rawOutput : output;
   }, [showRaw, rawOutput, output]);
 
   const renderFormat = useMemo<"plain" | "json">(() => {
-    // If user toggles "show raw", try to treat it as json if it parses
     if (showRaw && rawOutput) {
       return safeJsonParse(rawOutput) ? "json" : "plain";
     }
@@ -382,6 +428,8 @@ export default function ToolClient({
     setUploadSuccess(false);
     setTranscribeNote(null);
     setTranscribing(false);
+    setUploadStage("idle");
+    setUploadProgress(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -400,8 +448,6 @@ export default function ToolClient({
     });
 
   // --------- LARGE MEDIA SUPPORT (Vercel Blob) ----------
-  const MAX_MEDIA_MB = 500; // adjust for your product / plan
-
   async function uploadToBlob(file: File): Promise<string> {
     const { upload } = await import("@vercel/blob/client");
 
@@ -410,25 +456,38 @@ export default function ToolClient({
 
     const res = await upload(unique, file, {
       access: "public",
-      handleUploadUrl: "/api/blob/upload", // or "/api/blob/token"
+      handleUploadUrl: "/api/blob/upload",
     });
 
     return String((res as any)?.url || "");
   }
 
   async function transcribeMediaFile(file: File): Promise<string> {
-    // 0) Client-side size guard
     const sizeMB = file.size / (1024 * 1024);
     if (sizeMB > MAX_MEDIA_MB) {
       throw new Error(`File too large (${sizeMB.toFixed(1)}MB). Max is ${MAX_MEDIA_MB}MB.`);
     }
 
-    // 1) Upload media to Vercel Blob and get public URL
+    setUploadStage("uploading");
+    setUploadProgress(5);
     setTranscribeNote(`Uploading ${file.name}…`);
-    const audioUrl = await uploadToBlob(file);
+
+    let fake = 5;
+    const fakeTimer = window.setInterval(() => {
+      fake = Math.min(35, fake + Math.random() * 4);
+      setUploadProgress(fake);
+    }, 220);
+
+    const audioUrl = await uploadToBlob(file).finally(() => {
+      window.clearInterval(fakeTimer);
+    });
+
     if (!audioUrl) throw new Error("Upload failed (no URL returned)");
 
-    // 2) Start transcription job (returns an id)
+    setUploadProgress(40);
+
+    setUploadStage("transcribing");
+    setTranscribing(true);
     setTranscribeNote(`Transcribing ${file.name}…`);
 
     const res = await fetch("/api/transcribe", {
@@ -446,10 +505,13 @@ export default function ToolClient({
     const id = String(data?.id || "");
     if (!id) throw new Error("Transcription failed (no transcript id returned)");
 
-    // 3) Poll status until completed
     const maxAttempts = 90; // 90 * 2s = 3 minutes
+
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       await sleep(2000);
+
+      const pct = 40 + Math.round(((attempt + 1) / maxAttempts) * 58);
+      setUploadProgress(pct);
 
       const sres = await fetch(`/api/transcribe/status?id=${encodeURIComponent(id)}`, {
         method: "GET",
@@ -463,6 +525,7 @@ export default function ToolClient({
 
       const status = String(sdata?.status || "");
       if (status === "completed") {
+        setUploadProgress(100);
         const text = String(sdata?.text || "");
         return text;
       }
@@ -471,16 +534,13 @@ export default function ToolClient({
         throw new Error(String(sdata?.error || "AssemblyAI transcription error"));
       }
 
-      // UI progress
       setTranscribeNote(`Transcribing ${file.name}… (${status || "processing"})`);
     }
 
     throw new Error("Transcription timed out. Please try again.");
   }
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-
+  async function handleFiles(files: File[]) {
     if (!files.length) {
       clearFiles();
       return;
@@ -488,7 +548,7 @@ export default function ToolClient({
 
     const invalid = files.filter((f) => !isText(f) && !isMedia(f));
     if (invalid.length > 0) {
-      setError("Unsupported file type. Upload text, audio, video, or PDF files only.");
+      setError("Unsupported file type. Upload text, PDF, audio, or video files only.");
       clearFiles();
       return;
     }
@@ -500,6 +560,9 @@ export default function ToolClient({
       const texts: string[] = [];
       const names: string[] = files.map((f) => f.name);
 
+      setUploadStage("reading");
+      setUploadProgress(null);
+
       const mediaFiles = files.filter(isMedia);
       if (mediaFiles.length > 0) {
         setTranscribing(true);
@@ -508,11 +571,14 @@ export default function ToolClient({
             ? `Preparing ${mediaFiles[0].name}…`
             : `Preparing ${mediaFiles.length} media files…`
         );
+      } else {
+        setTranscribing(false);
       }
 
-      // Process sequentially (safer for rate limits + large uploads)
       for (const f of files) {
         if (isText(f)) {
+          setUploadStage("reading");
+          setUploadProgress(null);
           const t = await readFileAsText(f);
           texts.push(t);
         } else if (isMedia(f)) {
@@ -525,14 +591,28 @@ export default function ToolClient({
       setFileTexts(texts);
       setFileNames(names);
       setUploadSuccess(true);
-      setTranscribeNote(mediaFiles.length > 0 ? "Transcription complete ✓" : "Files ready ✓");
+
+      if (mediaFiles.length > 0) {
+        setTranscribeNote("Transcription complete ✓");
+      } else {
+        setTranscribeNote("Files ready ✓");
+      }
+
+      setUploadStage("idle");
+      setUploadProgress(null);
     } catch (err: any) {
       console.error(err);
       setError(err?.message || "Failed to process one or more files. Please try again.");
       clearFiles();
     } finally {
       setTranscribing(false);
+      setDragOver(false);
     }
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    await handleFiles(files);
   }
 
   const fileSummary = useMemo(() => {
@@ -551,7 +631,6 @@ export default function ToolClient({
     const newLabel = safeStr(p.label).trim();
     const newPrompt = safeStr(p.prompt).trim();
 
-    // toggle off if clicked again
     const nextActive = focusLabel === newLabel ? "" : newLabel;
     setFocusLabel(nextActive);
     setFocusPrompt(nextActive ? newPrompt : "");
@@ -603,14 +682,11 @@ export default function ToolClient({
     combinedInput: string;
   }) {
     const serverReportedFmt = data?.outputFormat === "json" ? ("json" as const) : ("plain" as const);
-
-    // Clarify step is handled elsewhere, but keep safe
     const outRaw = String(data?.output || "");
+
     setRawOutput(outRaw);
     setShowRaw(false);
 
-    // If the user requested PLAIN, we enforce plain rendering client-side:
-    // - If server claims JSON or output looks like JSON, we convert to readable plain text
     if (requestedFormat === "plain") {
       const parsed = safeJsonParse(outRaw);
       const didReturnJson = serverReportedFmt === "json" || (looksLikeJson(outRaw) && !!parsed);
@@ -638,7 +714,6 @@ export default function ToolClient({
       return;
     }
 
-    // JSON mode requested → respect server format, but default to JSON rendering if it parses
     setFormatMismatch(false);
 
     const parsed = safeJsonParse(outRaw);
@@ -670,14 +745,12 @@ export default function ToolClient({
     setFormatMismatch(false);
     setShowRaw(false);
 
-    // Reset rating each generation
     setJustGenerated(false);
     setHoverStars(null);
     setSelectedStars(null);
     setRatingThanks(false);
     setRatingError(null);
 
-    // Reset clarify flow when starting fresh
     setClarify(null);
 
     const combinedInput = buildCombinedInput();
@@ -688,12 +761,9 @@ export default function ToolClient({
       const data = await callToolApi({
         input: combinedInput,
         outputFormat: requestedFormat,
-        // server should enforce, but client now also enforces in plain mode
         enforceOutputFormat: true,
-
         jsonSchemaHint: supportsStructured ? jsonSchemaHint || "" : "",
         mode: supportsClarify ? "auto" : "simple",
-
         focusLabel: focusLabel || "",
         focusPrompt: focusPrompt || "",
       });
@@ -708,6 +778,7 @@ export default function ToolClient({
           questions: qs,
           answers: qs.map(() => ""),
         });
+
         setOutput("");
         setRawOutput("");
         setJustGenerated(false);
@@ -746,7 +817,6 @@ export default function ToolClient({
     setFormatMismatch(false);
     setShowRaw(false);
 
-    // Reset rating
     setHoverStars(null);
     setSelectedStars(null);
     setRatingThanks(false);
@@ -762,10 +832,8 @@ export default function ToolClient({
         answers,
         outputFormat: requestedFormat,
         enforceOutputFormat: true,
-
         jsonSchemaHint: supportsStructured ? jsonSchemaHint || "" : "",
         mode: "auto",
-
         focusLabel: focusLabel || "",
         focusPrompt: focusPrompt || "",
       });
@@ -837,7 +905,6 @@ export default function ToolClient({
       }
 
       router.refresh();
-
       setRatingThanks(true);
       window.setTimeout(() => setRatingThanks(false), 1600);
     } catch (e: any) {
@@ -855,32 +922,70 @@ export default function ToolClient({
     return renderText;
   }, [renderText, renderFormat]);
 
+  // ----- dropzone handlers -----
+  function onDrop(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOver(false);
+    const dropped = Array.from(e.dataTransfer.files ?? []);
+    void handleFiles(dropped);
+  }
+
+  function onDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOver(true);
+  }
+
+  function onDragLeave(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOver(false);
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-      {/* PRESETS -> Always refinement lenses */}
+    <form onSubmit={handleSubmit} className="space-y-5 mt-4">
+      {/* REFINE LENSES */}
       {supportsPresets && lensPresets.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-3">
-            <div className="text-sm font-medium text-slate-200">Quick refine (optional)</div>
-            <div className="text-[11px] text-slate-500">
-              Pick a lens — it improves results without changing your input
+        <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+            <div>
+              <div className="text-sm font-semibold text-slate-100">Refine lens</div>
             </div>
+
+            {focusLabel ? (
+              <div className="text-[11px] text-slate-400">
+                Active: <span className="text-slate-100 font-medium">{focusLabel}</span>
+                <button
+                  type="button"
+                  className="ml-2 text-slate-400 hover:text-slate-200 transition"
+                  onClick={() => {
+                    setFocusLabel("");
+                    setFocusPrompt("");
+                  }}
+                  title="Clear refine lens"
+                >
+                  (clear)
+                </button>
+              </div>
+            ) : (
+              <div className="text-[11px] text-slate-500">Optional</div>
+            )}
           </div>
 
           <div className="flex flex-wrap gap-2">
             {lensPresets.map((p) => {
               const active = focusLabel === p.label;
-
               return (
                 <button
                   key={p.label}
                   type="button"
                   onClick={() => applyLens(p)}
                   className={[
-                    "rounded-full border px-3 py-1.5 text-xs transition",
+                    "rounded-full border px-3.5 py-2 text-xs font-medium transition",
                     active
-                      ? "border-white/30 bg-white/10 text-slate-100"
-                      : "border-white/10 bg-slate-900/50 text-slate-200 hover:border-white/25 hover:bg-slate-900",
+                      ? "border-white/30 bg-white/10 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
+                      : "border-white/10 bg-slate-900/40 text-slate-200 hover:border-white/25 hover:bg-slate-900/70",
                   ].join(" ")}
                   title={p.hint || "Applies a refinement lens (does not change your input)"}
                 >
@@ -889,49 +994,23 @@ export default function ToolClient({
               );
             })}
           </div>
-
-          {focusLabel && (
-            <div className="text-[11px] text-slate-400">
-              Active refine: <span className="text-slate-200 font-medium">{focusLabel}</span>
-              <button
-                type="button"
-                className="ml-2 text-slate-400 hover:text-slate-200 transition"
-                onClick={() => {
-                  setFocusLabel("");
-                  setFocusPrompt("");
-                }}
-                title="Clear refine lens"
-              >
-                (clear)
-              </button>
-            </div>
-          )}
         </div>
       )}
 
-      {/* OUTPUT FORMAT */}
+      {/* OUTPUT FORMAT (compact) */}
       {supportsStructured && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-3">
-          <div className="space-y-0.5">
-            <div className="text-sm font-medium text-slate-200">Output format</div>
-            {outputFormat === "json" ? (
-              <div className="text-[11px] text-slate-400">
-                JSON mode on{jsonSchemaHint ? ` — ${jsonSchemaHint}` : ""}
-              </div>
-            ) : (
-              <div className="text-[11px] text-slate-400">Plain text mode</div>
-            )}
-          </div>
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-sm font-medium text-slate-200">Output</div>
 
-          <div className="flex items-center gap-2">
+          <div className="inline-flex rounded-full border border-white/10 bg-slate-950/30 p-1">
             <button
               type="button"
               onClick={() => setOutputFormat("plain")}
               className={[
-                "rounded-full px-3 py-1.5 text-xs border transition",
+                "rounded-full px-3 py-1 text-[11px] font-medium transition",
                 outputFormat === "plain"
-                  ? "border-white/30 bg-white/10 text-slate-100"
-                  : "border-white/10 bg-slate-900/40 text-slate-300 hover:border-white/20",
+                  ? "bg-white/10 text-white"
+                  : "text-slate-300 hover:text-white",
               ].join(" ")}
             >
               Plain
@@ -940,10 +1019,10 @@ export default function ToolClient({
               type="button"
               onClick={() => setOutputFormat("json")}
               className={[
-                "rounded-full px-3 py-1.5 text-xs border transition",
+                "rounded-full px-3 py-1 text-[11px] font-medium transition",
                 outputFormat === "json"
-                  ? "border-white/30 bg-white/10 text-slate-100"
-                  : "border-white/10 bg-slate-900/40 text-slate-300 hover:border-white/20",
+                  ? "bg-white/10 text-white"
+                  : "text-slate-300 hover:text-white",
               ].join(" ")}
             >
               JSON
@@ -955,88 +1034,127 @@ export default function ToolClient({
       {/* FILE UPLOAD */}
       {supportsFileUpload && (
         <div className="space-y-2">
-          <label className="block font-medium">Upload document (optional)</label>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <input
-              ref={fileInputRef}
-              id={`file-${slug}`}
-              type="file"
-              multiple
-              accept=".txt,.md,.csv,.json,.log,.html,.xml,.pdf,.mp3,.wav,.m4a,.mp4,.mov,.webm"
-              onChange={handleFileChange}
-              className="sr-only"
-            />
-
-            <label
-              htmlFor={`file-${slug}`}
-              className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm font-medium
-                         border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100 cursor-pointer"
-            >
-              Choose files
+          <div className="flex items-end justify-between gap-3">
+            <label className="block text-sm font-medium text-slate-200">
+              Upload files (optional)
             </label>
+            <div className="text-[11px] text-slate-500">Max media: {MAX_MEDIA_MB}MB each</div>
+          </div>
 
-            <span className="text-xs text-slate-400 truncate max-w-[280px] sm:max-w-[420px]">
-              {fileSummary}
-            </span>
+          <input
+            ref={fileInputRef}
+            id={`file-${slug}`}
+            type="file"
+            multiple
+            accept={ACCEPT_ATTR}
+            onChange={handleFileChange}
+            className="sr-only"
+          />
 
-            {fileNames.length > 0 && (
-              <button
-                type="button"
-                onClick={clearFiles}
-                className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm font-medium
-                           border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200"
-                title="Clear uploaded files"
+          <div
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
+            className={[
+              "rounded-2xl border p-4 transition",
+              dragOver
+                ? "border-white/30 bg-white/5"
+                : "border-white/10 bg-slate-950/20 hover:border-white/20",
+            ].join(" ")}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="space-y-1">
+                <div className="text-sm text-slate-200 font-medium">
+                  Drag & drop files here
+                </div>
+
+
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {TYPE_BADGES.map((b) => (
+                    <span
+                      key={b.label}
+                      title={`Accepted: ${b.title}`}
+                      className="inline-flex items-center rounded-full border border-white/10 bg-slate-900/40 px-3 py-1 text-[11px] text-slate-200 hover:border-white/20 transition"
+                    >
+                      {b.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {fileNames.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearFiles}
+                    className="rounded-full border border-white/10 bg-slate-900/40 px-3 py-1.5 text-[11px] text-slate-200 hover:border-white/20 hover:bg-slate-900/70 transition"
+                    title="Clear uploaded files"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* swapped: button LEFT, selected RIGHT */}
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <label
+                htmlFor={`file-${slug}`}
+                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 transition cursor-pointer"
               >
-                Clear
-              </button>
+                Choose files
+              </label>
+
+              <div className="text-xs text-slate-400 truncate text-right">
+                <span className="text-slate-500">Selected:</span> {fileSummary}
+              </div>
+            </div>
+
+            {(uploadStage !== "idle" || transcribeNote) && (
+              <div className="mt-3">
+                <ProgressBar
+                  value={uploadProgress}
+                  indeterminate={uploadStage === "uploading" || uploadStage === "reading"}
+                  label={
+                    transcribeNote ||
+                    (uploadStage === "reading"
+                      ? "Reading files…"
+                      : uploadStage === "uploading"
+                      ? "Uploading large file…"
+                      : uploadStage === "transcribing"
+                      ? "Transcribing…"
+                      : "")
+                  }
+                />
+              </div>
+            )}
+
+            {uploadSuccess && fileNames.length > 0 && !transcribing && (
+              <div className="mt-3 flex items-center gap-2 text-xs text-emerald-400">
+                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] text-black">
+                  ✓
+                </span>
+                <span>
+                  {fileNames.length} file{fileNames.length > 1 ? "s" : ""} ready
+                </span>
+              </div>
             )}
           </div>
-
-          {(transcribing || transcribeNote) && (
-            <div className="flex items-center gap-2 text-xs">
-              {transcribing ? (
-                <>
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-slate-500 text-[10px] text-black">
-                    …
-                  </span>
-                  <span className="text-slate-300">{transcribeNote || "Working…"}</span>
-                </>
-              ) : (
-                <>
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] text-black">
-                    ✓
-                  </span>
-                  <span className="text-emerald-400">{transcribeNote}</span>
-                </>
-              )}
-            </div>
-          )}
-
-          {uploadSuccess && fileNames.length > 0 && !transcribing && (
-            <div className="flex items-center gap-2 text-xs text-emerald-400">
-              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] text-black">
-                ✓
-              </span>
-              <span>
-                {fileNames.length} file{fileNames.length > 1 ? "s" : ""} ready
-              </span>
-            </div>
-          )}
-
-          <div className="text-[11px] text-slate-500">
-            Supports text/PDF + audio/video (large media uploads supported via Vercel Blob).
-          </div>
-          <div className="text-[11px] text-slate-600">Media max: {MAX_MEDIA_MB}MB per file.</div>
         </div>
       )}
 
       {/* INPUT */}
-      <div>
-        <label className="block font-medium mb-1">{inputLabel}</label>
+      <div className="space-y-2">
+        <div className="flex items-end justify-between gap-3">
+          <label className="block text-sm font-medium text-slate-200">{inputLabel}</label>
+          <div className="text-[11px] text-slate-500">
+            Tip: <span className="text-slate-300">Ctrl</span>+<span className="text-slate-300">Enter</span>
+          </div>
+        </div>
+
         <textarea
           ref={textareaRef}
-          className="w-full border rounded-md p-2 min-h-[160px] bg-slate-900/60 text-slate-100 placeholder:text-slate-500"
+          className="w-full rounded-2xl border border-white/10 bg-slate-950/20 p-3 min-h-[170px] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400/30"
           value={input}
           onChange={(e) => {
             setInput(e.target.value);
@@ -1052,10 +1170,6 @@ export default function ToolClient({
           }}
           placeholder="Paste or type your text here..."
         />
-        <p className="mt-1 text-[11px] text-slate-500">
-          Tip: Press <span className="text-slate-300">Ctrl</span>+<span className="text-slate-300">Enter</span>{" "}
-          to generate.
-        </p>
       </div>
 
       {/* CLARIFY UI */}
@@ -1063,7 +1177,7 @@ export default function ToolClient({
         <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4 space-y-3">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <div className="text-sm font-medium text-slate-200">Quick questions</div>
+              <div className="text-sm font-semibold text-slate-100">Quick questions</div>
               <div className="text-[11px] text-slate-400">
                 Answer what you can — Atlas will generate a better result.
               </div>
@@ -1092,7 +1206,7 @@ export default function ToolClient({
                     setClarify({ ...clarify, answers: next });
                     if (error) setError(null);
                   }}
-                  className="w-full rounded-md border border-white/10 bg-slate-900/50 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500"
+                  className="w-full rounded-xl border border-white/10 bg-slate-900/40 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400/30"
                   placeholder="Type your answer (optional)"
                 />
               </div>
@@ -1109,8 +1223,8 @@ export default function ToolClient({
               onClick={submitClarifyAnswers}
               disabled={clarifySubmitting || loading || transcribing}
               className={[
-                "rounded-md border px-4 py-2 font-medium",
-                "border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100",
+                "rounded-full px-4 py-2 text-xs font-semibold text-white transition",
+                "bg-gradient-to-r from-purple-500 to-blue-500 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
               ].join(" ")}
             >
@@ -1121,29 +1235,29 @@ export default function ToolClient({
       )}
 
       {/* ACTIONS */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           type="submit"
           disabled={loading || clarifySubmitting || transcribing || !hasAnyInput}
           className={[
-            "rounded-md border px-4 py-2 font-medium",
-            "border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100",
+            "rounded-full px-5 py-2.5 text-sm font-semibold text-white transition",
+            "bg-gradient-to-r from-purple-500 to-blue-500 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35",
             "disabled:opacity-50 disabled:cursor-not-allowed",
           ].join(" ")}
         >
           {transcribing
-            ? "Transcribing..."
+            ? "Working…"
             : loading
-            ? "Generating..."
+            ? "Generating…"
             : supportsClarify
             ? "Generate (auto)"
             : "Generate"}
         </button>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           {renderText && justGenerated && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-300 hidden sm:inline">Rate output:</span>
+              <span className="text-sm text-slate-300 hidden sm:inline">Rate:</span>
 
               <div className="flex items-center gap-1" onMouseLeave={() => setHoverStars(null)}>
                 {[1, 2, 3, 4, 5].map((n) => (
@@ -1152,9 +1266,7 @@ export default function ToolClient({
                       sizeClass="text-2xl"
                       filled={n <= (hoverStars ?? selectedStars ?? 0)}
                       disabled={ratingSubmitting}
-                      title={
-                        session?.user ? `Rate ${n} star${n > 1 ? "s" : ""}` : "Sign in to rate"
-                      }
+                      title={session?.user ? `Rate ${n} star${n > 1 ? "s" : ""}` : "Sign in to rate"}
                       onClick={() => submitRating(n)}
                     />
                   </span>
@@ -1171,8 +1283,7 @@ export default function ToolClient({
             <button
               type="button"
               onClick={handleCopy}
-              className="rounded-md border px-4 py-2 font-medium
-                         border-slate-600 bg-slate-900 hover:bg-slate-800 text-slate-100"
+              className="rounded-full border border-white/10 bg-slate-900/40 px-4 py-2 text-xs font-semibold text-slate-100 hover:border-white/20 hover:bg-slate-900/70 transition"
             >
               {copied ? "Copied!" : "Copy"}
             </button>
@@ -1186,7 +1297,7 @@ export default function ToolClient({
       {renderText && (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="font-semibold">{outputLabel}</h3>
+            <h3 className="text-sm font-semibold text-slate-100">{outputLabel}</h3>
 
             <div className="flex items-center gap-2">
               {formatMismatch && (
@@ -1207,13 +1318,13 @@ export default function ToolClient({
               )}
 
               {renderFormat === "json" && (
-                <span className="text-[11px] text-slate-400">Structured view</span>
+                <span className="text-[11px] text-slate-400">Structured</span>
               )}
             </div>
           </div>
 
           {renderFormat === "json" && parsedJson && isSimpleDisplayObject(parsedJson) ? (
-            <div className="rounded-xl border border-black/10 bg-white text-black p-4 space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-white text-black p-4 space-y-4">
               {Object.keys(parsedJson).map((k) => {
                 const v = (parsedJson as any)[k];
                 return (
@@ -1238,7 +1349,7 @@ export default function ToolClient({
               })}
             </div>
           ) : (
-            <pre className="whitespace-pre-wrap border rounded-md p-3 bg-white text-black font-mono text-[13px] leading-relaxed overflow-x-auto">
+            <pre className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-white text-black p-3 font-mono text-[13px] leading-relaxed overflow-x-auto">
               {prettyOutput}
             </pre>
           )}
@@ -1249,7 +1360,7 @@ export default function ToolClient({
       {supportsHistory && (
         <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/30 p-4 space-y-3">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-sm font-medium text-slate-200">Recent runs</div>
+            <div className="text-sm font-semibold text-slate-100">Recent runs</div>
             <button
               type="button"
               onClick={clearHistory}
@@ -1270,7 +1381,7 @@ export default function ToolClient({
                   onClick={() => {
                     setInput(h.input);
                     setOutput(h.output);
-                    setRawOutput(""); // history stores display output (plain or json). raw is per-run only
+                    setRawOutput("");
                     setOutputFormat(h.outputFormat);
                     setServerOutputFormat(h.outputFormat);
                     setFormatMismatch(false);
@@ -1280,7 +1391,7 @@ export default function ToolClient({
                     setError(null);
                     setTimeout(() => textareaRef.current?.focus(), 50);
                   }}
-                  className="w-full text-left rounded-xl border border-white/10 bg-slate-900/40 p-3 hover:border-white/20 transition"
+                  className="w-full text-left rounded-2xl border border-white/10 bg-slate-900/30 p-3 hover:border-white/20 transition"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="text-xs text-slate-200 truncate">

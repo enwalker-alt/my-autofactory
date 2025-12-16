@@ -23,7 +23,6 @@ type ToolConfig = {
 
   features?: string[];
 
-  // Optional feature-driven fields
   presets?: ToolPreset[];
   outputFormatDefault?: "plain" | "json";
   jsonSchemaHint?: string;
@@ -61,7 +60,7 @@ function Stars({ avg }: { avg: number }) {
 }
 
 function safeFeatures(maybe: any): string[] {
-  if (!Array.isArray(maybe)) return ["text-input"]; // default baseline
+  if (!Array.isArray(maybe)) return ["text-input"];
   const cleaned = maybe.map((x) => String(x)).filter(Boolean);
   return cleaned.length ? cleaned : ["text-input"];
 }
@@ -71,19 +70,21 @@ function normalizePresets(presets: any): ToolPreset[] | undefined {
 
   const cleaned = presets
     .map((p: any) => {
-      const label = typeof p?.label === "string" ? p.label.trim().slice(0, 80) : "";
+      const label =
+        typeof p?.label === "string" ? p.label.trim().slice(0, 80) : "";
       if (!label) return null;
 
-      // Lens preset
       if (typeof p?.prompt === "string" && p.prompt.trim()) {
         return {
           label,
           prompt: p.prompt.trim().slice(0, 2000),
-          hint: typeof p?.hint === "string" ? p.hint.trim().slice(0, 200) : undefined,
+          hint:
+            typeof p?.hint === "string"
+              ? p.hint.trim().slice(0, 200)
+              : undefined,
         } as ToolPreset;
       }
 
-      // Legacy preset
       if (typeof p?.input === "string" && p.input.trim()) {
         return {
           label,
@@ -96,6 +97,13 @@ function normalizePresets(presets: any): ToolPreset[] | undefined {
     .filter(Boolean) as ToolPreset[];
 
   return cleaned.length ? cleaned : undefined;
+}
+
+function clampText(s: string, max = 190) {
+  const t = (s || "").trim();
+  if (t.length <= max) return { short: t, long: "", clamped: false };
+  const short = t.slice(0, max).replace(/\s+\S*$/, "").trim();
+  return { short: short + "…", long: t, clamped: true };
 }
 
 export default async function ToolPage({
@@ -129,18 +137,24 @@ export default async function ToolPage({
   const raw = fs.readFileSync(configPath, "utf-8");
   const config: ToolConfig = JSON.parse(raw);
 
-  // ✅ normalize defaults so old configs don't break
   const normalized: ToolConfig = {
     ...config,
     features: safeFeatures(config.features),
 
-    // ✅ Force plain on load for everyone
+    // Force plain on load for everyone
     outputFormatDefault: "plain",
 
     presets: normalizePresets(config.presets),
-    jsonSchemaHint: typeof config.jsonSchemaHint === "string" ? config.jsonSchemaHint : undefined,
-    clarifyPrompt: typeof config.clarifyPrompt === "string" ? config.clarifyPrompt : undefined,
-    finalizePrompt: typeof config.finalizePrompt === "string" ? config.finalizePrompt : undefined,
+    jsonSchemaHint:
+      typeof config.jsonSchemaHint === "string"
+        ? config.jsonSchemaHint
+        : undefined,
+    clarifyPrompt:
+      typeof config.clarifyPrompt === "string" ? config.clarifyPrompt : undefined,
+    finalizePrompt:
+      typeof config.finalizePrompt === "string"
+        ? config.finalizePrompt
+        : undefined,
   };
 
   /* ---------- Auth ---------- */
@@ -197,6 +211,8 @@ export default async function ToolPage({
   const ratingAvg = toolRow.ratingAvg ?? 0;
   const ratingCount = toolRow.ratingCount ?? 0;
 
+  const desc = clampText(normalized.description || "", 200);
+
   return (
     <main className="min-h-screen bg-[#020617] text-slate-100">
       <div className="relative mx-auto max-w-5xl px-4 pt-20 pb-16 sm:px-6 lg:px-8">
@@ -230,12 +246,11 @@ export default async function ToolPage({
 
         {/* Title + Rating + Save */}
         <header className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
               {normalized.title}
             </h1>
 
-            {/* ⭐ Rating display */}
             <div className="flex items-center gap-3 mb-3">
               <Stars avg={ratingAvg} />
               <div className="text-xs text-slate-300/80">
@@ -246,47 +261,83 @@ export default async function ToolPage({
               </div>
             </div>
 
-            <p className="max-w-2xl text-sm sm:text-base text-slate-300 leading-relaxed">
-              {normalized.description}
-            </p>
+            {/* ✅ Description (single "Full description" button) */}
+            {desc.clamped ? (
+              <details className="group max-w-2xl">
+                <summary className="list-none inline-flex items-center gap-2 cursor-pointer select-none rounded-full border border-white/10 bg-slate-900/40 px-3 py-1.5 text-[11px] font-semibold text-slate-100 hover:border-white/20 hover:bg-slate-900/60 transition">
+                  <span className="group-open:hidden">Full description</span>
+                  <span className="hidden group-open:inline">Hide description</span>
+                  <span className="opacity-70 group-open:hidden">▾</span>
+                  <span className="opacity-70 hidden group-open:inline">▴</span>
+                </summary>
+
+                <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed group-open:hidden">
+                  {desc.short}
+                </p>
+
+                <div className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed hidden group-open:block">
+                  {desc.long}
+                </div>
+              </details>
+            ) : (
+              <p className="max-w-2xl text-sm sm:text-base text-slate-300 leading-relaxed">
+                {normalized.description}
+              </p>
+            )}
           </div>
 
           <div className="shrink-0 pt-1">
-            <SaveButton slug={slug} initialSaved={initialSaved} isSignedIn={isSignedIn} />
+            <SaveButton
+              slug={slug}
+              initialSaved={initialSaved}
+              isSignedIn={isSignedIn}
+            />
           </div>
         </header>
 
         {/* Tool container */}
-        <section className="relative rounded-3xl border border-white/10 bg-slate-900/70 backdrop-blur shadow-xl shadow-purple-500/25 p-4 sm:p-6 lg:p-8">
-          <div className="mb-4 flex justify-end">
-            <div className="flex flex-col items-end text-[11px] text-slate-400">
-              <span className="uppercase tracking-wide text-slate-500">Mode</span>
-              <span className="font-mono text-xs text-slate-200">{slug}</span>
+        <section className="relative rounded-3xl border border-white/10 bg-slate-900/70 backdrop-blur shadow-xl shadow-purple-500/25 overflow-hidden">
+          {/* subtle inner glow */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.06] via-transparent to-transparent" />
+
+          <div className="relative p-4 sm:p-6 lg:p-8">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-1">
+                <div className="text-[11px] text-slate-500 uppercase tracking-wide">
+                  Mode
+                </div>
+                <div className="font-mono text-xs text-slate-200">{slug}</div>
+              </div>
+
+              <div className="hidden sm:flex items-center gap-2 text-[11px] text-slate-400">
+                <span className="inline-flex h-2 w-2 rounded-full bg-purple-400/80" />
+                <span>Ctrl+Enter to generate</span>
+              </div>
             </div>
-          </div>
 
-          <ToolClient
-            slug={normalized.slug}
-            inputLabel={normalized.inputLabel}
-            outputLabel={normalized.outputLabel}
-            features={normalized.features}
-            presets={normalized.presets}
-            outputFormatDefault={normalized.outputFormatDefault}
-            jsonSchemaHint={normalized.jsonSchemaHint}
-            clarifyPrompt={normalized.clarifyPrompt}
-            finalizePrompt={normalized.finalizePrompt}
-          />
+            <ToolClient
+              slug={normalized.slug}
+              inputLabel={normalized.inputLabel}
+              outputLabel={normalized.outputLabel}
+              features={normalized.features}
+              presets={normalized.presets}
+              outputFormatDefault={normalized.outputFormatDefault}
+              jsonSchemaHint={normalized.jsonSchemaHint}
+              clarifyPrompt={normalized.clarifyPrompt}
+              finalizePrompt={normalized.finalizePrompt}
+            />
 
-          <div className="mt-6 border-t border-white/5 pt-4 flex items-center justify-between gap-3">
-            <Link
-              href="/tools"
-              className="inline-flex items-center rounded-full border border-white/10 px-3 py-1 text-[11px] sm:text-xs hover:border-white/30 hover:text-slate-200 transition"
-            >
-              ← Back to Tool Library
-            </Link>
+            <div className="mt-6 border-t border-white/5 pt-4 flex items-center justify-between gap-3">
+              <Link
+                href="/tools"
+                className="inline-flex items-center rounded-full border border-white/10 px-3 py-1 text-[11px] sm:text-xs hover:border-white/30 hover:text-slate-200 transition"
+              >
+                ← Back to Tool Library
+              </Link>
 
-            <div className="text-[11px] sm:text-xs text-slate-500">
-              {initialSaved ? "Saved to your library" : "Not saved"}
+              <div className="text-[11px] sm:text-xs text-slate-500">
+                {initialSaved ? "Saved to your library" : "Not saved"}
+              </div>
             </div>
           </div>
         </section>

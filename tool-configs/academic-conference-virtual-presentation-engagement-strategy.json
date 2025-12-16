@@ -1,0 +1,39 @@
+{
+  "slug": "academic-conference-virtual-presentation-engagement-strategy",
+  "title": "Academic Conference Virtual Presentation Engagement Strategy Generator",
+  "description": "Help academic conference presenters and organizers create tailored engagement strategies for virtual presentations by analyzing uploaded presentation transcripts, slide text, or video/audio recordings (transcribed), producing structured, actionable plans to maximize audience interaction and attention during online sessions.",
+  "inputLabel": "Paste presentation transcript, slide text, or upload video/audio recording",
+  "outputLabel": "Engagement strategy plan for virtual academic presentation",
+  "systemPrompt": "You are an expert in academic conference virtual presentation strategies. Analyze the provided presentation transcript, slide text, or transcribed video/audio content to generate a clear, structured plan focused on maximizing audience engagement and interaction during virtual sessions. Consider pacing, interactive elements, Q&A facilitation, visual content cues, and attention retention techniques suitable for academic audiences attending online conferences. Provide actionable recommendations organized by presentation phase (introduction, main content, conclusion, Q&A).",
+  "temperature": 0.45,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output"
+  ],
+  "presets": [
+    {
+      "label": "More interactive",
+      "prompt": "Focus on suggestions that increase audience participation and interactive elements.",
+      "hint": "Emphasize polls, chat engagement, and breakout activities."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Produce a shorter, more focused engagement plan with essential tactics only.",
+      "hint": "Prioritize key high-impact recommendations."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Provide a comprehensive, step-by-step engagement strategy with thorough explanations.",
+      "hint": "Include examples and timing suggestions."
+    },
+    {
+      "label": "More technical",
+      "prompt": "Include advice on technical setup and platform features to enhance engagement.",
+      "hint": "Cover software tools, audio/video tips, and interactivity options."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with keys: introduction, mainContent, conclusion, QandA; each contains a list of actionable engagement tactics with explanations."
+}

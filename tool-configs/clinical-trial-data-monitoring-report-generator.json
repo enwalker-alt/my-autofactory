@@ -1,0 +1,43 @@
+{
+  "slug": "clinical-trial-data-monitoring-report-generator",
+  "title": "Clinical Trial Data Monitoring Report Generator",
+  "description": "Help clinical trial data managers and monitors convert raw trial data summaries, monitoring visit notes, and uploaded patient safety reports into clear, structured, and compliant data monitoring reports that highlight data quality issues, protocol deviations, and safety signals for regulatory submission and sponsor review.",
+  "inputLabel": "Paste trial data summaries, monitoring visit notes, and upload related reports",
+  "outputLabel": "Structured clinical trial data monitoring report",
+  "systemPrompt": "You are an expert clinical trial data monitor assistant. Analyze the pasted text and any uploaded files containing trial data summaries, monitoring visit notes, and patient safety reports. Identify key data quality issues, protocol deviations, and safety signals. Generate a clear, structured, and regulatory-compliant clinical trial data monitoring report that includes an executive summary, detailed findings, and recommended corrective actions. The report must use precise clinical trial monitoring terminology and be suitable for submission to trial sponsors and regulatory authorities. If any essential information is missing, ask up to three clarifying questions before producing the final report.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the report more concise and focused on critical findings.",
+      "hint": "Use this to shorten the report emphasizing key issues."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include more detailed explanations and data examples.",
+      "hint": "Use this to produce a thorough, granular report."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Emphasize clear, prioritized corrective actions.",
+      "hint": "Use this to focus on practical next steps."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the report into clearly labeled sections with bullet points.",
+      "hint": "Use this for easier readability and navigation."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with keys: executiveSummary (string), keyFindings (array of strings), protocolDeviations (array of objects describing deviation and impact), safetySignals (array of objects describing signal and severity), correctiveActions (array of strings), and overallAssessment (string).",
+  "clarifyPrompt": "Please provide additional details needed to generate a compliant clinical trial data monitoring report, such as trial phase, key monitoring objectives, or specific data sources available.",
+  "finalizePrompt": "Using the provided clarifications and uploaded data, generate a clear, structured clinical trial data monitoring report that highlights data quality issues, protocol deviations, safety signals, and recommended corrective actions suitable for regulatory and sponsor review."
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "technical-support-call-transcript-action-item-extractor",
+  "title": "Technical Support Call Transcript Action Item Extractor",
+  "description": "Help technical support team leads and quality managers analyze uploaded call center audio recordings (transcribed) or chat logs to extract clear, structured action items and follow-up tasks with assigned priorities and responsible roles, enabling efficient post-call resolution tracking and coaching.",
+  "inputLabel": "Paste call transcript or upload call audio/video recording",
+  "outputLabel": "Structured action items and follow-up tasks",
+  "systemPrompt": "You are an expert assistant helping technical support team leads extract actionable, prioritized follow-up tasks from customer support call transcripts or chat logs. Analyze the provided transcript text thoroughly to identify specific action items, categorize them by urgency (high, medium, low), assign them to appropriate roles (e.g., support agent, escalation team, product team), and provide clear descriptions. Avoid generic summaries; focus on concrete next steps that support timely resolution and quality improvement.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Extract only the most critical and high-priority action items.",
+      "hint": "Focus on top priority tasks that must be addressed immediately."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include detailed descriptions and context for each action item.",
+      "hint": "Add background info to help assignees understand the task fully."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Rephrase action items to be clear, specific, and easily assignable.",
+      "hint": "Ensure each item includes a clear next step and responsible party."
+    },
+    {
+      "label": "Add estimated effort",
+      "prompt": "Include an estimated effort level (e.g., quick fix, moderate, extensive) for each action item.",
+      "hint": "Helps prioritize based on effort required."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of action items, each with description (string), priority (high/medium/low), assignedRole (string), and optional estimatedEffort (string)."
+}

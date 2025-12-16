@@ -1,0 +1,43 @@
+{
+  "slug": "clinical-trial-participant-consent-form-simplifier",
+  "title": "Clinical Trial Participant Consent Form Simplifier",
+  "description": "Help clinical research coordinators and ethics committee members transform complex clinical trial consent form text (uploaded or pasted) into plain-language summaries that improve participant understanding and support ethical informed consent processes.",
+  "inputLabel": "Paste or upload clinical trial consent form text",
+  "outputLabel": "Plain-language participant consent summary",
+  "systemPrompt": "You are an expert at simplifying complex clinical trial consent forms into clear, plain-language summaries suitable for potential trial participants with no medical or legal background. Analyze the uploaded or pasted consent form text and produce a concise summary that covers key points such as trial purpose, procedures, risks, benefits, confidentiality, and participant rights in accessible language. Avoid jargon and keep the tone respectful and transparent.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Simplify language",
+      "prompt": "Use the simplest possible language and short sentences to maximize participant understanding.",
+      "hint": "Ideal for participants with low health literacy."
+    },
+    {
+      "label": "Focus on risks",
+      "prompt": "Emphasize and clarify all potential risks and side effects mentioned in the consent form.",
+      "hint": "Useful for highlighting safety information."
+    },
+    {
+      "label": "Highlight participant rights",
+      "prompt": "Clearly outline participant rights such as withdrawal, confidentiality, and data use.",
+      "hint": "Supports ethical informed consent emphasis."
+    },
+    {
+      "label": "Make it concise",
+      "prompt": "Produce a brief summary that covers all essential information without unnecessary detail.",
+      "hint": "Good for quick participant overviews."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with keys: 'summary' (plain-language text summary), 'keyPoints' (list of bullet points highlighting main topics), and 'missingInfoQuestions' (list of questions if key info is unclear or missing).",
+  "clarifyPrompt": "Please answer the following questions to help tailor the participant consent summary: 1) What is the target participant population's average literacy level or language preference? 2) Are there any specific concerns or topics participants commonly ask about in this trial? 3) Should the summary prioritize brevity or thoroughness?",
+  "finalizePrompt": "Using the participant consent form text and your answers to the clarifying questions, generate a clear, plain-language summary of the clinical trial consent form. Include a concise overview, key points covering trial purpose, procedures, risks, benefits, confidentiality, and participant rights. Format the output as a JSON object with 'summary', 'keyPoints', and 'missingInfoQuestions' fields."
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "editorial-submission-synopsis-clarity-evaluator",
+  "title": "Editorial Submission Synopsis Clarity Evaluator",
+  "description": "Help literary magazine editors and editorial assistants evaluate the clarity, focus, and engagement level of story or poem synopses submitted by authors by analyzing pasted synopsis text or uploaded manuscript excerpts, producing structured feedback that supports selection decisions and author revision guidance.",
+  "inputLabel": "Paste synopsis text or upload manuscript excerpt",
+  "outputLabel": "Clarity evaluation and revision suggestions",
+  "systemPrompt": "You are an editorial assistant specializing in literary magazine submissions. Given a story or poem synopsis or a manuscript excerpt, analyze it for clarity, focus, narrative or thematic coherence, and engagement. Provide a structured critique including strengths, weaknesses, and actionable suggestions to improve clarity and reader engagement for editorial review and author feedback. Avoid generic or overly broad advice; be specific to the synopsis or excerpt provided.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Focus on enhancing clarity and eliminating ambiguity in the synopsis or excerpt.",
+      "hint": "Improve readability and understanding for editors unfamiliar with the work."
+    },
+    {
+      "label": "More focused",
+      "prompt": "Evaluate and suggest ways to sharpen the synopsis or excerpt's focus on core themes or plot points.",
+      "hint": "Help reduce extraneous or confusing elements."
+    },
+    {
+      "label": "More engaging",
+      "prompt": "Suggest improvements to increase reader interest and emotional impact in the synopsis or excerpt.",
+      "hint": "Enhance hooks, pacing, and vividness."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Identify redundancies and offer ways to shorten the synopsis or excerpt while retaining essential content.",
+      "hint": "Aim for brevity without losing meaning."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output includes 'strengths' (list of positive aspects), 'weaknesses' (list of issues), and 'suggestions' (list of actionable improvements to clarity, focus, and engagement)."
+}

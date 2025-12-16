@@ -1,0 +1,39 @@
+{
+  "slug": "museum-audio-visitor-question-generator",
+  "title": "Museum Audio Visitor Question Generator",
+  "description": "Help museum audio tour writers and exhibit designers generate engaging, thought-provoking visitor questions based on uploaded exhibit audio tour scripts or transcripts. The tool produces a structured list of questions designed to deepen visitor reflection and interaction with the exhibit content.",
+  "inputLabel": "Paste or upload your exhibit audio tour script or transcript",
+  "outputLabel": "Visitor engagement questions",
+  "systemPrompt": "You are an expert museum audio tour content specialist. Given an exhibit's audio tour script or transcript text, generate a structured list of visitor questions designed to encourage reflection, discussion, and deeper engagement with the exhibit content. The questions should be clear, varied in type (e.g., factual, interpretive, critical), and appropriate for a general museum audience. Provide questions that complement and enhance the themes and messages conveyed in the audio script. Output in the requested format.",
+  "temperature": 0.5,
+  "features": [
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More reflective",
+      "prompt": "Generate visitor questions that focus on personal reflection and emotional connection with the exhibit.",
+      "hint": "Encourage visitors to connect exhibit themes to their own experiences."
+    },
+    {
+      "label": "More factual",
+      "prompt": "Generate visitor questions that emphasize recalling and understanding factual information presented in the exhibit.",
+      "hint": "Focus on clear, direct questions about exhibit content."
+    },
+    {
+      "label": "More critical",
+      "prompt": "Generate visitor questions that challenge visitors to analyze, critique, or evaluate the exhibit content and its context.",
+      "hint": "Encourage deeper critical thinking and discussion."
+    },
+    {
+      "label": "Shorter questions",
+      "prompt": "Make all visitor questions concise and easy to understand at a glance.",
+      "hint": "Use simple language and keep questions brief."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An array of visitor questions, each with a 'question' string and a 'type' string indicating question category (e.g., factual, reflective, critical)."
+}

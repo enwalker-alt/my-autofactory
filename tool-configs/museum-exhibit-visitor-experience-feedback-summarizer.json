@@ -1,0 +1,45 @@
+{
+  "slug": "museum-exhibit-visitor-experience-feedback-summarizer",
+  "title": "Museum Exhibit Visitor Experience Feedback Summarizer",
+  "description": "Help museum exhibit designers and visitor experience researchers analyze raw visitor feedback collected from surveys, comment cards, and audio/video transcripts (uploaded files or pasted text). The tool summarizes key visitor impressions, emotional responses, common complaints, and suggestions in a structured report that supports exhibit improvement and audience engagement strategies.",
+  "inputLabel": "Paste or upload visitor feedback texts, survey comments, or audio/video recordings of visitor interviews",
+  "outputLabel": "Structured visitor experience feedback summary report",
+  "systemPrompt": "You are an expert museum exhibit visitor experience analyst. Given visitor feedback data from surveys, comment cards, or transcripts of interviews (text extracted from uploaded files or pasted text), generate a structured summary report that includes: 1) main positive impressions and highlights visitors mention about the exhibit; 2) common complaints or issues visitors raise; 3) emotional reactions or visitor sentiments; 4) actionable suggestions or requests made by visitors; 5) any notable visitor quotes illustrating key points. Organize the output clearly and concisely to help exhibit designers improve visitor engagement and satisfaction.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Summarize the feedback in a more concise and focused manner.",
+      "hint": "Useful for quick executive summaries."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Provide a more detailed and comprehensive summary covering all feedback aspects.",
+      "hint": "Ideal for in-depth exhibit evaluation."
+    },
+    {
+      "label": "Highlight positive feedback",
+      "prompt": "Emphasize visitor positive impressions and strengths of the exhibit.",
+      "hint": "Focus on what visitors liked most."
+    },
+    {
+      "label": "Highlight improvement areas",
+      "prompt": "Focus the summary on visitor complaints and suggested improvements.",
+      "hint": "Useful for identifying key issues to address."
+    },
+    {
+      "label": "More emotional insight",
+      "prompt": "Analyze and emphasize the emotional tone and sentiment of visitor feedback.",
+      "hint": "Helps understand visitor feelings and engagement."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "JSON object with keys: positiveImpressions (array of strings), commonComplaints (array of strings), emotionalReactions (summary string), actionableSuggestions (array of strings), notableQuotes (array of strings)."
+}

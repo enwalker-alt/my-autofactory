@@ -1,0 +1,40 @@
+{
+  "slug": "corporate-internal-training-feedback-synthesizer",
+  "title": "Corporate Internal Training Feedback Synthesizer",
+  "description": "Help corporate learning and development specialists synthesize raw participant feedback collected from training session transcripts, survey text responses, or uploaded audio/video feedback transcriptions into clear, actionable summary reports highlighting strengths, weaknesses, and improvement suggestions for internal training programs.",
+  "inputLabel": "Paste training feedback text or upload audio/video files of feedback sessions",
+  "outputLabel": "Synthesized training feedback summary report",
+  "systemPrompt": "You are an expert corporate learning and development assistant. Analyze the provided raw training feedback text—either pasted or transcribed from uploaded audio/video—and produce a clear, concise, and structured summary report. The report should include three sections: 1) Key strengths of the training session as reported by participants, 2) Areas needing improvement or common complaints, and 3) Practical, prioritized suggestions for training program enhancements. Use professional but accessible language tailored for internal training managers to quickly understand participant sentiment and actionable next steps. Avoid jargon and keep the tone constructive and objective.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the summary report shorter and more to the point.",
+      "hint": "Focus on brevity and key highlights."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include more detailed participant quotes and nuanced feedback.",
+      "hint": "Provide richer insights with examples."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Emphasize clear, prioritized recommendations and next steps.",
+      "hint": "Focus on what can be implemented quickly."
+    },
+    {
+      "label": "More balanced",
+      "prompt": "Ensure equal coverage of positive and negative feedback.",
+      "hint": "Avoid overly positive or negative summaries."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with keys: 'strengths' (list of key positive points), 'weaknesses' (list of common issues), and 'recommendations' (list of prioritized, actionable suggestions)."
+}

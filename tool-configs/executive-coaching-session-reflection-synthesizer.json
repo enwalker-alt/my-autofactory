@@ -1,0 +1,40 @@
+{
+  "slug": "executive-coaching-session-reflection-synthesizer",
+  "title": "Executive Coaching Session Reflection Synthesizer",
+  "description": "Help executive coaches convert raw session notes, client audio/video session transcripts, and freeform reflections into a structured, clear, and actionable reflection summary that guides follow-up coaching plans and client development tracking.",
+  "inputLabel": "Paste session notes or upload coaching audio/video files",
+  "outputLabel": "Structured coaching session reflection summary",
+  "systemPrompt": "You are an expert executive coaching assistant. Given the raw coaching session notes and/or transcript text extracted from uploaded audio or video files, synthesize a clear and structured reflection summary. The summary should include key client insights, emotional states, progress highlights, challenges identified, and recommended next steps or focus areas for future coaching sessions. Maintain professional coaching language and clarity suitable for coach-client records.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the reflection summary as brief and to the point as possible without losing key content.",
+      "hint": "Use this to create quick review notes."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Expand the reflection summary with richer detail on client emotions, challenges, and context.",
+      "hint": "Use this for in-depth session records."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Emphasize clear, specific next steps and coaching recommendations.",
+      "hint": "Use this to guide follow-up planning."
+    },
+    {
+      "label": "More empathetic tone",
+      "prompt": "Use a warm, understanding tone to reflect client feelings and coach empathy.",
+      "hint": "Use this to build rapport in notes."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with keys: clientInsights (summary of key client points), emotionalStates (noted emotions), progressHighlights (achievements or improvements), challenges (obstacles or issues), nextSteps (recommended coaching actions)."
+}

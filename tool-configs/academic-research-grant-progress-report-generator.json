@@ -1,0 +1,43 @@
+{
+  "slug": "academic-research-grant-progress-report-generator",
+  "title": "Academic Research Grant Progress Report Generator",
+  "description": "Help academic researchers and grant administrators convert raw research progress notes, interim data summaries, and uploaded project update documents into clear, funder-compliant, structured progress reports highlighting milestones achieved, challenges faced, and next steps to maintain funding accountability.",
+  "inputLabel": "Paste your raw research progress notes or upload interim project update documents",
+  "outputLabel": "Generated structured grant progress report",
+  "systemPrompt": "You are an expert academic research grant progress report writer. Given raw progress notes, interim data summaries, or uploaded project update documents from researchers, produce a clear, concise, and funder-compliant progress report. The report should include sections for milestones achieved, challenges encountered, budget status summary, and planned next steps. Use formal, clear academic administrative language suitable for funding agency reviewers. When information is missing or ambiguous, ask up to 3 clarifying questions before generating the final report. Output the final report either as plain text or structured JSON with clearly labeled sections. Do NOT provide medical, legal, or ethical advice. Keep the focus strictly on summarizing research progress and funding accountability.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Rewrite the report to improve clarity and remove jargon",
+      "hint": "Enhance readability by simplifying complex language"
+    },
+    {
+      "label": "More structured",
+      "prompt": "Format the report with clear section headings and bullet points",
+      "hint": "Use explicit structure to improve report navigability"
+    },
+    {
+      "label": "More critical",
+      "prompt": "Include a critical assessment of challenges and risks",
+      "hint": "Highlight potential risk factors and issues clearly"
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Emphasize clear next steps and recommendations",
+      "hint": "Focus on practical plans and corrective actions"
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with keys: milestonesAchieved (string), challengesEncountered (string), budgetStatusSummary (string), nextSteps (string)",
+  "clarifyPrompt": "To generate a complete and accurate grant progress report, please answer the following questions about your research update.",
+  "finalizePrompt": "Using the provided answers and uploaded text, generate a structured, clear, and funder-compliant research grant progress report, including milestones achieved, challenges encountered, budget status summary, and planned next steps."
+}

@@ -4,7 +4,20 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { signIn } from "next-auth/react";
-import { Building2, UserRound } from "lucide-react";
+import {
+  Building2,
+  UserRound,
+  LayoutGrid,
+  Sparkles,
+  PenLine,
+  BookOpen,
+  CalendarDays,
+  BarChart3,
+  Megaphone,
+  ShieldCheck,
+  X,
+  ChevronRight,
+} from "lucide-react";
 
 type ToolMeta = {
   slug: string;
@@ -22,225 +35,99 @@ type Props = {
 
 const PER_PAGE = 20;
 
-const SORT_OPTIONS = [
-  { id: "rating-high", label: "Rating: High → Low" },
-  { id: "rating-low", label: "Rating: Low → High" },
+/**
+ * Sort options:
+ * - "recommended" is injected dynamically ONLY when user has workflows.
+ */
+const BASE_SORT_OPTIONS = [
+  { id: "rating-high", label: "Top rated" },
+  { id: "rating-low", label: "Lowest rated" },
   { id: "title-az", label: "A → Z" },
   { id: "title-za", label: "Z → A" },
 ] as const;
 
-type SortId = (typeof SORT_OPTIONS)[number]["id"];
+type SortId = (typeof BASE_SORT_OPTIONS)[number]["id"] | "recommended";
 
 const CATEGORY_RULES: Record<
   string,
-  { label: string; strong: string[]; weak: string[]; phrases: string[]; minScore: number }
+  { label: string; blurb: string; icon: React.ReactNode; strong: string[]; weak: string[]; phrases: string[]; minScore: number }
 > = {
   writing: {
-    label: "Writing & Messaging",
-    phrases: [
-      "cover letter",
-      "linkedin post",
-      "press release",
-      "email response",
-      "email reply",
-      "follow up",
-      "cold email",
-      "sales email",
-      "job application",
-      "rewrite",
-      "tone",
-    ],
-    strong: [
-      "email",
-      "copy",
-      "rewrite",
-      "edit",
-      "grammar",
-      "proof",
-      "message",
-      "reply",
-      "response",
-      "bio",
-      "resume",
-      "cover",
-      "letter",
-      "proposal",
-      "pitch",
-      "script",
-      "dialogue",
-      "headline",
-    ],
+    label: "Writing & Communication",
+    blurb: "Emails, rewrites, tone fixes, scripts, clarity upgrades.",
+    icon: <PenLine className="h-4.5 w-4.5 text-purple-200/90" />,
+    phrases: ["cover letter", "linkedin post", "press release", "email response", "email reply", "follow up", "cold email", "sales email", "job application", "rewrite", "tone"],
+    strong: ["email", "copy", "rewrite", "edit", "grammar", "proof", "message", "reply", "response", "bio", "resume", "cover", "letter", "proposal", "pitch", "script", "dialogue", "headline"],
     weak: ["clarify", "summarize", "concise", "professional", "polished"],
     minScore: 3,
   },
 
   research: {
     label: "Learning & Research",
+    blurb: "Explain concepts, summarize sources, study help, Q&A support.",
+    icon: <BookOpen className="h-4.5 w-4.5 text-purple-200/90" />,
     phrases: ["academic abstract", "literature review", "study guide", "research question", "explain like"],
-    strong: [
-      "academic",
-      "research",
-      "study",
-      "learn",
-      "lesson",
-      "explain",
-      "summary",
-      "summarize",
-      "abstract",
-      "paper",
-      "article",
-      "source",
-      "notes",
-      "concept",
-      "definition",
-      "quiz",
-      "flashcards",
-    ],
+    strong: ["academic", "research", "study", "learn", "lesson", "explain", "summary", "summarize", "abstract", "paper", "article", "source", "notes", "concept", "definition", "quiz", "flashcards"],
     weak: ["simplify", "breakdown", "overview", "interpret", "clarification"],
     minScore: 3,
   },
 
   productivity: {
-    label: "Workflows & Productivity",
+    label: "Workflows & Ops",
+    blurb: "Checklists, SOPs, templates, decision helpers, time savers.",
+    icon: <LayoutGrid className="h-4.5 w-4.5 text-purple-200/90" />,
     phrases: ["standard operating procedure", "to-do list", "step by step"],
-    strong: [
-      "checklist",
-      "workflow",
-      "sop",
-      "template",
-      "process",
-      "procedure",
-      "steps",
-      "operations",
-      "ops",
-      "system",
-      "organize",
-      "prioritize",
-      "plan",
-      "framework",
-    ],
+    strong: ["checklist", "workflow", "sop", "template", "process", "procedure", "steps", "operations", "ops", "system", "organize", "prioritize", "plan", "framework"],
     weak: ["improve", "streamline", "efficient", "structure", "track"],
     minScore: 3,
   },
 
   planning: {
-    label: "Planning & Events",
+    label: "Planning & Meetings",
+    blurb: "Agendas, itineraries, prep plans, run-of-show docs.",
+    icon: <CalendarDays className="h-4.5 w-4.5 text-purple-200/90" />,
     phrases: ["run of show", "event plan", "meeting agenda"],
-    strong: [
-      "event",
-      "agenda",
-      "itinerary",
-      "schedule",
-      "conference",
-      "wedding",
-      "party",
-      "meeting",
-      "presentation",
-      "speaker",
-      "prep",
-      "prepare",
-      "planning",
-      "timeline",
-    ],
+    strong: ["event", "agenda", "itinerary", "schedule", "conference", "wedding", "party", "meeting", "presentation", "speaker", "prep", "prepare", "planning", "timeline"],
     weak: ["checklist", "coordination", "logistics", "setup"],
     minScore: 3,
   },
 
   data: {
     label: "Data & Finance",
+    blurb: "Numbers, analysis, comparisons, summaries, structured output.",
+    icon: <BarChart3 className="h-4.5 w-4.5 text-purple-200/90" />,
     phrases: ["cash flow", "financial model", "valuation", "income statement"],
-    strong: [
-      "finance",
-      "financial",
-      "valuation",
-      "model",
-      "forecast",
-      "budget",
-      "pricing",
-      "metrics",
-      "kpi",
-      "analysis",
-      "analyze",
-      "calculate",
-      "spreadsheet",
-      "roi",
-      "profit",
-      "revenue",
-      "cost",
-      "margin",
-      "numbers",
-      "data",
-    ],
+    strong: ["finance", "financial", "valuation", "model", "forecast", "budget", "pricing", "metrics", "kpi", "analysis", "analyze", "calculate", "spreadsheet", "roi", "profit", "revenue", "cost", "margin", "numbers", "data"],
     weak: ["compare", "summary", "insights", "estimate", "projection"],
     minScore: 3,
   },
 
   marketing: {
     label: "Marketing & Growth",
+    blurb: "Ads, landing copy, positioning, hooks, content strategy.",
+    icon: <Megaphone className="h-4.5 w-4.5 text-purple-200/90" />,
     phrases: ["landing page", "value proposition", "ad copy", "seo keywords"],
-    strong: [
-      "marketing",
-      "growth",
-      "ads",
-      "ad",
-      "seo",
-      "campaign",
-      "landing",
-      "positioning",
-      "hook",
-      "brand",
-      "audience",
-      "offer",
-      "conversion",
-      "cta",
-      "newsletter",
-      "social",
-      "content strategy",
-    ],
+    strong: ["marketing", "growth", "ads", "ad", "seo", "campaign", "landing", "positioning", "hook", "brand", "audience", "offer", "conversion", "cta", "newsletter", "social", "content strategy", "cold email", "sales email"],
     weak: ["headline", "pitch", "post", "copy", "optimize"],
     minScore: 3,
   },
 
   creative: {
     label: "Creative & Media",
+    blurb: "Stories, prompts, social content, names, idea generation.",
+    icon: <Sparkles className="h-4.5 w-4.5 text-purple-200/90" />,
     phrases: ["short story", "comic script", "character bio"],
-    strong: [
-      "creative",
-      "story",
-      "comic",
-      "character",
-      "plot",
-      "scene",
-      "dialogue",
-      "poem",
-      "lyrics",
-      "name",
-      "brainstorm",
-      "ideas",
-      "prompt",
-      "worldbuilding",
-    ],
+    strong: ["creative", "story", "comic", "character", "plot", "scene", "dialogue", "poem", "lyrics", "name", "brainstorm", "ideas", "prompt", "worldbuilding"],
     weak: ["style", "voice", "funny", "humor", "generate"],
     minScore: 3,
   },
 
   compliance: {
     label: "Policy & Professional",
+    blurb: "Safer wording, formal templates, admin-style documentation.",
+    icon: <ShieldCheck className="h-4.5 w-4.5 text-purple-200/90" />,
     phrases: ["terms of service", "privacy policy", "risk assessment"],
-    strong: [
-      "policy",
-      "compliance",
-      "legal",
-      "terms",
-      "privacy",
-      "disclaimer",
-      "guidelines",
-      "risk",
-      "security",
-      "hr",
-      "regulation",
-      "contract",
-    ],
+    strong: ["policy", "compliance", "legal", "terms", "privacy", "disclaimer", "guidelines", "risk", "security", "hr", "regulation", "contract"],
     weak: ["professional", "formal", "review", "safe"],
     minScore: 3,
   },
@@ -351,8 +238,6 @@ type ToolIdea = {
 function whyDifferentText(idea: ToolIdea) {
   const w = (idea?.whyDifferent || "").trim();
   if (w) return w;
-
-  // fallback so the UI is never blank here
   return "Built specifically from your workflow details — more targeted than a generic template.";
 }
 
@@ -402,13 +287,7 @@ function Pill({
   );
 }
 
-function ProgressBar({
-  show,
-  progress,
-}: {
-  show: boolean;
-  progress: number; // 0..100
-}) {
+function ProgressBar({ show, progress }: { show: boolean; progress: number }) {
   return (
     <div
       className={`pointer-events-none absolute bottom-0 left-0 right-0 h-2 border-t border-white/10 bg-white/[0.03] ${
@@ -426,18 +305,151 @@ function ProgressBar({
   );
 }
 
+function CategoryModal({
+  open,
+  onClose,
+  activeCategory,
+  onPick,
+}: {
+  open: boolean;
+  onClose: () => void;
+  activeCategory: string;
+  onPick: (category: string) => void;
+}) {
+  if (!open) return null;
+
+  const cards = [
+    "writing",
+    "research",
+    "productivity",
+    "planning",
+    "data",
+    "marketing",
+    "creative",
+    "compliance",
+  ] as const;
+
+  return (
+    <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 flex items-end sm:items-center justify-center p-3 sm:p-4">
+        <div className="relative w-full max-w-3xl rounded-2xl sm:rounded-3xl border border-white/10 bg-[#020617]/95 shadow-2xl shadow-purple-900/50 overflow-hidden">
+          <div className="px-4 sm:px-6 py-4 border-b border-white/10 flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-base sm:text-lg font-semibold text-slate-50">Find the right tool faster</div>
+              <div className="mt-1 text-[12px] sm:text-sm text-slate-300/70">
+                Pick a category to filter instantly. You can still use search after.
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="shrink-0 rounded-full bg-white/5 px-3 py-2 text-xs text-slate-200 hover:bg-white/10"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {cards.map((id) => {
+                const r = CATEGORY_RULES[id];
+                const active = activeCategory === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => {
+                      onPick(id);
+                      onClose();
+                    }}
+                    className={
+                      active
+                        ? "rounded-2xl border border-purple-300/40 bg-purple-500/10 p-4 text-left hover:bg-purple-500/15 transition"
+                        : "rounded-2xl border border-white/10 bg-white/5 p-4 text-left hover:bg-white/10 hover:border-purple-300/30 transition"
+                    }
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                          {r.icon}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-sm sm:text-base font-semibold text-slate-50">{r.label}</div>
+                          <div className="mt-1 text-[12px] sm:text-sm text-slate-300/70">{r.blurb}</div>
+                        </div>
+                      </div>
+                      <span className="mt-1 inline-flex items-center gap-1 text-[11px] text-slate-300/60">
+                        Category <ChevronRight className="h-3.5 w-3.5" />
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+
+              <button
+                type="button"
+                onClick={() => {
+                  onPick("all");
+                  onClose();
+                }}
+                className={
+                  activeCategory === "all" || !activeCategory
+                    ? "rounded-2xl border border-purple-300/40 bg-purple-500/10 p-4 text-left hover:bg-purple-500/15 transition"
+                    : "rounded-2xl border border-white/10 bg-white/5 p-4 text-left hover:bg-white/10 hover:border-purple-300/30 transition"
+                }
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                      <LayoutGrid className="h-4.5 w-4.5 text-purple-200/90" />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="text-sm sm:text-base font-semibold text-slate-50">Show all tools</div>
+                      <div className="mt-1 text-[12px] sm:text-sm text-slate-300/70">
+                        Clear category filters and browse everything.
+                      </div>
+                    </div>
+                  </div>
+                  <span className="mt-1 inline-flex items-center gap-1 text-[11px] text-slate-300/60">
+                    All tools <ChevronRight className="h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </button>
+            </div>
+
+            <div className="mt-4 text-[11px] text-slate-400/70">
+              Tip: choose a category, then type in search to laser-focus results.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Close overlay"
+        onClick={onClose}
+        className="absolute inset-0 -z-10"
+        tabIndex={-1}
+      />
+    </div>
+  );
+}
+
 function RecommendWizard({
   open,
   onClose,
   isSignedIn,
   onRequireSignIn,
   onSavedSlugsLocalAdd,
+  initialKind,
 }: {
   open: boolean;
   onClose: () => void;
   isSignedIn: boolean;
-  onRequireSignIn: () => Promise<void>;
+  onRequireSignIn: (callbackUrl?: string) => Promise<void>;
   onSavedSlugsLocalAdd: (slugs: string[]) => void;
+  initialKind?: WorkflowKind | null;
 }) {
   // step 0 = choose context, 1 = form, 2 = recommendations, 3 = build new tools
   const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
@@ -487,7 +499,6 @@ function RecommendWizard({
     if (analyzeTimer.current) window.clearInterval(analyzeTimer.current);
     analyzeTimer.current = window.setInterval(() => {
       setAnalyzeProgress((p) => {
-        // ease toward 92% while waiting
         if (p >= 92) return p;
         const bump = p < 40 ? 6 : p < 70 ? 3 : 1.5;
         return Math.min(92, p + bump);
@@ -568,7 +579,7 @@ function RecommendWizard({
     setProfileName("");
 
     setForm({
-      kind: "PERSONAL",
+      kind: initialKind ?? "PERSONAL",
       companyType: "",
       industry: "",
       teamSize: "",
@@ -600,7 +611,6 @@ function RecommendWizard({
   }, []);
 
   async function submitIntake() {
-    // light validation: we want at least some signal
     const hasAnySignal =
       form.normalWeek.trim() ||
       form.slowDowns.trim() ||
@@ -759,24 +769,16 @@ function RecommendWizard({
       .map(([idx]) => Number(idx))
       .filter((n) => Number.isFinite(n));
 
-    if (picked.length === 0) {
-      flash("Pick 1–3 ideas first.");
-      return;
-    }
-    if (picked.length > 3) {
-      flash("Pick up to 3 ideas.");
-      return;
-    }
+    if (picked.length === 0) return flash("Pick 1–3 ideas first.");
+    if (picked.length > 3) return flash("Pick up to 3 ideas.");
+
     if (!isSignedIn) {
       await onRequireSignIn();
       return;
     }
 
     const selected = picked.map((i) => ideas[i]).filter(Boolean);
-    if (selected.length === 0) {
-      flash("No ideas selected.");
-      return;
-    }
+    if (selected.length === 0) return flash("No ideas selected.");
 
     setLoading(true);
     try {
@@ -831,7 +833,6 @@ function RecommendWizard({
           ? "Your recommended tools"
           : "Build new tools (optional)";
 
-  // ✅ removed the exact circled copy on step 0; tightened step 3 for clarity
   const stepDesc =
     step === 0
       ? ""
@@ -840,6 +841,18 @@ function RecommendWizard({
         : step === 2
           ? "Review and save the tools you want. You can also go back and edit inputs."
           : "Pick up to 3. Atlas will build and auto-save them.";
+
+  async function chooseContext(kind: WorkflowKind) {
+    // requirement: user can open wizard and see step 0,
+    // but once they pick Personal/Business, force login if not signed in.
+    if (!isSignedIn) {
+      const cb = `/tools?rec=1&kind=${kind}`;
+      await onRequireSignIn(cb);
+      return;
+    }
+    setForm((p) => ({ ...p, kind }));
+    setStep(1);
+  }
 
   return (
     <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm" role="dialog" aria-modal="true">
@@ -872,7 +885,6 @@ function RecommendWizard({
                 </button>
               </div>
 
-              {/* Step 2 sticky actions (top): SAVE SELECTED at the top */}
               {step === 2 && (
                 <div className="px-4 sm:px-6 pb-4">
                   <div className="rounded-2xl border border-white/10 bg-white/5 px-3 sm:px-4 py-3 flex items-center justify-between gap-3">
@@ -921,10 +933,7 @@ function RecommendWizard({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
                         type="button"
-                        onClick={() => {
-                          setForm((p) => ({ ...p, kind: "PERSONAL" }));
-                          setStep(1);
-                        }}
+                        onClick={() => chooseContext("PERSONAL")}
                         className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-300/40 transition p-4 text-left"
                       >
                         <div className="flex items-center gap-2">
@@ -935,17 +944,20 @@ function RecommendWizard({
                         </div>
 
                         <div className="mt-2 text-sm text-slate-300/70">
-                          You describe <span className="text-slate-200 font-semibold">your job</span>, your tasks, and
-                          friction points.
+                          Recommend tools for <span className="text-slate-200 font-semibold">your job</span> and daily
+                          tasks.
                         </div>
+
+                        {!isSignedIn && (
+                          <div className="mt-3 text-[12px] text-slate-300/70">
+                            You’ll sign in next to save recommendations.
+                          </div>
+                        )}
                       </button>
 
                       <button
                         type="button"
-                        onClick={() => {
-                          setForm((p) => ({ ...p, kind: "BUSINESS" }));
-                          setStep(1);
-                        }}
+                        onClick={() => chooseContext("BUSINESS")}
                         className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-300/40 transition p-4 text-left"
                       >
                         <div className="flex items-center gap-2">
@@ -956,15 +968,21 @@ function RecommendWizard({
                         </div>
 
                         <div className="mt-2 text-sm text-slate-300/70">
-                          You describe <span className="text-slate-200 font-semibold">your company</span>, team roles,
-                          and operational bottlenecks.
+                          Recommend tools across <span className="text-slate-200 font-semibold">your company</span> and
+                          team roles.
                         </div>
+
+                        {!isSignedIn && (
+                          <div className="mt-3 text-[12px] text-slate-300/70">
+                            You’ll sign in next to save recommendations.
+                          </div>
+                        )}
                       </button>
                     </div>
 
                     <div className="mt-4 rounded-2xl border border-purple-300/20 bg-purple-500/10 p-3 text-sm text-slate-200">
                       <span className="font-semibold text-purple-100">Tip:</span>{" "}
-                      You can save multiple “workflow profiles” and re-run recommendations later.
+                      Save multiple “workflow profiles” so recommendations get smarter over time.
                     </div>
                   </SectionCard>
 
@@ -983,7 +1001,6 @@ function RecommendWizard({
               {step === 1 && (
                 <div className="space-y-4">
                   <SectionCard title={isBusiness ? "Business profile" : "Personal profile"} subtitle={topHelp}>
-                    {/* mode pills (still accessible, but now secondary) */}
                     <div className="flex items-center gap-2 flex-wrap">
                       <Pill active={form.kind === "PERSONAL"} onClick={() => setForm((p) => ({ ...p, kind: "PERSONAL" }))}>
                         Personal
@@ -1000,7 +1017,6 @@ function RecommendWizard({
                       </button>
                     </div>
 
-                    {/* saved workflow picker */}
                     <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2">
                       <div className="min-w-0">
                         <div className="mb-1 text-[12px] text-slate-300/70">Autofill from a saved workflow</div>
@@ -1143,11 +1159,7 @@ function RecommendWizard({
                         <input
                           value={profileName}
                           onChange={(e) => setProfileName(e.target.value)}
-                          placeholder={
-                            isBusiness
-                              ? "Name this business workflow (e.g., My Agency Ops)"
-                              : "Name this personal workflow (e.g., My Day Job)"
-                          }
+                          placeholder={isBusiness ? "Name this business workflow (e.g., My Agency Ops)" : "Name this personal workflow (e.g., My Day Job)"}
                           className="w-full rounded-2xl bg-white/5 border border-white/10 px-3 py-3 text-sm text-slate-100 placeholder:text-slate-400/60 outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-500/40"
                         />
                         <button
@@ -1188,7 +1200,7 @@ function RecommendWizard({
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                     <p className="text-sm font-semibold text-slate-50">Recommended tools ({recommendations.length})</p>
                     <p className="mt-1 text-sm text-slate-300/70">
-                      Toggle selections. Your “Save selected” button is at the top so you don’t lose it while scrolling.
+                      Toggle selections. “Save selected” stays pinned at the top.
                     </p>
                   </div>
 
@@ -1233,7 +1245,6 @@ function RecommendWizard({
 
               {step === 3 && (
                 <div className="space-y-4">
-                  {/* ✅ simplified + faster to parse */}
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-sm font-semibold text-slate-50">Pick up to 3 tools to auto-build</p>
@@ -1259,8 +1270,6 @@ function RecommendWizard({
                           <div className="min-w-0">
                             <div className="text-base font-semibold text-slate-50">{idea.title}</div>
                             <p className="mt-2 text-sm text-slate-200/90">{idea.description}</p>
-
-                            {/* ✅ never blank now */}
                             <p className="mt-2 text-sm text-slate-300/80">
                               <span className="text-purple-200 font-semibold">Why it’s different:</span>{" "}
                               {whyDifferentText(idea)}
@@ -1298,7 +1307,6 @@ function RecommendWizard({
             </div>
           </div>
 
-          {/* ✅ loading bar at the bottom (only during analysis) */}
           <ProgressBar show={analyzing} progress={analyzeProgress} />
         </div>
       </div>
@@ -1365,6 +1373,55 @@ function TextArea({
   );
 }
 
+function buildWorkflowCorpus(workflows: WorkflowRow[]) {
+  const parts: string[] = [];
+  for (const w of workflows) {
+    const d = w.data ?? {};
+    parts.push(String(w.name ?? ""));
+    parts.push(String(w.kind ?? ""));
+    for (const k of ["companyType", "industry", "teamSize", "roles", "jobTitle", "functionArea", "normalWeek", "slowDowns", "documents"]) {
+      if (d?.[k]) parts.push(String(d[k]));
+    }
+  }
+  return normalize(parts.join(" "));
+}
+
+function inferWorkflowCategoryScores(workflowText: string) {
+  const scores: Record<string, number> = {};
+  for (const id of Object.keys(CATEGORY_RULES)) {
+    scores[id] = scoreCategory(workflowText, id);
+  }
+  return scores;
+}
+
+/**
+ * "Recommended" relevance (fast heuristic, no extra API):
+ * - infer which categories appear in the user's workflows (by scoring workflow text)
+ * - score each tool by: category match strength + light keyword overlap
+ */
+function recommendedScoreForTool(tool: ToolMeta, workflowText: string) {
+  const t = normalize(`${tool.title} ${tool.description}`);
+  if (!workflowText) return 0;
+
+  const wfCat = inferWorkflowCategoryScores(workflowText);
+
+  // category alignment
+  let catBoost = 0;
+  for (const [catId, s] of Object.entries(wfCat)) {
+    if (s <= 0) continue;
+    const toolCatScore = scoreCategory(t, catId);
+    if (toolCatScore > 0) catBoost += Math.min(12, s) * Math.min(6, toolCatScore);
+  }
+
+  // tiny keyword overlap: take some frequent-ish tokens from workflow, count hits in tool text
+  const wfTokens = workflowText.split(" ").filter((x) => x.length >= 4);
+  const sample = wfTokens.slice(0, 120); // cap for perf
+  let overlap = 0;
+  for (const tok of sample) if (t.includes(tok)) overlap += 1;
+
+  return catBoost + overlap;
+}
+
 export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -1377,6 +1434,10 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
   const statusTimer = useRef<number | null>(null);
 
   const [recOpen, setRecOpen] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
+
+  const [workflows, setWorkflows] = useState<WorkflowRow[]>([]);
+  const [workflowsLoaded, setWorkflowsLoaded] = useState(false);
 
   function flashStatus(msg: string) {
     setSaveStatus(msg);
@@ -1384,19 +1445,23 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
     statusTimer.current = window.setTimeout(() => setSaveStatus(null), 3500);
   }
 
+  // --- URL params ---
   const savedOn = searchParams.get("saved") === "1";
   const qRaw = searchParams.get("q") || "";
   const query = normalize(qRaw);
 
   const category = searchParams.get("category") || "";
-  const categoryLabel = CATEGORY_RULES[category]?.label;
+  const categoryLabel = (category && category !== "all" ? CATEGORY_RULES[category]?.label : "") || "";
 
-  const sortParam = (searchParams.get("sort") || "rating-high") as SortId;
-  const sort: SortId = SORT_OPTIONS.find((s) => s.id === sortParam)?.id ?? "rating-high";
+  const sortParamRaw = searchParams.get("sort");
+  const sortParam = (sortParamRaw || "") as SortId;
 
   const pageParamRaw = searchParams.get("page") || "1";
   const pageParsed = Number.parseInt(pageParamRaw, 10);
   const requestedPage = Number.isFinite(pageParsed) && pageParsed > 0 ? pageParsed : 1;
+
+  const recParam = searchParams.get("rec") === "1";
+  const kindParam = (searchParams.get("kind") || "") as WorkflowKind;
 
   const setParam = (key: string, value?: string, resetPage = false) => {
     const current = new URLSearchParams(searchParams?.toString() || "");
@@ -1404,6 +1469,14 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
     else current.set(key, value);
     if (resetPage) current.set("page", "1");
 
+    const qs = current.toString();
+    router.push(qs ? `/tools?${qs}` : "/tools", { scroll: true });
+  };
+
+  const clearParam = (keys: string[]) => {
+    const current = new URLSearchParams(searchParams?.toString() || "");
+    keys.forEach((k) => current.delete(k));
+    current.set("page", "1");
     const qs = current.toString();
     router.push(qs ? `/tools?${qs}` : "/tools", { scroll: true });
   };
@@ -1416,9 +1489,76 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  async function requireSignIn() {
+  // load workflows (needed for "Recommended" sort + default behavior)
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      if (!isSignedIn) {
+        setWorkflows([]);
+        setWorkflowsLoaded(true);
+        return;
+      }
+      try {
+        const res = await fetch("/api/workflows", { cache: "no-store" });
+        if (!res.ok) throw new Error(String(res.status));
+        const body = await res.json().catch(() => null);
+        const rows = Array.isArray(body?.workflows) ? body.workflows : [];
+        if (!cancelled) setWorkflows(rows);
+      } catch {
+        if (!cancelled) setWorkflows([]);
+      } finally {
+        if (!cancelled) setWorkflowsLoaded(true);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [isSignedIn]);
+
+  const hasWorkflows = workflowsLoaded && workflows.length > 0;
+
+  // If user has workflows: default sort = recommended (ONLY if user didn't explicitly set sort)
+  useEffect(() => {
+    if (!hasWorkflows) return;
+    if (sortParamRaw) return; // user already chose something
+    // set default without being annoying: only once
+    setParam("sort", "recommended", true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasWorkflows]);
+
+  // if coming back from login with rec=1, auto-open wizard then clean URL
+  useEffect(() => {
+    if (!recParam) return;
+    setRecOpen(true);
+    // remove rec/kind from URL so refresh isn't weird
+    const current = new URLSearchParams(searchParams?.toString() || "");
+    current.delete("rec");
+    current.delete("kind");
+    const qs = current.toString();
+    router.replace(qs ? `/tools?${qs}` : "/tools");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recParam]);
+
+  const sortOptions = useMemo(() => {
+    const opts: Array<{ id: SortId; label: string }> = [];
+    if (hasWorkflows) opts.push({ id: "recommended", label: "Recommended for you" });
+    BASE_SORT_OPTIONS.forEach((o) => opts.push({ id: o.id as SortId, label: o.label }));
+    return opts;
+  }, [hasWorkflows]);
+
+  const sort: SortId = useMemo(() => {
+    // guard: don't allow recommended if no workflows
+    if (sortParam === "recommended" && !hasWorkflows) return "rating-high";
+    const ok = sortOptions.some((o) => o.id === sortParam);
+    return ok ? sortParam : hasWorkflows ? "recommended" : "rating-high";
+  }, [sortParam, sortOptions, hasWorkflows]);
+
+  async function requireSignIn(callbackUrl?: string) {
     flashStatus("Sign in required.");
-    await signIn("google", { callbackUrl: "/tools" });
+    await signIn("google", { callbackUrl: callbackUrl || "/tools" });
   }
 
   async function toggleSave(slug: string) {
@@ -1505,7 +1645,9 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
     }
   }
 
-  const sorted = useMemo(() => {
+  const workflowText = useMemo(() => (hasWorkflows ? buildWorkflowCorpus(workflows) : ""), [hasWorkflows, workflows]);
+
+  const filteredAndSorted = useMemo(() => {
     let filtered = tools;
 
     if (savedOn) {
@@ -1532,6 +1674,16 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
       const ac = typeof a.ratingCount === "number" ? a.ratingCount : 0;
       const bc = typeof b.ratingCount === "number" ? b.ratingCount : 0;
 
+      if (sort === "recommended") {
+        const as = recommendedScoreForTool(a, workflowText);
+        const bs = recommendedScoreForTool(b, workflowText);
+        if (bs !== as) return bs - as;
+        // tie-breakers that feel sane
+        if (br !== ar) return br - ar;
+        if (bc !== ac) return bc - ac;
+        return normalize(a.title).localeCompare(normalize(b.title));
+      }
+
       if (sort === "rating-high") {
         if (br !== ar) return br - ar;
         if (bc !== ac) return bc - ac;
@@ -1550,20 +1702,22 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
     });
 
     return next;
-  }, [tools, savedOn, isSignedIn, localSaved, query, category, sort]);
+  }, [tools, savedOn, isSignedIn, localSaved, query, category, sort, workflowText]);
 
-  const totalFiltered = sorted.length;
+  const totalFiltered = filteredAndSorted.length;
   const totalPages = Math.max(1, Math.ceil(totalFiltered / PER_PAGE));
   const page = clamp(requestedPage, 1, totalPages);
 
   const start = (page - 1) * PER_PAGE;
   const end = start + PER_PAGE;
-  const pageItems = sorted.slice(start, end);
+  const pageItems = filteredAndSorted.slice(start, end);
 
   const showingFrom = totalFiltered === 0 ? 0 : start + 1;
   const showingTo = Math.min(end, totalFiltered);
 
   const pageModel = buildPageModel(page, totalPages);
+
+  const anyFiltersOn = savedOn || !!qRaw.trim() || (!!category && category !== "all");
 
   return (
     <div>
@@ -1580,6 +1734,14 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
           });
           startTransition(() => router.refresh());
         }}
+        initialKind={kindParam === "BUSINESS" || kindParam === "PERSONAL" ? kindParam : null}
+      />
+
+      <CategoryModal
+        open={catOpen}
+        onClose={() => setCatOpen(false)}
+        activeCategory={category || "all"}
+        onPick={(cat) => setParam("category", cat === "all" ? "all" : cat, true)}
       />
 
       {saveStatus && (
@@ -1598,7 +1760,16 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
               <span className="text-purple-200 font-medium">{totalFiltered}</span>
             </span>
 
-            {(qRaw.trim() || categoryLabel || savedOn) && (
+            {hasWorkflows && sort === "recommended" && (
+              <>
+                <span className="hidden sm:inline-block text-gray-600">•</span>
+                <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-xs border border-purple-400/40 text-purple-100">
+                  Personalized
+                </span>
+              </>
+            )}
+
+            {anyFiltersOn && (
               <>
                 <span className="hidden sm:inline-block text-gray-600">•</span>
                 <span className="flex flex-wrap items-center gap-1">
@@ -1618,11 +1789,20 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
                     </span>
                   )}
                 </span>
+
+                <button
+                  type="button"
+                  onClick={() => clearParam(["q", "category", "saved"])}
+                  className="ml-1 rounded-full px-2 py-0.5 text-[11px] border border-white/10 bg-white/5 text-gray-200 hover:bg-white/10 hover:border-purple-400/40 transition"
+                >
+                  Clear
+                </button>
               </>
             )}
           </div>
 
           <div className="flex items-center justify-center md:justify-end gap-2 flex-wrap">
+
             <button
               type="button"
               onClick={() => setRecOpen(true)}
@@ -1635,10 +1815,10 @@ export default function ToolLibraryClient({ tools, savedSlugs, isSignedIn }: Pro
               <select
                 value={sort}
                 onChange={(e) => setParam("sort", e.target.value, true)}
-                className="appearance-none rounded-full bg-white/5 border border-white/10 text-gray-200 text-xs md:text-sm px-3 py-2 pr-9 hover:bg-white/10 hover:border-purple-400/40 transition"
+                className="appearance-none rounded-full bg-white/5 border border-white/10 text-gray-200 text-xs md:text-sm px-3 py-2 pr-9 remember:hover:bg-white/10 hover:border-purple-400/40 transition"
                 aria-label="Sort tools"
               >
-                {SORT_OPTIONS.map((o) => (
+                {sortOptions.map((o) => (
                   <option key={o.id} value={o.id} className="bg-[#020617]">
                     Sort: {o.label}
                   </option>

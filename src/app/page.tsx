@@ -7,7 +7,6 @@ import {
   UploadCloud,
   Sparkles,
   Wand2,
-  Bookmark,
   ArrowDown,
   PenLine,
   ClipboardList,
@@ -18,6 +17,11 @@ import {
   Briefcase,
   BookOpen,
   LayoutGrid,
+  MessageSquareText,
+  SlidersHorizontal,
+  CheckCircle2,
+  Zap,
+  ArrowRight,
 } from "lucide-react";
 
 type Mode = "wander" | "inspect-title" | "slide-edge";
@@ -188,6 +192,30 @@ function pickToolIcon(title: string, description: string) {
   return Sparkles;
 }
 
+function inferToolIO(tool: ToolMeta) {
+  const s = `${tool.title} ${tool.description}`.toLowerCase();
+
+  if (s.includes("email") || s.includes("reply") || s.includes("rewrite")) {
+    return { input: "Draft / notes", output: "Polished email" };
+  }
+  if (s.includes("checklist") || s.includes("sop") || s.includes("procedure")) {
+    return { input: "Requirements", output: "Checklist" };
+  }
+  if (s.includes("summary") || s.includes("notes") || s.includes("meeting") || s.includes("lecture")) {
+    return { input: "Long text", output: "Summary + next steps" };
+  }
+  if (s.includes("calendar") || s.includes("schedule") || s.includes("run of show")) {
+    return { input: "Details", output: "Plan / schedule" };
+  }
+  if (s.includes("marketing") || s.includes("headline") || s.includes("ad")) {
+    return { input: "Offer + audience", output: "Hooks + copy" };
+  }
+  if (s.includes("analysis") || s.includes("report") || s.includes("kpi")) {
+    return { input: "Data / notes", output: "Insights" };
+  }
+  return { input: "Your context", output: "Useful output" };
+}
+
 function ToolCardMini({ tool }: { tool: ToolMeta }) {
   const Icon = useMemo(() => pickToolIcon(tool.title, tool.description), [tool.title, tool.description]);
 
@@ -262,8 +290,8 @@ function ToolCarousel({ compact = false }: { compact?: boolean }) {
     <section className={compact ? "w-full" : "mt-12 w-full"}>
       <div className="mx-auto mb-4 flex w-full items-end justify-between gap-4 px-1">
         <div>
-          <h3 className="text-sm font-semibold text-slate-100">New tools shipping constantly</h3>
-          <p className="mt-1 text-xs text-slate-300">Browse what Atlas is generating right now — scrolls forever.</p>
+          <h3 className="text-sm font-semibold text-slate-100">New tools generated continuously</h3>
+          <p className="mt-1 text-xs text-slate-300">See what Atlas is generating right now.</p>
         </div>
         <Link
           href="/tools"
@@ -349,9 +377,25 @@ function SectionHeading({
   );
 }
 
-function FeatureCard({ title, desc, kicker }: { title: string; desc: string; kicker?: string }) {
+function FeatureCard({
+  title,
+  desc,
+  kicker,
+  className = "",
+}: {
+  title: string;
+  desc: string;
+  kicker?: string;
+  className?: string;
+}) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_0_40px_rgba(15,23,42,0.9)] backdrop-blur-xl transition hover:-translate-y-[1px] hover:border-white/20 hover:bg-white/10">
+    <div
+      className={[
+        "rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_0_40px_rgba(15,23,42,0.9)] backdrop-blur-xl transition",
+        "hover:-translate-y-[1px] hover:border-white/20 hover:bg-white/10",
+        className,
+      ].join(" ")}
+    >
       {kicker ? (
         <div className="mb-3 inline-flex rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[0.65rem] font-semibold text-slate-200/90">
           {kicker}
@@ -425,7 +469,7 @@ function formatInt(n: number) {
   }
 }
 
-/** ✅ Updated right-side hero cards: brighter interior + white text + remove dark inner wash */
+/** ✅ Updated right-side hero cards */
 function ProcessCard({
   toolsCount,
   avgRating,
@@ -439,7 +483,7 @@ function ProcessCard({
     {
       Icon: UploadCloud,
       title: "Tell Atlas what you do",
-      desc: "Describe your work (personal or business) so Atlas knows what “good” looks like.",
+      desc: "Describe your work once.",
       glow: "from-fuchsia-500/25 via-violet-500/20 to-transparent",
       bar: "from-fuchsia-400 via-violet-300 to-cyan-200",
       iconBg: "from-fuchsia-500/25 via-violet-500/15 to-cyan-500/10",
@@ -448,7 +492,7 @@ function ProcessCard({
     {
       Icon: Sparkles,
       title: "Get tool recommendations",
-      desc: "Instant matches from the library for the jobs you do every week.",
+      desc: "Instantly matched to the right tools.",
       glow: "from-violet-500/25 via-fuchsia-500/15 to-transparent",
       bar: "from-violet-300 via-fuchsia-300 to-cyan-200",
       iconBg: "from-violet-500/25 via-fuchsia-500/15 to-cyan-500/10",
@@ -457,7 +501,7 @@ function ProcessCard({
     {
       Icon: Wand2,
       title: "Receive new tools for you",
-      desc: "Atlas generates new micro-tools based specifically on your workflow patterns.",
+      desc: "New tools generated automatically.",
       glow: "from-cyan-500/25 via-violet-500/15 to-transparent",
       bar: "from-cyan-300 via-violet-300 to-fuchsia-300",
       iconBg: "from-cyan-500/25 via-violet-500/15 to-fuchsia-500/10",
@@ -467,7 +511,6 @@ function ProcessCard({
 
   return (
     <div className="relative">
-      {/* header pills (no panel background) */}
       <div className="flex items-start justify-between gap-3">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.65rem] font-semibold text-slate-200/90 backdrop-blur-xl">
           How Atlas works
@@ -491,11 +534,8 @@ function ProcessCard({
 
           return (
             <div key={s.title} className="relative">
-              {/* glow belongs to THIS card only */}
               <div className={`pointer-events-none absolute -inset-6 rounded-[2rem] bg-gradient-to-r ${s.glow} blur-2xl`} />
-              <div
-                className={`pointer-events-none absolute -inset-3 rounded-[1.75rem] bg-gradient-to-r ${s.glow} blur-xl opacity-70`}
-              />
+              <div className={`pointer-events-none absolute -inset-3 rounded-[1.75rem] bg-gradient-to-r ${s.glow} blur-xl opacity-70`} />
 
               <div
                 className={[
@@ -504,13 +544,10 @@ function ProcessCard({
                   s.cardTint,
                   "px-5 py-5 shadow-[0_0_50px_rgba(15,23,42,0.65)] backdrop-blur-xl",
                   "transition hover:-translate-y-[1px] hover:border-white/22 hover:shadow-[0_0_70px_rgba(15,23,42,0.8)]",
+                  idx === 0 ? "animate-soft-attention" : "",
                 ].join(" ")}
               >
-                {/* ✅ remove the dark internal wash that was dimming text */}
-                {/* left color bar */}
                 <div className={`pointer-events-none absolute inset-y-0 left-0 w-[6px] bg-gradient-to-b ${s.bar}`} />
-
-                {/* subtle highlight sheen (bright, not dark) */}
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/8 via-transparent to-transparent" />
 
                 <div className="relative flex items-center gap-4">
@@ -528,7 +565,6 @@ function ProcessCard({
                 </div>
               </div>
 
-              {/* down arrow between cards */}
               {idx < steps.length - 1 ? (
                 <div className="my-2 flex items-center justify-center">
                   <div className="relative">
@@ -551,17 +587,243 @@ function ProcessCard({
         >
           Explore tools →
         </Link>
-        <Link
-          href="/tools?saved=1"
-          className="flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-500/10 px-4 py-2 text-center text-xs font-semibold text-cyan-100 backdrop-blur-xl transition hover:border-cyan-200/30 hover:bg-cyan-500/15"
-        >
-          <Bookmark className="h-4 w-4" />
-          Saved tools
-        </Link>
       </div>
-
-      <div className="relative mt-3 text-[0.7rem] text-slate-400">Tip: sign in to save tools and build your stack.</div>
     </div>
+  );
+}
+
+/** Animated ChatGPT vs Atlas (Option B) */
+function ChatVsAtlas() {
+  const frames = useMemo(
+    () => [
+      {
+        label: "Email reply",
+        chatPrompt: "Write a professional reply to this customer complaint. Keep it calm and firm.",
+        chatLong:
+          "Sure — here’s a professional reply:\n\nHi [Name],\n\nThank you for reaching out. I’m sorry to hear about your experience... (long answer) ...\n\nBest,\n[You]\n\nWould you like it to be more apologetic or more firm?",
+        atlasTool: "Customer Reply Generator",
+        atlasInputs: [
+          { k: "Tone", v: "Calm, firm, helpful" },
+          { k: "Context", v: "Customer complaint text" },
+          { k: "Goal", v: "Resolve + reduce back-and-forth" },
+        ],
+        atlasOutput: "A clean, structured reply with clear next steps (no prompt-crafting).",
+      },
+      {
+        label: "Checklist",
+        chatPrompt: "Turn these requirements into an SOP checklist and include edge cases.",
+        chatLong:
+          "Absolutely. Here’s a checklist:\n\n1) Confirm inputs\n2) Validate constraints\n3) Handle exceptions... (keeps going)\n\nDo you want this in CSV, Notion, or plain text?",
+        atlasTool: "SOP / Checklist Builder",
+        atlasInputs: [
+          { k: "Format", v: "Checklist w/ validation" },
+          { k: "Scope", v: "Requirements + constraints" },
+          { k: "Output", v: "Copy/paste ready" },
+        ],
+        atlasOutput: "A tight checklist with checks, owners, and edge-case handling — in the format you need.",
+      },
+      {
+        label: "Meeting notes",
+        chatPrompt: "Summarize this messy transcript and give next steps by owner.",
+        chatLong:
+          "Here’s a summary:\n\n• Key points...\n• Decisions...\n• Risks...\n\nNext steps:\n- Alex: ...\n- Sam: ...\n\nWant a shorter version?",
+        atlasTool: "Notes → Action Items",
+        atlasInputs: [
+          { k: "Input", v: "Transcript / notes" },
+          { k: "Extract", v: "Decisions, risks, actions" },
+          { k: "Structure", v: "Owners + due dates" },
+        ],
+        atlasOutput: "Decisions + action items by owner, instantly reusable (no re-prompting).",
+      },
+    ],
+    []
+  );
+
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    let id: any = null;
+    const mq = typeof window !== "undefined" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+    const reduce = mq?.matches;
+
+    if (!reduce) {
+      id = setInterval(() => setIdx((v) => (v + 1) % frames.length), 3800);
+    }
+    return () => {
+      if (id) clearInterval(id);
+    };
+  }, [frames.length]);
+
+  const f = frames[idx];
+
+  return (
+    <section className="relative mt-16">
+      {/* asymmetric background */}
+      <div className="pointer-events-none absolute -left-24 -top-16 h-72 w-72 rounded-full bg-fuchsia-500/12 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 top-10 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
+
+      <SectionHeading
+        eyebrow="Why this beats a blank chat box"
+        title="ChatGPT gives answers. Atlas gives repeatable tools."
+        desc="Instead of re-prompting the same tasks, you use purpose-built micro-apps with structured inputs and predictable outputs."
+      />
+
+      <div className="mt-8 grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-stretch">
+        {/* LEFT: Chat pane */}
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_0_70px_rgba(15,23,42,0.85)]">
+          <div className="pointer-events-none absolute -right-14 -top-16 h-44 w-44 rounded-full bg-violet-500/12 blur-3xl" />
+
+          <div className="flex items-center justify-between border-b border-white/10 bg-black/20 px-5 py-4">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+                <MessageSquareText className="h-4 w-4 text-slate-200/90" />
+              </span>
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-slate-100">Chat</div>
+                <div className="text-[0.7rem] text-slate-400">Great for conversation — not for repeatable workflows</div>
+              </div>
+            </div>
+
+            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[0.65rem] font-semibold text-slate-200/90">
+              {f.label}
+            </span>
+          </div>
+
+          <div className="p-5">
+            <div className="swap-fade">
+              <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                <div className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                  Prompt
+                </div>
+                <div className="mt-2 text-sm text-slate-200/90">{f.chatPrompt}</div>
+              </div>
+
+              <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                  Output
+                </div>
+                <pre className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-200/85">
+                  {f.chatLong}
+                </pre>
+              </div>
+
+              <div className="mt-4 flex items-center gap-2 text-[0.7rem] text-slate-400">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                  <span className="h-2 w-2 rounded-full bg-slate-400" />
+                  Lots of text
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                  <span className="h-2 w-2 rounded-full bg-slate-400" />
+                  Re-prompt every time
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT: Atlas pane */}
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_0_70px_rgba(15,23,42,0.85)] lg:-translate-y-2">
+          <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-cyan-500/12 blur-3xl" />
+          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-fuchsia-500/10 blur-3xl" />
+
+          <div className="flex items-center justify-between border-b border-white/10 bg-black/20 px-5 py-4">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+                <SlidersHorizontal className="h-4 w-4 text-cyan-200/90" />
+              </span>
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-slate-100">Atlas tool</div>
+                <div className="text-[0.7rem] text-slate-400">Structured inputs → predictable output</div>
+              </div>
+            </div>
+
+            <span className="rounded-full border border-cyan-300/20 bg-cyan-500/10 px-2.5 py-1 text-[0.65rem] font-semibold text-cyan-100">
+              Repeatable
+            </span>
+          </div>
+
+          <div className="p-5">
+            <div className="swap-fade">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-base font-semibold tracking-tight text-white">{f.atlasTool}</div>
+                  <div className="mt-1 text-xs text-slate-300">
+                    Same job, every time — without prompt-crafting.
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[0.65rem] font-semibold text-slate-200/90">
+                  <Zap className="h-3.5 w-3.5" />
+                  ~15s
+                </span>
+              </div>
+
+              <div className="mt-4 grid gap-3">
+                {f.atlasInputs.map((row) => (
+                  <div
+                    key={row.k}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  >
+                    <div className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                      {row.k}
+                    </div>
+                    <div className="mt-1 text-sm text-slate-200/90">{row.v}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-4">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-200">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </span>
+                  <div className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-slate-300">
+                    Output
+                  </div>
+                </div>
+                <div className="mt-2 text-sm leading-relaxed text-slate-200/90">{f.atlasOutput}</div>
+              </div>
+
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-[0.7rem] text-slate-400">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400/90" />
+                    Clear inputs
+                  </span>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                    <span className="h-2 w-2 rounded-full bg-cyan-300/90" />
+                    Predictable output
+                  </span>
+                </div>
+
+                <Link
+                  href="/tools"
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 px-5 py-2 text-xs font-semibold text-slate-950 shadow-lg shadow-fuchsia-500/20 transition hover:translate-y-0.5 hover:shadow-xl"
+                >
+                  Try tools <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* dots */}
+            <div className="mt-5 flex items-center gap-2">
+              {frames.map((x, i) => (
+                <button
+                  key={x.label}
+                  type="button"
+                  onClick={() => setIdx(i)}
+                  aria-label={`Show ${x.label}`}
+                  className={[
+                    "h-2.5 w-2.5 rounded-full border transition",
+                    i === idx ? "border-cyan-300/50 bg-cyan-200/80" : "border-white/20 bg-white/10 hover:bg-white/20",
+                  ].join(" ")}
+                />
+              ))}
+              <div className="ml-2 text-[0.7rem] text-slate-400">Auto-cycles • click dots to pin</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -579,11 +841,9 @@ export default function HomePage() {
     lastMove: 0,
   });
 
-  // header/progress polish
   const [scrolled, setScrolled] = useState(false);
   const [scrollP, setScrollP] = useState(0);
 
-  // metrics (pulled from /api/tools)
   const [metrics, setMetrics] = useState<{
     toolsCount: number;
     avgRating: number | null;
@@ -853,10 +1113,6 @@ export default function HomePage() {
   const toolsCount = metrics.toolsCount || 0;
   const avgRating = metrics.avgRating;
   const ratingCount = metrics.ratingCount || 0;
-  const ratedTools = metrics.ratedTools || 0;
-
-  // ✅ lightweight “hours saved” proxy (clearly marked as an estimate)
-  const estHoursSaved = ratingCount ? Math.max(1, Math.round((ratingCount * 2) / 60)) : 0;
 
   return (
     <>
@@ -865,7 +1121,6 @@ export default function HomePage() {
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
-        {/* top scroll progress */}
         <div className="pointer-events-none fixed left-0 top-0 z-[60] h-[2px] w-full bg-white/5">
           <div
             className="h-full bg-gradient-to-r from-fuchsia-400 via-violet-300 to-cyan-200"
@@ -873,19 +1128,16 @@ export default function HomePage() {
           />
         </div>
 
-        {/* ambient glows */}
         <div className="pointer-events-none absolute -left-40 top-0 h-80 w-80 rounded-full bg-fuchsia-500/25 blur-3xl" />
         <div className="pointer-events-none absolute -right-40 bottom-0 h-96 w-96 rounded-full bg-cyan-500/25 blur-3xl" />
         <div className="pointer-events-none absolute left-1/2 top-40 h-72 w-[38rem] -translate-x-1/2 rounded-full bg-violet-500/10 blur-3xl" />
 
-        {/* header */}
         <header
           className={`sticky top-0 z-50 mx-auto w-full border-b border-transparent ${
             scrolled ? "border-white/10 bg-slate-950/35 backdrop-blur-xl" : "bg-transparent"
           }`}
         >
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4">
-            {/* ✅ Atlas word a bit larger */}
             <Link href="/" aria-label="Atlas home" className="group inline-flex items-center gap-3">
               <span className="text-2xl font-semibold tracking-tight text-slate-50 transition group-hover:opacity-95 sm:text-3xl">
                 Atlas
@@ -924,24 +1176,26 @@ export default function HomePage() {
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-slate-300">
-                Experimental • Auto-generated AI micro-apps
+                Experimental • Auto-generated micro-tools
               </div>
 
               <h1
                 ref={titleRef}
                 className="mt-5 text-balance text-4xl font-semibold tracking-tight text-slate-50 sm:text-5xl lg:text-6xl"
               >
-                Atlas turns your{" "}
+                Turn your{" "}
                 <span className="bg-gradient-to-r from-fuchsia-400 via-violet-300 to-cyan-200 bg-clip-text text-transparent">
                   real work
                 </span>{" "}
-                into custom AI tools.
+                into custom tools.
               </h1>
 
-
               <p className="mt-4 max-w-xl text-pretty text-sm leading-relaxed text-slate-300 sm:text-base">
-                Stop rewriting the same emails, rebuilding the same checklists, and reformatting messy notes. Atlas turns
-                your raw work into clear outputs in seconds — by using the right tool for the job.
+                Tools that fit the way you already work — instantly.
+              </p>
+
+              <p className="mt-2 max-w-xl text-pretty text-xs text-slate-400 sm:text-sm">
+                Built for operators, founders, and teams who repeat real work every week.
               </p>
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -949,27 +1203,23 @@ export default function HomePage() {
                   href="/tools"
                   className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 px-8 py-3 text-sm font-semibold text-slate-950 shadow-xl shadow-fuchsia-500/30 transition hover:translate-y-0.5 hover:shadow-2xl"
                 >
-                  Explore tools →
+                  Find tools for your work →
                 </Link>
 
                 <Link
                   href="#how-it-works"
-                  className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-8 py-3 text-sm font-semibold text-slate-100 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/10"
+                  className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/0 px-8 py-3 text-sm font-semibold text-slate-200/80 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/5 hover:text-slate-100"
                 >
                   How it works
                 </Link>
               </div>
 
               <div className="mt-8 grid max-w-xl grid-cols-1 gap-3 sm:grid-cols-3">
+                <StatCard label="Tools live" value={toolsCount ? formatInt(toolsCount) : "—"} sub="Purpose-built micro tools (and growing)." />
                 <StatCard
-                  label="Tools live"
-                  value={toolsCount ? formatInt(toolsCount) : "—"}
-                  sub="Purpose-built micro tools (and growing)."
-                />
-                <StatCard
-                  label="Hours saved"
-                  value={estHoursSaved ? `~${formatInt(estHoursSaved)}h` : "—"}
-                  sub={estHoursSaved ? "Est. from ratings × ~2 min saved/use." : "Sign in + use tools to start tracking."}
+                  label="Signals"
+                  value={ratingCount ? formatInt(ratingCount) : "Live"}
+                  sub={ratingCount ? "Ratings steer what Atlas builds next." : "Atlas is learning — your usage trains the loop."}
                 />
                 <StatCard label="Time to value" value="~15s" sub="Pick a tool → paste text → get output." />
               </div>
@@ -990,7 +1240,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* ✅ Right hero: brighter 3 cards */}
             <div className="relative">
               <ProcessCard toolsCount={toolsCount} avgRating={avgRating} ratingCount={ratingCount} />
             </div>
@@ -1001,7 +1250,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* sections */}
+        {/* WHY ATLAS (asymmetric stagger) */}
         <section ref={(el) => reveal(el)} className="reveal relative z-10 mx-auto w-full max-w-6xl px-4 pt-16">
           <SectionHeading
             eyebrow="Why Atlas"
@@ -1012,21 +1261,27 @@ export default function HomePage() {
 
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             <FeatureCard
+              className="md:translate-y-1"
               kicker="Focused UX"
               title="Designed around the task"
               desc="Each tool has the right inputs, output format, and guardrails — so you aren’t prompting from scratch every time."
             />
             <FeatureCard
+              className="md:-translate-y-1"
               kicker="Discovery"
               title="Find better ways to work"
               desc="Browse by title, search, or categories. Atlas helps you stumble into optimizations you didn’t know existed."
             />
             <FeatureCard
+              className="md:translate-y-2"
               kicker="Feedback loop"
               title="Gets sharper over time"
               desc="Ratings + saves reveal what works. The best tools influence how future tools are generated and tuned."
             />
           </div>
+
+          {/* ✅ NEW: ChatGPT vs Atlas animated visual */}
+          <ChatVsAtlas />
         </section>
 
         {/* HOW IT WORKS */}
@@ -1056,7 +1311,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="group rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_0_40px_rgba(15,23,42,0.9)] backdrop-blur-xl transition hover:-translate-y-[1px] hover:border-violet-400/70 hover:shadow-[0_0_60px_rgba(129,140,248,0.7)]">
+            <div className="group rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_0_40px_rgba(15,23,42,0.9)] backdrop-blur-xl transition hover:-translate-y-[1px] hover:border-violet-400/70 hover:shadow-[0_0_60px_rgba(129,140,248,0.7)] md:-translate-y-1">
               <div className="mb-3 flex items-center gap-2">
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-violet-500/20 text-violet-300">
                   <Sparkles className="h-4 w-4" />
@@ -1087,9 +1342,7 @@ export default function HomePage() {
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <div className="text-sm font-semibold text-slate-100">Want the fastest path?</div>
-                <div className="mt-1 text-sm text-slate-300">
-                  Browse the library and save the tools that match your workflows.
-                </div>
+                <div className="mt-1 text-sm text-slate-300">Browse the library and save the tools that match your workflows.</div>
               </div>
               <Link
                 href="/tools"
@@ -1111,36 +1364,12 @@ export default function HomePage() {
           />
 
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            <FeatureCard
-              kicker="Writing"
-              title="Emails, replies, rewrites"
-              desc="Turn rough drafts into crisp, professional responses with the right tone and structure."
-            />
-            <FeatureCard
-              kicker="Ops"
-              title="Checklists, SOPs, validation"
-              desc="Convert procedures and requirements into actionable checklists and audits."
-            />
-            <FeatureCard
-              kicker="Planning"
-              title="Events, meetings, run-of-show"
-              desc="Generate step-by-step plans that remove the ‘what am I forgetting?’ anxiety."
-            />
-            <FeatureCard
-              kicker="Support"
-              title="Customer responses"
-              desc="Create empathetic, clear replies that reduce back-and-forth and improve satisfaction."
-            />
-            <FeatureCard
-              kicker="Decision"
-              title="Summaries + next steps"
-              desc="Extract the key points, risks, and actions from messy notes, threads, or drafts."
-            />
-            <FeatureCard
-              kicker="Growth"
-              title="Marketing + positioning"
-              desc="Test hooks, value props, and landing copy — quickly — with tools that stay on-task."
-            />
+            <FeatureCard kicker="Writing" title="Emails, replies, rewrites" desc="Turn rough drafts into crisp, professional responses with the right tone and structure." className="lg:translate-y-1" />
+            <FeatureCard kicker="Ops" title="Checklists, SOPs, validation" desc="Convert procedures and requirements into actionable checklists and audits." className="lg:-translate-y-1" />
+            <FeatureCard kicker="Planning" title="Events, meetings, run-of-show" desc="Generate step-by-step plans that remove the ‘what am I forgetting?’ anxiety." className="lg:translate-y-2" />
+            <FeatureCard kicker="Support" title="Customer responses" desc="Create empathetic, clear replies that reduce back-and-forth and improve satisfaction." />
+            <FeatureCard kicker="Decision" title="Summaries + next steps" desc="Extract the key points, risks, and actions from messy notes, threads, or drafts." className="lg:-translate-y-1" />
+            <FeatureCard kicker="Growth" title="Marketing + positioning" desc="Test hooks, value props, and landing copy — quickly — with tools that stay on-task." className="lg:translate-y-1" />
           </div>
         </section>
 
@@ -1188,26 +1417,6 @@ export default function HomePage() {
                 between “prompting” and “using a purpose-built micro-app.”
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-2 text-[0.7rem] text-slate-400">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400/90" />
-                  Save tools
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
-                  <span className="h-2 w-2 rounded-full bg-cyan-300/90" />
-                  Rate tools
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
-                  <span className="h-2 w-2 rounded-full bg-fuchsia-300/90" />
-                  Improve the loop
-                </span>
-                {toolsCount ? (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-500/10 px-3 py-1 text-cyan-100">
-                    {formatInt(toolsCount)} tools live
-                  </span>
-                ) : null}
-              </div>
-
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/tools"
@@ -1243,24 +1452,33 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* global styles (marquee + orb pulse + reveals) */}
       <style jsx global>{`
         @keyframes orb-pulse {
-          0% {
-            transform: scale(0.9);
-            opacity: 0.85;
-          }
-          50% {
-            transform: scale(1.05);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(0.9);
-            opacity: 0.85;
-          }
+          0% { transform: scale(0.9); opacity: 0.85; }
+          50% { transform: scale(1.05); opacity: 1; }
+          100% { transform: scale(0.9); opacity: 0.85; }
         }
-        .animate-orb-pulse {
-          animation: orb-pulse 2.7s ease-in-out infinite;
+        .animate-orb-pulse { animation: orb-pulse 2.7s ease-in-out infinite; }
+
+        /* soft-attention (you asked where to put it — keep it inside this global <style> block) */
+        @keyframes soft-attention {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-2px); }
+        }
+        .animate-soft-attention {
+          animation: soft-attention 3.2s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-soft-attention { animation: none !important; }
+        }
+
+        /* crossfade helper (used by ChatVsAtlas) */
+        .swap-fade {
+          animation: swapFade 380ms ease both;
+        }
+        @keyframes swapFade {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         /* ===== subtle section reveal ===== */
@@ -1302,25 +1520,19 @@ export default function HomePage() {
         }
 
         @keyframes atlas-marquee-left {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
 
+        /* hide scrollbar for horizontal strips */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         @media (prefers-reduced-motion: reduce) {
-          .atlasMarqueeTrack {
-            animation: none !important;
-          }
-          .animate-orb-pulse {
-            animation: none !important;
-          }
-          .reveal {
-            opacity: 1 !important;
-            transform: none !important;
-          }
+          .atlasMarqueeTrack { animation: none !important; }
+          .animate-orb-pulse { animation: none !important; }
+          .reveal { opacity: 1 !important; transform: none !important; }
+          .swap-fade { animation: none !important; }
         }
       `}</style>
     </>

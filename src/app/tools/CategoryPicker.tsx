@@ -1,216 +1,261 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import {
   PenLine,
-  BookOpen,
   Briefcase,
-  CalendarDays,
-  Sparkles,
   BarChart3,
   Megaphone,
+  CalendarDays,
+  Sparkles,
   ShieldCheck,
+  BookOpen,
   LayoutGrid,
+  ChevronDown,
+  X,
+  Check,
 } from "lucide-react";
 
 type Category = {
   id: string;
   label: string;
-  description: string;
   Icon: LucideIcon;
 };
 
 const CATEGORIES: Category[] = [
-  {
-    id: "writing",
-    label: "Writing & Messaging",
-    description: "Emails, rewrites, tone fixes, scripts, and clarity upgrades.",
-    Icon: PenLine,
-  },
-  {
-    id: "research",
-    label: "Learning & Research",
-    description: "Explain concepts, summarize sources, study help, Q&A support.",
-    Icon: BookOpen,
-  },
-  {
-    id: "productivity",
-    label: "Workflows & Productivity",
-    description: "Checklists, SOPs, templates, decision helpers, time savers.",
-    Icon: Briefcase,
-  },
-  {
-    id: "planning",
-    label: "Planning & Events",
-    description: "Agendas, itineraries, preparation plans, and run-of-show docs.",
-    Icon: CalendarDays,
-  },
-  {
-    id: "data",
-    label: "Data & Finance",
-    description: "Numbers, analysis, comparisons, summaries, and structured output.",
-    Icon: BarChart3,
-  },
-  {
-    id: "marketing",
-    label: "Marketing & Growth",
-    description: "Ads, landing copy, positioning, hooks, and content strategy.",
-    Icon: Megaphone,
-  },
-  {
-    id: "creative",
-    label: "Creative & Media",
-    description: "Stories, prompts, social content, names, and idea generation.",
-    Icon: Sparkles,
-  },
-  {
-    id: "compliance",
-    label: "Policy & Professional",
-    description: "Safer wording, formal templates, and admin-style documentation.",
-    Icon: ShieldCheck,
-  },
-  {
-    id: "all",
-    label: "Show all tools",
-    description: "Clear category filters and browse everything.",
-    Icon: LayoutGrid,
-  },
+  { id: "writing", label: "Writing", Icon: PenLine },
+  { id: "ops", label: "Operations", Icon: Briefcase },
+  { id: "analysis", label: "Analysis", Icon: BarChart3 },
+  { id: "marketing", label: "Marketing", Icon: Megaphone },
+  { id: "planning", label: "Planning", Icon: CalendarDays },
+  { id: "creative", label: "Creative", Icon: Sparkles },
+  { id: "research", label: "Research", Icon: BookOpen },
+  { id: "policy", label: "Policy", Icon: ShieldCheck },
 ];
 
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
 export default function CategoryPicker() {
-  const [open, setOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [open, setOpen] = useState(false);
 
-  const handleSelect = (category: Category) => {
+  const currentCategoryId = searchParams.get("category") || "";
+  const currentCategory = useMemo(() => {
+    if (!currentCategoryId) return null;
+    return CATEGORIES.find((c) => c.id === currentCategoryId) ?? null;
+  }, [currentCategoryId]);
+
+  // close on ESC
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  const pushSelection = (categoryId: string) => {
     const current = new URLSearchParams(searchParams?.toString() || "");
 
-    if (category.id === "all") current.delete("category");
-    else current.set("category", category.id);
+    if (!categoryId) current.delete("category");
+    else current.set("category", categoryId);
 
-    const queryString = current.toString();
-    const href = queryString ? `/tools?${queryString}` : "/tools";
+    current.set("page", "1");
+    const qs = current.toString();
+    router.push(qs ? `/tools?${qs}` : "/tools", { scroll: true });
+  };
 
-    router.push(href, { scroll: true });
+  const select = (categoryId: string) => {
+    pushSelection(categoryId);
     setOpen(false);
   };
 
+  const clear = () => select("");
+
   return (
     <>
-      {/* Trigger Button */}
+      {/* Trigger — modern pill, cleaner hierarchy */}
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-xs md:text-sm font-medium bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-400/40 transition duration-200 shadow-sm shadow-purple-900/40"
+        className={cx(
+          "inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs md:text-sm font-semibold transition",
+          "bg-white/[0.04] border-white/10 hover:bg-white/[0.07] hover:border-white/20",
+          "shadow-[0_0_0_1px_rgba(255,255,255,0.03),0_10px_30px_rgba(0,0,0,0.35)]"
+        )}
+        aria-haspopup="dialog"
+        aria-expanded={open}
       >
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.9)]" />
-        Browse by category
+        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
+          <LayoutGrid className="h-3.5 w-3.5 text-slate-200/90" />
+        </span>
+
+        <span className="text-slate-100">Categories</span>
+
+        <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[11px] text-slate-200/75">
+          {currentCategory ? currentCategory.label : "All"}
+        </span>
+
+        <ChevronDown className="h-4 w-4 text-slate-300/70" />
       </button>
 
-      {/* Overlay + Modal */}
+      {/* Modal */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-50 bg-black/65 backdrop-blur-md"
           role="dialog"
           aria-modal="true"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setOpen(false);
+          }}
         >
-          {/* Center on desktop, bottom-sheet on mobile */}
           <div className="absolute inset-0 flex items-end sm:items-center justify-center p-3 sm:p-4">
-            <div className="relative w-full max-w-3xl rounded-2xl sm:rounded-3xl border border-white/10 bg-[#020617]/95 shadow-2xl shadow-purple-900/50 overflow-hidden">
-              {/* Scroll container so it fits on phones */}
-              <div className="max-h-[88vh] sm:max-h-[85vh] overflow-y-auto overscroll-contain">
-                {/* Sticky header (so close is always visible) */}
-                <div className="sticky top-0 z-10 border-b border-white/10 bg-[#020617]/95 backdrop-blur">
-                  <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <h2 className="text-base sm:text-lg md:text-xl font-semibold leading-snug">
-                        Find the right tool faster
-                      </h2>
-                      <p className="mt-1 text-[11px] sm:text-xs md:text-sm text-gray-400">
-                        Pick a category to filter the library instantly.
-                      </p>
-                    </div>
+            <div className="w-full max-w-xl overflow-hidden rounded-3xl border border-white/10 bg-[#050B1B]/95 shadow-2xl shadow-black/60">
+              {/* Header — centered title, removed subtitle */}
+              <div className="relative px-5 sm:px-6 py-4 border-b border-white/10">
+                <div className="text-center">
+                  <div className="text-base font-semibold text-slate-50">Categories</div>
+                </div>
 
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/[0.04] p-2 text-slate-200/80 hover:bg-white/[0.08]"
+                  aria-label="Close"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-4 sm:p-6">
+                {/* “All tools” — more modern, slimmer */}
+                <button
+                  type="button"
+                  onClick={clear}
+                  className={cx(
+                    "w-full rounded-2xl border px-4 py-3 flex items-center justify-between transition",
+                    "shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
+                    !currentCategoryId
+                      ? "border-purple-400/40 bg-gradient-to-r from-purple-500/12 to-cyan-500/5"
+                      : "border-white/10 bg-white/[0.04] hover:bg-white/[0.07] hover:border-white/20"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={cx(
+                        "h-10 w-10 rounded-xl border grid place-items-center",
+                        !currentCategoryId
+                          ? "border-purple-400/30 bg-purple-500/10"
+                          : "border-white/10 bg-white/[0.04]"
+                      )}
+                    >
+                      <LayoutGrid className="h-4 w-4 text-slate-200/90" />
+                    </span>
+
+                    <div className="text-left leading-tight">
+                      <div className="text-sm font-semibold text-slate-50">All tools</div>
+                      <div className="text-xs text-slate-400">No filter</div>
+                    </div>
+                  </div>
+
+                  {!currentCategoryId ? (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-purple-400/30 bg-purple-500/10 px-2 py-1 text-[11px] text-purple-200">
+                      <Check className="h-3.5 w-3.5" />
+                      Selected
+                    </span>
+                  ) : (
+                    <span className="text-xs text-slate-400">Select</span>
+                  )}
+                </button>
+
+                {/* Grid — softer shapes, cleaner spacing */}
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  {CATEGORIES.map((cat) => {
+                    const active = currentCategoryId === cat.id;
+                    const Icon = cat.Icon;
+
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => select(cat.id)}
+                        className={cx(
+                          "group rounded-2xl border p-3 text-left transition",
+                          "shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
+                          active
+                            ? "border-purple-400/40 bg-gradient-to-r from-purple-500/12 to-cyan-500/5"
+                            : "border-white/10 bg-white/[0.04] hover:bg-white/[0.07] hover:border-white/20"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={cx(
+                              "h-10 w-10 rounded-xl border grid place-items-center shrink-0 transition",
+                              active
+                                ? "border-purple-400/30 bg-purple-500/10"
+                                : "border-white/10 bg-white/[0.04] group-hover:bg-white/[0.07]"
+                            )}
+                          >
+                            <Icon
+                              className={cx(
+                                "h-4 w-4 transition",
+                                active ? "text-purple-100" : "text-slate-200/85 group-hover:text-slate-100"
+                              )}
+                            />
+                          </span>
+
+                          <div className="min-w-0">
+                            <div className="text-sm font-semibold text-slate-50 truncate">{cat.label}</div>
+                            {active && (
+                              <div className="mt-0.5 text-[11px] text-purple-200">Selected</div>
+                            )}
+                          </div>
+
+                          {active && (
+                            <span className="ml-auto inline-flex items-center justify-center h-6 w-6 rounded-full border border-purple-400/30 bg-purple-500/10">
+                              <Check className="h-3.5 w-3.5 text-purple-200" />
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Footer — cleaner, more “premium” */}
+                <div className="mt-5 flex items-center justify-between">
+                  <div className="text-xs text-slate-500">
+                    Current:{" "}
+                    <span className="text-slate-300">
+                      {currentCategory ? currentCategory.label : "All tools"}
+                    </span>
+                  </div>
+
+                  {currentCategory && (
                     <button
                       type="button"
-                      onClick={() => setOpen(false)}
-                      className="shrink-0 rounded-full bg-white/5 px-2.5 py-1.5 text-xs text-gray-300 hover:bg-white/10"
-                      aria-label="Close"
+                      onClick={clear}
+                      className="rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-semibold text-slate-200/90 hover:bg-white/[0.07] hover:border-white/20 transition"
                     >
-                      ✕
+                      Clear
                     </button>
-                  </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-3 sm:pt-4">
-                  {/* Category grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 md:gap-4">
-                    {CATEGORIES.map((cat) => {
-                      const Icon = cat.Icon;
-
-                      return (
-                        <button
-                          key={cat.id}
-                          type="button"
-                          onClick={() => handleSelect(cat)}
-                          className="group text-left rounded-2xl border border-white/10 bg-white/5 hover:bg-purple-500/10 hover:border-purple-400/60 transition duration-200 p-3 sm:p-4 flex flex-col justify-between"
-                        >
-                          <div className="flex items-start gap-3">
-                            {/* Icon bubble */}
-                            <div className="shrink-0 mt-0.5 h-9 w-9 rounded-xl border border-white/10 bg-white/5 grid place-items-center group-hover:border-purple-400/50 group-hover:bg-purple-500/10 transition">
-                              <Icon className="h-4 w-4 text-purple-200/90 group-hover:text-purple-100" />
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center justify-between gap-2 mb-1">
-                                <span className="text-sm sm:text-base font-medium truncate">
-                                  {cat.label}
-                                </span>
-                                <span className="text-[10px] uppercase tracking-wide text-purple-300/80 group-hover:text-purple-200">
-                                  {cat.id === "all" ? "All tools" : "Category"}
-                                </span>
-                              </div>
-
-                              {/* On phones, keep it compact: show a shorter description */}
-                              <p className="text-[11px] sm:text-sm text-gray-400 leading-snug">
-                                <span className="sm:hidden">
-                                  {cat.description}
-                                </span>
-                                <span className="hidden sm:inline">
-                                  {cat.description}
-                                </span>
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <p className="mt-3 sm:mt-4 text-[11px] text-gray-500">
-                    Tip: you can still type in the search bar after choosing a
-                    category to laser-focus the results.
-                  </p>
-
-                  {/* Mobile affordance: little grab handle look */}
-                  <div className="sm:hidden mt-4 flex justify-center">
-                    <div className="h-1 w-12 rounded-full bg-white/10" />
-                  </div>
-                </div>
+              {/* Mobile affordance */}
+              <div className="sm:hidden flex justify-center pb-3">
+                <div className="h-1 w-12 rounded-full bg-white/10" />
               </div>
             </div>
           </div>
-
-          {/* Tap outside to close */}
-          <button
-            type="button"
-            aria-label="Close overlay"
-            onClick={() => setOpen(false)}
-            className="absolute inset-0 -z-10"
-            tabIndex={-1}
-          />
         </div>
       )}
     </>

@@ -1,0 +1,34 @@
+{
+  "slug": "academic-conference-poster-visual-accessibility-checker",
+  "title": "Academic Conference Poster Visual Accessibility Checker",
+  "description": "Help academic researchers and conference poster designers evaluate the visual accessibility of their research poster text and layout descriptions (uploaded or pasted) by producing a structured report that identifies potential accessibility barriers for viewers with visual impairments (e.g., low contrast, font size, color blindness issues), and provides actionable recommendations to improve readability and compliance with accessibility guidelines.",
+  "inputLabel": "Paste or upload your conference poster text content, figure descriptions, or visual layout notes",
+  "outputLabel": "Visual accessibility evaluation report with identified issues and improvement suggestions",
+  "systemPrompt": "You are an expert in academic conference poster design accessibility. Analyze the provided poster text content, figure descriptions, and layout notes to identify visual accessibility barriers such as insufficient contrast, small font size, ambiguous color usage, or other issues that could hinder readability for people with visual impairments. Produce a clear, structured report listing each issue found, explaining why it is a problem, and providing actionable suggestions to improve visual accessibility and comply with common accessibility standards for academic posters.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output"
+  ],
+  "presets": [
+    {
+      "label": "More actionable",
+      "prompt": "Focus on providing clear, specific, and practical recommendations for improving visual accessibility.",
+      "hint": "Helps generate concrete steps for poster designers to implement."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Provide a thorough analysis with detailed explanations of each accessibility issue found.",
+      "hint": "Ideal for deep understanding of accessibility problems."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Summarize the accessibility issues and recommendations briefly and clearly.",
+      "hint": "Good for quick review and implementation."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON report with keys 'issues' (list of identified accessibility problems with 'description' and 'impact'), and 'recommendations' (list of specific actionable suggestions to improve accessibility)."
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "academic-research-poster-qr-code-content-generator",
+  "title": "Academic Research Poster QR Code Content Generator",
+  "description": "Help academic researchers and conference poster designers generate concise, optimized, and structured text content for QR codes on research posters by analyzing uploaded poster text or draft abstracts. Produces focused, mobile-friendly summaries and key resource links that enhance audience engagement and provide seamless access to supplementary materials during poster sessions.",
+  "inputLabel": "Paste your poster text, abstract, or upload files (text or audio/video) related to your research poster",
+  "outputLabel": "Generated QR code content text (summary + key links) optimized for quick mobile access",
+  "systemPrompt": "You are an assistant helping academic researchers create concise, clear, and engaging text content optimized for QR codes on research posters. Analyze the provided poster text, abstracts, or uploaded files (including transcriptions) to produce a mobile-friendly summary of the research and a prioritized list of 2-4 key resource links or calls to action (e.g., project website, dataset, contact info). Ensure the output is brief, avoids jargon, and is structured for easy scanning by conference attendees using smartphone QR code readers.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Make the summary and links as brief and compact as possible.",
+      "hint": "Ideal for dense posters with limited QR code space."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include slightly more detail in the summary to better explain the research context.",
+      "hint": "Useful if the QR code links to a general info page."
+    },
+    {
+      "label": "More engaging",
+      "prompt": "Use a more inviting and action-oriented tone to encourage scanning and exploration.",
+      "hint": "Good for posters targeting interdisciplinary audiences."
+    },
+    {
+      "label": "Simpler language",
+      "prompt": "Simplify technical terms and jargon for a broader audience.",
+      "hint": "Help non-experts understand the content quickly."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object with keys: 'summary' (a concise, mobile-friendly research summary string) and 'keyLinks' (an array of 2-4 objects with 'label' and 'url' fields representing important resources or calls to action)."
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "academic-conference-workshop-session-feedback-synthesizer",
+  "title": "Academic Conference Workshop Session Feedback Synthesizer",
+  "description": "Help academic conference workshop organizers and facilitators analyze raw participant feedback collected from uploaded workshop evaluation forms, freeform comments, or audio/video feedback transcripts to generate a clear, structured synthesis report highlighting key strengths, common challenges, participant suggestions, and actionable improvements for future workshop sessions.",
+  "inputLabel": "Paste or upload workshop participant feedback (text or audio/video recordings)",
+  "outputLabel": "Structured workshop feedback synthesis report",
+  "systemPrompt": "You are an expert in academic conference workshop facilitation feedback synthesis. Analyze the input text, which may include raw participant comments, evaluation form responses, or transcribed audio/video feedback from workshop sessions. Produce a clear, structured synthesis report that identifies major strengths of the session, common challenges or criticisms, participant suggestions for improvement, and prioritized actionable recommendations for future workshops. Organize the output into distinct sections with concise, objective language suitable for workshop organizers and academic event planners.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it more actionable",
+      "prompt": "Focus on producing specific, prioritized, and practical recommendations for workshop improvement.",
+      "hint": "Great for organizers planning next sessions."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Summarize feedback synthesis into a brief and high-level report without losing key insights.",
+      "hint": "Useful for quick executive summaries."
+    },
+    {
+      "label": "Highlight participant sentiment",
+      "prompt": "Emphasize the emotional tone and sentiment expressed by participants in the feedback.",
+      "hint": "Helpful for understanding overall participant mood."
+    },
+    {
+      "label": "Identify recurring themes",
+      "prompt": "Focus on detecting and listing the most common topics, praises, and concerns raised by participants.",
+      "hint": "Supports thematic analysis of feedback."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "A JSON object with sections: strengths (array of key positive points), challenges (array of common issues), suggestions (array of participant ideas), and recommendations (array of prioritized, actionable improvements)."
+}

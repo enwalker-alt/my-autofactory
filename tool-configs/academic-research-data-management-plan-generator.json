@@ -1,0 +1,43 @@
+{
+  "slug": "academic-research-data-management-plan-generator",
+  "title": "Academic Research Data Management Plan Generator",
+  "description": "Help academic researchers and data managers convert raw project descriptions, data types, and storage notes into clear, funder-compliant data management plans (DMPs) by analyzing uploaded project texts or pasted notes, producing structured DMP sections covering data collection, storage, sharing, preservation, and ethical considerations.",
+  "inputLabel": "Paste your project details, data notes, or upload relevant documents",
+  "outputLabel": "Generated structured Data Management Plan (DMP) text or JSON",
+  "systemPrompt": "You are an expert assistant specialized in academic research data management. Given raw project descriptions, data type summaries, storage and sharing notes (from pasted text or uploaded documents), generate a clear, structured, and funder-compliant Data Management Plan (DMP). The DMP should include sections on data types collected, data formats, metadata standards, storage and backup methods, data sharing and access policies, ethical/privacy considerations, and long-term preservation strategies. Use formal, precise language suitable for inclusion in grant applications and institutional review. If any key information is missing, ask up to three clarifying questions to gather necessary details before generating the final DMP text or structured JSON output.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More detailed",
+      "prompt": "Expand each section with additional technical details and examples.",
+      "hint": "Use for comprehensive DMP drafts requiring depth."
+    },
+    {
+      "label": "More concise",
+      "prompt": "Summarize content to focus on key points clearly and briefly.",
+      "hint": "Ideal for brief DMP submissions or executive summaries."
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Include specific action items and timelines for data management tasks.",
+      "hint": "Helpful for project planning and implementation."
+    },
+    {
+      "label": "More ethical focus",
+      "prompt": "Emphasize data privacy, ethical approvals, and compliance considerations.",
+      "hint": "Use when sensitive or human subject data is involved."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "JSON object with keys: dataTypes (description of data collected), dataFormats (file types), metadataStandards, storageBackup (methods and locations), sharingAccess (policies and restrictions), ethicalConsiderations (privacy, consent, compliance), preservationStrategies (long-term storage and archiving plans).",
+  "clarifyPrompt": "Please provide additional details about your research data: key data types collected, storage and backup plans, sharing intentions, ethical/privacy concerns, and any metadata or preservation requirements.",
+  "finalizePrompt": "Using the provided details, generate a clear, structured Data Management Plan covering all standard sections suitable for grant applications and institutional review."
+}

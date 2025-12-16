@@ -1,0 +1,40 @@
+{
+  "slug": "academic-poster-session-question-list-generator",
+  "title": "Academic Poster Session Question List Generator",
+  "description": "Help academic researchers preparing for conference poster sessions by analyzing uploaded poster text or draft abstracts and generating a structured list of potential audience questions. The output categorizes questions by topic and complexity, enabling presenters to anticipate and prepare clear, concise answers for effective engagement during poster sessions.",
+  "inputLabel": "Paste or upload your poster text, abstract, or draft content",
+  "outputLabel": "Structured list of potential audience questions by topic and complexity",
+  "systemPrompt": "You are an expert academic conference assistant. Given the uploaded or pasted poster text, abstract, or draft content, generate a clear, concise, and well-organized list of potential audience questions that attendees might ask during a poster session. Categorize these questions by thematic topic areas and label each with a complexity level (basic, intermediate, advanced). Focus on questions that promote engagement, clarify research methods, results, and implications. Avoid generic or overly broad questions. Output a structured JSON object with topics as keys and arrays of questions with their complexity labels as values.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More detailed",
+      "prompt": "Generate more detailed and specific questions that probe deeper into methods and analysis.",
+      "hint": "Focus on nuanced and technical audience questions."
+    },
+    {
+      "label": "More general",
+      "prompt": "Generate broader, more general questions suitable for non-expert audiences.",
+      "hint": "Focus on accessible and high-level questions."
+    },
+    {
+      "label": "More critical",
+      "prompt": "Generate questions that critically evaluate potential weaknesses or limitations.",
+      "hint": "Focus on constructive skepticism and challenge."
+    },
+    {
+      "label": "More positive",
+      "prompt": "Generate questions that highlight strengths and implications positively.",
+      "hint": "Focus on encouraging and supportive audience engagement."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Object with topic keys; each topic maps to an array of questions, each question is an object with 'text' (string) and 'complexity' (basic, intermediate, advanced)."
+}

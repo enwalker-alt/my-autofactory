@@ -1,0 +1,650 @@
+{
+  "slug": "academic-grant-coi-identifier",
+  "title": "Academic Research Grant Reviewer COI Identifier",
+  "description": "Upload grant proposals, your reviewer profile, and COI guidelines to generate a structured report highlighting potential conflicts of interest with justifications and recommendations to support impartial and compliant grant review.",
+  "inputLabel": "Paste or upload grant proposal(s), reviewer profile, and COI guidelines data",
+  "outputLabel": "Conflict of Interest Analysis Report",
+  "systemPrompt": "You are a specialized assistant helping academic research grant reviewers identify potential conflicts of interest (COI). You will receive textual data describing grant proposals, reviewer affiliations and past collaborations, and funding agency COI guidelines. Your task is to analyze this data and produce a structured COI report highlighting potential conflicts categorized by type, including clear justification notes referencing specific details from the input, and recommendations for recusal or special handling if conflicts are detected. You must reject any input missing required fields or violating format constraints. You must ensure the output is safe and does not reveal sensitive personal data beyond what is necessary for COI identification. Always disclaim that final COI determinations are the responsibility of the human reviewer. Refuse any requests that attempt to bypass privacy or security policies.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Conflict Summary Lens",
+      "prompt": "Analyze the provided grant proposal and reviewer data to summarize all detected potential conflicts of interest by type, providing a clear, concise report suitable for quick reviewer assessment."
+    },
+    {
+      "label": "Detailed Justification Lens",
+      "prompt": "Generate a detailed COI report that includes exact references and explanations for each detected conflict, citing the relevant proposal and reviewer data points for audit and transparency."
+    },
+    {
+      "label": "Recusal Recommendation Lens",
+      "prompt": "Based on the detected conflicts in the data, provide explicit recommendations whether the reviewer should recuse themselves or apply special handling for each flagged proposal."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output a JSON object with fields: conflictFlags (object with conflict type keys and boolean values), justifications (object with conflict type keys and explanation strings), recommendations (object with conflict type keys and suggested actions). Dates in ISO 8601 format.",
+  "clarifyPrompt": "Please provide all required data including grant proposal details (proposalId, title, PI name and affiliation, key personnel), reviewer profile (reviewerId, name, affiliations, past collaborations, data consent), and COI guidelines (guidelineId, agencyName, rules, effectiveDate). Upload files must be PDF, CSV, or JSON and well-formed. Do you have any questions or need help formatting your data?",
+  "finalizePrompt": "Review the generated COI report carefully. Remember that final conflict of interest determinations remain your responsibility. Do you want to save this report or analyze another proposal?",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Reviewer Conflict of Interest Identifier",
+      "niche": {
+        "role": "Academic Research Grant Reviewer",
+        "scenario": "Reviewers must identify potential conflicts of interest (COI) when evaluating multiple grant proposals to ensure impartiality and compliance with funding agency policies."
+      },
+      "problem": "Reviewers manually cross-check detailed grant proposals, collaborator lists, and their own affiliations to detect any conflicts of interest, which is time-consuming, error-prone, and can miss subtle or indirect conflicts.",
+      "inputs": [
+        "Uploaded grant proposals including PI and key personnel names, affiliations, and collaborator lists",
+        "Reviewer's own affiliation details and past collaboration records",
+        "Funding agency COI guidelines and definitions"
+      ],
+      "outputs": [
+        "Structured report highlighting potential conflicts of interest per proposal, categorized by type (e.g., direct collaboration, institutional overlap, financial interest)",
+        "Justification notes referencing specific data points triggering the COI flags",
+        "Recommendations for recusal or special handling if conflicts are detected"
+      ],
+      "whyItWins": [
+        "Automates and systematizes complex COI identification, reducing reviewer workload and human error",
+        "Supports compliance with strict funding agency COI policies to maintain review integrity",
+        "Provides clear, transparent rationale for detected conflicts, aiding reviewer decisions and audit trails",
+        "Targets a critical but underserved step in the grant review workflow distinct from grant writing or budgeting tools"
+      ],
+      "upgradePath": {
+        "today": "Lightweight web tool allowing manual upload of proposals and reviewer data to generate COI summary reports",
+        "in90Days": "Integration with common grant management systems for automated data ingestion and batch conflict screening with user dashboards",
+        "in12Months": "Full multi-user platform supporting institutional reviewer pools, real-time COI monitoring, workflow assignment controls, historical conflict analytics, and configurable COI policy rule engines"
+      },
+      "riskNotes": [
+        "Must ensure secure handling of sensitive proposal and reviewer data due to confidentiality",
+        "Needs careful design to avoid false positives or negatives that could bias review outcomes",
+        "Should clearly disclaim final COI determination responsibility remains with human reviewers",
+        "Compliance with data privacy laws (e.g., GDPR) for storing and processing personal affiliation information"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A secure web platform that assists academic research grant reviewers in identifying potential conflicts of interest (COI) by analyzing uploaded grant proposals, reviewer affiliations, and funding agency COI guidelines. It generates structured COI reports with justifications and recommendations to streamline and improve the impartiality of the review process.",
+      "primaryUser": "Academic Research Grant Reviewer",
+      "successMetrics": [
+        "Reduction in time spent manually identifying COIs per review cycle",
+        "Accuracy and relevance of COI flags compared to manual review",
+        "User adoption rate among grant reviewers and institutions",
+        "Compliance with funding agency COI policies and data privacy regulations",
+        "User satisfaction with clarity and usefulness of COI reports"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Proposal & Reviewer Data Upload UI",
+          "type": "ui",
+          "responsibility": "Allow reviewers to securely upload grant proposals, their own affiliation and collaboration data, and COI guidelines documents.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multiple file formats (e.g., PDF, CSV, JSON) with validation.",
+            "Includes secure authentication and session management.",
+            "Handles sensitive data with encryption in transit."
+          ]
+        },
+        {
+          "id": "api-coi-analysis",
+          "name": "COI Analysis API",
+          "type": "api",
+          "responsibility": "Process uploaded data to detect potential conflicts of interest by applying COI rules and matching affiliations, collaborations, and financial interests.",
+          "dependsOn": [
+            "data-proposals",
+            "data-reviewers",
+            "data-coi-guidelines"
+          ],
+          "notes": [
+            "Implements configurable rule engine for COI detection.",
+            "Generates structured COI reports with flagged issues and justifications.",
+            "Handles edge cases like ambiguous affiliations or incomplete data."
+          ]
+        },
+        {
+          "id": "data-proposals",
+          "name": "Grant Proposals Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded grant proposal data including PI, key personnel, affiliations, and collaborator lists for analysis and audit trail.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted at rest to ensure confidentiality.",
+            "Supports versioning to track updates or corrections."
+          ]
+        },
+        {
+          "id": "data-reviewers",
+          "name": "Reviewer Profile & Collaboration Data Store",
+          "type": "data",
+          "responsibility": "Store reviewer affiliation details, past collaborations, and historical COI decisions to support analysis and reporting.",
+          "dependsOn": [],
+          "notes": [
+            "Includes privacy controls and data minimization to comply with GDPR.",
+            "Supports updates and corrections by reviewers."
+          ]
+        },
+        {
+          "id": "data-coi-guidelines",
+          "name": "COI Guidelines Repository",
+          "type": "data",
+          "responsibility": "Maintain funding agency COI policies and definitions as structured data/rules for automated conflict detection.",
+          "dependsOn": [],
+          "notes": [
+            "Allows updates to guidelines without code changes.",
+            "Supports multiple agencies and customizable policies."
+          ]
+        },
+        {
+          "id": "ui-report-viewer",
+          "name": "COI Report Viewer UI",
+          "type": "ui",
+          "responsibility": "Present detailed COI reports to reviewers with categorized conflict flags, justifications, and recommendations for action.",
+          "dependsOn": [
+            "api-coi-analysis"
+          ],
+          "notes": [
+            "Supports filtering, sorting, and exporting reports.",
+            "Includes disclaimers about human responsibility for final decisions."
+          ]
+        },
+        {
+          "id": "integration-grant-systems",
+          "name": "Grant Management System Integration",
+          "type": "integration",
+          "responsibility": "Connect with external grant management platforms to automate data ingestion and batch COI screening.",
+          "dependsOn": [
+            "api-coi-analysis",
+            "data-proposals",
+            "data-reviewers"
+          ],
+          "notes": [
+            "Supports secure API authentication and data synchronization.",
+            "Planned for future upgrade phases."
+          ]
+        },
+        {
+          "id": "job-coi-batch-screening",
+          "name": "Batch COI Screening Job",
+          "type": "job",
+          "responsibility": "Periodically process multiple proposals and reviewers to identify conflicts in bulk and update dashboards.",
+          "dependsOn": [
+            "api-coi-analysis",
+            "data-proposals",
+            "data-reviewers"
+          ],
+          "notes": [
+            "Handles large data volumes with retry and failure logging.",
+            "Triggers notifications for detected conflicts."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "GrantProposal",
+          "purpose": "Store detailed information about each grant proposal for COI analysis and auditing.",
+          "fields": [
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "piName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "piAffiliation",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "keyPersonnel",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "collaborators",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "sourceFileReference",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "piName"
+          ]
+        },
+        {
+          "name": "ReviewerProfile",
+          "purpose": "Maintain reviewer personal and professional details relevant for COI detection.",
+          "fields": [
+            {
+              "name": "reviewerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "affiliations",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "pastCollaborations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "contactEmail",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dataConsent",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "reviewerId",
+            "name"
+          ]
+        },
+        {
+          "name": "COIGuideline",
+          "purpose": "Represent COI policies and rules to apply during conflict detection.",
+          "fields": [
+            {
+              "name": "guidelineId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "agencyName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "guidelineId",
+            "agencyName"
+          ]
+        },
+        {
+          "name": "COIReport",
+          "purpose": "Store generated conflict of interest reports with flags, justifications, and recommendations.",
+          "fields": [
+            {
+              "name": "reportId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reviewerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "conflictFlags",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "justifications",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "recommendations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "reportId",
+            "proposalId",
+            "reviewerId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Proposals and Reviewer Data",
+          "purpose": "Allow users to securely upload grant proposals, reviewer profiles, and COI guidelines.",
+          "inputs": [
+            "proposal files",
+            "reviewer profile data",
+            "COI guidelines documents"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "COI Reports Dashboard",
+          "purpose": "Display generated COI reports with filtering and export options.",
+          "inputs": [
+            "filter criteria (proposal, date, conflict type)"
+          ],
+          "outputs": [
+            "list of COI reports",
+            "detailed report views"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/guidelines",
+          "title": "COI Guidelines Management",
+          "purpose": "View and update COI policy rules and definitions.",
+          "inputs": [
+            "new or updated guidelines data"
+          ],
+          "outputs": [
+            "current guidelines list",
+            "update confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Authentication",
+          "purpose": "Authenticate reviewers and administrators to access the system.",
+          "inputs": [
+            "username",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Receive and validate uploaded proposals, reviewer data, and COI guidelines.",
+          "requestShape": "{ proposalFiles: File[], reviewerData: JSON, coiGuidelines: JSON }",
+          "responseShape": "{ success: boolean, errors: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/coi-analysis",
+          "method": "POST",
+          "purpose": "Trigger COI analysis on uploaded data and return structured reports.",
+          "requestShape": "{ proposalId: string, reviewerId: string }",
+          "responseShape": "{ coiReport: COIReport }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports",
+          "method": "GET",
+          "purpose": "Fetch COI reports with optional filtering parameters.",
+          "requestShape": "{ filter: { proposalId?: string, reviewerId?: string, dateRange?: [string, string], conflictType?: string } }",
+          "responseShape": "{ reports: COIReport[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/guidelines",
+          "method": "GET",
+          "purpose": "Retrieve current COI guidelines.",
+          "requestShape": "{}",
+          "responseShape": "{ guidelines: COIGuideline[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/guidelines",
+          "method": "POST",
+          "purpose": "Update or add new COI guidelines.",
+          "requestShape": "{ guideline: COIGuideline }",
+          "responseShape": "{ success: boolean, errors?: string[] }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Batch COI Screening",
+          "trigger": "Scheduled (e.g., nightly) or manual trigger",
+          "purpose": "Automatically process multiple proposals and reviewers to identify conflicts and update reports in bulk."
+        },
+        {
+          "name": "Data Cleanup and Archival",
+          "trigger": "Scheduled monthly",
+          "purpose": "Archive or anonymize old data to comply with data retention policies and GDPR."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or inconsistent affiliation data leading to uncertain conflict status.",
+        "Conflicts arising from indirect or historical collaborations not explicitly listed.",
+        "Handling multiple COI guidelines with conflicting rules for the same proposal.",
+        "Reviewer data consent withdrawal requiring data removal or anonymization.",
+        "False positives due to common institution names or collaborator overlaps.",
+        "Network or server failures during upload or batch processing causing partial data ingestion."
+      ],
+      "nonGoals": [
+        "Automated final decision-making on COI status; responsibility remains with human reviewers.",
+        "Grant proposal writing, budgeting, or submission management.",
+        "Financial conflict verification beyond declared affiliations and collaborations.",
+        "Comprehensive legal compliance auditing beyond COI policy adherence.",
+        "Real-time collaboration or chat features among reviewers."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page to obtain session token.",
+        "Authenticated user accesses /upload page to submit grant proposals, reviewer profiles, and COI guidelines files.",
+        "Upload UI validates file formats (PDF, CSV, JSON) and data schema client-side before sending to /api/upload.",
+        "/api/upload endpoint validates, parses, and stores data into respective Prisma models: GrantProposal, ReviewerProfile, COIGuideline with encryption at rest and versioning where applicable.",
+        "User navigates to /reports page which calls /api/reports with optional filters to fetch COIReport data for display.",
+        "User triggers COI analysis by selecting a proposal and reviewer, which calls /api/coi-analysis with proposalId and reviewerId.",
+        "/api/coi-analysis fetches related data from GrantProposal, ReviewerProfile, and COIGuideline stores, applies configurable COI detection rules, handles edge cases, and generates a COIReport stored in the database.",
+        "Generated COIReport is returned to the UI for detailed viewing with filtering, sorting, and export options on /reports page.",
+        "User can view and update COI guidelines on /guidelines page, which calls GET and POST /api/guidelines endpoints to retrieve and update policies without code changes.",
+        "Background job 'Batch COI Screening' periodically triggers bulk COI analyses for multiple proposals and reviewers, updating COIReport records and sending notifications on detected conflicts.",
+        "Background job 'Data Cleanup and Archival' runs monthly to archive or anonymize old data per GDPR and data retention policies.",
+        "Integration with external grant management systems planned for future phases to automate data ingestion and batch screening."
+      ],
+      "validationRules": [
+        "Uploaded proposal files must be PDF, CSV, or JSON and conform to required schema fields: proposalId, title, piName, piAffiliation, keyPersonnel.",
+        "Reviewer profile data must include reviewerId, name, affiliations (JSON), contactEmail, and explicit dataConsent boolean true.",
+        "COI guidelines JSON must include guidelineId, agencyName, rules (JSON), effectiveDate; version is optional.",
+        "All IDs (proposalId, reviewerId, guidelineId) must be unique and non-empty strings.",
+        "Dates (uploadedAt, effectiveDate, generatedAt) must be valid ISO 8601 date strings.",
+        "KeyPersonnel and collaborators fields must be valid JSON arrays with expected structure.",
+        "On /api/coi-analysis, proposalId and reviewerId must exist in the database; reject requests referencing missing entities.",
+        "On /api/guidelines POST, new or updated guidelines must not conflict structurally and must pass schema validation.",
+        "Authentication tokens must be validated on all protected API routes; reject unauthorized requests.",
+        "File uploads must be scanned for malware and size-limited to prevent denial of service.",
+        "Reviewer dataConsent must be true to allow storage and processing; if withdrawn, data must be anonymized or deleted."
+      ],
+      "errorHandling": [
+        "API endpoints return structured error responses with HTTP status codes (400 for validation errors, 401 for auth failures, 500 for server errors).",
+        "Upload endpoint aggregates validation errors per file and returns detailed messages for user correction.",
+        "COI analysis API returns errors if referenced proposal or reviewer not found or if analysis fails due to incomplete data.",
+        "Guidelines update API returns errors if rules conflict or schema validation fails.",
+        "Background jobs log failures with retry mechanisms and alert administrators on repeated errors.",
+        "UI displays user-friendly error messages with guidance on corrective actions.",
+        "Network or server failures during upload or batch processing trigger rollback or partial ingestion detection with clear error reporting.",
+        "Edge cases like ambiguous affiliations result in warnings in reports rather than blocking processing.",
+        "Authentication failures redirect users to login with appropriate messages."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /login; use secure session tokens or JWT with short expiry.",
+        "Data in transit is encrypted via HTTPS/TLS.",
+        "Sensitive data stored in database is encrypted at rest using field-level encryption for personal and affiliation data.",
+        "File uploads are scanned for malware and validated to prevent injection attacks.",
+        "Access controls enforce that users can only view COI reports and data relevant to their identity and roles.",
+        "Reviewer dataConsent is strictly enforced; withdrawal triggers data anonymization or deletion workflows.",
+        "Audit logs maintained for data uploads, updates, and COI report generation for compliance and traceability.",
+        "Rate limiting and input sanitization protect against brute force and injection attacks.",
+        "Background jobs run in isolated environments with limited privileges.",
+        "Future integration with external grant systems will use secure API keys and OAuth where applicable."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with valid proposal files, reviewer data, and COI guidelines.",
+          "when": "The user submits the upload form with all required data correctly formatted.",
+          "then": "The system stores the data securely, returns a success confirmation, and no validation errors are shown."
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user requests COI analysis for a valid proposalId and reviewerId.",
+          "when": "The user triggers the analysis via /api/coi-analysis.",
+          "then": "The system returns a structured COIReport with conflict flags, justifications, and recommendations."
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on the /reports page with existing COI reports.",
+          "when": "The user applies filters by proposalId and conflict type.",
+          "then": "The system returns a filtered list of COI reports matching the criteria."
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user attempts to upload a proposal file with invalid format or missing required fields.",
+          "when": "The user submits the upload form.",
+          "then": "The system rejects the upload and returns detailed validation error messages."
+        },
+        {
+          "id": "AT-005",
+          "given": "An unauthenticated user attempts to access /upload or /reports pages.",
+          "when": "The user navigates to these pages.",
+          "then": "The system redirects the user to /login page with an appropriate message."
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user updates COI guidelines with valid new rules.",
+          "when": "The user submits the update via /api/guidelines POST.",
+          "then": "The system stores the new guidelines and returns a success confirmation."
+        },
+        {
+          "id": "AT-007",
+          "given": "The batch COI screening job runs on multiple proposals and reviewers.",
+          "when": "The job completes successfully.",
+          "then": "COIReport records are updated or created accordingly, and notifications are sent for detected conflicts."
+        },
+        {
+          "id": "AT-008",
+          "given": "Reviewer withdraws data consent after profile creation.",
+          "when": "The system processes the consent withdrawal request.",
+          "then": "Reviewer data is anonymized or deleted in compliance with GDPR, and no further processing occurs on that data."
+        }
+      ],
+      "buildOrder": [
+        "Implement Prisma data models: GrantProposal, ReviewerProfile, COIGuideline, COIReport with indexes and encryption.",
+        "Develop authentication system and /login page with secure session management.",
+        "Build /upload page UI with file upload components and client-side validation.",
+        "Create /api/upload endpoint to validate, parse, and store uploaded data securely.",
+        "Implement /api/guidelines GET and POST endpoints and /guidelines page UI for viewing and updating policies.",
+        "Develop COI analysis engine and /api/coi-analysis endpoint to generate COI reports.",
+        "Build /reports page UI with filtering, sorting, and detailed report views calling /api/reports.",
+        "Implement background jobs for batch COI screening and data cleanup with logging and notifications.",
+        "Add error handling and user-friendly messages across UI and API layers.",
+        "Integrate security measures: encryption, access control, consent enforcement, and audit logging.",
+        "Plan and scaffold integration with external grant management systems for future phases."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/upload",
+          "/reports",
+          "/guidelines"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload.ts",
+          "/api/coi-analysis.ts",
+          "/api/reports.ts",
+          "/api/guidelines.ts"
+        ],
+        "prismaModelsToAdd": [
+          "GrantProposal",
+          "ReviewerProfile",
+          "COIGuideline",
+          "COIReport"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify missing constraints or edge cases for the COI identifier tool.",
+        "promptTemplate": "You are a planner refining the Academic Research Grant Reviewer COI Identifier requirements. Given the current blueprint and expanded details: {{BLUEPRINT}} and {{EXPANDED}}, please ask the user {{USER_INPUT}} to clarify any ambiguous or missing constraints, edge cases, or security concerns before proceeding."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed page layouts, API routes, and database schema for the COI identifier app.",
+        "promptTemplate": "As the architect, finalize the detailed pages and data models for the COI Identifier app based on the blueprint: {{BLUEPRINT}} and expansions: {{EXPANDED}}. Use user input {{USER_INPUT}} to adjust or confirm the designs. Provide clear schema definitions and API specs."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate frontend page stubs and basic UI components for the COI identifier tool.",
+        "promptTemplate": "You are the builder tasked with generating page stubs for the COI Identifier web app. Using the finalized designs in {{BLUEPRINT}} and the expanded specs {{EXPANDED}}, and considering user input {{USER_INPUT}}, produce React or other framework page skeletons with placeholders for upload, reports, guidelines, and login pages."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages with backend API endpoints and database models for full functionality.",
+        "promptTemplate": "You are the integrator wiring the COI Identifier app. Using the blueprint {{BLUEPRINT}}, expanded specs {{EXPANDED}}, and user input {{USER_INPUT}}, write integration code that connects UI pages to API routes and underlying database models, ensuring secure data flow, validation, and error handling."
+      }
+    ]
+  }
+}

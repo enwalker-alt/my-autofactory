@@ -1,0 +1,891 @@
+{
+  "slug": "academic-repro-checklist-tracker",
+  "title": "Academic Research Reproducibility Checklist & Tracker",
+  "description": "A single-page web app for academic researchers and lab managers to input experiment metadata and related reproducibility documentation, generate structured reproducibility checklists, track status of checklist items, and export basic reports. Supports text input and file uploads for experiment details, code links, protocols, and publication drafts, enabling systematic tracking and improved transparency of reproducibility components.",
+  "inputLabel": "Enter experiment details, reproducibility components, and optional related files",
+  "outputLabel": "Generated reproducibility checklist and status report",
+  "systemPrompt": "You are a reproducibility checklist and tracker assistant for academic research projects. Accept experiment metadata including title, date, participants, purpose; data file descriptions and links; code snippets or repository links with version info; detailed protocols and parameters; software environment details; publication drafts or preprints; and reproducibility guidelines or checklists. Validate inputs to ensure required fields are present and safe. Generate a structured reproducibility checklist tailored to the input, indicating status (complete, pending, missing) for each component. Provide a summary status report suitable for export. Refuse requests with disallowed or unsafe content. Output plain text by default, optionally JSON if structured-output is enabled. Enforce safety, data privacy, and clarity strictly.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Reproducibility Checklist",
+      "prompt": "Generate a basic reproducibility checklist for the provided experiment metadata and reproducibility components. Focus on core items: data files, code versions, protocols, environment, and publications. Indicate status for each item as complete, pending, or missing."
+    },
+    {
+      "label": "Detailed Checklist with Status Tracking",
+      "prompt": "Create a detailed reproducibility checklist including categories for data, code, protocols, environment, and publications. For each item, assess completeness based on inputs and assign status. Provide a summary tracking overall progress."
+    },
+    {
+      "label": "Export-Ready Reproducibility Report",
+      "prompt": "Generate a reproducibility report formatted for journal submission including checklist items with status, experiment metadata summary, and notes on missing or pending documentation. Output in clear text suitable for export."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with fields: { experimentMetadata: {...}, checklistItems: [{ description, category, status }], statusSummary: { totalItems, complete, pending, missing } }",
+  "clarifyPrompt": "Please provide complete experiment metadata including title, date, participants, and purpose. Also include descriptions or links for data files, code repositories, protocols, environment details, publications, and any reproducibility guidelines or checklists you wish to follow.",
+  "finalizePrompt": "Review the generated reproducibility checklist and status report. Confirm all components are accurately represented and statuses are correct. Specify any additional items to include or modify before export.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Reproducibility Checklist & Tracker",
+      "niche": {
+        "role": "Academic researcher or lab manager",
+        "scenario": "Preparing and managing reproducibility documentation for research projects, experiments, and publications"
+      },
+      "problem": "Researchers struggle to systematically track and document all necessary reproducibility components (e.g., data sets, code versions, protocols, environment details) across multiple experiments and projects, leading to incomplete reproducibility records that hinder transparency, verification, and future reuse.",
+      "inputs": [
+        "Experiment metadata (title, date, participants, purpose)",
+        "Data file descriptions and links",
+        "Code snippets or repository links with version info",
+        "Detailed experimental protocols and parameters",
+        "Software environment and dependency descriptions",
+        "Associated publication drafts or preprints",
+        "Reproducibility guidelines or checklists from journals or funders"
+      ],
+      "outputs": [
+        "Structured, customizable reproducibility checklists tailored to the project",
+        "Status tracking of reproducibility components (complete, pending, missing) per experiment",
+        "Automated reminders for missing documentation or updates",
+        "Exportable reproducibility reports formatted for journal submission or institutional records",
+        "Versioned audit trail of reproducibility documentation changes"
+      ],
+      "whyItWins": [
+        "Fills a crucial gap by integrating reproducibility documentation into researchers’ workflows rather than relying on ad hoc or scattered notes",
+        "Supports compliance with increasing journal and funder reproducibility requirements",
+        "Provides a reusable, centralized system for multi-experiment projects or labs to consistently track reproducibility",
+        "Lightweight at start, but with potential to grow into a comprehensive project management system",
+        "Reduces administrative burden and risk of incomplete or inconsistent reproducibility reporting"
+      ],
+      "upgradePath": {
+        "today": "A simple web app where researchers input experiment details and upload related materials to generate reproducibility checklists and basic status reports.",
+        "in90Days": "Add user accounts, multi-project/lab support, automated checklist templates customized by discipline or journal, and reminder notifications for missing items.",
+        "in12Months": "Develop a full multi-page system including version control integration (e.g., Git), collaborative editing, linking to data repositories, compliance dashboards for institutions, and export to multiple journal-standard reproducibility reporting formats."
+      },
+      "riskNotes": [
+        "Must ensure sensitive or unpublished data inputs are securely handled and access-controlled.",
+        "Avoid becoming a generic project management tool by focusing tightly on reproducibility-specific workflows and outputs.",
+        "Need clear UI/UX to not add complexity or overhead for researchers already burdened with documentation tasks.",
+        "Should not replace but complement existing code or data repository tools; focus is on integrated reproducibility status tracking and reporting."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web application enabling academic researchers and lab managers to systematically document, track, and report reproducibility components across experiments and projects. It provides customizable reproducibility checklists, status tracking, reminders, versioned audit trails, and exportable reports to support transparency and compliance with journal and funder requirements.",
+      "primaryUser": "Academic researchers and lab managers preparing and managing reproducibility documentation for research projects and experiments.",
+      "successMetrics": [
+        "Number of active projects and experiments managed in the system",
+        "Percentage of reproducibility checklist items completed per experiment",
+        "User engagement with reminder notifications and checklist updates",
+        "Frequency of reproducibility report exports generated",
+        "User satisfaction measured via feedback on UI simplicity and workflow integration"
+      ],
+      "components": [
+        {
+          "id": "ui-experiment-dashboard",
+          "name": "Experiment & Project Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for creating, viewing, and managing projects, experiments, and their reproducibility checklists and status.",
+          "dependsOn": [
+            "api-projects",
+            "api-experiments",
+            "api-checklists",
+            "api-users"
+          ],
+          "notes": [
+            "Must support multi-project and multi-experiment navigation.",
+            "Display status summaries and progress indicators.",
+            "Include access control UI elements based on user roles."
+          ]
+        },
+        {
+          "id": "ui-checklist-editor",
+          "name": "Checklist Customization & Editing UI",
+          "type": "ui",
+          "responsibility": "Enable users to create, customize, and update reproducibility checklists tailored to disciplines, journals, or funder guidelines.",
+          "dependsOn": [
+            "api-checklists",
+            "api-templates"
+          ],
+          "notes": [
+            "Support template selection and checklist item editing.",
+            "Allow adding/removing checklist items and setting item metadata.",
+            "UI must prevent checklist bloat and complexity."
+          ]
+        },
+        {
+          "id": "api-users",
+          "name": "User Management API",
+          "type": "api",
+          "responsibility": "Handle user authentication, authorization, profile management, and access control for projects and experiments.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Securely store user credentials and session tokens.",
+            "Support roles such as researcher, lab manager, and collaborator.",
+            "Enforce data access restrictions to protect sensitive inputs."
+          ]
+        },
+        {
+          "id": "api-projects-experiments",
+          "name": "Projects and Experiments API",
+          "type": "api",
+          "responsibility": "Manage creation, retrieval, update, and deletion of projects and experiments including metadata and associated reproducibility data.",
+          "dependsOn": [
+            "data-projects",
+            "data-experiments"
+          ],
+          "notes": [
+            "Ensure referential integrity between projects and experiments.",
+            "Support bulk updates and status queries.",
+            "Validate inputs to prevent incomplete or inconsistent records."
+          ]
+        },
+        {
+          "id": "api-checklists",
+          "name": "Reproducibility Checklist & Status API",
+          "type": "api",
+          "responsibility": "Serve checklist templates, track item completion status, and manage versioned audit trails of checklist changes.",
+          "dependsOn": [
+            "data-checklists",
+            "data-audit-trails"
+          ],
+          "notes": [
+            "Support checklist versioning and history retrieval.",
+            "Allow status updates with timestamps and user attribution.",
+            "Integrate with reminder job to identify missing or pending items."
+          ]
+        },
+        {
+          "id": "api-templates",
+          "name": "Checklist Template API",
+          "type": "api",
+          "responsibility": "Provide predefined reproducibility checklist templates based on disciplines, journals, or funders, and allow creation of custom templates.",
+          "dependsOn": [
+            "data-templates"
+          ],
+          "notes": [
+            "Templates should be extensible and versioned.",
+            "Allow users to select or combine templates when creating checklists."
+          ]
+        },
+        {
+          "id": "job-reminder-notifications",
+          "name": "Reminder Notification Background Job",
+          "type": "job",
+          "responsibility": "Periodically scan experiments for missing or pending reproducibility checklist items and send automated reminders to responsible users.",
+          "dependsOn": [
+            "api-checklists",
+            "api-users"
+          ],
+          "notes": [
+            "Configurable reminder frequency and channels (email, in-app).",
+            "Handle failures in notification delivery gracefully.",
+            "Respect user notification preferences and permissions."
+          ]
+        },
+        {
+          "id": "job-report-generation",
+          "name": "Reproducibility Report Generation Job",
+          "type": "job",
+          "responsibility": "Generate exportable reproducibility reports formatted according to journal or institutional standards, including audit trails and status summaries.",
+          "dependsOn": [
+            "api-projects-experiments",
+            "api-checklists"
+          ],
+          "notes": [
+            "Support multiple export formats (PDF, DOCX, JSON).",
+            "Allow on-demand and scheduled report generation.",
+            "Ensure data consistency and completeness in reports."
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, credentials, roles, and access permissions.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive data at rest.",
+            "Index on username/email for authentication efficiency."
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Project Data Store",
+          "type": "data",
+          "responsibility": "Persist project metadata and ownership information.",
+          "dependsOn": [],
+          "notes": [
+            "Support multi-user project collaboration.",
+            "Index on project name and owner."
+          ]
+        },
+        {
+          "id": "data-experiments",
+          "name": "Experiment Data Store",
+          "type": "data",
+          "responsibility": "Persist experiment metadata, associated reproducibility components, and links to data/code/publications.",
+          "dependsOn": [],
+          "notes": [
+            "Include fields for experiment title, date, participants, and purpose.",
+            "Index on project association and date."
+          ]
+        },
+        {
+          "id": "data-checklists",
+          "name": "Checklist Data Store",
+          "type": "data",
+          "responsibility": "Persist reproducibility checklist items, their completion status, and associations to experiments.",
+          "dependsOn": [],
+          "notes": [
+            "Track item metadata such as description, category, and required status.",
+            "Support status states: complete, pending, missing."
+          ]
+        },
+        {
+          "id": "data-templates",
+          "name": "Checklist Template Data Store",
+          "type": "data",
+          "responsibility": "Persist predefined and custom checklist templates with versioning and discipline/journal/funder metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Allow tagging templates by discipline and source.",
+            "Version control for template updates."
+          ]
+        },
+        {
+          "id": "data-audit-trails",
+          "name": "Audit Trail Data Store",
+          "type": "data",
+          "responsibility": "Persist versioned change logs for reproducibility documentation and checklist item status updates.",
+          "dependsOn": [],
+          "notes": [
+            "Record timestamp, user, change type, and before/after states.",
+            "Support retrieval for compliance and reporting."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user authentication, profile, and role information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notificationPreferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Represent a research project grouping multiple experiments.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name",
+            "ownerUserId"
+          ]
+        },
+        {
+          "name": "Experiment",
+          "purpose": "Store metadata and reproducibility components for individual experiments.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "date",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "participants",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "purpose",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "dataFiles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "codeLinks",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "protocols",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "environmentDetails",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "publicationLinks",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "date"
+          ]
+        },
+        {
+          "name": "ChecklistTemplate",
+          "purpose": "Define reusable checklist templates for reproducibility requirements.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "discipline",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "items",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name",
+            "discipline",
+            "version"
+          ]
+        },
+        {
+          "name": "ChecklistItem",
+          "purpose": "Represent individual reproducibility checklist items and their status per experiment.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "experimentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "templateItemId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "category",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "assignedToUserId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "experimentId",
+            "status"
+          ]
+        },
+        {
+          "name": "AuditTrailEntry",
+          "purpose": "Track changes to reproducibility documentation and checklist statuses for versioning and compliance.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "changedByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "changeType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "before",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "after",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "entityType",
+            "entityId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access their projects and experiments.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Project and Experiment Dashboard",
+          "purpose": "Display user's projects and experiments with reproducibility status summaries.",
+          "inputs": [],
+          "outputs": [
+            "list of projects",
+            "experiment summaries",
+            "status indicators"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/experiments/:experimentId",
+          "title": "Experiment Detail & Checklist",
+          "purpose": "View and update reproducibility checklist items and experiment metadata.",
+          "inputs": [],
+          "outputs": [
+            "experiment metadata",
+            "checklist items with status",
+            "audit trail snippets"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/checklists/templates",
+          "title": "Checklist Template Library",
+          "purpose": "Browse and select reproducibility checklist templates for customization.",
+          "inputs": [],
+          "outputs": [
+            "list of templates",
+            "template details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/export",
+          "title": "Export Reproducibility Reports",
+          "purpose": "Generate and download formatted reproducibility reports for selected experiments or projects.",
+          "inputs": [
+            "projectId",
+            "experimentIds",
+            "report format",
+            "template selection"
+          ],
+          "outputs": [
+            "downloadable report files",
+            "generation status"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: { id: string, name: string, role: string } }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of projects accessible by the authenticated user.",
+          "requestShape": "none",
+          "responseShape": "{ projects: Project[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project.",
+          "requestShape": "{ name: string, description?: string }",
+          "responseShape": "{ project: Project }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/experiments",
+          "method": "GET",
+          "purpose": "List experiments under a project.",
+          "requestShape": "none",
+          "responseShape": "{ experiments: Experiment[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/experiments/:experimentId",
+          "method": "GET",
+          "purpose": "Retrieve detailed experiment metadata and reproducibility checklist status.",
+          "requestShape": "none",
+          "responseShape": "{ experiment: Experiment, checklistItems: ChecklistItem[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/experiments/:experimentId/checklist",
+          "method": "POST",
+          "purpose": "Update reproducibility checklist item status or details.",
+          "requestShape": "{ itemId: string, status: string, assignedToUserId?: string }",
+          "responseShape": "{ updatedItem: ChecklistItem }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/checklists/templates",
+          "method": "GET",
+          "purpose": "Retrieve available checklist templates.",
+          "requestShape": "none",
+          "responseShape": "{ templates: ChecklistTemplate[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Trigger generation of reproducibility report for selected experiments or projects.",
+          "requestShape": "{ projectId: string, experimentIds: string[], format: string, templateId?: string }",
+          "responseShape": "{ reportUrl: string, status: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Reminder Notification Job",
+          "trigger": "Scheduled (e.g., daily)",
+          "purpose": "Identify missing or pending checklist items and send reminder notifications to assigned users."
+        },
+        {
+          "name": "Report Generation Job",
+          "trigger": "On-demand or scheduled via API request",
+          "purpose": "Generate exportable reproducibility reports in requested formats with current data and audit trails."
+        }
+      ],
+      "edgeCases": [
+        "User attempts to update checklist items without proper authorization.",
+        "Concurrent edits to the same checklist item causing race conditions.",
+        "Loss of connectivity during report generation or file export.",
+        "Handling sensitive or unpublished data inputs with strict access controls.",
+        "Template updates invalidating existing checklist items or causing version conflicts.",
+        "Users ignoring or disabling reminder notifications leading to stale documentation.",
+        "Partial data input for experiments causing incomplete checklist generation."
+      ],
+      "nonGoals": [
+        "Replacing existing code or data repository management tools.",
+        "Becoming a generic project management or lab notebook system.",
+        "Handling raw data storage or heavy file hosting.",
+        "Providing deep domain-specific experimental design or statistical analysis tools.",
+        "Supporting offline usage or mobile-first native apps in initial phases."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/auth/login POST endpoint.",
+        "On successful authentication, server returns a JWT token and user info; client stores token for authenticated requests.",
+        "Authenticated user navigates to /dashboard; client requests /api/projects GET to fetch accessible projects.",
+        "For each project, client requests /api/projects/:projectId/experiments GET to retrieve experiments and their summaries.",
+        "User selects a project and experiment, navigates to /projects/:projectId/experiments/:experimentId; client requests /api/experiments/:experimentId GET to fetch experiment metadata and checklist items.",
+        "User updates checklist item status or assignment via /api/experiments/:experimentId/checklist POST with itemId, status, and optional assignedToUserId.",
+        "Checklist API updates status, records audit trail entry, and returns updated checklist item.",
+        "User browses checklist templates at /checklists/templates; client requests /api/checklists/templates GET to retrieve available templates.",
+        "User triggers report generation via /reports/export page, submitting projectId, experimentIds, format, and optional templateId to /api/reports/generate POST.",
+        "Report generation job processes request asynchronously, creates report file, and returns report URL and status.",
+        "Background Reminder Notification Job runs on schedule, queries checklist items with pending or missing status via API, and sends notifications respecting user preferences.",
+        "Audit trail entries are created on every checklist or experiment metadata change for compliance and reporting."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "Project creation: name required, non-empty, unique per user; description optional.",
+        "Experiment creation/update: title required, non-empty; date required and valid date; projectId must reference existing project accessible by user.",
+        "Checklist item update: itemId must exist and belong to experiment; status must be one of ['complete', 'pending', 'missing']; assignedToUserId, if provided, must be a valid user with access.",
+        "Template selection: templateId must reference existing template; version compatibility checked when combining templates.",
+        "Report generation: projectId and experimentIds must belong to authenticated user; format must be one of supported formats ['PDF', 'DOCX', 'JSON']; templateId optional but if provided must exist.",
+        "All inputs must be sanitized to prevent injection attacks.",
+        "Concurrent updates to checklist items must be handled with optimistic locking or version checks to prevent race conditions."
+      ],
+      "errorHandling": [
+        "Authentication errors return 401 Unauthorized with clear messages.",
+        "Authorization failures return 403 Forbidden when user lacks access to requested resource.",
+        "Validation errors return 400 Bad Request with field-specific error details.",
+        "Not found resources return 404 Not Found with descriptive messages.",
+        "Concurrent modification conflicts return 409 Conflict with instructions to refresh data.",
+        "Background job failures log errors and retry with exponential backoff; notification failures logged and do not block other jobs.",
+        "Report generation failures return status with error details; user informed via UI.",
+        "API responses include consistent error object structure: { errorCode, message, details? }.",
+        "Client UI displays error messages contextually and provides retry options where applicable."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all client-server communication.",
+        "Store passwords hashed with strong algorithm (e.g., bcrypt) and never in plaintext.",
+        "Issue JWT tokens with appropriate expiration and secure storage on client side (e.g., HttpOnly cookies or secure storage).",
+        "Enforce role-based access control on all API endpoints, verifying user permissions for projects, experiments, and checklist items.",
+        "Sanitize all inputs to prevent injection attacks (SQL, XSS).",
+        "Encrypt sensitive data at rest, especially user credentials and notification preferences.",
+        "Audit trail entries must be immutable and securely stored to prevent tampering.",
+        "Respect user notification preferences and do not send reminders to users who opted out.",
+        "Implement rate limiting on authentication and sensitive endpoints to prevent brute force attacks.",
+        "Background jobs must authenticate API calls internally and use secure channels."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive a valid authentication token and user info, and can access authenticated pages"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user with access to projects",
+          "when": "They visit /dashboard",
+          "then": "They see a list of their projects with experiment summaries and reproducibility status indicators"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user viewing an experiment detail page",
+          "when": "They update a checklist item status to 'complete'",
+          "then": "The status updates are saved, audit trail entry is created, and UI reflects the change"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user browsing checklist templates",
+          "when": "They select a template",
+          "then": "The template details are displayed and can be used for checklist customization"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user requests report generation with valid inputs",
+          "when": "They submit the report generation form",
+          "then": "The system starts report generation, returns a report URL and status, and the report is downloadable in the selected format"
+        },
+        {
+          "id": "AT-006",
+          "given": "A checklist item update request from a user without proper access",
+          "when": "The request is made",
+          "then": "The API returns 403 Forbidden and the update is rejected"
+        },
+        {
+          "id": "AT-007",
+          "given": "Concurrent updates to the same checklist item",
+          "when": "Two users submit conflicting updates simultaneously",
+          "then": "One update succeeds, the other receives a 409 Conflict error prompting refresh"
+        },
+        {
+          "id": "AT-008",
+          "given": "Reminder Notification Job runs",
+          "when": "There are checklist items pending or missing",
+          "then": "Assigned users receive reminders respecting their notification preferences"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database",
+        "Implement User Management API with authentication and authorization",
+        "Build /login page and authentication flow",
+        "Implement Projects and Experiments API with access control",
+        "Build /dashboard page integrating projects and experiments data",
+        "Implement Checklist Template API and data versioning",
+        "Build Checklist Template Library UI page",
+        "Implement Reproducibility Checklist API with versioning and audit trails",
+        "Build Experiment Detail & Checklist UI page with checklist editing",
+        "Implement Report Generation API and background job",
+        "Build Export Reports UI page",
+        "Implement Reminder Notification background job",
+        "Add audit trail logging across APIs",
+        "Implement error handling and validation across all APIs",
+        "Add security hardening and input sanitization",
+        "Write acceptance tests and perform QA"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/projects/[projectId]/experiments/[experimentId]",
+          "/checklists/templates",
+          "/reports/export"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/projects/index.ts",
+          "api/projects/[projectId]/experiments/index.ts",
+          "api/experiments/[experimentId].ts",
+          "api/experiments/[experimentId]/checklist.ts",
+          "api/checklists/templates.ts",
+          "api/reports/generate.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "Experiment",
+          "ChecklistTemplate",
+          "ChecklistItem",
+          "AuditTrailEntry"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing or unclear constraints and gather additional requirements for the reproducibility checklist tracker.",
+        "promptTemplate": "You are a planner refining requirements for the Academic Research Reproducibility Checklist & Tracker. Given the current blueprint: {{BLUEPRINT}}, and the user input: {{USER_INPUT}}, ask clarifying questions to identify missing constraints, use cases, or workflows to ensure the system meets researcher needs."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the detailed pages, API endpoints, and data models needed to implement the reproducibility checklist tracker.",
+        "promptTemplate": "You are an architect finalizing the design for the Academic Research Reproducibility Checklist & Tracker. Using the refined requirements: {{REFINED_REQUIREMENTS}} and blueprint: {{BLUEPRINT}}, produce detailed page routes, API routes, and Prisma data models needed for the system."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code stubs for the UI pages of the reproducibility checklist tracker based on the finalized design.",
+        "promptTemplate": "You are a builder generating code stubs for UI pages of the Academic Research Reproducibility Checklist & Tracker. Based on the finalized page designs: {{PAGE_DESIGNS}}, create initial React/Next.js page components with placeholder content and basic layout."
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the connections between UI pages, backend APIs, and database models for full functionality.",
+        "promptTemplate": "You are an integrator wiring the Academic Research Reproducibility Checklist & Tracker system. Using the page stubs: {{PAGE_STUBS}}, API routes: {{API_ROUTES}}, and data models: {{DATA_MODELS}}, implement the necessary code to connect frontend pages with backend APIs and persist data in the database."
+      }
+    ]
+  }
+}

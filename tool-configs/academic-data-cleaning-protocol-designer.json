@@ -1,0 +1,750 @@
+{
+  "slug": "academic-data-cleaning-protocol-designer",
+  "title": "Academic Research Data Cleaning Protocol Designer",
+  "description": "Design structured, reproducible data cleaning protocols tailored to your research datasets and analysis goals. Upload sample data and study notes, specify cleaning preferences, and receive a detailed stepwise cleaning protocol with rationale, checklist, and annotated pseudocode snippets.",
+  "inputLabel": "Provide your study context, data cleaning preferences, and optionally upload sample dataset and notes",
+  "outputLabel": "Generated Data Cleaning Protocol Document and Checklist",
+  "systemPrompt": "You are an expert assistant helping academic researchers design clear, reproducible data cleaning protocols tailored to their quantitative datasets and study aims. Accept input text describing study design, data cleaning preferences, and analysis goals. Optionally accept a CSV or spreadsheet file upload representing a sample dataset. Generate a structured, stepwise data cleaning protocol document that includes each cleaning step, rationale, expected outcomes, and recommended checklist items for documentation and audit. Also provide reusable pseudocode snippets illustrating key cleaning steps. Enforce data privacy by refusing to process any personally identifiable or sensitive medical information. Reject unsupported file types or oversized files. Output plain text or JSON as requested. Do not perform actual data cleaning or analysis. Your output should assist researchers in transparent, reproducible protocol design suitable for academic publication standards.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "General Protocol Draft",
+      "prompt": "Create a stepwise data cleaning protocol based on the provided study context and cleaning preferences. Include rationale and expected outcomes for each step."
+    },
+    {
+      "label": "Detailed Checklist Focus",
+      "prompt": "Generate a comprehensive checklist for documenting data cleaning decisions and tracking changes aligned with the provided inputs."
+    },
+    {
+      "label": "Annotated Pseudocode Snippets",
+      "prompt": "Provide reusable pseudocode or Python/R snippets illustrating key cleaning steps described in the protocol."
+    },
+    {
+      "label": "Summary Report of Data Issues",
+      "prompt": "Analyze the sample dataset upload metadata and inputs to highlight potential data issues and recommended cleaning priorities."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON object with keys: protocolSteps (array of {stepDescription, rationale, expectedOutcome}), checklistItems (array of strings), pseudocodeSnippets (array of {step, code}), summaryReport (string).",
+  "clarifyPrompt": "Please provide more details about your dataset, cleaning preferences (e.g., missing data handling, outlier treatment), and target analyses to generate a tailored protocol.",
+  "finalizePrompt": "Review the generated data cleaning protocol for completeness, clarity, and alignment with your study goals. Confirm or request refinements.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Cleaning Protocol Designer",
+      "niche": {
+        "role": "Academic Researcher (Quantitative Data Analyst)",
+        "scenario": "Researchers preparing raw datasets from surveys, experiments, or observational studies for statistical analysis and publication"
+      },
+      "problem": "Academic researchers often struggle with designing clear, reproducible, and well-documented data cleaning protocols tailored to their specific datasets and study aims. Existing tools focus on code or broad data validation but do not help researchers systematically create, customize, and document step-by-step cleaning workflows that can be easily shared, updated, and audited.",
+      "inputs": [
+        "Raw dataset sample (CSV or spreadsheet upload)",
+        "Study design and data collection notes (text or document upload)",
+        "Researcher-specified data cleaning preferences or goals (e.g., handling missing data, outlier rules, variable transformations)",
+        "Target analysis types or statistical methods planned"
+      ],
+      "outputs": [
+        "Structured, stepwise data cleaning protocol document detailing each cleaning step with rationale, methods, and expected outcomes",
+        "Reusable, annotated data cleaning templates or scripts (e.g., pseudocode or R/Python snippets)",
+        "Checklist for documenting cleaning decisions and tracking changes",
+        "Summary report highlighting potential data issues and recommended cleaning priorities"
+      ],
+      "whyItWins": [
+        "Fills a gap between raw data and statistical analysis by focusing on protocol design and documentation rather than just cleaning execution",
+        "Supports reproducibility and transparency by creating shareable, well-justified cleaning workflows",
+        "Caters specifically to academic researchers who must comply with publication and funder data standards without requiring advanced programming skills",
+        "Facilitates iterative refinement and team collaboration on data cleaning plans",
+        "Can integrate diverse inputs (data samples, study context, analysis goals) to produce tailored, contextualized cleaning protocols"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web tool that takes sample datasets and researcher inputs to generate a preliminary data cleaning protocol document and checklist in PDF or markdown format",
+        "in90Days": "Add interactive, multi-step protocol builder UI with guided decision support for common cleaning choices, version control for protocol revisions, and export to code snippets in multiple languages",
+        "in12Months": "Expand into a multi-page platform supporting collaborative team accounts, integration with data repositories and statistical software, automated protocol compliance checks against journal/funder standards, and dashboards to track cleaning progress and audit trails"
+      },
+      "riskNotes": [
+        "Must clearly disclaim that the tool assists protocol design but does not perform actual data cleaning or guarantee data quality",
+        "Handle uploaded datasets securely with privacy safeguards, especially for sensitive or unpublished research data",
+        "Avoid providing medical or personally identifiable data processing advice to comply with ethical standards",
+        "Ensure outputs do not replace expert statistical consulting but serve as aids for protocol clarity and documentation"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A platform enabling academic researchers to design, document, and share reproducible data cleaning protocols tailored to their datasets and study goals, supporting transparency, collaboration, and iterative refinement.",
+      "primaryUser": "Academic researchers preparing quantitative datasets for analysis and publication",
+      "successMetrics": [
+        "Number of protocols created and exported",
+        "User engagement with interactive protocol builder",
+        "Frequency of collaborative edits and versioning usage",
+        "User satisfaction with clarity and usability of generated protocols",
+        "Adoption rate by research teams and institutions"
+      ],
+      "components": [
+        {
+          "id": "ui-landing",
+          "name": "Landing and Authentication UI",
+          "type": "ui",
+          "responsibility": "Provide user onboarding, login/signup, and public information pages",
+          "dependsOn": [],
+          "notes": [
+            "Supports user authentication and guest access with disclaimers",
+            "Includes privacy and risk disclaimers prominently"
+          ]
+        },
+        {
+          "id": "ui-protocolBuilder",
+          "name": "Interactive Protocol Builder UI",
+          "type": "ui",
+          "responsibility": "Facilitate multi-step guided creation and editing of data cleaning protocols with inputs, decisions, and annotations",
+          "dependsOn": [
+            "api-protocolManagement",
+            "api-fileUpload",
+            "data-protocols"
+          ],
+          "notes": [
+            "Supports uploading sample datasets and study notes",
+            "Includes guided decision support for common cleaning steps",
+            "Allows version control and collaborative editing"
+          ]
+        },
+        {
+          "id": "api-fileUpload",
+          "name": "File Upload and Parsing API",
+          "type": "api",
+          "responsibility": "Securely receive, validate, and parse uploaded datasets and documents for preview and analysis",
+          "dependsOn": [
+            "data-fileStorage"
+          ],
+          "notes": [
+            "Implements privacy safeguards and file size/type restrictions",
+            "Parses CSV/spreadsheet metadata for protocol input assistance"
+          ]
+        },
+        {
+          "id": "api-protocolManagement",
+          "name": "Protocol Management API",
+          "type": "api",
+          "responsibility": "Handle creation, retrieval, updating, versioning, and export of data cleaning protocols and related metadata",
+          "dependsOn": [
+            "data-protocols",
+            "data-users"
+          ],
+          "notes": [
+            "Supports export to PDF, markdown, and annotated code snippets",
+            "Manages checklist and audit trail data"
+          ]
+        },
+        {
+          "id": "data-protocols",
+          "name": "Protocols Data Store",
+          "type": "data",
+          "responsibility": "Persist protocol documents, versions, cleaning steps, annotations, and metadata",
+          "dependsOn": [],
+          "notes": [
+            "Stores structured protocol steps with rationale and expected outcomes",
+            "Includes user and team ownership info"
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User and Team Data Store",
+          "type": "data",
+          "responsibility": "Persist user accounts, authentication credentials, team memberships, and permissions",
+          "dependsOn": [],
+          "notes": [
+            "Supports role-based access for collaboration",
+            "Stores user preferences and settings"
+          ]
+        },
+        {
+          "id": "data-fileStorage",
+          "name": "Ephemeral File Storage",
+          "type": "data",
+          "responsibility": "Temporarily store uploaded datasets and documents for parsing and preview",
+          "dependsOn": [],
+          "notes": [
+            "Files are deleted after processing or session expiration",
+            "Implements encryption and access controls"
+          ]
+        },
+        {
+          "id": "job-protocolComplianceCheck",
+          "name": "Automated Protocol Compliance Check Job",
+          "type": "job",
+          "responsibility": "Periodically analyze protocols against journal and funder data standards to flag compliance issues",
+          "dependsOn": [
+            "data-protocols"
+          ],
+          "notes": [
+            "Runs asynchronously after protocol updates",
+            "Generates notifications or dashboard alerts"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user account information and authentication data",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Team",
+          "purpose": "Represent collaborative groups of users with shared protocol access",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "memberIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "Protocol",
+          "purpose": "Store structured data cleaning protocols including steps, rationale, versions, and metadata",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "teamId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "steps",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "analysisGoals",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "complianceStatus",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "ownerId",
+            "teamId",
+            "title"
+          ]
+        },
+        {
+          "name": "UploadedFile",
+          "purpose": "Temporarily store metadata about uploaded datasets and documents",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "expirationDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "uploadDate"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Home / Landing",
+          "purpose": "Introduce the tool, provide access to login/signup and disclaimers",
+          "inputs": [],
+          "outputs": [
+            "Navigation to login/signup or protocol builder"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate returning users",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "Authentication token or session"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/signup",
+          "title": "User Signup",
+          "purpose": "Register new users",
+          "inputs": [
+            "email",
+            "password",
+            "name"
+          ],
+          "outputs": [
+            "User account created confirmation"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/protocols",
+          "title": "Protocol Dashboard",
+          "purpose": "List user’s protocols, allow creation and access to existing protocols",
+          "inputs": [],
+          "outputs": [
+            "List of protocols with version info and status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/protocols/new",
+          "title": "New Protocol Builder",
+          "purpose": "Start a new data cleaning protocol with guided inputs",
+          "inputs": [
+            "Upload sample dataset",
+            "Upload study notes",
+            "Specify cleaning preferences",
+            "Define analysis goals"
+          ],
+          "outputs": [
+            "Preliminary protocol draft"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/protocols/:id/edit",
+          "title": "Edit Protocol",
+          "purpose": "Interactive multi-step protocol editing with version control and collaboration",
+          "inputs": [
+            "Protocol step edits",
+            "Annotations",
+            "Version notes"
+          ],
+          "outputs": [
+            "Updated protocol version"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/protocols/:id/export",
+          "title": "Export Protocol",
+          "purpose": "Export protocol document, checklist, and annotated code snippets",
+          "inputs": [
+            "Export format selection"
+          ],
+          "outputs": [
+            "Downloadable protocol files (PDF, markdown, code)"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/team",
+          "title": "Team Management",
+          "purpose": "Manage team members, permissions, and shared protocols",
+          "inputs": [
+            "Invite members",
+            "Assign roles"
+          ],
+          "outputs": [
+            "Team member list and permissions overview"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Compliance and Progress Dashboard",
+          "purpose": "View protocol compliance status, audit trails, and cleaning progress",
+          "inputs": [],
+          "outputs": [
+            "Compliance alerts",
+            "Protocol version history",
+            "Cleaning checklist status"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Receive and process uploaded dataset or document files",
+          "requestShape": "{ file: binary, metadata: { type: string } }",
+          "responseShape": "{ fileId: string, previewData: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/protocols",
+          "method": "GET",
+          "purpose": "Retrieve list of user’s protocols",
+          "requestShape": "{}",
+          "responseShape": "{ protocols: Protocol[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/protocols",
+          "method": "POST",
+          "purpose": "Create a new data cleaning protocol",
+          "requestShape": "{ title: string, description?: string, steps: json, analysisGoals?: string }",
+          "responseShape": "{ protocolId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/protocols/:id",
+          "method": "GET",
+          "purpose": "Retrieve a specific protocol by ID",
+          "requestShape": "{}",
+          "responseShape": "{ protocol: Protocol }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/protocols/:id",
+          "method": "POST",
+          "purpose": "Update protocol steps, annotations, or metadata with versioning",
+          "requestShape": "{ steps?: json, annotations?: json, versionNotes?: string }",
+          "responseShape": "{ success: boolean, newVersion: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/protocols/:id/export",
+          "method": "POST",
+          "purpose": "Generate export files for a protocol",
+          "requestShape": "{ format: string }",
+          "responseShape": "{ downloadUrl: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/team",
+          "method": "GET",
+          "purpose": "Retrieve team information and members",
+          "requestShape": "{}",
+          "responseShape": "{ team: Team }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/team/invite",
+          "method": "POST",
+          "purpose": "Invite a new member to the team",
+          "requestShape": "{ email: string, role: string }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Protocol Compliance Checker",
+          "trigger": "On protocol update or scheduled interval",
+          "purpose": "Analyze protocols for adherence to journal and funder data cleaning standards and flag issues"
+        },
+        {
+          "name": "File Expiration Cleaner",
+          "trigger": "Scheduled daily",
+          "purpose": "Delete expired uploaded files to maintain privacy and storage limits"
+        }
+      ],
+      "edgeCases": [
+        "Uploaded files exceeding size limits or unsupported formats",
+        "Concurrent edits causing version conflicts in protocols",
+        "Incomplete or ambiguous cleaning step inputs from users",
+        "Users uploading sensitive data requiring strict access controls",
+        "Export failures due to malformed protocol data or unsupported export formats",
+        "Team membership changes during active protocol editing sessions",
+        "Network interruptions during file upload or protocol save operations"
+      ],
+      "nonGoals": [
+        "Performing actual data cleaning or transformation on datasets",
+        "Providing medical or personally identifiable data processing advice",
+        "Replacing expert statistical consulting or data analysis services",
+        "Hosting or managing raw research data repositories long-term",
+        "Supporting advanced programming IDE features for code development"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User visits landing page (/) and optionally signs up (/signup) or logs in (/login).",
+        "Upon authentication, user accesses protocol dashboard (/protocols) to view existing protocols or create new ones.",
+        "User initiates new protocol creation (/protocols/new), uploads sample datasets and study notes via /api/upload, receiving fileId and preview data.",
+        "Uploaded files are stored temporarily in ephemeral file storage with encryption and access control, and parsed for metadata extraction.",
+        "User inputs cleaning preferences and analysis goals, which are sent to /api/protocols (POST) to create a new protocol record in the protocols data store.",
+        "User edits protocols interactively (/protocols/:id/edit), sending updates to /api/protocols/:id (POST) with versioning and annotations.",
+        "Protocol management API handles version control, audit trails, and stores structured protocol steps and metadata.",
+        "Team management (/team) allows inviting members and assigning roles via /api/team and /api/team/invite endpoints, updating user and team data stores.",
+        "Background jobs run asynchronously: protocol compliance checker analyzes updated protocols and generates alerts; file expiration cleaner deletes expired uploaded files.",
+        "Users export protocols (/protocols/:id/export) by selecting format, triggering /api/protocols/:id/export (POST) which generates downloadable files.",
+        "Throughout, UI components consume API responses to update views, handle errors, and maintain session state."
+      ],
+      "validationRules": [
+        "User authentication inputs: email must be valid format, password minimum length and complexity.",
+        "File uploads: restrict file types to CSV, XLSX, TXT; enforce maximum file size limit (e.g., 10MB).",
+        "Protocol creation: title required, non-empty; steps must be valid JSON with required fields (e.g., step description, rationale).",
+        "Protocol updates: versionNotes optional but if present must be string; steps and annotations JSON must conform to schema.",
+        "Team invites: email must be valid and not already a team member; role must be one of predefined roles (e.g., admin, editor, viewer).",
+        "Export requests: format must be one of supported types (pdf, markdown, code).",
+        "API endpoints require authenticated user sessions; verify ownership or team membership for protocol access and edits.",
+        "Concurrent edits: enforce optimistic concurrency control by checking protocol version before update."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with descriptive messages.",
+        "File upload errors return 400 Bad Request for invalid file types or size, with user-friendly error messages.",
+        "Protocol not found or access denied returns 404 Not Found or 403 Forbidden respectively.",
+        "Validation errors return 422 Unprocessable Entity with details on invalid fields.",
+        "Version conflicts during protocol updates return 409 Conflict with instructions to refresh and retry.",
+        "Export failures return 500 Internal Server Error with logging for diagnostics and user notification.",
+        "Network interruptions during uploads or saves trigger client-side retry mechanisms and user alerts.",
+        "Unhandled exceptions return generic 500 errors with logging; sensitive details are not exposed to clients."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all client-server communications.",
+        "Store passwords hashed with strong algorithms (e.g., bcrypt).",
+        "Implement role-based access control for protocols and team resources.",
+        "Encrypt files in ephemeral storage and restrict access to owning user or team members.",
+        "Sanitize and validate all inputs to prevent injection attacks.",
+        "Implement CSRF protection on state-changing API endpoints.",
+        "Limit upload file size and types to prevent denial of service or malware upload.",
+        "Expire uploaded files promptly to minimize sensitive data exposure.",
+        "Log authentication attempts and suspicious activities for audit."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A new user visits the landing page",
+          "when": "They navigate to signup and provide valid email, password, and name",
+          "then": "A user account is created and user is authenticated"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user uploads a CSV file exceeding size limit",
+          "when": "They submit the file via /api/upload",
+          "then": "The API rejects the upload with a clear error message"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user creates a new protocol with valid inputs",
+          "when": "They submit protocol data to /api/protocols (POST)",
+          "then": "A new protocol is stored with version 1 and protocolId returned"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user edits a protocol concurrently with another user",
+          "when": "They submit updates with an outdated version number",
+          "then": "The API returns a 409 Conflict error indicating version conflict"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user requests export of a protocol in markdown format",
+          "when": "They call /api/protocols/:id/export with format=markdown",
+          "then": "A downloadable URL for the markdown export is returned"
+        },
+        {
+          "id": "AT-006",
+          "given": "A team admin invites a new member with valid email and role",
+          "when": "They submit invite via /api/team/invite",
+          "then": "The member is added to the team and success is true"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user attempts to access /protocols",
+          "when": "They navigate to the protocols dashboard",
+          "then": "They are redirected to login page"
+        },
+        {
+          "id": "AT-008",
+          "given": "An uploaded file expires after session expiration",
+          "when": "The file expiration cleaner job runs",
+          "then": "The expired file is deleted from storage"
+        }
+      ],
+      "buildOrder": [
+        "Set up data models in Prisma: User, Team, Protocol, UploadedFile",
+        "Implement authentication system with signup and login APIs and session management",
+        "Build landing page and authentication UI (ui-landing)",
+        "Implement ephemeral file storage with encryption and access control (data-fileStorage)",
+        "Develop file upload API (/api/upload) with validation and parsing",
+        "Create protocol management API endpoints (/api/protocols and related routes)",
+        "Build protocol dashboard and new protocol builder UI (ui-protocolBuilder)",
+        "Implement protocol editing UI with version control and collaboration features",
+        "Develop team management APIs and UI (/api/team and /team page)",
+        "Implement protocol export functionality and API",
+        "Set up background jobs: protocol compliance checker and file expiration cleaner",
+        "Add compliance and progress dashboard UI (/dashboard)",
+        "Implement error handling, validation, and security measures across stack",
+        "Write acceptance tests and perform integration testing"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/login",
+          "/signup",
+          "/protocols",
+          "/protocols/new",
+          "/protocols/[id]/edit",
+          "/protocols/[id]/export",
+          "/team",
+          "/dashboard"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload.ts",
+          "/api/protocols/index.ts",
+          "/api/protocols/[id].ts",
+          "/api/protocols/[id]/export.ts",
+          "/api/team/index.ts",
+          "/api/team/invite.ts",
+          "/api/auth/login.ts",
+          "/api/auth/signup.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { id String @id @default(uuid()) email String @unique hashedPassword String name String? roles Json? createdAt DateTime updatedAt DateTime }",
+          "model Team { id String @id @default(uuid()) name String memberIds Json createdAt DateTime }",
+          "model Protocol { id String @id @default(uuid()) ownerId String teamId String? title String description String? steps Json version Int createdAt DateTime updatedAt DateTime analysisGoals String? complianceStatus String? }",
+          "model UploadedFile { id String @id @default(uuid()) userId String filename String fileType String uploadDate DateTime expirationDate DateTime }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for missing constraints, preferences, or clarifications to better tailor the data cleaning protocol tool.",
+        "promptTemplate": "Given the current blueprint and idea: {{BLUEPRINT}} and {{IDEA}}, ask the user: {{USER_INPUT}}. Identify any missing or unclear requirements about inputs, outputs, or workflows."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final set of UI pages and data models needed to implement the protocol designer platform.",
+        "promptTemplate": "Using the refined requirements and blueprint: {{BLUEPRINT}}, finalize the list of pages and data models. Include fields, relationships, and key API endpoints."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for the platform UI pages to scaffold development.",
+        "promptTemplate": "Based on the finalized pages list: {{PAGES}}, generate React/Next.js page stub code for each route with placeholders for inputs and outputs."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages with backend API routes and database models to enable full data flow.",
+        "promptTemplate": "Given the pages, API endpoints, and data models: {{PAGES}}, {{API_ROUTES}}, {{DATA_MODELS}}, produce integration code and configuration to link UI, API, and data storage."
+      }
+    ]
+  }
+}

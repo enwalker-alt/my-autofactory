@@ -1,0 +1,865 @@
+{
+  "slug": "academic-travel-grant-planner",
+  "title": "Academic Conference Travel Grant Planner",
+  "description": "Plan and optimize your academic conference travel funding by inputting conference details, your profile, available travel grants, and travel cost estimates. Receive a prioritized list of eligible grants, a consolidated budget plan, and a customized application checklist to maximize your funding opportunities.",
+  "inputLabel": "Enter your conference, profile, grant, and travel cost information below (JSON or plain text):",
+  "outputLabel": "Your tailored travel grant plan and application checklist:",
+  "systemPrompt": "You are an expert travel grant planning assistant for early-career academic researchers. Given the user's input including conference details, researcher profile, available travel grants with eligibility and deadlines, and estimated travel costs, produce a prioritized list of eligible grants, a consolidated budget plan aligned with grant award limits, and a customized application checklist including required documents and deadlines. Refuse to provide legal or financial advice. Validate inputs for completeness and consistency, and warn about missing or inconsistent data. Output the result as plain text summary or JSON if requested. Enforce privacy and data safety by not exposing user personal details beyond what's necessary for planning. Reject disallowed requests or unsupported data formats. Always be clear, concise, and actionable.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Eligibility & Budget Planner",
+      "prompt": "Analyze the following input to identify eligible travel grants and generate a consolidated budget plan with application checklists. Ensure eligibility criteria and deadlines are respected.",
+      "hint": "Paste your conference, profile, grants, and cost data."
+    },
+    {
+      "label": "Prioritized Grant Application Schedule",
+      "prompt": "Given the input data, produce a prioritized schedule of grant applications with deadlines and checklist items to maximize funding opportunities.",
+      "hint": "Provide detailed grant eligibility and deadlines."
+    },
+    {
+      "label": "Budget Gap Analysis",
+      "prompt": "Review the travel cost estimates and grant award limits from the input, and generate a budget plan highlighting funding gaps and self-funding needs.",
+      "hint": "Include all estimated costs and award limits."
+    },
+    {
+      "label": "Comprehensive Travel Grant Report",
+      "prompt": "Generate a detailed report summarizing eligible grants, prioritized application steps, budget breakdown, and required documents based on the provided data.",
+      "hint": "Use full input including profile, conference, grants, and budgets."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output a JSON object with fields: eligibleGrants (array), prioritizedSchedule (array), budgetPlan (object), applicationChecklists (object), summaryReport (string).",
+  "clarifyPrompt": "Please provide the conference details, your researcher profile, available travel grants with eligibility criteria and deadlines, and your preliminary travel cost estimates. If any information is missing or unclear, please specify.",
+  "finalizePrompt": "Based on the provided information, finalize the travel grant plan including eligibility, budget alignment, application checklist, and scheduling recommendations. Confirm all required documents and deadlines are included.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Independent Academic Conference Travel Grant Planner",
+      "niche": {
+        "role": "Early-career academic researcher or graduate student",
+        "scenario": "Planning and applying for travel grants to attend academic conferences with complex eligibility criteria, budget restrictions, and multiple funding sources"
+      },
+      "problem": "Early-career researchers face difficulties in identifying suitable travel grants for conferences, managing varied application requirements, budgeting travel expenses accurately, and coordinating multiple funding sources to maximize support without overspending or missing deadlines.",
+      "inputs": [
+        "Conference details (location, dates, registration fees)",
+        "Researcher's profile (career stage, institution, previous funding)",
+        "List of available travel grants (eligibility criteria, deadlines, award limits, paperwork requirements)",
+        "Preliminary travel cost estimates (airfare, accommodation, meals, local transport)",
+        "Personal calendars and deadlines"
+      ],
+      "outputs": [
+        "Tailored list of eligible travel grants with prioritized application schedule",
+        "Consolidated budget plan aligning expected expenses with grant award limits and self-funding gaps",
+        "Customized application checklist per grant with required documents and reminders",
+        "Summary report for advisors or department reviewers",
+        "Tracking dashboard for application statuses and upcoming deadlines"
+      ],
+      "whyItWins": [
+        "Unlike generic grant or budget tools, it specifically integrates conference travel planning complexities for early-career academics.",
+        "Provides actionable prioritization and scheduling to avoid missed funding opportunities.",
+        "Combines budgeting with compliance to diverse grant rules, reducing risk of overspending or application errors.",
+        "Supports repeated use across multiple conferences and funding cycles with personalized user profiles.",
+        "Lays groundwork for institutional adoption to assist departments in managing researcher travel funding."
+      ],
+      "upgradePath": {
+        "today": "Lightweight web app where users input conference and grant info to generate prioritized grant lists, budget sketches, and application checklists.",
+        "in90Days": "Add user account system, calendar integration with deadline alerts, and upload/storage for application documents with progress tracking.",
+        "in12Months": "Expand to multi-user departmental dashboard enabling advisors and administrators to oversee multiple researchers’ travel funding plans, integrate funding source databases, and generate institutional travel funding reports."
+      },
+      "riskNotes": [
+        "Must ensure privacy of user data, especially personal and institutional information.",
+        "Avoid giving any legal or financial advice; tool should explicitly disclaim advisory limits.",
+        "Dependence on user-provided grant and cost data requires clear instructions to avoid inaccurate outputs.",
+        "Must comply with data protection regulations for stored user profiles and documents."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized web application to help early-career academic researchers and graduate students plan and apply for travel grants to attend academic conferences by managing eligibility, budgeting, scheduling, and application tracking.",
+      "primaryUser": "Early-career academic researchers or graduate students planning conference travel funding",
+      "successMetrics": [
+        "User adoption and retention rates",
+        "Number of completed travel grant applications tracked",
+        "Reduction in missed grant deadlines reported by users",
+        "User satisfaction with budgeting accuracy and checklist completeness",
+        "Institutional adoption and multi-user dashboard usage (long term)"
+      ],
+      "components": [
+        {
+          "id": "ui-portal",
+          "name": "User Interface Portal",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for user input, visualization of grant eligibility, budgeting, application checklists, and dashboard views.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Pages for conference input, profile management, grant browsing, budgeting, checklist management, and reporting.",
+            "Supports authentication and role-based views (researcher, advisor).",
+            "Responsive design for desktop and mobile."
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API",
+          "type": "api",
+          "responsibility": "Handle business logic for eligibility filtering, prioritization, budgeting calculations, checklist generation, and application tracking.",
+          "dependsOn": [
+            "data-storage",
+            "integration-calendar"
+          ],
+          "notes": [
+            "Exposes RESTful endpoints for UI consumption.",
+            "Implements validation and error handling for user inputs.",
+            "Enforces authorization and privacy controls."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage Layer",
+          "type": "data",
+          "responsibility": "Persist user profiles, conference details, grant definitions, travel budgets, application statuses, and uploaded documents metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage for sensitive personal and institutional data.",
+            "Indexes on user ID, grant deadlines, and conference dates for efficient queries.",
+            "Supports versioning/history for budgets and application progress."
+          ]
+        },
+        {
+          "id": "integration-calendar",
+          "name": "Calendar Integration Service",
+          "type": "integration",
+          "responsibility": "Integrate with external calendar providers (e.g., Google Calendar, Outlook) to sync deadlines and reminders.",
+          "dependsOn": [
+            "api-core"
+          ],
+          "notes": [
+            "Handles OAuth flows securely.",
+            "Supports two-way sync of deadlines and user reminders.",
+            "Gracefully handles connectivity failures and permission revocations."
+          ]
+        },
+        {
+          "id": "background-jobs",
+          "name": "Background Jobs Manager",
+          "type": "job",
+          "responsibility": "Run scheduled tasks such as deadline reminders, document expiry checks, report generation, and data cleanup.",
+          "dependsOn": [
+            "data-storage",
+            "integration-calendar"
+          ],
+          "notes": [
+            "Retries on transient failures.",
+            "Logs job outcomes for audit and debugging.",
+            "Ensures privacy compliance in notifications."
+          ]
+        },
+        {
+          "id": "document-storage",
+          "name": "Document Upload & Storage",
+          "type": "data",
+          "responsibility": "Securely store uploaded application documents and support files with metadata linking to grants and users.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Implements virus scanning and file type validation.",
+            "Supports version control and access restrictions.",
+            "Encrypted at rest and in transit."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "UserProfile",
+          "purpose": "Store researcher personal and institutional information, career stage, and preferences.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "careerStage",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "previousFunding",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "email"
+          ]
+        },
+        {
+          "name": "Conference",
+          "purpose": "Store details about academic conferences relevant for travel planning.",
+          "fields": [
+            {
+              "name": "conferenceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "registrationFee",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "conferenceId",
+            "startDate"
+          ]
+        },
+        {
+          "name": "TravelGrant",
+          "purpose": "Define available travel grants with eligibility, deadlines, award limits, and application requirements.",
+          "fields": [
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "eligibilityCriteria",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "applicationDeadline",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "awardLimit",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "requiredDocuments",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "applicationDeadline"
+          ]
+        },
+        {
+          "name": "TravelBudget",
+          "purpose": "Track estimated travel expenses and align them with funding sources and self-funding gaps.",
+          "fields": [
+            {
+              "name": "budgetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "conferenceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "airfare",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "accommodation",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "meals",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "localTransport",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "totalEstimatedCost",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "fundingAllocations",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "budgetId",
+            "userId",
+            "conferenceId"
+          ]
+        },
+        {
+          "name": "ApplicationStatus",
+          "purpose": "Track progress and status of grant applications including checklist completion and document uploads.",
+          "fields": [
+            {
+              "name": "applicationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "conferenceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "checklist",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "documents",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "applicationId",
+            "userId",
+            "grantId"
+          ]
+        },
+        {
+          "name": "UploadedDocument",
+          "purpose": "Metadata and storage references for user-uploaded application documents.",
+          "fields": [
+            {
+              "name": "documentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "applicationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "storagePath",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "documentId",
+            "applicationId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Dashboard",
+          "purpose": "Overview of upcoming deadlines, application statuses, and budget summaries.",
+          "inputs": [],
+          "outputs": [
+            "applicationStatusSummary",
+            "deadlineReminders",
+            "budgetOverview"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/profile",
+          "title": "User Profile",
+          "purpose": "Manage personal and institutional profile information and preferences.",
+          "inputs": [
+            "profileData"
+          ],
+          "outputs": [
+            "profileConfirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/conference/new",
+          "title": "Add Conference",
+          "purpose": "Input details for a new conference to plan travel funding.",
+          "inputs": [
+            "conferenceDetails"
+          ],
+          "outputs": [
+            "conferenceCreationStatus"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grants",
+          "title": "Available Grants",
+          "purpose": "Browse and filter travel grants based on eligibility and deadlines.",
+          "inputs": [
+            "filterCriteria"
+          ],
+          "outputs": [
+            "grantList",
+            "eligibilityResults"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/budget",
+          "title": "Travel Budget Planner",
+          "purpose": "Enter and adjust travel cost estimates and allocate funding sources.",
+          "inputs": [
+            "costEstimates",
+            "fundingAllocations"
+          ],
+          "outputs": [
+            "budgetSummary",
+            "fundingGaps"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/applications",
+          "title": "Application Tracker",
+          "purpose": "View and update application statuses, checklists, and upload documents.",
+          "inputs": [
+            "applicationUpdates",
+            "documentUploads"
+          ],
+          "outputs": [
+            "applicationStatus",
+            "checklistProgress"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Summary Reports",
+          "purpose": "Generate reports for advisors or departmental review.",
+          "inputs": [
+            "reportParameters"
+          ],
+          "outputs": [
+            "reportData",
+            "exportOptions"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access personalized data and features.",
+          "inputs": [
+            "credentials"
+          ],
+          "outputs": [
+            "authenticationToken",
+            "errorMessages"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/profile",
+          "method": "GET",
+          "purpose": "Retrieve authenticated user's profile data.",
+          "requestShape": "None",
+          "responseShape": "UserProfile JSON",
+          "auth": "user"
+        },
+        {
+          "route": "/api/profile",
+          "method": "POST",
+          "purpose": "Update authenticated user's profile data.",
+          "requestShape": "UserProfile JSON",
+          "responseShape": "Success/Error message",
+          "auth": "user"
+        },
+        {
+          "route": "/api/conferences",
+          "method": "POST",
+          "purpose": "Create a new conference entry.",
+          "requestShape": "Conference JSON",
+          "responseShape": "Conference creation confirmation",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants",
+          "method": "GET",
+          "purpose": "List available travel grants filtered by eligibility and deadlines.",
+          "requestShape": "Filter criteria JSON",
+          "responseShape": "Array of TravelGrant JSON",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budget",
+          "method": "POST",
+          "purpose": "Create or update travel budget for a conference.",
+          "requestShape": "TravelBudget JSON",
+          "responseShape": "Budget summary with funding gaps",
+          "auth": "user"
+        },
+        {
+          "route": "/api/applications",
+          "method": "GET",
+          "purpose": "Retrieve application statuses and checklists for user.",
+          "requestShape": "None",
+          "responseShape": "Array of ApplicationStatus JSON",
+          "auth": "user"
+        },
+        {
+          "route": "/api/applications",
+          "method": "POST",
+          "purpose": "Update application status, checklist, or upload documents.",
+          "requestShape": "ApplicationStatus update JSON with optional document metadata",
+          "responseShape": "Success/Error message",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents/upload",
+          "method": "POST",
+          "purpose": "Upload application documents securely.",
+          "requestShape": "Multipart form-data with file and metadata",
+          "responseShape": "Upload confirmation with documentId",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports",
+          "method": "POST",
+          "purpose": "Generate summary reports for advisors or departments.",
+          "requestShape": "Report parameters JSON",
+          "responseShape": "Report data or export file link",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "DeadlineReminderJob",
+          "trigger": "Scheduled daily",
+          "purpose": "Send reminders for upcoming grant application deadlines and checklist due dates."
+        },
+        {
+          "name": "DocumentExpiryCheckJob",
+          "trigger": "Scheduled weekly",
+          "purpose": "Identify and notify users of expiring or outdated uploaded documents."
+        },
+        {
+          "name": "ReportGenerationJob",
+          "trigger": "On-demand or scheduled",
+          "purpose": "Generate and cache institutional or departmental travel funding reports."
+        },
+        {
+          "name": "DataCleanupJob",
+          "trigger": "Scheduled monthly",
+          "purpose": "Archive or remove stale data per privacy policies and user requests."
+        }
+      ],
+      "edgeCases": [
+        "User inputs incomplete or inconsistent grant eligibility data causing no matches.",
+        "Overlapping grant deadlines requiring prioritization and conflict resolution.",
+        "Budget estimates exceeding total available funding causing warnings.",
+        "Failed calendar sync due to revoked permissions or network issues.",
+        "Document upload failures due to file size limits or unsupported formats.",
+        "Multiple users accessing and updating shared departmental dashboards concurrently.",
+        "Users forgetting to update application statuses leading to stale data.",
+        "Handling time zone differences for conference dates and deadlines."
+      ],
+      "nonGoals": [
+        "Providing legal or financial advice beyond informational guidance.",
+        "Automatically fetching or verifying external grant data without user input.",
+        "Booking travel or managing actual payments.",
+        "Replacing institutional grant management systems entirely.",
+        "Supporting non-academic or non-travel related grants."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receives authentication token stored in client.",
+        "Authenticated user accesses UI pages (Dashboard, Profile, Grants, Budget, Applications, Reports).",
+        "UI pages fetch data from corresponding API endpoints (/api/profile, /api/grants, /api/budget, /api/applications, /api/reports) using authenticated requests.",
+        "User inputs on UI pages (profile updates, conference creation, budget edits, application updates, document uploads) are sent via POST requests to respective API routes.",
+        "API Core validates inputs, applies business logic (eligibility filtering, budgeting calculations, checklist generation), and persists data to Data Storage via Prisma models.",
+        "Document uploads are handled by /api/documents/upload, which stores files securely in Document Storage and metadata in Data Storage.",
+        "Integration Calendar syncs deadlines and reminders by interacting with API Core and external calendar providers via OAuth, updating Data Storage accordingly.",
+        "Background Jobs run scheduled tasks (deadline reminders, document expiry checks, report generation, data cleanup) accessing Data Storage and Integration Calendar services, sending notifications or updating records as needed.",
+        "UI pages subscribe or poll for updated data to reflect changes from background jobs or calendar syncs.",
+        "Error states and validation feedback are propagated from API responses to UI for user correction or retry."
+      ],
+      "validationRules": [
+        "UserProfile: userId, name, email, careerStage are required; email must be valid format; previousFunding and preferences JSON must be well-formed if present.",
+        "Conference: conferenceId, title, location, startDate, endDate required; startDate must be before or equal to endDate; registrationFee if present must be non-negative.",
+        "TravelGrant: grantId, name, eligibilityCriteria (valid JSON), applicationDeadline (future date), awardLimit (positive number), requiredDocuments (valid JSON) required.",
+        "TravelBudget: budgetId, userId, conferenceId required; cost fields (airfare, accommodation, meals, localTransport) if present must be non-negative; totalEstimatedCost must equal sum of cost fields if provided; fundingAllocations JSON must be valid and sum to less than or equal to totalEstimatedCost.",
+        "ApplicationStatus: applicationId, userId, grantId, conferenceId, status, lastUpdated required; status must be one of predefined states (e.g., pending, submitted, approved, rejected); checklist and documents JSON must be valid if present.",
+        "UploadedDocument: documentId, applicationId, fileName, fileType, uploadDate, storagePath required; fileType must be allowed MIME types; uploadDate must be current or past date.",
+        "API input payloads must be validated for required fields, types, and logical consistency (e.g., deadlines not in past, budgets not exceeding award limits).",
+        "File uploads must be scanned for viruses and validated for size limits and supported formats before acceptance."
+      ],
+      "errorHandling": [
+        "API routes return structured error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors).",
+        "Validation errors include field-specific messages to guide user correction.",
+        "Authentication failures redirect to /login or return 401 with message.",
+        "Authorization failures return 403 with explanation.",
+        "Document upload failures return detailed error (e.g., virus detected, unsupported format, size limit exceeded).",
+        "Background jobs log errors with context and retry transient failures with exponential backoff.",
+        "Calendar integration failures due to revoked permissions or network issues are logged and surfaced as warnings in UI with guidance to reauthorize.",
+        "Concurrent updates to shared resources use optimistic concurrency control; conflicts return 409 Conflict with instructions to refresh.",
+        "Unhandled exceptions return generic 500 error with logging for diagnostics, avoiding sensitive data exposure.",
+        "UI displays error messages prominently and allows retry or corrective actions."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /login; tokens must be securely stored (e.g., HttpOnly cookies or secure storage).",
+        "Role-based access control enforced in API Core to restrict advisor views and multi-user dashboards.",
+        "Sensitive data (personal info, documents) encrypted at rest and in transit using TLS and database encryption features.",
+        "OAuth tokens for calendar integration stored securely and refreshed as needed; permissions minimized to required scopes.",
+        "File uploads scanned for malware and validated for allowed types and sizes before storage.",
+        "Rate limiting and input sanitization applied to prevent abuse and injection attacks.",
+        "Audit logs maintained for background jobs and critical user actions for compliance and debugging.",
+        "Privacy compliance ensured by data cleanup jobs and user data access controls.",
+        "Cross-site scripting (XSS) and cross-site request forgery (CSRF) protections implemented in UI and API layers.",
+        "Access to document storage restricted by user ownership and role permissions."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the Dashboard page",
+          "when": "The user views the page",
+          "then": "They see a summary of upcoming deadlines, application statuses, and budget overviews relevant to their profile"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user submits a profile update with valid data",
+          "when": "They POST to /api/profile",
+          "then": "The API responds with success and the updated profile is persisted and retrievable"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user submits a new conference with startDate after endDate",
+          "when": "They POST to /api/conferences",
+          "then": "The API returns a 400 validation error indicating date inconsistency"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user requests available grants with eligibility filters",
+          "when": "They GET /api/grants with filter criteria",
+          "then": "The API returns a list of grants matching eligibility and deadlines"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user submits a travel budget with cost estimates exceeding award limits",
+          "when": "They POST to /api/budget",
+          "then": "The API returns a warning in the response about funding gaps or budget excess"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user uploads a document with unsupported file type",
+          "when": "They POST to /api/documents/upload",
+          "then": "The API rejects the upload with an error message specifying allowed file types"
+        },
+        {
+          "id": "AT-007",
+          "given": "A background job runs DeadlineReminderJob",
+          "when": "It executes on schedule",
+          "then": "Users with upcoming deadlines receive reminders and job logs success"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to access /grants page without authentication",
+          "when": "They navigate to /grants",
+          "then": "They are redirected to /login page"
+        },
+        {
+          "id": "AT-009",
+          "given": "Multiple users update shared departmental dashboard concurrently",
+          "when": "Conflicting updates occur",
+          "then": "API returns conflict errors and UI prompts users to refresh data"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user syncs calendar but permissions are revoked",
+          "when": "Calendar integration attempts sync",
+          "then": "The system logs the failure and UI displays a warning with reauthorization instructions"
+        }
+      ],
+      "buildOrder": [
+        "Set up authentication and user profile management (login page, /api/profile GET and POST).",
+        "Implement Data Storage Layer with Prisma models for UserProfile, Conference, TravelGrant, TravelBudget, ApplicationStatus, UploadedDocument.",
+        "Develop API Core endpoints for conferences (/api/conferences), grants (/api/grants), budget (/api/budget), applications (/api/applications), documents (/api/documents/upload), and reports (/api/reports).",
+        "Build UI pages for Dashboard, Profile, Conference creation, Grants browsing, Budget planner, Application tracker, Reports.",
+        "Integrate Document Upload & Storage with virus scanning and secure metadata handling.",
+        "Implement Integration Calendar service with OAuth flows and two-way sync.",
+        "Develop Background Jobs Manager for scheduled reminders, document expiry checks, report generation, and data cleanup.",
+        "Implement validation, error handling, and security controls across API and UI.",
+        "Add concurrency controls and conflict resolution mechanisms.",
+        "Conduct acceptance testing and edge case handling.",
+        "Optimize performance, indexing, and responsive UI design.",
+        "Prepare for institutional adoption with multi-user dashboards and role-based views."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/profile",
+          "/conference/new",
+          "/grants",
+          "/budget",
+          "/applications",
+          "/reports",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "/api/profile.js",
+          "/api/conferences.js",
+          "/api/grants.js",
+          "/api/budget.js",
+          "/api/applications.js",
+          "/api/documents/upload.js",
+          "/api/reports.js"
+        ],
+        "prismaModelsToAdd": [
+          "UserProfile",
+          "Conference",
+          "TravelGrant",
+          "TravelBudget",
+          "ApplicationStatus",
+          "UploadedDocument"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing or unclear constraints and details related to travel grant planning to improve the tool's requirements.",
+        "promptTemplate": "Given the current blueprint and expanded specs:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nPlease ask targeted questions to clarify missing constraints, edge cases, or user needs for the Academic Conference Travel Grant Planner."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the detailed UI pages, API routes, and data models needed to implement the planner application.",
+        "promptTemplate": "Given the refined requirements and initial blueprint:\n\n{{REFINED_REQUIREMENTS}}\n\nDefine a comprehensive list of pages, API endpoints, and data models with fields, validation rules, and relationships needed to support the Academic Conference Travel Grant Planner."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs and UI skeletons for the defined pages to scaffold development.",
+        "promptTemplate": "Using the finalized pages and data models:\n\n{{PAGES_AND_MODELS}}\n\nGenerate code stubs or templates for each UI page, including inputs, outputs, and placeholder components for the Academic Conference Travel Grant Planner."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate UI pages with API endpoints and data storage to create a functioning application.",
+        "promptTemplate": "Given the page stubs and API definitions:\n\n{{PAGE_STUBS}}\n\nDescribe or generate the integration code and data flow wiring between UI, API, and database layers for the Academic Conference Travel Grant Planner."
+      }
+    ]
+  }
+}

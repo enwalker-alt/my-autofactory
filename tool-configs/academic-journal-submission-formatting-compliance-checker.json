@@ -1,0 +1,546 @@
+{
+  "slug": "academic-journal-submission-formatting-compliance-checker",
+  "title": "Academic Journal Submission Formatting Compliance Checker",
+  "description": "Upload your manuscript and target journal formatting guidelines to receive a detailed compliance report highlighting formatting issues, checklist summaries, and compliance scores to reduce submission risks.",
+  "inputLabel": "Upload manuscript file (DOCX or LaTeX), journal guideline document or URL, citation style, supplementary files (optional), and manuscript metadata (title, authors, affiliations, ORCID IDs).",
+  "outputLabel": "Formatted compliance report with detailed issues, checklist summary, annotated manuscript suggestions, and compliance score.",
+  "systemPrompt": "You are an academic journal submission formatting compliance assistant. Accept a manuscript file (DOCX or LaTeX), a journal guideline document or URL, citation style preference, optional supplementary files, and manuscript metadata including title, authors, affiliations, and ORCID IDs. Validate all inputs strictly: reject unsupported manuscript formats or corrupted files, ensure guideline input is a valid document or reachable URL, and verify citation style against supported styles. Provide a detailed compliance report identifying formatting issues by category (references, headings, figures, ethical statements), a checklist of required statements, an overall compliance score, and inline suggestions or comments for corrections. Output must be plain text summarizing the compliance findings. Refuse any request missing required inputs or containing disallowed content. Maintain strict privacy and security of manuscript content. Do not generate any content beyond the compliance report summary. If inputs are invalid, respond with a clear error message only. Use a professional and concise tone.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "General Compliance Check",
+      "prompt": "Check the uploaded manuscript against the provided journal guidelines and citation style. Provide a detailed compliance report with identified formatting issues, checklist of ethical statements, and a compliance score summary."
+    },
+    {
+      "label": "References and Citations Focus",
+      "prompt": "Analyze the manuscript's references and citations for compliance with the journal's citation style rules. Highlight any inconsistencies or formatting errors."
+    },
+    {
+      "label": "Figures and Tables Formatting",
+      "prompt": "Evaluate the formatting of figures and tables in the manuscript according to the journal guidelines. Report any deviations or missing elements."
+    },
+    {
+      "label": "Ethical Statements and Disclosures",
+      "prompt": "Verify the presence and formatting of required ethical and disclosure statements in the manuscript as per the journal's checklist."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "The output is a plain text compliance report summarizing formatting issues, checklist items, and compliance score. Optionally, structured JSON output is available with fields: issues (array), checklist (array), complianceScore (number).",
+  "clarifyPrompt": "Please provide the manuscript file, journal guidelines (document or URL), citation style preference, and manuscript metadata including title and authors. Optional supplementary files can also be uploaded. Ensure files are in supported formats.",
+  "finalizePrompt": "Review the compliance report carefully and confirm if you need further detailed analysis or export options. If satisfied, you may proceed to download corrected manuscript suggestions or style templates.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Journal Submission Formatting Compliance Checker",
+      "niche": {
+        "role": "Academic researcher preparing manuscript submissions",
+        "scenario": "Before submitting a manuscript to a target academic journal, ensuring the document complies precisely with the journal's detailed formatting and style guidelines to avoid desk rejection or delays."
+      },
+      "problem": "Academic researchers often struggle to manually verify that their manuscript drafts fully comply with complex, journal-specific formatting rules including citation styles, section order, figure/table formatting, font requirements, and ethical declarations, resulting in wasted time and risk of submission rejection.",
+      "inputs": [
+        "Manuscript document file (e.g., DOCX, LaTeX source)",
+        "Target journal formatting guidelines (uploaded document or URL)",
+        "Citation style preference or journal standard",
+        "Supplementary files (figures, tables as separate files or embedded)",
+        "Manuscript metadata (title, authors, affiliations, ORCID ids)"
+      ],
+      "outputs": [
+        "Detailed, structured compliance report highlighting formatting issues by category (e.g., references, headings, figure captions)",
+        "Annotated manuscript with suggested corrections inline or as comments",
+        "Checklist of required ethical and disclosure statements presence and format",
+        "Summary of compliance score and risk level for desk rejection",
+        "Exportable corrected manuscript version or style template recommendations"
+      ],
+      "whyItWins": [
+        "Fills a real pain point not fully addressed by generic grammar or reference managers by focusing on end-to-end journal-specific formatting compliance",
+        "Saves researchers significant time and reduces submission frustration and risk of desk rejection",
+        "Supports multiple input formats (DOCX, LaTeX) and complex journal rules that vary widely",
+        "Provides actionable, detailed feedback rather than vague style notes",
+        "Can integrate with manuscript writing workflows and reference managers as it scales"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app where users upload manuscript files and journal guidelines to receive a detailed compliance report and checklist summary.",
+        "in90Days": "Add interactive manuscript annotation features, support batch submissions, and integrate with popular reference managers and manuscript preparation tools for seamless workflow.",
+        "in12Months": "Develop a full multi-page system including user accounts, multiple journal profiles, collaborative manuscript version control, automated pre-submission formatting fixes, and analytics on submission success rates."
+      },
+      "riskNotes": [
+        "Must ensure privacy and secure handling of unpublished manuscript content.",
+        "Accuracy depends on up-to-date parsing of journal guidelines, requiring ongoing updates and validation.",
+        "Complex formatting rules vary widely and may require manual override or expert input for ambiguous cases.",
+        "Not intended to replace final human proofreading or publisher checks but to improve initial compliance."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web application that helps academic researchers verify and ensure their manuscript submissions comply with detailed, journal-specific formatting guidelines by analyzing uploaded manuscript files and journal rules, providing detailed compliance reports, annotated corrections, and exportable outputs.",
+      "primaryUser": "Academic researchers preparing manuscript submissions",
+      "successMetrics": [
+        "Number of manuscripts successfully checked",
+        "User satisfaction with compliance report accuracy and usefulness",
+        "Reduction in user-reported desk rejections due to formatting issues",
+        "Frequency of repeat usage and integration with manuscript workflows",
+        "Accuracy and coverage of journal guideline parsing and updates"
+      ],
+      "components": [
+        {
+          "id": "ui-landing",
+          "name": "Landing and Upload UI",
+          "type": "ui",
+          "responsibility": "Provide initial user interface for uploading manuscripts, journal guidelines, and metadata; display compliance report summaries and navigation to detailed views.",
+          "dependsOn": [],
+          "notes": [
+            "Supports drag-and-drop and file selection for DOCX, LaTeX, and supplementary files",
+            "Handles input validation and user guidance for required inputs"
+          ]
+        },
+        {
+          "id": "ui-report",
+          "name": "Compliance Report and Annotation UI",
+          "type": "ui",
+          "responsibility": "Display detailed compliance reports by category, annotated manuscript views with inline suggestions or comments, and checklist summaries; allow export/download of corrected manuscripts or templates.",
+          "dependsOn": [
+            "api-compliance",
+            "data-manuscript"
+          ],
+          "notes": [
+            "Interactive annotation features planned for future upgrades",
+            "Supports filtering and navigation by issue category"
+          ]
+        },
+        {
+          "id": "api-compliance",
+          "name": "Compliance Checking API",
+          "type": "api",
+          "responsibility": "Process uploaded manuscripts and journal guidelines to analyze formatting compliance, generate detailed reports, annotated manuscripts, checklists, and compliance scores.",
+          "dependsOn": [
+            "data-journalGuidelines",
+            "data-manuscript",
+            "integration-formatParsers"
+          ],
+          "notes": [
+            "Handles parsing of multiple input formats (DOCX, LaTeX)",
+            "Applies journal-specific rules and citation style checks",
+            "Supports manual overrides or expert input for ambiguous cases"
+          ]
+        },
+        {
+          "id": "data-manuscript",
+          "name": "Manuscript Data Storage",
+          "type": "data",
+          "responsibility": "Persist uploaded manuscripts, supplementary files, metadata, and generated compliance reports and annotations securely.",
+          "dependsOn": [],
+          "notes": [
+            "Must ensure strong privacy and access controls to protect unpublished content",
+            "Stores versioned manuscript data for future collaborative features"
+          ]
+        },
+        {
+          "id": "data-journalGuidelines",
+          "name": "Journal Guidelines Repository",
+          "type": "data",
+          "responsibility": "Store parsed and normalized journal formatting guidelines, citation style definitions, and ethical statement requirements for compliance checks.",
+          "dependsOn": [],
+          "notes": [
+            "Supports updates and versioning of journal rules",
+            "May integrate with external guideline sources or manual curator inputs"
+          ]
+        },
+        {
+          "id": "integration-formatParsers",
+          "name": "Format Parsing and Analysis Integration",
+          "type": "integration",
+          "responsibility": "Provide parsing and structural analysis of manuscript files (DOCX, LaTeX) and journal guideline documents to extract relevant formatting elements for compliance evaluation.",
+          "dependsOn": [],
+          "notes": [
+            "Handles complex document structures, embedded figures/tables, citations",
+            "Must be extensible to support new formats or updated journal guideline formats"
+          ]
+        },
+        {
+          "id": "job-guidelineUpdater",
+          "name": "Journal Guideline Update Job",
+          "type": "job",
+          "responsibility": "Periodically fetch, parse, and update journal formatting guidelines and citation style definitions to maintain accuracy of compliance checks.",
+          "dependsOn": [
+            "data-journalGuidelines",
+            "integration-formatParsers"
+          ],
+          "notes": [
+            "Triggers scheduled or manual updates",
+            "Includes validation and alerting on parsing failures or guideline conflicts"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Manuscript",
+          "purpose": "Stores manuscript files, metadata, supplementary files, and associated compliance reports",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authors",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "affiliations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "orcidIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "manuscriptFile",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "supplementaryFiles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "complianceReport",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "annotatedManuscript",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "complianceScore",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "JournalGuideline",
+          "purpose": "Stores normalized journal formatting rules, citation styles, and ethical statement requirements",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "journalName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "guidelineSource",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "parsedRules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "citationStyle",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "ethicalStatementsChecklist",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "journalName",
+            "lastUpdated"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Upload Manuscript and Guidelines",
+          "purpose": "Landing page for users to upload manuscript files, journal guidelines, and enter metadata for compliance checking",
+          "inputs": [
+            "Manuscript file (DOCX, LaTeX)",
+            "Journal guideline document or URL",
+            "Citation style preference",
+            "Supplementary files",
+            "Manuscript metadata (title, authors, affiliations, ORCID)"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Preliminary compliance summary (if available)"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/report/:manuscriptId",
+          "title": "Compliance Report and Annotations",
+          "purpose": "Display detailed compliance report, annotated manuscript view, checklist summary, and export options",
+          "inputs": [
+            "Manuscript ID from URL"
+          ],
+          "outputs": [
+            "Detailed compliance issues by category",
+            "Annotated manuscript with inline suggestions/comments",
+            "Ethical and disclosure checklist",
+            "Compliance score and risk summary",
+            "Export corrected manuscript or style templates"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/guidelines",
+          "title": "Journal Guidelines Management",
+          "purpose": "Admin or curator page to view, update, and manage journal guideline profiles and parsing status",
+          "inputs": [
+            "Journal guideline data"
+          ],
+          "outputs": [
+            "List of journals, update status, parsing errors"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/submit",
+          "method": "POST",
+          "purpose": "Accept manuscript and guideline uploads and initiate compliance checking",
+          "requestShape": "{ manuscriptFile: file, journalGuidelineFileOrUrl: string, citationStyle: string, supplementaryFiles: file[], metadata: json }",
+          "responseShape": "{ manuscriptId: string, status: 'processing' | 'completed' | 'failed', message: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/report/:manuscriptId",
+          "method": "GET",
+          "purpose": "Retrieve detailed compliance report and annotated manuscript data",
+          "requestShape": "{ manuscriptId: string }",
+          "responseShape": "{ complianceReport: json, annotatedManuscript: string, complianceScore: number, checklist: json }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/guidelines",
+          "method": "GET",
+          "purpose": "Fetch list of supported journal guidelines and their metadata",
+          "requestShape": "{}",
+          "responseShape": "{ guidelines: json[] }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/guidelines/update",
+          "method": "POST",
+          "purpose": "Trigger update of journal guidelines (admin only)",
+          "requestShape": "{}",
+          "responseShape": "{ status: string, message: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "JournalGuidelineUpdater",
+          "trigger": "Scheduled (e.g., weekly) or manual trigger",
+          "purpose": "Automatically fetch, parse, and update journal formatting guidelines and citation styles to keep compliance checks accurate"
+        }
+      ],
+      "edgeCases": [
+        "Manuscript files with unsupported or corrupted formats causing parsing failures",
+        "Journal guidelines that are ambiguous, incomplete, or in non-standard formats requiring manual curation",
+        "Large manuscripts with many embedded figures/tables causing performance degradation",
+        "User uploads missing required metadata or supplementary files",
+        "Privacy breaches if manuscript data is improperly accessed or leaked",
+        "Conflicting rules between journal guidelines and citation styles",
+        "Partial compliance where some formatting rules cannot be automatically verified",
+        "Network failures during guideline updates or file uploads"
+      ],
+      "nonGoals": [
+        "Replacing final human proofreading or publisher formatting checks",
+        "Providing full manuscript editing or writing assistance beyond formatting compliance",
+        "Supporting every possible academic journal without curated guideline updates",
+        "Handling plagiarism or content originality checks",
+        "Managing user accounts and collaboration features in initial versions"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User visits landing page (/) and uploads manuscript files, journal guideline document or URL, citation style preference, supplementary files, and metadata.",
+        "Landing UI validates inputs and sends POST request to /api/submit with files and metadata.",
+        "API /api/submit validates and stores manuscript and supplementary files in data-manuscript storage, stores or references journal guideline data in data-journalGuidelines if new, then triggers compliance checking via api-compliance.",
+        "api-compliance calls integration-formatParsers to parse manuscript files and journal guidelines, applies journal-specific rules, citation style checks, and generates compliance report, annotated manuscript, checklist, and compliance score.",
+        "Compliance results are saved back to data-manuscript storage linked to the manuscript record.",
+        "User navigates to /report/:manuscriptId to view detailed compliance report and annotations.",
+        "Report UI fetches compliance data from /api/report/:manuscriptId and displays categorized issues, annotated manuscript view, checklist summary, compliance score, and export options.",
+        "Admin users access /guidelines to view and manage journal guidelines, fetching data from /api/guidelines and triggering updates via /api/guidelines/update.",
+        "Background job JournalGuidelineUpdater runs on schedule or manual trigger to fetch and parse updated journal guidelines using integration-formatParsers, updating data-journalGuidelines repository."
+      ],
+      "validationRules": [
+        "Manuscript file must be present and in supported formats (DOCX, LaTeX); reject unsupported or corrupted files with clear error messages.",
+        "Journal guideline input must be a valid document file or a reachable URL; validate format and accessibility before processing.",
+        "Citation style preference must match supported styles; reject unknown styles with guidance.",
+        "Metadata fields: title (non-empty string), authors (non-empty JSON array with required fields), optional affiliations and ORCID IDs must be valid JSON arrays.",
+        "Supplementary files are optional but if provided must be valid files within size limits.",
+        "API endpoints must validate presence and type of required parameters; reject requests missing required data with HTTP 400 and descriptive messages.",
+        "Admin-only endpoints require authenticated user with appropriate roles; reject unauthorized access with HTTP 401 or 403.",
+        "Background job validates fetched guideline data for completeness and correctness before updating repository; log and alert on validation failures."
+      ],
+      "errorHandling": [
+        "On manuscript upload parsing failure, respond with HTTP 400 and user-friendly message indicating file issues.",
+        "If journal guideline parsing fails or is ambiguous, store partial data and flag for manual curation; notify admin users.",
+        "For large manuscripts causing performance issues, implement request timeouts and inform users to upload smaller files or contact support.",
+        "Missing required metadata or files results in immediate validation errors on upload UI with inline messages.",
+        "Network failures during uploads or guideline updates trigger retries with exponential backoff; inform users of delays or failures.",
+        "Unauthorized access attempts to protected API routes return HTTP 401 or 403 with no sensitive data exposure.",
+        "Internal server errors return HTTP 500 with generic message; detailed errors logged server-side for diagnostics.",
+        "Conflicting journal rules detected during compliance checking generate warnings in reports and flag for expert review."
+      ],
+      "securityNotes": [
+        "Ensure all manuscript and supplementary files are stored securely with access controls limiting data visibility to the uploading user and authorized admins.",
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Sanitize all inputs to prevent injection attacks, especially JSON metadata and file uploads.",
+        "Authenticate and authorize admin routes and background job triggers to prevent unauthorized guideline updates.",
+        "Implement rate limiting on public APIs to mitigate abuse.",
+        "Log access and changes to sensitive data for audit trails.",
+        "Store sensitive data encrypted at rest where feasible.",
+        "Ensure compliance with data privacy regulations relevant to unpublished manuscript content."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user accesses the landing page and uploads a valid DOCX manuscript, journal guideline file, citation style, and metadata",
+          "when": "The user submits the upload form",
+          "then": "The system accepts the files, stores data, initiates compliance checking, and returns a processing status with a manuscript ID"
+        },
+        {
+          "id": "AT-002",
+          "given": "A manuscript is successfully processed and compliance report generated",
+          "when": "The user navigates to /report/:manuscriptId",
+          "then": "The system displays detailed compliance issues, annotated manuscript, checklist, compliance score, and export options"
+        },
+        {
+          "id": "AT-003",
+          "given": "An admin user accesses /guidelines page",
+          "when": "The user views the list of journal guidelines and triggers an update",
+          "then": "The system fetches, parses, updates guidelines, and displays update status and any parsing errors"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user uploads a manuscript with unsupported format or corrupted file",
+          "when": "The user submits the upload form",
+          "then": "The system rejects the upload with a clear error message indicating the file issue"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user submits incomplete metadata or missing required files",
+          "when": "The user attempts to submit the upload form",
+          "then": "The UI displays inline validation errors preventing submission until corrected"
+        },
+        {
+          "id": "AT-006",
+          "given": "A background job runs to update journal guidelines",
+          "when": "The job encounters ambiguous or incomplete guideline data",
+          "then": "The system logs warnings, flags the guidelines for manual curation, and alerts admin users"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthorized user attempts to access /api/guidelines/update",
+          "when": "The user sends a POST request without authentication",
+          "then": "The system responds with HTTP 401 Unauthorized and no data exposure"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma models for Manuscript and JournalGuideline with specified fields and indexes",
+        "Implement data storage modules for manuscripts and journal guidelines with access controls",
+        "Develop integration-formatParsers module for parsing DOCX, LaTeX, and guideline documents",
+        "Build /api/submit POST route to handle uploads, validate inputs, store data, and trigger compliance checking",
+        "Implement api-compliance module to process manuscripts and guidelines, generate reports and annotations",
+        "Create /api/report/:manuscriptId GET route to fetch compliance data for UI",
+        "Develop Landing and Upload UI page (/) with file upload, metadata input, validation, and submission",
+        "Develop Compliance Report UI page (/report/:manuscriptId) to display detailed reports and exports",
+        "Implement /api/guidelines GET and /api/guidelines/update POST routes with authentication and guideline management logic",
+        "Create Guidelines Management UI page (/guidelines) for admin users with guideline list and update controls",
+        "Implement background job JournalGuidelineUpdater for scheduled and manual guideline updates",
+        "Add error handling, validation, and security measures throughout API and UI layers",
+        "Write acceptance tests and perform integration testing"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/index.tsx",
+          "/report/[manuscriptId].tsx",
+          "/guidelines.tsx"
+        ],
+        "apiFilesToCreate": [
+          "/api/submit.ts",
+          "/api/report/[manuscriptId].ts",
+          "/api/guidelines.ts",
+          "/api/guidelines/update.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Manuscript { id String @id; title String; authors Json; affiliations Json?; orcidIds Json?; manuscriptFile String; supplementaryFiles Json?; uploadDate DateTime; complianceReport Json?; annotatedManuscript String?; complianceScore Float?; @@index([id]); @@index([uploadDate]) }",
+          "model JournalGuideline { id String @id; journalName String; guidelineSource String?; parsedRules Json; citationStyle String?; ethicalStatementsChecklist Json?; lastUpdated DateTime; @@index([journalName]); @@index([lastUpdated]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, clarify ambiguous inputs, and finalize the detailed requirements for the compliance checker tool.",
+        "promptTemplate": "Given the initial idea {{IDEA}}, blueprint {{BLUEPRINT}}, and expanded specs {{EXPANDED}}, please provide any missing constraints or clarifications needed to finalize the requirements for the Academic Journal Submission Formatting Compliance Checker. Include questions about input formats, output expectations, and user interactions. Use user input: {{USER_INPUT}}."
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the final page routes, UI flows, and data models required to implement the compliance checker application.",
+        "promptTemplate": "Using the refined requirements and blueprint {{BLUEPRINT}}, define and finalize the page routes, user interface components, and data models for manuscript and journal guideline storage. Detail the input/output for each page and API route. Reference expansion {{EXPANDED}} and user notes {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial code stubs for the main pages and API endpoints to start development.",
+        "promptTemplate": "Based on the finalized architecture and data models {{BLUEPRINT}}, generate code stubs for the landing page upload UI, compliance report page, guidelines management page, and the corresponding API routes including /api/submit and /api/report. Use user instructions {{USER_INPUT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the integration logic to connect UI pages with backend APIs and the database models.",
+        "promptTemplate": "Implement the integration between the UI components and backend APIs, ensuring data flows correctly from the user inputs through API endpoints to the database models defined in {{BLUEPRINT}}. Use the expanded data flow and validation rules {{EXPANDED}} and incorporate user feedback {{USER_INPUT}}."
+      }
+    ]
+  }
+}

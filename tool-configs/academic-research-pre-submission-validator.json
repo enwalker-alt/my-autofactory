@@ -1,0 +1,664 @@
+{
+  "slug": "academic-research-pre-submission-validator",
+  "title": "Academic Research Pre-Submission Readiness Validator",
+  "description": "Upload your manuscript draft, supplementary materials, and target journal guidelines to receive a comprehensive pre-submission readiness report highlighting formatting compliance, ethical checks, and actionable recommendations to improve submission success.",
+  "inputLabel": "Upload manuscript text or paste key excerpts here. Optionally upload manuscript and supplementary files and provide journal guidelines URL or text.",
+  "outputLabel": "Pre-submission readiness report with compliance summaries and prioritized corrective actions.",
+  "systemPrompt": "You are a strict and precise assistant specialized in academic manuscript pre-submission readiness validation. Given the user input text plus optionally uploaded manuscript files, supplementary materials, and journal guideline URLs or documents, produce a detailed readiness report in plain text. The report must include formatting compliance summaries, ethical compliance status, and highlight major issues with actionable prioritized recommendations. Reject any request that lacks user authentication context or that attempts to upload disallowed file types or malware. Do not provide legal or medical advice, only checklist-based validation. Follow all input validation and security rules strictly. Output must be safe, clear, and actionable. Use only the provided inputs: manuscript text or files, supplementary files, journal guidelines, ethical statements, and data/code links. Refuse disallowed content or unsupported file formats. Output plain text summary by default. If structured-output feature enabled, produce valid JSON report matching readiness report structure.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Basic Formatting & Ethics Check",
+      "prompt": "Please analyze the provided manuscript text and journal guidelines focusing on formatting compliance and ethical statement presence. Provide a summary of formatting issues and ethical checklist status with recommended fixes.",
+      "hint": "Use this preset for a quick initial check of manuscript formatting and ethics compliance."
+    },
+    {
+      "label": "Comprehensive Readiness Assessment",
+      "prompt": "Perform a full pre-submission readiness validation of the manuscript, supplementary materials, and journal guidelines. Include formatting, ethical compliance, data/code availability, and figure quality checks. Provide a prioritized corrective action list.",
+      "hint": "Use this for a detailed readiness report covering multiple criteria."
+    },
+    {
+      "label": "Data and Code Availability Verification",
+      "prompt": "Evaluate the data availability statements and code repository links in the manuscript and supplementary materials. Score completeness and compliance with journal policies. Suggest improvements if needed.",
+      "hint": "Focus on reproducibility and data/code sharing aspects."
+    },
+    {
+      "label": "Figure Quality and Resolution Audit",
+      "prompt": "Audit all provided figures and supplementary images for resolution and quality standards per the target journal guidelines. List any figures requiring replacement or improvement.",
+      "hint": "Useful to ensure all figures meet journal image requirements."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output a JSON object with keys: formattingSummary, ethicalComplianceStatus, dataCodeAvailabilityScore (number), figureQualityAudit, reproducibilityChecklistCoverage, correctiveActions (list).",
+  "clarifyPrompt": "Please provide any missing manuscript files, journal guidelines, or ethical statements needed for a complete pre-submission readiness validation.",
+  "finalizePrompt": "Generate the final comprehensive pre-submission readiness report including prioritized corrective actions and a summary compliance score.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Pre-Submission Readiness Validator",
+      "niche": {
+        "role": "Academic Researcher (Graduate Student or Early Career Researcher)",
+        "scenario": "Preparing a manuscript for initial submission to a journal or preprint server"
+      },
+      "problem": "Researchers often struggle to comprehensively verify that their manuscript and supplementary materials meet all essential pre-submission criteria, including journal-specific formatting, ethical compliance declarations, data and code availability statements, figure resolution standards, and adherence to reproducibility best practices. Current tools mostly focus on isolated tasks (e.g., formatting checks or ethical statements) but lack an integrated, stepwise readiness assessment that guides authors through the complex multi-dimensional checklist before submission.",
+      "inputs": [
+        "Manuscript draft file (PDF or DOCX)",
+        "Supplementary materials files (data, code archives, figures)",
+        "Target journal or preprint server guidelines document or URL",
+        "Ethical approval documents or statements",
+        "Data availability and code repository links or metadata"
+      ],
+      "outputs": [
+        "Comprehensive pre-submission readiness report detailing",
+        "- Formatting compliance summary with actionable corrections",
+        "- Ethical compliance checklist status",
+        "- Data and code availability verification with completeness score",
+        "- Figure quality and resolution audit",
+        "- Reproducibility checklist coverage",
+        "- Recommended corrective actions prioritized by impact",
+        "Exportable submission readiness certificate or checklist"
+      ],
+      "whyItWins": [
+        "Integrates multiple critical pre-submission checks into one workflow, saving researchers time and reducing submission rejections or delays",
+        "Provides a clear, prioritized, actionable report tailored to the target journal or preprint requirements",
+        "Supports repeated iterative use during manuscript development with version tracking",
+        "Addresses a broad but specific gap not covered by existing niche tools focused on single aspects",
+        "Improves manuscript quality and compliance, enhancing authors' confidence and reducing editorial back-and-forth"
+      ],
+      "upgradePath": {
+        "today": "Offer a lightweight web tool that accepts manuscript and guideline uploads to produce a basic multi-criteria checklist report highlighting major formatting and ethical compliance issues.",
+        "in90Days": "Add modular checks for data/code availability verification and automatic figure resolution analysis with user-friendly dashboard and export options. Enable saving and comparing multiple manuscript versions.",
+        "in12Months": "Develop a full multi-page app integrating user accounts, detailed submission readiness workflows with journal profiles, automated guideline updates, collaborative review features, and submission package assembly assistance including metadata management and cross-platform integration."
+      },
+      "riskNotes": [
+        "Must ensure user data confidentiality due to sensitive unpublished manuscript content",
+        "Automated guideline parsing may be limited by variable journal document formats, requiring manual input fallback",
+        "Ethical and data compliance checks must avoid legal or medical advice, focusing on checklist verification only",
+        "File uploads should be securely handled and virus-scanned to prevent security risks"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An integrated platform for academic researchers to comprehensively validate manuscript and supplementary materials against target journal or preprint server pre-submission criteria, producing actionable readiness reports and certificates to improve submission success.",
+      "primaryUser": "Academic Researcher (Graduate Student or Early Career Researcher) preparing manuscripts for submission",
+      "successMetrics": [
+        "Reduction in manuscript submission rejections or delays due to compliance issues",
+        "Number of manuscripts processed and readiness reports generated",
+        "User engagement with iterative manuscript version tracking",
+        "User satisfaction scores on report clarity and actionable recommendations",
+        "Adoption rate of exportable readiness certificates by authors"
+      ],
+      "components": [
+        {
+          "id": "ui-portal",
+          "name": "User Interface Portal",
+          "type": "ui",
+          "responsibility": "Provides multi-page web interface for manuscript uploads, guideline inputs, readiness report viewing, version management, and export functions.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Supports authentication for user accounts in advanced versions",
+            "Handles file upload UI with progress and validation feedback",
+            "Includes dashboard for iterative manuscript version comparisons",
+            "Displays prioritized actionable recommendations clearly"
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API Service",
+          "type": "api",
+          "responsibility": "Handles manuscript and guideline processing requests, orchestrates validation checks, manages user data, and serves readiness reports and certificates.",
+          "dependsOn": [
+            "data-storage",
+            "job-validation",
+            "integration-virus-scan"
+          ],
+          "notes": [
+            "Exposes authenticated endpoints for manuscript submission and report retrieval",
+            "Manages workflow state for multi-step readiness validation",
+            "Implements fallback for manual guideline input if parsing fails"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Stores user accounts, manuscript versions, uploaded files metadata, journal profiles, validation results, and readiness reports.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage for sensitive manuscript and ethical documents",
+            "Versioned storage to support iterative manuscript development",
+            "Indexes on user ID, manuscript ID, and journal ID for efficient queries"
+          ]
+        },
+        {
+          "id": "job-validation",
+          "name": "Validation Background Jobs",
+          "type": "job",
+          "responsibility": "Performs asynchronous processing of uploaded manuscripts and supplementary materials to run multi-criteria checks including formatting, ethical compliance, data/code availability, figure quality, and reproducibility.",
+          "dependsOn": [
+            "integration-guideline-parser",
+            "integration-virus-scan"
+          ],
+          "notes": [
+            "Handles failure retries and partial result reporting",
+            "Prioritizes checks by impact for actionable recommendations",
+            "Supports modular addition of new validation checks"
+          ]
+        },
+        {
+          "id": "integration-guideline-parser",
+          "name": "Journal Guideline Parsing Integration",
+          "type": "integration",
+          "responsibility": "Parses uploaded or linked journal/preprint server guidelines to extract structured validation criteria for automated checking.",
+          "dependsOn": [],
+          "notes": [
+            "Supports fallback to manual criteria input if parsing fails",
+            "Regularly updated to handle common journal guideline formats",
+            "Limits scope to checklist extraction, not legal interpretation"
+          ]
+        },
+        {
+          "id": "integration-virus-scan",
+          "name": "File Virus Scanning Integration",
+          "type": "integration",
+          "responsibility": "Scans all uploaded files for malware to ensure platform security and user data safety.",
+          "dependsOn": [],
+          "notes": [
+            "Triggers on every file upload before processing",
+            "Blocks or quarantines suspicious files",
+            "Logs scan results for audit and troubleshooting"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents platform users with authentication and profile data.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Manuscript",
+          "purpose": "Stores metadata and version info for uploaded manuscripts and supplementary materials.",
+          "fields": [
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "filesMetadata",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "targetJournalId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "manuscriptId"
+          ]
+        },
+        {
+          "name": "JournalProfile",
+          "purpose": "Represents structured validation criteria extracted from journal or preprint server guidelines.",
+          "fields": [
+            {
+              "name": "journalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "guidelineSource",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "validationCriteria",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "journalId"
+          ]
+        },
+        {
+          "name": "ReadinessReport",
+          "purpose": "Stores results of multi-criteria manuscript validation including scores, compliance status, and recommendations.",
+          "fields": [
+            {
+              "name": "reportId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "formattingSummary",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "ethicalComplianceStatus",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "dataCodeAvailabilityScore",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "figureQualityAudit",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "reproducibilityChecklistCoverage",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "correctiveActions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "exportedCertificateUrl",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "manuscriptId",
+            "generatedAt"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Home & Upload",
+          "purpose": "Landing page for uploading manuscripts, supplementary materials, and journal guidelines to start validation.",
+          "inputs": [
+            "Manuscript files",
+            "Supplementary files",
+            "Journal guideline document or URL",
+            "Ethical approval documents",
+            "Data/code links"
+          ],
+          "outputs": [
+            "Upload status",
+            "Initial validation start confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "User Dashboard",
+          "purpose": "Overview of user manuscripts, versions, and readiness report statuses with access to detailed reports and version comparisons.",
+          "inputs": [],
+          "outputs": [
+            "List of manuscripts",
+            "Validation statuses",
+            "Report summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/report/:manuscriptId/:versionNumber",
+          "title": "Readiness Report Detail",
+          "purpose": "Displays comprehensive multi-criteria readiness report with prioritized actionable recommendations and export options.",
+          "inputs": [
+            "Manuscript ID",
+            "Version number"
+          ],
+          "outputs": [
+            "Detailed readiness report",
+            "Corrective action list",
+            "Export certificate button"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings",
+          "purpose": "Manage user profile, security settings, and notification preferences.",
+          "inputs": [],
+          "outputs": [
+            "Profile info",
+            "Security options"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Accepts manuscript, supplementary files, journal guidelines, and related documents for processing.",
+          "requestShape": "Multipart form-data with files and metadata JSON",
+          "responseShape": "Upload status and manuscript version metadata",
+          "auth": "user"
+        },
+        {
+          "route": "/api/validate/start",
+          "method": "POST",
+          "purpose": "Triggers asynchronous validation jobs for a submitted manuscript version.",
+          "requestShape": "{ \"manuscriptId\": string, \"versionNumber\": number }",
+          "responseShape": "{ \"jobId\": string, \"status\": string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/report/:manuscriptId/:versionNumber",
+          "method": "GET",
+          "purpose": "Retrieves the readiness report for a specific manuscript version.",
+          "requestShape": "N/A",
+          "responseShape": "ReadinessReport JSON",
+          "auth": "user"
+        },
+        {
+          "route": "/api/journals",
+          "method": "GET",
+          "purpose": "Lists supported journals and their profiles for selection during manuscript submission.",
+          "requestShape": "N/A",
+          "responseShape": "[JournalProfile]",
+          "auth": "public"
+        },
+        {
+          "route": "/api/export/certificate",
+          "method": "POST",
+          "purpose": "Generates and returns exportable submission readiness certificate for a manuscript version.",
+          "requestShape": "{ \"manuscriptId\": string, \"versionNumber\": number }",
+          "responseShape": "{ \"certificateUrl\": string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ManuscriptValidationJob",
+          "trigger": "Triggered after successful file upload and validation start request",
+          "purpose": "Runs multi-criteria checks asynchronously on manuscript and supplementary materials, aggregates results into readiness report."
+        },
+        {
+          "name": "GuidelineParsingJob",
+          "trigger": "Triggered on journal guideline document or URL upload",
+          "purpose": "Parses journal/preprint server guidelines to extract structured validation criteria."
+        },
+        {
+          "name": "VirusScanJob",
+          "trigger": "Triggered immediately on file upload",
+          "purpose": "Performs malware scanning on uploaded files to ensure security."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded journal guidelines in unsupported or highly variable formats requiring manual criteria input fallback",
+        "Partial validation results due to corrupted or unreadable manuscript files",
+        "User uploads malicious or infected files triggering virus scan quarantine and upload rejection",
+        "Network interruptions during large file uploads requiring resumable upload support",
+        "Multiple manuscript versions with conflicting validation states requiring clear version management",
+        "Ethical compliance checks limited to checklist verification without legal or medical advice",
+        "User attempts to access reports or manuscripts without proper authentication or authorization"
+      ],
+      "nonGoals": [
+        "Providing legal, ethical, or medical advice beyond checklist verification",
+        "Replacing full manuscript editing or formatting software",
+        "Automated full parsing and semantic analysis of manuscript content beyond checklist criteria",
+        "Hosting or serving manuscript submission to journals or preprint servers",
+        "Supporting non-academic manuscript types or non-research documents"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses the UI portal.",
+        "On the Home & Upload page, user uploads manuscript files, supplementary files, journal guideline document or URL, ethical approval documents, and data/code links.",
+        "Uploaded files trigger VirusScanJob immediately; if virus scan passes, files metadata and uploads are stored in data-storage.",
+        "Journal guideline upload triggers GuidelineParsingJob to extract structured validation criteria; if parsing fails, fallback to manual input is enabled.",
+        "User submits upload form; API /api/upload accepts multipart form-data with files and metadata JSON, stores data, and returns upload status and manuscript version metadata.",
+        "User triggers validation start via /api/validate/start with manuscriptId and versionNumber; API enqueues ManuscriptValidationJob.",
+        "ManuscriptValidationJob asynchronously performs multi-criteria checks (formatting, ethical compliance, data/code availability, figure quality, reproducibility) using parsed guidelines and uploaded files.",
+        "Validation results are aggregated and stored as ReadinessReport linked to manuscript version in data-storage.",
+        "User accesses /dashboard to view list of manuscripts, versions, validation statuses, and report summaries via API calls.",
+        "User views detailed readiness report on /report/:manuscriptId/:versionNumber page by fetching report from /api/report/:manuscriptId/:versionNumber.",
+        "User can export readiness certificate by calling /api/export/certificate with manuscriptId and versionNumber; API generates certificate and returns URL for download.",
+        "Throughout, UI provides progress and validation feedback, version management, prioritized actionable recommendations, and export options."
+      ],
+      "validationRules": [
+        "User authentication required for all manuscript-related API endpoints and pages.",
+        "Uploaded files must be scanned by VirusScanJob before acceptance; infected files are rejected with clear error messages.",
+        "Manuscript files and supplementary materials must be non-empty and conform to accepted file types (e.g., PDF, DOCX, XLSX, images).",
+        "Journal guideline documents or URLs must be parsable by GuidelineParsingJob; if parsing fails, user must provide manual validation criteria input.",
+        "Manuscript versionNumber must be a positive integer and unique per manuscript per user.",
+        "API /api/upload multipart form-data must include required metadata JSON with userId, manuscript title (optional), targetJournalId (optional).",
+        "Validation start requests must reference existing manuscriptId and versionNumber belonging to authenticated user.",
+        "ReadinessReport fields must be complete and consistent; partial results allowed with warnings if some checks fail or are incomplete.",
+        "Export certificate requests must reference existing readiness reports with completed validation status.",
+        "Input fields on UI pages must be validated for type, required presence, and format before submission."
+      ],
+      "errorHandling": [
+        "On virus scan failure, reject upload with HTTP 400 and message indicating infected file; log incident for audit.",
+        "If guideline parsing fails, respond with HTTP 422 and prompt user for manual criteria input fallback.",
+        "For missing or invalid authentication, respond with HTTP 401 Unauthorized and redirect to login.",
+        "If manuscript or report not found or does not belong to user, respond with HTTP 404 Not Found or 403 Forbidden respectively.",
+        "On validation job failure or partial results, store partial readiness report with warnings; notify user via dashboard UI.",
+        "Handle network interruptions during file upload with resumable upload support and clear UI feedback.",
+        "For malformed API requests, respond with HTTP 400 Bad Request and detailed error messages.",
+        "Log all errors with context for troubleshooting; avoid leaking sensitive data in error responses.",
+        "Gracefully handle concurrency conflicts in manuscript version updates with optimistic locking or version checks.",
+        "Fallback to manual input or retry mechanisms for integration failures (guideline parsing, virus scanning)."
+      ],
+      "securityNotes": [
+        "All manuscript and ethical documents stored encrypted at rest to protect sensitive data.",
+        "User authentication enforced on all manuscript-related pages and APIs; session management with secure cookies or tokens.",
+        "File uploads scanned for malware before storage and processing to prevent platform compromise.",
+        "Access control checks on all data retrieval endpoints to ensure users can only access their own manuscripts and reports.",
+        "Audit logging of file uploads, virus scan results, validation job triggers, and certificate exports for security monitoring.",
+        "Rate limiting and input sanitization on APIs to prevent abuse and injection attacks.",
+        "HTTPS enforced for all client-server communications to protect data in transit.",
+        "Sensitive fields like hashedPassword stored securely with strong hashing algorithms (e.g., bcrypt).",
+        "Exported certificates URLs should be time-limited or access-controlled to prevent unauthorized sharing.",
+        "Regular updates to integration components (guideline parser, virus scan) to address security vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the Home & Upload page with valid manuscript files and journal guideline document",
+          "when": "The user uploads files and submits the upload form",
+          "then": "The files are scanned for viruses, stored securely, and the API responds with upload status and manuscript version metadata"
+        },
+        {
+          "id": "AT-002",
+          "given": "A manuscript version uploaded and stored with associated journal guideline parsed successfully",
+          "when": "The user triggers validation start via API",
+          "then": "The ManuscriptValidationJob runs asynchronously, and readiness report is generated with multi-criteria results"
+        },
+        {
+          "id": "AT-003",
+          "given": "A readiness report exists for a manuscript version",
+          "when": "The user accesses the report detail page",
+          "then": "The detailed readiness report with prioritized corrective actions is displayed accurately"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user attempts to upload a file infected with malware",
+          "when": "The file is scanned during upload",
+          "then": "The upload is rejected with an error message, and the file is quarantined"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user uploads a journal guideline in an unsupported format",
+          "when": "GuidelineParsingJob fails to parse the document",
+          "then": "The user is prompted to input validation criteria manually"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user requests export of readiness certificate for a validated manuscript version",
+          "when": "The export API is called",
+          "then": "A certificate is generated and a secure URL is returned for download"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user attempts to access manuscript upload or report pages",
+          "when": "The user tries to access protected routes or APIs",
+          "then": "The system responds with HTTP 401 Unauthorized and redirects to login"
+        },
+        {
+          "id": "AT-008",
+          "given": "Multiple manuscript versions exist with different validation states",
+          "when": "The user views the dashboard",
+          "then": "All versions are listed with clear validation statuses and version numbers"
+        },
+        {
+          "id": "AT-009",
+          "given": "A network interruption occurs during a large file upload",
+          "when": "The user resumes upload",
+          "then": "The upload continues from the last successful chunk without data loss"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma data models and migrations for User, Manuscript, JournalProfile, ReadinessReport",
+        "Implement user authentication system with secure password hashing and session management",
+        "Develop API routes for /api/upload with multipart form-data handling and virus scan integration",
+        "Implement VirusScanJob triggered on file upload with quarantine and logging",
+        "Develop GuidelineParsingJob and fallback manual input UI for journal guideline processing",
+        "Implement /api/validate/start endpoint and ManuscriptValidationJob with modular validation checks",
+        "Build UI pages: Home & Upload with file upload and validation feedback, Dashboard with manuscript/version list",
+        "Develop /api/report/:manuscriptId/:versionNumber endpoint and Readiness Report Detail page with actionable recommendations",
+        "Implement /api/export/certificate endpoint and export certificate generation logic",
+        "Add User Settings page and profile management APIs",
+        "Add error handling, validation, and security checks across API and UI",
+        "Implement resumable upload support and network interruption handling",
+        "Add audit logging and rate limiting middleware",
+        "Write and run acceptance tests to validate end-to-end functionality"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/dashboard",
+          "/report/[manuscriptId]/[versionNumber]",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload.ts",
+          "/api/validate/start.ts",
+          "/api/report/[manuscriptId]/[versionNumber].ts",
+          "/api/journals.ts",
+          "/api/export/certificate.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { userId String @id @default(uuid()) email String @unique hashedPassword String createdAt DateTime lastLogin DateTime? }",
+          "model Manuscript { manuscriptId String @id @default(uuid()) userId String title String? versionNumber Int uploadDate DateTime filesMetadata Json targetJournalId String? @@index([userId]) @@index([manuscriptId]) }",
+          "model JournalProfile { journalId String @id name String guidelineSource String? validationCriteria Json lastUpdated DateTime @@index([journalId]) }",
+          "model ReadinessReport { reportId String @id @default(uuid()) manuscriptId String generatedAt DateTime formattingSummary Json ethicalComplianceStatus Json dataCodeAvailabilityScore Int figureQualityAudit Json reproducibilityChecklistCoverage Json correctiveActions Json exportedCertificateUrl String? @@index([manuscriptId]) @@index([generatedAt]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, clarify user needs, and refine the tool requirements before design.",
+        "promptTemplate": "Given the current idea spec: {{IDEA_SPEC}}\nAnd blueprint: {{BLUEPRINT}}\nPlease ask the user for any missing constraints, edge cases, or feature clarifications needed to finalize the requirements for the Academic Research Pre-Submission Readiness Validator tool. Use {{USER_INPUT}} if needed."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed page routes, data models, and API structures for the tool based on refined requirements.",
+        "promptTemplate": "Using the refined requirements: {{REFINED_REQUIREMENTS}}\nAnd initial blueprint: {{BLUEPRINT}}\nPlease finalize the pages, data models, and API endpoints needed for the Academic Research Pre-Submission Readiness Validator. Include any adjustments or additions required. Reference {{USER_INPUT}} as needed."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code scaffolds for UI pages and API endpoints to bootstrap development.",
+        "promptTemplate": "Given the finalized architecture: {{ARCHITECTURE}}\nPlease generate stub code files and UI page skeletons for the Academic Research Pre-Submission Readiness Validator. Include placeholders for inputs, outputs, and API calls. Use {{USER_INPUT}} if required."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement connections between UI, backend APIs, and database models for end-to-end functionality.",
+        "promptTemplate": "Given the page stubs and API definitions: {{BUILDER_OUTPUT}}\nAnd data models: {{DATA_MODELS}}\nPlease provide detailed instructions or code to connect the UI pages with backend APIs and database layers to enable manuscript upload, validation triggering, report viewing, and certificate export in the Academic Research Pre-Submission Readiness Validator. Use {{USER_INPUT}} as needed."
+      }
+    ]
+  }
+}

@@ -1,0 +1,692 @@
+{
+  "slug": "research-data-version-control",
+  "title": "Academic Research Data Version Control & Change Log Manager",
+  "description": "Upload and annotate your research datasets to create versioned data entries with detailed change logs. Manage dataset metadata and track provenance for reproducibility. Supports CSV, Excel, and JSON files with secure handling and validation.",
+  "inputLabel": "Upload dataset file (CSV, Excel, JSON) with metadata and change description",
+  "outputLabel": "Version creation confirmation and change log summary",
+  "systemPrompt": "You are a secure, strict assistant helping academic research data managers upload datasets and create new dataset versions with metadata and change logs. Accept only CSV, Excel, or JSON files under size limits. Validate metadata JSON structure and enforce change description length limits. Reject unsupported formats or invalid inputs with clear error messages. Output a brief confirmation of dataset version creation including dataset ID and version number. Do not perform any code version control or analysis. Refuse any requests unrelated to dataset versioning or change logging. Maintain privacy and do not expose sensitive data. Output only plain text unless structured output is requested. If structured output is enabled, respond with JSON containing { datasetId: string, versionNumber: number, message: string }. Always ensure responses are safe and comply with academic data management best practices.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Upload",
+      "prompt": "Upload a dataset file with basic metadata and a short change description for version creation.",
+      "hint": "Provide dataset file, JSON metadata (optional), and a brief description of changes."
+    },
+    {
+      "label": "Detailed Change Log",
+      "prompt": "Upload dataset with detailed change annotations including type of change (addition, modification, deletion) and collaborators.",
+      "hint": "Describe the changes in detail and specify collaborators if applicable."
+    },
+    {
+      "label": "Metadata Update Only",
+      "prompt": "Submit metadata updates for an existing dataset version without uploading a new file.",
+      "hint": "Provide dataset ID and updated metadata JSON."
+    },
+    {
+      "label": "Request Version Info",
+      "prompt": "Request a summary of existing versions and change logs for a specific dataset.",
+      "hint": "Provide dataset ID to retrieve version history."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, respond with JSON: { datasetId: string, versionNumber: number, message: string }",
+  "clarifyPrompt": "Please provide the dataset file, optional metadata in valid JSON format, and a change description. Supported file formats are CSV, Excel, and JSON. Max file size is 50MB. Describe the type of change if possible.",
+  "finalizePrompt": "Confirm dataset upload details and version creation. Provide dataset ID and version number or explain validation errors clearly.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Version Control & Change Log Manager",
+      "niche": {
+        "role": "Academic Research Data Manager or Lab Manager",
+        "scenario": "Managing large and complex datasets with multiple contributors during a research project lifecycle, ensuring data provenance, tracking changes, and coordinating dataset versions for reproducibility."
+      },
+      "problem": "Academic research teams often struggle to manage multiple versions of datasets generated and modified by different collaborators over time. Without a systematic version control system tailored for data (not code), it is difficult to track changes, maintain provenance, ensure reproducibility, and coordinate collaborative data updates, leading to errors, data loss, or inconsistent analysis results.",
+      "inputs": [
+        "Dataset files (e.g., CSV, Excel, JSON, specialized research data formats)",
+        "Metadata describing dataset context and variables",
+        "Change descriptions or annotations from collaborators",
+        "User roles and permissions",
+        "Linkages to analysis scripts or publications (optional)"
+      ],
+      "outputs": [
+        "Structured change logs detailing dataset updates, authorship, and timestamps",
+        "Versioned datasets accessible for download or integration",
+        "Visual timeline of dataset evolution with diffs highlighting changes",
+        "Collaborator activity reports",
+        "Provenance reports supporting reproducibility documentation"
+      ],
+      "whyItWins": [
+        "Fills a critical gap by providing version control focused on research data rather than code",
+        "Enables collaborative teams to coordinate data updates transparently and systematically",
+        "Supports reproducibility and audit requirements increasingly demanded by funders and journals",
+        "Lightweight enough to start with simple dataset uploads and change logging, without heavy DevOps or Git expertise",
+        "Can integrate with existing research workflows, data repositories, and analysis pipelines"
+      ],
+      "upgradePath": {
+        "today": "A web tool for uploading datasets and manually recording dataset version changes with annotated logs and basic user access controls.",
+        "in90Days": "Add visual diff tools to compare dataset versions, user notifications for changes, and exportable provenance reports tailored for publication or funding agency documentation.",
+        "in12Months": "Develop a full multi-user collaborative platform with role-based permissions, integration with data repositories (e.g., OSF, institutional repositories), API support for automated versioning from analysis scripts, and advanced analytics on dataset usage and change impact."
+      },
+      "riskNotes": [
+        "Must ensure secure handling of potentially sensitive or unpublished research data with appropriate access controls.",
+        "Avoid overlap with existing code version control tools by focusing exclusively on data and metadata management.",
+        "Data size and format heterogeneity may require scalable infrastructure and flexible data parsers in future phases.",
+        "User training may be needed since version control concepts are less common for research data than code."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web-based platform tailored for academic research teams to manage, version, and track changes in complex datasets collaboratively, ensuring data provenance, reproducibility, and coordinated updates with annotated change logs and role-based access.",
+      "primaryUser": "Academic Research Data Manager or Lab Manager",
+      "successMetrics": [
+        "Number of datasets uploaded and versioned",
+        "User adoption rate within research teams",
+        "Frequency of collaborative edits and annotations",
+        "Accuracy and completeness of change logs and provenance reports",
+        "User satisfaction regarding ease of use and integration with workflows"
+      ],
+      "components": [
+        {
+          "id": "ui-dataset-management",
+          "name": "Dataset Management UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for dataset upload, version browsing, metadata editing, change annotation, and dataset download.",
+          "dependsOn": [
+            "api-dataset",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports multiple data formats for upload with validation feedback.",
+            "Allows manual entry and editing of metadata and change descriptions.",
+            "Displays dataset version history and visual timeline."
+          ]
+        },
+        {
+          "id": "ui-visual-diffs",
+          "name": "Visual Diff & Timeline UI",
+          "type": "ui",
+          "responsibility": "Render visual comparisons between dataset versions highlighting changes and show timeline of dataset evolution.",
+          "dependsOn": [
+            "api-diff",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports tabular diffs for CSV/Excel and structural diffs for JSON.",
+            "Interactive timeline with filters by collaborator, date, or change type."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Manage user authentication, session handling, and enforce role-based permissions on datasets and actions.",
+          "dependsOn": [
+            "data-users",
+            "data-roles"
+          ],
+          "notes": [
+            "Supports roles like Admin, Contributor, Viewer with granular access controls.",
+            "Ensures secure access to sensitive or unpublished data."
+          ]
+        },
+        {
+          "id": "api-dataset",
+          "name": "Dataset Versioning API",
+          "type": "api",
+          "responsibility": "Handle dataset uploads, version creation, metadata updates, change log recording, and dataset retrieval.",
+          "dependsOn": [
+            "data-datasets",
+            "data-versions",
+            "data-changelogs",
+            "api-auth"
+          ],
+          "notes": [
+            "Validates dataset formats and metadata on upload.",
+            "Stores versioned datasets with references to previous versions.",
+            "Records detailed change logs with authorship and timestamps."
+          ]
+        },
+        {
+          "id": "api-diff",
+          "name": "Dataset Diff API",
+          "type": "api",
+          "responsibility": "Generate and serve visual and structured diffs between dataset versions.",
+          "dependsOn": [
+            "data-datasets",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports multiple data formats with pluggable diff algorithms.",
+            "Handles large datasets efficiently with pagination or sampling."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage & Persistence",
+          "type": "data",
+          "responsibility": "Persist datasets, versions, metadata, change logs, user info, roles, and provenance data securely and reliably.",
+          "dependsOn": [],
+          "notes": [
+            "Stores datasets in scalable blob/object storage with metadata in a relational or document DB.",
+            "Indexes on dataset IDs, version numbers, user IDs, and timestamps for fast retrieval."
+          ]
+        },
+        {
+          "id": "job-provenance-report",
+          "name": "Provenance Report Generation Job",
+          "type": "job",
+          "responsibility": "Periodically or on-demand generate detailed provenance reports summarizing dataset history, changes, authorship, and linked analysis scripts/publications.",
+          "dependsOn": [
+            "data-datasets",
+            "data-changelogs",
+            "data-users"
+          ],
+          "notes": [
+            "Supports export in formats suitable for publication or funding agency documentation.",
+            "Can be triggered manually or scheduled."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user credentials, profile, and role information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "role"
+          ]
+        },
+        {
+          "name": "Dataset",
+          "purpose": "Represent a research dataset with metadata and ownership info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "ownerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "ownerId",
+            "title"
+          ]
+        },
+        {
+          "name": "DatasetVersion",
+          "purpose": "Store individual versions of a dataset with file references and provenance.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "fileLocation",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "changeDescription",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "linkedScripts",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "datasetId",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "ChangeLog",
+          "purpose": "Record detailed changes, annotations, and authorship for dataset versions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "changeType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "datasetVersionId",
+            "authorId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "Role",
+          "purpose": "Define user roles and permissions for access control.",
+          "fields": [
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "permissions",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the platform.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/datasets",
+          "title": "Dataset List & Upload",
+          "purpose": "List user's datasets and provide upload interface for new datasets.",
+          "inputs": [
+            "dataset files",
+            "metadata",
+            "change description"
+          ],
+          "outputs": [
+            "dataset list",
+            "upload confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/datasets/:id",
+          "title": "Dataset Detail & Version History",
+          "purpose": "View dataset metadata, version history, and change logs.",
+          "inputs": [
+            "dataset id"
+          ],
+          "outputs": [
+            "dataset metadata",
+            "version list",
+            "change logs"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/datasets/:id/compare",
+          "title": "Dataset Version Comparison",
+          "purpose": "Visualize differences between two selected dataset versions.",
+          "inputs": [
+            "dataset id",
+            "version A",
+            "version B"
+          ],
+          "outputs": [
+            "visual diffs",
+            "change highlights"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/provenance/:datasetId",
+          "title": "Provenance Report",
+          "purpose": "Generate and display detailed provenance report for a dataset.",
+          "inputs": [
+            "dataset id"
+          ],
+          "outputs": [
+            "provenance report",
+            "export options"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: { id: string, email: string, role: string } }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/datasets",
+          "method": "GET",
+          "purpose": "Retrieve list of datasets accessible to the user.",
+          "requestShape": "none",
+          "responseShape": "[ { id, title, description, ownerId, createdAt } ]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets",
+          "method": "POST",
+          "purpose": "Upload a new dataset or create a new dataset version.",
+          "requestShape": "{ datasetId?: string, file: file, metadata?: json, changeDescription?: string }",
+          "responseShape": "{ datasetId: string, versionNumber: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets/:id/versions",
+          "method": "GET",
+          "purpose": "Get version history and change logs for a dataset.",
+          "requestShape": "none",
+          "responseShape": "[ { versionNumber, uploadedBy, uploadedAt, changeDescription } ]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets/:id/compare",
+          "method": "POST",
+          "purpose": "Generate diff data between two dataset versions.",
+          "requestShape": "{ versionA: number, versionB: number }",
+          "responseShape": "{ diff: json | html }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/provenance/:datasetId",
+          "method": "GET",
+          "purpose": "Retrieve provenance report for a dataset.",
+          "requestShape": "none",
+          "responseShape": "{ report: json | pdf }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ProvenanceReportGenerator",
+          "trigger": "On-demand or scheduled (e.g., nightly)",
+          "purpose": "Generate and update provenance reports for datasets to support reproducibility documentation."
+        }
+      ],
+      "edgeCases": [
+        "Handling very large datasets that exceed upload or processing limits.",
+        "Conflicting simultaneous edits or uploads by multiple collaborators.",
+        "Partial or failed dataset uploads requiring rollback or retry.",
+        "Unsupported or corrupted dataset file formats.",
+        "User permission changes mid-session affecting access to datasets.",
+        "Ensuring data privacy and access control for sensitive or unpublished data.",
+        "Network interruptions during uploads or downloads.",
+        "Version numbering conflicts or gaps due to manual version creation."
+      ],
+      "nonGoals": [
+        "Providing code version control or integration with Git-like systems.",
+        "Performing in-depth data analysis or statistical computations.",
+        "Hosting or managing analysis scripts or publications beyond metadata linking.",
+        "Replacing institutional or public data repositories but rather integrating with them.",
+        "Handling real-time collaborative editing of datasets."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI pages (e.g., /login, /datasets, /datasets/:id) and inputs data or requests information.",
+        "UI components call corresponding API routes with authenticated user context where required.",
+        "API routes validate inputs, enforce authorization via api-auth, and interact with Prisma models to query or mutate data-storage.",
+        "Dataset uploads are stored in blob/object storage; metadata and references saved in relational DB via Prisma.",
+        "Change logs and version info are recorded atomically with dataset versions to maintain provenance.",
+        "Diff API generates structured or visual diffs on demand using stored dataset versions.",
+        "Provenance report job runs on schedule or on-demand, querying datasets, versions, changelogs, and users to generate exportable reports.",
+        "UI components receive API responses and render data, including error or validation feedback.",
+        "User sessions and tokens managed via api-auth to secure all protected endpoints."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "Dataset upload: file must be one of supported formats (CSV, Excel, JSON); file size within limits; metadata JSON schema validated if provided; change description max length enforced.",
+        "Dataset version creation: datasetId must exist and user must have write permission; versionNumber auto-incremented and checked for conflicts.",
+        "ChangeLog entries: changeType must be one of predefined enums (e.g., 'addition', 'modification', 'deletion'); description optional but max length enforced.",
+        "Diff API: versionA and versionB must exist for given dataset and user must have read access.",
+        "Provenance report: datasetId must exist and user must have read access.",
+        "Role and permission checks enforced on all sensitive operations.",
+        "All inputs sanitized to prevent injection attacks."
+      ],
+      "errorHandling": [
+        "API returns standard HTTP status codes: 400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors.",
+        "Validation errors include detailed messages per field for UI display.",
+        "File upload errors (e.g., unsupported format, size limit exceeded) return clear messages.",
+        "Conflicting version creation returns 409 Conflict with instructions to retry.",
+        "Network or storage failures trigger retries where appropriate or return 503 Service Unavailable.",
+        "Authentication failures return 401 with no sensitive info.",
+        "Unhandled exceptions logged server-side with correlation IDs returned to clients.",
+        "UI displays user-friendly error messages and allows retry or navigation."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/login require valid authentication tokens.",
+        "Role-based access control enforced at API layer for dataset read/write/delete operations.",
+        "Sensitive data (e.g., hashedPassword) never exposed in API responses.",
+        "File uploads scanned and validated to prevent malicious content.",
+        "Sessions use secure, HttpOnly cookies or token headers with expiration.",
+        "Data storage access restricted to backend services only.",
+        "Rate limiting and brute force protections on login endpoint.",
+        "Audit logs maintained for critical actions (uploads, edits, permission changes).",
+        "Ensure CORS policies restrict API access to trusted origins."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with Contributor role is logged in",
+          "when": "They upload a valid CSV dataset with metadata and change description",
+          "then": "The dataset is stored, version 1 is created, and the user receives confirmation with datasetId and versionNumber"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user with Viewer role accesses /datasets",
+          "when": "They request the dataset list",
+          "then": "They receive a list of datasets they have read access to without upload options"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user requests to compare two versions of a dataset they own",
+          "when": "They submit version numbers to /api/datasets/:id/compare",
+          "then": "They receive a structured diff highlighting changes between the versions"
+        },
+        {
+          "id": "AT-004",
+          "given": "An unauthenticated user attempts to access /datasets",
+          "when": "They navigate to the page",
+          "then": "They are redirected to /login and cannot access dataset data"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user uploads a dataset with unsupported file format",
+          "when": "They submit the upload form",
+          "then": "They receive a validation error indicating unsupported format and no dataset is created"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user triggers provenance report generation for a dataset",
+          "when": "They access /reports/provenance/:datasetId",
+          "then": "They receive a detailed provenance report with export options"
+        },
+        {
+          "id": "AT-007",
+          "given": "Two users attempt simultaneous uploads creating new versions",
+          "when": "Both submit uploads concurrently",
+          "then": "Version numbering conflicts are detected and one upload is rejected with conflict error"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user session expires mid-operation",
+          "when": "They attempt an API call requiring authentication",
+          "then": "They receive 401 Unauthorized and are prompted to re-login"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database",
+        "Implement api-auth with user login, session management, and role enforcement",
+        "Build dataset upload and versioning API (api-dataset) with file storage integration",
+        "Develop dataset listing and detail APIs with permission checks",
+        "Create change log recording and retrieval mechanisms",
+        "Implement dataset diff API with support for CSV, Excel, JSON",
+        "Build UI pages: /login, /datasets (list & upload), /datasets/:id (detail & history)",
+        "Develop UI for dataset version comparison (/datasets/:id/compare) with visual diff rendering",
+        "Implement provenance report generation job and API endpoint",
+        "Add export functionality for provenance reports",
+        "Integrate validation, error handling, and security measures throughout",
+        "Write acceptance tests and perform end-to-end testing",
+        "Handle edge cases and optimize for large datasets and concurrency"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/datasets",
+          "/datasets/[id]",
+          "/datasets/[id]/compare",
+          "/reports/provenance/[datasetId]"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/datasets/index.ts",
+          "/api/datasets/[id]/versions.ts",
+          "/api/datasets/[id]/compare.ts",
+          "/api/reports/provenance/[datasetId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Role",
+          "Dataset",
+          "DatasetVersion",
+          "ChangeLog"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints, edge cases, or user needs for the data version control tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}} What additional requirements or constraints should we consider? User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define final page routes, UI components, and data models for the platform.",
+        "promptTemplate": "Based on the idea and blueprint: {{IDEA}} {{BLUEPRINT}} Design the final page structure, API routes, and data models. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial UI page stubs and API endpoint skeletons for the platform.",
+        "promptTemplate": "Using the finalized design: {{BLUEPRINT}} {{EXPANDED}} Generate code stubs for UI pages and APIs. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to API endpoints and backend database models ensuring data flow and security.",
+        "promptTemplate": "Given the page stubs and data models: {{EXPANDED}} {{BLUEPRINT}} Integrate front-end, API, and database layers. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

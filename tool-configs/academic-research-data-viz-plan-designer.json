@@ -1,0 +1,685 @@
+{
+  "slug": "academic-research-data-viz-plan-designer",
+  "title": "Academic Research Data Visualization Plan Designer",
+  "description": "A lightweight tool for academic researchers to design tailored data visualization plans by entering dataset metadata, research questions, and audience details. Generates structured visualization recommendations and rationales to guide effective, reproducible academic visualizations.",
+  "inputLabel": "Enter your dataset metadata, research questions, hypotheses, audience description, and optionally upload a preliminary sample data file (CSV or JSON, max 5MB). Please provide JSON formatted metadata for variables, data types, and sample sizes.",
+  "outputLabel": "Generated Visualization Plan with chart type recommendations, rationales linked to research goals and data characteristics, and guidelines for reproducible visualization standards.",
+  "systemPrompt": "You are an expert academic data visualization plan assistant. Given user input describing dataset metadata (variables, data types, sample sizes), research questions, hypotheses, and audience details, generate a structured, advisory visualization plan. The plan must recommend chart types per variable/group, provide rationales linking choices to research questions and data features, and include guidelines for visualization standards focusing on reproducibility and accessibility. Do not perform any data analysis or statistical interpretation. If inputs are incomplete or inconsistent, provide clear advisory warnings and generate best-effort recommendations. Refuse any requests involving raw data analysis or interpretation beyond visualization guidance. Output plain text or JSON if structured-output is enabled. Ensure privacy by not storing or exposing any user data. Always maintain an advisory tone with disclaimers. Validate that uploaded files comply with size and type restrictions. Reject disallowed requests with clear error messages.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Plan",
+      "prompt": "Generate a visualization plan focusing on clear, standard chart recommendations aligned with the provided research questions and dataset metadata. Provide rationales and visualization guidelines.",
+      "hint": "Use for straightforward datasets with clear research questions."
+    },
+    {
+      "label": "Accessibility Focus",
+      "prompt": "Generate a visualization plan emphasizing accessibility guidelines, colorblind-friendly palettes, and clear labeling for academic audiences.",
+      "hint": "Use when audience accessibility is a priority."
+    },
+    {
+      "label": "Exploratory Emphasis",
+      "prompt": "Generate a visualization plan that includes recommendations for exploratory data visualization to aid early hypothesis testing, alongside confirmatory charts.",
+      "hint": "Use for early-stage research with broad questions."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON includes keys: chartRecommendations (array), rationales (array), guidelines (object), mockupAnnotations (optional array).",
+  "clarifyPrompt": "Please provide missing or unclear dataset metadata, research questions, hypotheses, or audience details to improve visualization plan quality.",
+  "finalizePrompt": "Confirm you want to generate the visualization plan based on the provided dataset metadata and research questions. Remember, this tool only offers advisory visualization guidance, not data analysis or interpretation.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Visualization Plan Designer",
+      "niche": {
+        "role": "Academic Researcher",
+        "scenario": "Designing data visualization plans for complex research datasets before analysis and publication"
+      },
+      "problem": "Academic researchers often struggle to plan effective, appropriate visualizations for their complex, multi-dimensional datasets early in their research workflow. This leads to inefficient exploratory analysis, inconsistent visualization standards, and delayed communication of findings to collaborators and reviewers.",
+      "inputs": [
+        "Research dataset metadata descriptions (variables, data types, sample sizes)",
+        "Research questions and hypotheses",
+        "Preliminary data summaries or sample data",
+        "Intended audience descriptions (e.g., academic peers, public, funders)"
+      ],
+      "outputs": [
+        "Structured, tailored data visualization plan outlining recommended chart types per variable/group",
+        "Rationale for each visualization choice linked to research questions and data characteristics",
+        "Guidelines for visualization standards (color, scales, accessibility) for reproducibility",
+        "Annotated sample mockups or templates of suggested visualizations"
+      ],
+      "whyItWins": [
+        "Fills a gap before data analysis by guiding visualization design aligned with research goals and data types",
+        "Reduces time wasted on ineffective charts and ad-hoc visualization attempts",
+        "Supports reproducibility and clarity in academic communication through standardized visualization plans",
+        "Facilitates collaboration by providing a clear visualization blueprint for team members and reviewers",
+        "Lightweight initial input-output flow with clear upgrade path to integrated visualization tools"
+      ],
+      "upgradePath": {
+        "today": "Simple web tool where researchers input dataset descriptions and research questions to get a tailored visualization plan PDF report with chart recommendations and rationales.",
+        "in90Days": "Interactive multi-page app allowing users to upload sample data, customize visualization options, generate editable templates, and export code snippets for reproducible figures.",
+        "in12Months": "Full integrated research data visualization platform with dataset management, automated exploratory visualization generation, collaboration features, version control, and export to multiple publication-ready formats."
+      },
+      "riskNotes": [
+        "Must avoid offering data analysis or interpretation beyond visualization guidance to stay safe from diagnostic or advisory risks.",
+        "Should ensure privacy and data security for uploaded dataset metadata and samples.",
+        "Visualization recommendations should be clearly advisory and not replace expert statistical consultation."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web application enabling academic researchers to design tailored data visualization plans for complex research datasets by inputting dataset metadata, research questions, and audience details, producing structured visualization recommendations with rationales and mockups. The system evolves from a simple plan report generator to an interactive visualization template editor and eventually a full research data visualization platform.",
+      "primaryUser": "Academic Researcher",
+      "successMetrics": [
+        "Number of visualization plans created",
+        "User satisfaction with relevance and clarity of visualization recommendations",
+        "Reduction in time spent planning visualizations reported by users",
+        "Frequency of collaborative sharing of visualization plans",
+        "Adoption rate of exported visualization templates and guidelines"
+      ],
+      "components": [
+        {
+          "id": "ui-input",
+          "name": "Input Data & Research Questions UI",
+          "type": "ui",
+          "responsibility": "Collect dataset metadata, research questions, hypotheses, preliminary summaries, and audience descriptions from users.",
+          "dependsOn": [],
+          "notes": [
+            "Must validate input formats and provide guidance on required metadata fields.",
+            "Support file uploads for preliminary sample data with privacy safeguards."
+          ]
+        },
+        {
+          "id": "ui-plan-viewer",
+          "name": "Visualization Plan Viewer & Editor UI",
+          "type": "ui",
+          "responsibility": "Display generated visualization plans with recommendations, rationales, guidelines, and annotated mockups; allow users to customize and annotate visualization templates in advanced versions.",
+          "dependsOn": [
+            "api-plan-generator",
+            "data-visualization-plans"
+          ],
+          "notes": [
+            "Initial version is read-only PDF report viewer.",
+            "Later versions support interactive editing and template customization."
+          ]
+        },
+        {
+          "id": "api-plan-generator",
+          "name": "Visualization Plan Generation API",
+          "type": "api",
+          "responsibility": "Process inputs to generate structured visualization plans with chart recommendations and rationales aligned to research questions and data characteristics.",
+          "dependsOn": [
+            "data-datasets",
+            "data-visualization-plans"
+          ],
+          "notes": [
+            "Must ensure recommendations are advisory only, with disclaimers.",
+            "Handle incomplete or inconsistent metadata gracefully."
+          ]
+        },
+        {
+          "id": "data-datasets",
+          "name": "Dataset Metadata & Sample Data Store",
+          "type": "data",
+          "responsibility": "Persist user-submitted dataset metadata, preliminary data summaries, and audience descriptions securely with privacy considerations.",
+          "dependsOn": [],
+          "notes": [
+            "Data retention policies must respect user privacy and allow deletion.",
+            "Sensitive data must be encrypted at rest."
+          ]
+        },
+        {
+          "id": "data-visualization-plans",
+          "name": "Visualization Plan Storage",
+          "type": "data",
+          "responsibility": "Store generated visualization plans, including chart recommendations, rationales, guidelines, and mockup annotations for retrieval and editing.",
+          "dependsOn": [
+            "data-datasets"
+          ],
+          "notes": [
+            "Plans linked to datasets and user accounts for collaboration.",
+            "Versioning support anticipated for future upgrades."
+          ]
+        },
+        {
+          "id": "integration-pdf-export",
+          "name": "PDF Report Export Service",
+          "type": "integration",
+          "responsibility": "Generate downloadable PDF reports of visualization plans with structured recommendations and rationales for offline use and sharing.",
+          "dependsOn": [
+            "data-visualization-plans"
+          ],
+          "notes": [
+            "Must produce accessible, publication-quality reports.",
+            "Handle large plans and embedded mockup images efficiently."
+          ]
+        },
+        {
+          "id": "job-plan-generation",
+          "name": "Asynchronous Plan Generation Job",
+          "type": "job",
+          "responsibility": "Process complex inputs asynchronously to generate visualization plans, enabling scalability and responsiveness.",
+          "dependsOn": [
+            "api-plan-generator",
+            "data-visualization-plans"
+          ],
+          "notes": [
+            "Retry and failure handling for plan generation.",
+            "Notify users on completion or errors."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "DatasetMetadata",
+          "purpose": "Store descriptions of research datasets including variables, data types, and sample sizes.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "variables",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "dataTypes",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "sampleSizes",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "audienceDescription",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "ResearchQuestions",
+          "purpose": "Store research questions and hypotheses linked to datasets.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "questions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "hypotheses",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "datasetId"
+          ]
+        },
+        {
+          "name": "VisualizationPlan",
+          "purpose": "Persist generated visualization plans with chart recommendations, rationales, guidelines, and mockup annotations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "chartRecommendations",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "rationales",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "guidelines",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "mockupAnnotations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "datasetId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user account and authentication details.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Home / Dashboard",
+          "purpose": "Landing page showing user datasets and visualization plans, with options to create new plans.",
+          "inputs": [],
+          "outputs": [
+            "List of datasets",
+            "List of visualization plans"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dataset/new",
+          "title": "New Dataset Metadata Input",
+          "purpose": "Form page for users to input dataset metadata, research questions, and audience descriptions.",
+          "inputs": [
+            "Variables and data types",
+            "Sample sizes",
+            "Research questions and hypotheses",
+            "Audience description",
+            "Preliminary sample data upload"
+          ],
+          "outputs": [
+            "Dataset metadata saved confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/plan/view/:planId",
+          "title": "Visualization Plan Viewer",
+          "purpose": "Display generated visualization plan report with recommendations, rationales, and guidelines.",
+          "inputs": [
+            "planId"
+          ],
+          "outputs": [
+            "Visualization plan details",
+            "Download PDF option"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/plan/edit/:planId",
+          "title": "Visualization Plan Editor",
+          "purpose": "Interactive editor for customizing visualization templates and annotations (advanced feature).",
+          "inputs": [
+            "planId"
+          ],
+          "outputs": [
+            "Updated visualization plan"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access their datasets and visualization plans.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token/session"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/register",
+          "title": "User Registration",
+          "purpose": "Allow new users to create accounts.",
+          "inputs": [
+            "Email",
+            "Password",
+            "Confirm Password"
+          ],
+          "outputs": [
+            "Account creation confirmation"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/datasets",
+          "method": "POST",
+          "purpose": "Create new dataset metadata and associated research questions.",
+          "requestShape": "{ variables: json, dataTypes: json, sampleSizes: json, researchQuestions: json, hypotheses?: json, audienceDescription?: string, sampleDataFile?: file }",
+          "responseShape": "{ datasetId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/visualization-plans/generate",
+          "method": "POST",
+          "purpose": "Trigger generation of a visualization plan based on dataset metadata and research questions.",
+          "requestShape": "{ datasetId: string }",
+          "responseShape": "{ jobId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/visualization-plans/:planId",
+          "method": "GET",
+          "purpose": "Retrieve a generated visualization plan by ID.",
+          "requestShape": "{ planId: string }",
+          "responseShape": "{ visualizationPlan: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/visualization-plans/:planId",
+          "method": "POST",
+          "purpose": "Update an existing visualization plan with user customizations.",
+          "requestShape": "{ planId: string, updates: json }",
+          "responseShape": "{ status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export/pdf/:planId",
+          "method": "GET",
+          "purpose": "Export the visualization plan as a downloadable PDF report.",
+          "requestShape": "{ planId: string }",
+          "responseShape": "application/pdf",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and create session/token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/register",
+          "method": "POST",
+          "purpose": "Register a new user account.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ userId: string }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "VisualizationPlanGeneration",
+          "trigger": "API request to /api/visualization-plans/generate",
+          "purpose": "Asynchronously generate visualization plans from dataset metadata and research questions to avoid blocking user requests."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or inconsistent dataset metadata leading to ambiguous visualization recommendations.",
+        "Large or sensitive sample data uploads requiring strict privacy and size limits.",
+        "User attempts to generate plans without sufficient input data.",
+        "Failures or timeouts during asynchronous plan generation jobs.",
+        "Concurrent edits to the same visualization plan causing version conflicts.",
+        "Users misunderstanding advisory nature of recommendations and expecting statistical analysis.",
+        "Exporting very large plans to PDF causing performance or memory issues."
+      ],
+      "nonGoals": [
+        "Performing any statistical data analysis or interpretation beyond visualization guidance.",
+        "Replacing expert consultation on data validity or research methodology.",
+        "Storing or processing full raw research datasets beyond metadata and small sample summaries.",
+        "Providing real-time collaborative editing in initial versions.",
+        "Automated generation of publication-ready figures with embedded data analysis code in early releases."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User registers or logs in via /api/auth/register or /api/auth/login, receiving authentication token/session.",
+        "Authenticated user accesses dashboard (/) displaying their datasets and visualization plans by fetching from /api/datasets and /api/visualization-plans endpoints.",
+        "User navigates to /dataset/new to input dataset metadata, research questions, hypotheses, audience description, and optionally uploads preliminary sample data.",
+        "Form submission triggers POST /api/datasets, which validates and persists DatasetMetadata and ResearchQuestions linked to the user.",
+        "User initiates visualization plan generation by requesting POST /api/visualization-plans/generate with datasetId.",
+        "API enqueues an asynchronous job (VisualizationPlanGeneration) to process dataset metadata and research questions, generating visualization plan recommendations, rationales, guidelines, and mockup annotations.",
+        "Upon job completion, the generated VisualizationPlan is stored linked to the dataset and user.",
+        "User views generated plans on /plan/view/:planId by fetching GET /api/visualization-plans/:planId, displaying a read-only report with option to export PDF via GET /api/export/pdf/:planId.",
+        "In advanced versions, user edits plans on /plan/edit/:planId, submitting updates via POST /api/visualization-plans/:planId to update stored plans with versioning support.",
+        "PDF export service generates accessible, publication-quality reports from stored visualization plans.",
+        "System handles retries and failure notifications for asynchronous job processing, informing users of status changes."
+      ],
+      "validationRules": [
+        "User registration: email must be valid format, password minimum length and complexity, confirm password must match.",
+        "Login: email and password required, validate credentials against stored hashedPassword.",
+        "Dataset metadata input: variables, dataTypes, and sampleSizes must be valid JSON arrays/objects with consistent lengths and types.",
+        "Audience description is optional but if provided, must be a non-empty string.",
+        "Research questions must be a non-empty JSON array; hypotheses optional JSON array if provided.",
+        "Sample data file uploads must be limited in size (e.g., max 5MB), accepted file types restricted (e.g., CSV, JSON), and scanned for malware.",
+        "Visualization plan generation request requires valid datasetId owned by authenticated user.",
+        "Visualization plan retrieval and update require valid planId linked to user's datasets.",
+        "Plan updates must validate structure of updates JSON, ensuring only allowed fields are modified.",
+        "PDF export requires valid planId and user authorization.",
+        "All API inputs must be sanitized to prevent injection attacks.",
+        "Concurrency control: updates to visualization plans must check version to prevent overwrites."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with descriptive messages for validation failures on all API inputs.",
+        "Return 401 Unauthorized when authentication token/session is missing or invalid.",
+        "Return 403 Forbidden when user attempts to access or modify resources they do not own.",
+        "Return 404 Not Found when datasetId or planId does not exist or is not accessible by user.",
+        "Handle incomplete or inconsistent metadata gracefully by returning warnings in generation API and allowing user to correct inputs.",
+        "For asynchronous job failures, log errors, retry up to configurable limit, and notify user with failure status and guidance.",
+        "On file upload errors (size, type, malware), reject upload with clear error messages.",
+        "Handle concurrency conflicts during plan updates by returning 409 Conflict with instructions to reload latest version.",
+        "For PDF export failures due to size or performance, return 503 Service Unavailable with retry suggestion.",
+        "Generic server errors return 500 Internal Server Error with minimal information, logging details internally."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/* require authentication tokens and verify user ownership of resources.",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt) and never logged or exposed.",
+        "Sample data files encrypted at rest and access restricted to owning user.",
+        "Input validation and sanitization to prevent injection (SQL, XSS) attacks.",
+        "Use HTTPS for all client-server communication to protect data in transit.",
+        "Implement rate limiting on authentication and data submission APIs to prevent brute force and abuse.",
+        "Ensure proper CORS policies to restrict API access to authorized frontends.",
+        "Sensitive error details logged internally but not exposed to clients.",
+        "Implement CSRF protection on state-changing API endpoints.",
+        "Regularly audit dependencies and update to patch vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A new user with valid email and password",
+          "when": "They register via /api/auth/register",
+          "then": "They receive a userId and can subsequently log in successfully"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the dashboard",
+          "when": "They view the page",
+          "then": "They see a list of their datasets and visualization plans"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /dataset/new",
+          "when": "They submit valid dataset metadata, research questions, and optional sample data",
+          "then": "The system saves the dataset and questions, returning datasetId and success status"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with a saved dataset",
+          "when": "They request visualization plan generation",
+          "then": "The system enqueues a job and returns jobId with status"
+        },
+        {
+          "id": "AT-005",
+          "given": "A completed visualization plan generation job",
+          "when": "User views /plan/view/:planId",
+          "then": "They see the visualization plan report with recommendations and can download PDF"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user editing a visualization plan",
+          "when": "They submit valid updates",
+          "then": "The system updates the plan and returns success status"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to access another user's dataset or plan",
+          "when": "They request data via API",
+          "then": "The system returns 403 Forbidden"
+        },
+        {
+          "id": "AT-008",
+          "given": "User uploads a sample data file exceeding size limit",
+          "when": "They submit the form",
+          "then": "The system rejects the upload with a clear error message"
+        },
+        {
+          "id": "AT-009",
+          "given": "User submits incomplete or inconsistent dataset metadata",
+          "when": "They request plan generation",
+          "then": "The system returns advisory warnings and generates best-effort recommendations"
+        },
+        {
+          "id": "AT-010",
+          "given": "Concurrent edits to the same visualization plan",
+          "when": "Second user submits update with stale version",
+          "then": "The system returns 409 Conflict with instructions to reload"
+        }
+      ],
+      "buildOrder": [
+        "Implement User model and authentication APIs (/api/auth/register, /api/auth/login) with validation and security.",
+        "Implement DatasetMetadata and ResearchQuestions models and POST /api/datasets API with file upload handling and validation.",
+        "Build dashboard page (/) to list user datasets and visualization plans.",
+        "Implement VisualizationPlan model and GET/POST /api/visualization-plans/:planId APIs for retrieval and updates.",
+        "Develop asynchronous job infrastructure for VisualizationPlanGeneration triggered by POST /api/visualization-plans/generate.",
+        "Create /plan/view/:planId page to display visualization plans and integrate PDF export via GET /api/export/pdf/:planId.",
+        "Implement /plan/edit/:planId page and update API to support plan customization and version control.",
+        "Add error handling, concurrency control, and notification mechanisms for job status.",
+        "Implement security hardening: authentication, authorization, input sanitization, encryption, and rate limiting.",
+        "Conduct acceptance testing and edge case validation, refine based on feedback."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/dataset/new",
+          "/plan/view/[planId]",
+          "/plan/edit/[planId]",
+          "/login",
+          "/register"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/register.ts",
+          "/api/auth/login.ts",
+          "/api/datasets.ts",
+          "/api/visualization-plans/generate.ts",
+          "/api/visualization-plans/[planId].ts",
+          "/api/export/pdf/[planId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "DatasetMetadata",
+          "ResearchQuestions",
+          "VisualizationPlan"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user to clarify missing constraints or details about dataset metadata, research questions, or audience to improve the visualization plan.",
+        "promptTemplate": "The user provided the following initial requirements for the visualization plan design:\n\n{{IDEA_SPEC}}\n\nCurrent blueprint:\n\n{{BLUEPRINT}}\n\nExpanded info:\n\n{{EXPANDED}}\n\nUser input:\n\n{{USER_INPUT}}\n\nPlease ask detailed questions to clarify missing or ambiguous requirements related to dataset variables, data types, sample sizes, research hypotheses, or audience characteristics to ensure the visualization plan is accurate and useful."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Finalize the detailed pages, data models, and API routes needed to implement the visualization plan designer application.",
+        "promptTemplate": "Given the refined idea and blueprint:\n\n{{IDEA_SPEC}}\n\n{{BLUEPRINT}}\n\n{{EXPANDED}}\n\nPlease finalize and list the necessary pages, data models, and API routes with their purposes and key fields to support the academic research data visualization plan designer."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs and UI scaffolds for the key pages of the visualization plan designer app.",
+        "promptTemplate": "Using the finalized blueprint and data models:\n\n{{BLUEPRINT}}\n\n{{EXPANDED}}\n\nGenerate code stubs or detailed descriptions for the main pages: dashboard, dataset metadata input, visualization plan viewer, and optionally editor and authentication pages."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate frontend pages with backend APIs and database models to create a working academic research visualization plan designer.",
+        "promptTemplate": "Using the pages, data models, and API routes defined:\n\n{{BLUEPRINT}}\n\n{{EXPANDED}}\n\nDescribe how to wire frontend page actions to API calls and database operations. Include authentication handling, input validation, error handling, and asynchronous job integration for visualization plan generation."
+      }
+    ]
+  }
+}

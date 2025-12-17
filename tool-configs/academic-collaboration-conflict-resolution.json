@@ -1,0 +1,610 @@
+{
+  "slug": "academic-collaboration-conflict-resolution",
+  "title": "Academic Collaboration Conflict Resolution Facilitator",
+  "description": "A focused tool for academic research team leaders to input conflict descriptions and related documents, producing structured conflict analysis summaries and tailored mediation conversation outlines to aid resolution facilitation.",
+  "inputLabel": "Conflict Description and Related Documents",
+  "outputLabel": "Structured Conflict Analysis and Mediation Framework",
+  "systemPrompt": "You are an expert assistant specialized in academic collaboration conflict resolution. Your task is to analyze provided conflict descriptions, associated project documents, email or meeting excerpts, and team member roles to produce a concise, structured conflict analysis report. This report should highlight key issues, involved stakeholders, and underlying causes without providing legal advice or automated judgment. Additionally, generate a mediation conversation framework tailored to the conflict type (e.g., authorship dispute, resource allocation). Refuse any requests that seek legal advice, enforcement, or violate confidentiality. Enforce input validation rules: conflict description must be between 50 and 5000 characters and avoid disallowed sensitive keywords. For file uploads, only accept PDF, TXT, and DOCX formats under 10MB each. Ensure output is safe, respectful, and encourages transparent, equitable resolution. Output must be plain text summary or valid JSON if structured-output is enabled.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Conflict Summary Lens",
+      "prompt": "Summarize the key conflict issues, stakeholders involved, and underlying causes based on the provided input."
+    },
+    {
+      "label": "Mediation Framework Lens",
+      "prompt": "Generate a mediation conversation framework tailored to the conflict type described."
+    },
+    {
+      "label": "Resolution Proposal Draft Lens",
+      "prompt": "Draft a clear resolution proposal document including next steps and responsibilities."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with fields: { \"analysisReport\": { \"keyIssues\": string[], \"stakeholders\": string[], \"causes\": string[] }, \"mediationFramework\": { \"conversationPoints\": string[], \"suggestedApproach\": string } }",
+  "clarifyPrompt": "Please provide a detailed conflict description between 50 and 5000 characters. Optionally, upload related project documents and specify team member roles and contributions. Confirm no sensitive legal questions or confidential data are included.",
+  "finalizePrompt": "Review the generated conflict analysis and mediation framework. Confirm if you want to save this summary or generate a resolution proposal draft next.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Collaboration Conflict Resolution Facilitator",
+      "niche": {
+        "role": "Academic research team leaders and project managers",
+        "scenario": "During multi-institutional or interdisciplinary academic research projects, conflicts arise related to authorship order, data ownership, resource allocation, or differing research priorities."
+      },
+      "problem": "Academic research teams often experience interpersonal and procedural conflicts that delay project progress and reduce collaboration effectiveness. Existing tools do not specifically support structured conflict identification, mediation preparation, and resolution documentation tailored for academic research collaborations.",
+      "inputs": [
+        "Written conflict descriptions or dispute reports from team members",
+        "Project documents such as authorship agreements, resource allocation plans, data sharing policies",
+        "Email or meeting transcript excerpts related to conflict issues",
+        "Team member roles and contribution summaries"
+      ],
+      "outputs": [
+        "Structured conflict analysis reports highlighting key issues, stakeholders involved, and underlying causes",
+        "Suggested mediation conversation frameworks tailored to each conflict type (e.g., authorship dispute vs resource allocation)",
+        "Drafted resolution proposal documents with clear next steps and responsibilities",
+        "Conflict resolution tracking dashboards summarizing status, deadlines, and follow-up actions"
+      ],
+      "whyItWins": [
+        "Fills a unique gap by focusing on conflict resolution facilitation specifically for academic research teams, a niche overlooked by existing academic workflow tools",
+        "Transforms unstructured conflict data into actionable mediation aids, reducing time and emotional toll on team leaders",
+        "Supports repeated use during long-term projects with evolving conflict dynamics",
+        "Encourages transparent, documented, and equitable resolution processes improving team cohesion and funding agency confidence"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web tool that ingests written conflict descriptions and project docs to generate structured conflict summaries and mediation conversation outlines.",
+        "in90Days": "Add interactive conflict resolution workflow pages with user roles, messaging templates, meeting agenda generators, and resolution tracking features integrated with calendar reminders.",
+        "in12Months": "Develop a full multi-page academic collaboration management system integrating conflict resolution with project task management, resource tracking, authorship negotiation modules, and reporting dashboards for institutional oversight."
+      },
+      "riskNotes": [
+        "Must avoid providing legal advice; focus on mediation facilitation and documentation support only.",
+        "Ensure confidentiality and data privacy of sensitive team communications.",
+        "Avoid automated judgment or enforcement; tool supports facilitation only, leaving final decisions to human users."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized web application facilitating structured conflict resolution for academic research teams by transforming unstructured conflict inputs into actionable mediation frameworks, tracking resolution progress, and supporting transparent documentation tailored to academic collaboration contexts.",
+      "primaryUser": "Academic research team leaders and project managers",
+      "successMetrics": [
+        "Reduction in average time to resolve conflicts within academic projects",
+        "User engagement frequency with conflict resolution workflows",
+        "Number of documented resolution proposals generated and accepted",
+        "Positive user feedback on mediation facilitation effectiveness",
+        "Increased transparency and traceability of conflict resolution processes"
+      ],
+      "components": [
+        {
+          "id": "ui-conflictInput",
+          "name": "Conflict Input & Submission UI",
+          "type": "ui",
+          "responsibility": "Collect written conflict descriptions, project documents, email/meeting excerpts, and team member roles/contributions from users.",
+          "dependsOn": [],
+          "notes": [
+            "Supports file uploads and text inputs.",
+            "Includes validation for sensitive data warnings.",
+            "Handles multi-format inputs (text, PDFs, transcripts)."
+          ]
+        },
+        {
+          "id": "api-conflictAnalysis",
+          "name": "Conflict Analysis API",
+          "type": "api",
+          "responsibility": "Process submitted conflict data to generate structured conflict analysis reports and mediation conversation frameworks.",
+          "dependsOn": [
+            "data-conflictRecords"
+          ],
+          "notes": [
+            "Uses NLP or rule-based parsing to extract key issues and stakeholders.",
+            "Does not provide legal judgments or enforce decisions.",
+            "Returns structured JSON summaries for UI consumption."
+          ]
+        },
+        {
+          "id": "data-conflictRecords",
+          "name": "Conflict Records Data Store",
+          "type": "data",
+          "responsibility": "Persist conflict inputs, analysis results, mediation frameworks, resolution proposals, and tracking metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage to ensure confidentiality.",
+            "Versioning to track evolving conflict states.",
+            "Indexes on project ID, conflict status, involved members."
+          ]
+        },
+        {
+          "id": "ui-resolutionTracking",
+          "name": "Resolution Tracking & Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display conflict status, deadlines, follow-up actions, and history in dashboards for team leaders and members.",
+          "dependsOn": [
+            "data-conflictRecords",
+            "api-conflictAnalysis"
+          ],
+          "notes": [
+            "Interactive views for filtering by project, conflict type, or status.",
+            "Supports calendar integration for reminders.",
+            "Visual indicators for overdue or pending actions."
+          ]
+        },
+        {
+          "id": "api-userManagement",
+          "name": "User Authentication & Role Management API",
+          "type": "api",
+          "responsibility": "Manage user accounts, roles (e.g., team leader, member), and access control for conflict data and workflows.",
+          "dependsOn": [
+            "data-userAccounts"
+          ],
+          "notes": [
+            "Supports secure login and session management.",
+            "Role-based authorization to restrict sensitive data access.",
+            "Audit logging for data access and changes."
+          ]
+        },
+        {
+          "id": "data-userAccounts",
+          "name": "User Accounts Data Store",
+          "type": "data",
+          "responsibility": "Persist user credentials, roles, preferences, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted password storage.",
+            "Compliance with data privacy regulations.",
+            "Stores user notification preferences."
+          ]
+        },
+        {
+          "id": "job-reminderNotifications",
+          "name": "Reminder Notification Background Job",
+          "type": "job",
+          "responsibility": "Send calendar reminders and follow-up notifications for pending conflict resolution actions and deadlines.",
+          "dependsOn": [
+            "data-conflictRecords",
+            "data-userAccounts"
+          ],
+          "notes": [
+            "Runs periodically (e.g., daily).",
+            "Handles failure retries and logs notification delivery status.",
+            "Supports multiple notification channels (email, in-app)."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "ConflictRecord",
+          "purpose": "Stores detailed information about each conflict, including inputs, analysis, mediation frameworks, and resolution tracking.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "submittedByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "conflictDescription",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedDocuments",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "emailMeetingExcerpts",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "teamMemberRoles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "analysisReport",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "mediationFramework",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "resolutionProposal",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "deadline",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "followUpActions",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "status",
+            "deadline"
+          ]
+        },
+        {
+          "name": "UserAccount",
+          "purpose": "Stores user authentication, roles, and preferences.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLoginAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/submit-conflict",
+          "title": "Submit Conflict Report",
+          "purpose": "Allow users to input conflict descriptions, upload related documents, and provide context for analysis.",
+          "inputs": [
+            "Conflict description text",
+            "File uploads (project docs, transcripts)",
+            "Team member roles and contributions"
+          ],
+          "outputs": [
+            "Submission confirmation",
+            "Preliminary conflict summary preview"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/conflicts/:id/analysis",
+          "title": "Conflict Analysis Report",
+          "purpose": "Display structured analysis of a specific conflict including key issues, stakeholders, and mediation frameworks.",
+          "inputs": [
+            "ConflictRecord ID"
+          ],
+          "outputs": [
+            "Conflict analysis report",
+            "Suggested mediation conversation frameworks"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/conflicts/:id/resolution",
+          "title": "Resolution Proposal & Tracking",
+          "purpose": "View and edit drafted resolution proposals, track status, deadlines, and follow-up actions.",
+          "inputs": [
+            "ConflictRecord ID"
+          ],
+          "outputs": [
+            "Resolution proposal document",
+            "Status and deadline dashboard",
+            "Action item lists"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Conflict Resolution Dashboard",
+          "purpose": "Overview page summarizing all conflicts, statuses, deadlines, and upcoming actions across projects.",
+          "inputs": [
+            "User ID",
+            "Filter parameters"
+          ],
+          "outputs": [
+            "Filtered conflict lists",
+            "Status indicators",
+            "Calendar reminders"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the application securely.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token or session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/conflicts",
+          "method": "POST",
+          "purpose": "Submit new conflict data for analysis and storage.",
+          "requestShape": "JSON with conflict description, documents metadata, excerpts, team roles",
+          "responseShape": "JSON with conflict record ID and preliminary analysis summary",
+          "auth": "user"
+        },
+        {
+          "route": "/api/conflicts/:id/analysis",
+          "method": "GET",
+          "purpose": "Retrieve structured conflict analysis and mediation frameworks.",
+          "requestShape": "Conflict record ID in URL",
+          "responseShape": "JSON with analysis report and mediation conversation templates",
+          "auth": "user"
+        },
+        {
+          "route": "/api/conflicts/:id/resolution",
+          "method": "POST",
+          "purpose": "Submit or update resolution proposals and tracking info.",
+          "requestShape": "JSON with resolution proposal details, status updates, deadlines",
+          "responseShape": "Confirmation of update",
+          "auth": "user"
+        },
+        {
+          "route": "/api/conflicts",
+          "method": "GET",
+          "purpose": "List conflicts filtered by project, status, or user involvement.",
+          "requestShape": "Query parameters for filtering",
+          "responseShape": "Array of conflict summaries",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and provide access token/session.",
+          "requestShape": "JSON with email and password",
+          "responseShape": "Authentication token or error message",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Reminder Notification Job",
+          "trigger": "Scheduled daily",
+          "purpose": "Send reminders for upcoming deadlines and pending follow-up actions to users."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or ambiguous conflict descriptions that limit analysis accuracy.",
+        "Conflicts involving sensitive or legally protected information requiring strict confidentiality.",
+        "Users submitting conflicting or contradictory inputs about the same conflict.",
+        "Multiple simultaneous conflicts within the same project requiring separate tracking.",
+        "Users losing access or leaving the project mid-resolution process.",
+        "Failure of background notification delivery due to email server issues or user opt-outs.",
+        "Data corruption or version conflicts when multiple users edit resolution proposals concurrently."
+      ],
+      "nonGoals": [
+        "Providing legal advice or enforcing conflict resolutions.",
+        "Automated decision-making or arbitration on conflict outcomes.",
+        "Replacing human mediation or interpersonal communication.",
+        "Managing full project task workflows beyond conflict resolution scope (initially).",
+        "Integrating with external institutional systems beyond calendar reminders (initially)."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User logs in via /login page, sending email and password to /api/auth/login; receives auth token/session.",
+        "Authenticated user accesses /submit-conflict page to input conflict description, upload files, and provide team roles.",
+        "On submission, client POSTs JSON payload with conflict data to /api/conflicts; server validates, stores in ConflictRecord, triggers conflict analysis.",
+        "Conflict Analysis API processes stored conflict data, generates structured analysis report and mediation frameworks, updates ConflictRecord.",
+        "User views conflict analysis on /conflicts/:id/analysis page; client fetches analysis data from /api/conflicts/:id/analysis.",
+        "User accesses /conflicts/:id/resolution to view/edit resolution proposals; client GETs current data and POSTs updates to /api/conflicts/:id/resolution.",
+        "Dashboard page (/dashboard) fetches filtered conflict summaries via GET /api/conflicts with query params for user/project/status filters.",
+        "Background job runs daily to query ConflictRecords with upcoming deadlines or pending actions, fetches user contact info, sends notifications via email and in-app channels.",
+        "UserAccount data used for authentication, role-based authorization, and preferences during all interactions.",
+        "Audit logs recorded on user actions and data changes for compliance and traceability."
+      ],
+      "validationRules": [
+        "Conflict description: required, min length 50 characters, max length 5000 characters, no prohibited sensitive keywords.",
+        "File uploads: allowed types PDF, TXT, DOCX; max size 10MB per file; virus scan before storage.",
+        "Team member roles: JSON array with userId and role string; userIds must exist in UserAccount store.",
+        "ConflictRecord status: must be one of ['Submitted', 'Under Analysis', 'Proposed', 'Resolved', 'Closed'].",
+        "Resolution proposal: JSON object with required fields 'proposalText' (string, min 20 chars), 'proposedByUserId' (string, must match authenticated user).",
+        "Deadline dates: must be valid ISO date strings, not in the past at time of submission.",
+        "User login: email must be valid format, password min 8 chars, hashed on server.",
+        "API requests requiring auth must include valid token/session; reject unauthorized requests with 401.",
+        "Query parameters for filtering conflicts must be sanitized and validated against allowed fields and values."
+      ],
+      "errorHandling": [
+        "All API routes return standardized JSON error responses with 'errorCode', 'message', and optionally 'details'.",
+        "Validation errors return 400 Bad Request with field-specific messages.",
+        "Authentication failures return 401 Unauthorized with generic message to avoid info leakage.",
+        "Authorization failures return 403 Forbidden when user lacks permission for requested resource.",
+        "File upload errors return 415 Unsupported Media Type or 413 Payload Too Large as appropriate.",
+        "Conflict not found returns 404 Not Found with clear message.",
+        "Background job failures log errors with timestamps and retry counts; do not block job scheduling.",
+        "Concurrent update conflicts on resolution proposals return 409 Conflict with instructions to reload latest data.",
+        "Sensitive data warnings surfaced to user on input with explicit confirmation required before submission."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all client-server communications.",
+        "Store passwords hashed with strong algorithm (e.g., bcrypt) and salted.",
+        "Encrypt sensitive fields in ConflictRecord and UserAccount at rest.",
+        "Implement role-based access control on all API endpoints to restrict data access.",
+        "Sanitize all user inputs to prevent injection attacks.",
+        "Limit file upload types and sizes; scan files for malware.",
+        "Use secure, HttpOnly, SameSite cookies or JWT with short expiry for session management.",
+        "Audit all data access and modifications with userId and timestamps.",
+        "Implement rate limiting on login and API endpoints to prevent brute force and abuse.",
+        "Ensure background job notifications respect user opt-out preferences and privacy settings."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on /submit-conflict page with valid conflict description, files, and team roles",
+          "when": "User submits the conflict report",
+          "then": "The system stores the conflict record, triggers analysis, and returns a confirmation with preliminary summary"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user requests /conflicts/:id/analysis for an existing conflict",
+          "when": "User accesses the analysis page",
+          "then": "The system returns structured analysis report and mediation frameworks matching the conflict ID"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user views /conflicts/:id/resolution and submits updated resolution proposal with valid data",
+          "when": "User saves the resolution proposal",
+          "then": "The system updates the ConflictRecord and confirms the update without data loss or conflicts"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user accesses /dashboard with filters applied",
+          "when": "User views the dashboard",
+          "then": "The system displays filtered conflict lists with accurate status indicators and calendar reminders"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user attempts to login with invalid credentials",
+          "when": "User submits login form",
+          "then": "The system rejects login with 401 Unauthorized and does not disclose which field was incorrect"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user uploads a file exceeding size limit or unsupported format",
+          "when": "User submits the conflict form",
+          "then": "The system rejects submission with appropriate error message and prevents storage"
+        },
+        {
+          "id": "AT-007",
+          "given": "Multiple users attempt to update the same resolution proposal concurrently",
+          "when": "Second user submits outdated data",
+          "then": "The system returns 409 Conflict and prompts user to reload latest data"
+        },
+        {
+          "id": "AT-008",
+          "given": "Background job runs daily",
+          "when": "There are conflicts with upcoming deadlines and pending actions",
+          "then": "The system sends notifications via email and in-app channels respecting user preferences and logs delivery status"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for UserAccount and ConflictRecord with encryption and indexes",
+        "Implement User Authentication & Role Management API with secure login and session handling",
+        "Develop /login page with form and client-side validation",
+        "Build Conflict Input & Submission UI (/submit-conflict) with file upload and validation",
+        "Create POST /api/conflicts route to accept conflict submissions, validate, store, and trigger analysis",
+        "Implement Conflict Analysis API to process conflict data and update ConflictRecord",
+        "Develop Conflict Analysis Report page (/conflicts/:id/analysis) fetching data from API",
+        "Build Resolution Proposal & Tracking UI (/conflicts/:id/resolution) with editing capabilities",
+        "Create POST /api/conflicts/:id/resolution route for updating proposals with concurrency control",
+        "Develop Conflict Resolution Dashboard (/dashboard) with filtering and calendar integration",
+        "Create GET /api/conflicts route supporting filters for dashboard data",
+        "Implement Reminder Notification Background Job with retry and logging",
+        "Add audit logging across APIs and data changes",
+        "Implement comprehensive error handling and security hardening",
+        "Write and run acceptance tests for all critical flows"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/submit-conflict",
+          "/conflicts/[id]/analysis",
+          "/conflicts/[id]/resolution",
+          "/dashboard"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/conflicts/index.ts",
+          "api/conflicts/[id]/analysis.ts",
+          "api/conflicts/[id]/resolution.ts"
+        ],
+        "prismaModelsToAdd": [
+          "UserAccount model with fields: userId (PK), email (unique), hashedPassword, roles, preferences, createdAt, lastLoginAt",
+          "ConflictRecord model with fields: id (PK), projectId, submittedByUserId, conflictDescription, relatedDocuments, emailMeetingExcerpts, teamMemberRoles, analysisReport, mediationFramework, resolutionProposal, status, createdAt, updatedAt, deadline, followUpActions; indexes on projectId, status, deadline"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Gather missing constraints, clarify ambiguous requirements, and finalize user needs for the conflict resolution facilitator.",
+        "promptTemplate": "Given the current idea and blueprint: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease identify missing constraints, user needs, or scenarios that should be addressed to improve the design."
+      },
+      {
+        "id": "architect-finalize-models-pages",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the exact pages, API routes, and data models needed to implement the conflict resolution system.",
+        "promptTemplate": "Based on the idea and expanded specs: {{EXPANDED}}\nAnd blueprint: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease specify detailed page definitions, data model schemas, and API endpoints required."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create scaffolded page implementations and basic UI components for pages in the conflict resolution tool.",
+        "promptTemplate": "Using the finalized pages and models: {{BLUEPRINT.pages}}\nUser input: {{USER_INPUT}}\nGenerate code-level page stubs and UI skeletons suitable for rapid development."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages with backend API routes and database models, ensuring data flow and security are correctly implemented.",
+        "promptTemplate": "Given the pages, API routes, and data models: {{BLUEPRINT.pages}}, {{BLUEPRINT.apiRoutes}}, {{BLUEPRINT.dataModels}}\nUser input: {{USER_INPUT}}\nProvide detailed integration steps and code snippets to wire frontend, backend, and DB layers."
+      }
+    ]
+  }
+}

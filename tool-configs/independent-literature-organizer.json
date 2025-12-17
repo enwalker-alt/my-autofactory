@@ -1,0 +1,752 @@
+{
+  "slug": "independent-literature-organizer",
+  "title": "Independent Researcher Literature Source Organizer",
+  "description": "A lightweight web app for independent academic researchers and graduate students to upload, organize, tag, and annotate literature sources with metadata and notes, supporting structured search and exportable bibliographies.",
+  "inputLabel": "Enter bibliographic metadata, notes, or upload literature files",
+  "outputLabel": "Organized literature entry summary or exportable bibliography",
+  "systemPrompt": "You are a safe and privacy-conscious assistant helping independent researchers organize their literature sources and notes. Accept user input as bibliographic metadata (author, title, publication, year), freeform notes linked to sources, user-defined tags, brief summaries, or uploaded literature files (PDF, DOCX). Validate inputs strictly: reject uploads exceeding size limits or unsupported formats, enforce non-empty titles, and sanitize all text inputs to prevent injection attacks. Do NOT provide academic advice, peer review, or interpret content beyond organizing and formatting. Output a structured summary of the literature source, notes, tags, and metadata, or generate exportable bibliographies in plain text or JSON if requested. If input is disallowed or unsafe, respond with a clear refusal message. Enforce user data privacy and avoid storing or sharing any content beyond this session. Use a professional, concise tone. Only support features: text-input, file-upload, presets, structured-output, clarify-first, saved-history.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Add Literature Source",
+      "prompt": "Please provide the bibliographic metadata for the literature source you want to add. Include title (required), authors, publication, year, optional summary, and upload the file if available. You may also add tags and notes linked to this source.",
+      "hint": "E.g., Title: \"Deep Learning\", Authors: \"Ian Goodfellow, Yoshua Bengio, Aaron Courville\", Year: 2016"
+    },
+    {
+      "label": "Add Note to Source",
+      "prompt": "Provide the note content you want to link to a specific literature source. Specify the source title or ID, add tags if desired, and include any relevant annotations or key points.",
+      "hint": "E.g., Source: \"Deep Learning\", Note: \"Key concept: convolutional neural networks are effective for image processing.\""
+    },
+    {
+      "label": "Search Literature Sources",
+      "prompt": "Enter a search query or filters such as tags, authors, year range to find literature sources in your collection.",
+      "hint": "E.g., Search for author \"Goodfellow\" or tag \"neural networks\""
+    },
+    {
+      "label": "Export Bibliography",
+      "prompt": "Select literature sources to export and specify citation style (e.g., APA, BibTeX, RIS) and output format (plain text or JSON).",
+      "hint": "E.g., Export all tagged \"machine learning\" sources in APA style."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Outputs structured JSON with fields: source {title, authors, publication, year, summary, tags}, notes [{content, tags}], and export {citationStyle, formattedEntries}.",
+  "clarifyPrompt": "Please clarify your input or specify missing required fields such as title or source identification.",
+  "finalizePrompt": "Confirm that all bibliographic metadata, notes, tags, and files are correct before saving or exporting.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Independent Researcher Literature Source Organizer",
+      "niche": {
+        "role": "Independent academic researchers or graduate students",
+        "scenario": "Managing and organizing diverse literature sources and notes during long-term, multi-topic research projects without institutional library systems"
+      },
+      "problem": "Independent researchers often struggle to systematically organize, tag, and cross-reference literature sources, notes, and annotations collected from various open-access platforms, PDFs, and web pages. Without dedicated institutional tools, the scattered materials lead to inefficient literature reviews, missed connections between concepts, and difficulty preparing structured bibliographies and literature maps.",
+      "inputs": [
+        "Uploaded PDFs or document files of research articles",
+        "Copy-pasted or uploaded bibliographic metadata (author, title, publication, year)",
+        "Freeform notes and annotations linked to specific sources",
+        "User-defined tags or keywords",
+        "Brief summaries or key points per source"
+      ],
+      "outputs": [
+        "Structured, searchable and filterable database of literature sources with metadata",
+        "Cross-referenced notes linked to specific sources and tags",
+        "Automatically generated thematic literature maps showing conceptual connections",
+        "Exportable, formatted bibliographies and citation lists",
+        "Progress tracking dashboard summarizing reading and note-taking status"
+      ],
+      "whyItWins": [
+        "Fills a gap for independent researchers who lack access to institutional literature management tools like EndNote or Zotero with full features",
+        "Tailored to workflows involving diverse open-access materials and manual note-taking rather than just citation management",
+        "Supports active knowledge synthesis via thematic maps, not just passive storage",
+        "Lightweight initial tool that can scale into a comprehensive research management system",
+        "Improves research efficiency and organization, reducing duplicated effort and enhancing insight discovery"
+      ],
+      "upgradePath": {
+        "today": "A simple web app that allows uploading literature files and notes, tagging, and basic search with exportable bibliographies",
+        "in90Days": "Add thematic literature mapping visualization, advanced filtering, and user collaboration/sharing features",
+        "in12Months": "Develop into a full research project management platform with integration to citation databases, DOI fetching, annotation collaboration, task tracking, and AI-assisted concept extraction"
+      },
+      "riskNotes": [
+        "Must ensure user data privacy and secure storage of uploaded documents",
+        "Avoid infringing on copyright by only supporting user-uploaded or open-access content",
+        "Must not provide automated academic advice or peer review to stay within safe guidance",
+        "User interface complexity must be managed to not overwhelm less tech-savvy independent researchers"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web application tailored for independent researchers and graduate students to upload, organize, tag, and cross-reference diverse literature sources and notes, enabling structured search, thematic literature mapping, and exportable bibliographies to enhance research efficiency and insight discovery.",
+      "primaryUser": "Independent academic researchers or graduate students managing multi-topic research projects without institutional library systems.",
+      "successMetrics": [
+        "Number of literature sources uploaded and organized per user",
+        "Frequency of note-taking and tagging activity",
+        "User engagement with literature maps and export features",
+        "User retention and growth over time",
+        "Positive user feedback on improved research organization and efficiency"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend UI",
+          "type": "ui",
+          "responsibility": "Provide user interfaces for uploading sources, managing notes, tagging, searching, viewing literature maps, exporting bibliographies, and tracking progress.",
+          "dependsOn": [
+            "api-backend"
+          ],
+          "notes": [
+            "Should balance feature richness with simplicity to avoid overwhelming users.",
+            "Progress dashboard helps users monitor reading and note-taking status.",
+            "Supports file upload, metadata input, note-taking, tagging, and export workflows."
+          ]
+        },
+        {
+          "id": "api-backend",
+          "name": "Backend API",
+          "type": "api",
+          "responsibility": "Handle authentication, data validation, storage operations, search queries, bibliography generation, and literature map data preparation.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Exposes RESTful endpoints for frontend consumption.",
+            "Implements user authentication and authorization.",
+            "Enforces data privacy and secure handling of uploaded files.",
+            "Supports pagination and filtering for scalable search."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage Layer",
+          "type": "data",
+          "responsibility": "Persist literature sources, bibliographic metadata, user notes, tags, user profiles, and export logs securely.",
+          "dependsOn": [],
+          "notes": [
+            "Stores uploaded document files securely with access control.",
+            "Indexes metadata and tags for efficient search and filtering.",
+            "Tracks user progress data for dashboard summaries."
+          ]
+        },
+        {
+          "id": "literature-mapping-engine",
+          "name": "Literature Mapping Engine",
+          "type": "job",
+          "responsibility": "Generate thematic literature maps by analyzing tags, notes, and metadata to identify conceptual connections between sources.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Runs periodically or on-demand to update maps.",
+            "Supports visualization data preparation for frontend consumption.",
+            "Handles edge cases such as sparse tagging or disconnected clusters."
+          ]
+        },
+        {
+          "id": "export-service",
+          "name": "Export Service",
+          "type": "api",
+          "responsibility": "Generate formatted bibliographies and citation lists in common formats (e.g., BibTeX, RIS, plain text) based on user-selected sources and filters.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Supports export customization (citation styles, fields included).",
+            "Ensures exports respect user privacy and data ownership."
+          ]
+        },
+        {
+          "id": "auth-service",
+          "name": "Authentication Service",
+          "type": "api",
+          "responsibility": "Manage user registration, login, session management, and secure authentication tokens.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Supports password reset and secure credential storage.",
+            "Prepares for future collaboration and sharing features."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents an application user with authentication credentials and preferences.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "LiteratureSource",
+          "purpose": "Stores metadata and file references for uploaded literature sources.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authors",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "publication",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "year",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "fileUrl",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "summary",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "title",
+            "authors",
+            "year"
+          ]
+        },
+        {
+          "name": "Note",
+          "purpose": "Represents user-created notes or annotations linked to specific literature sources.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sourceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "tags",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "sourceId",
+            "userId",
+            "tags"
+          ]
+        },
+        {
+          "name": "Tag",
+          "purpose": "Stores user-defined tags or keywords for categorizing sources and notes.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "name"
+          ]
+        },
+        {
+          "name": "ExportLog",
+          "purpose": "Tracks user export actions for bibliographies and citation lists.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "exportType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parameters",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "exportType"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Allow users to authenticate and access their literature organizer account.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/register",
+          "title": "Register",
+          "purpose": "Allow new users to create an account.",
+          "inputs": [
+            "email",
+            "password",
+            "password confirmation"
+          ],
+          "outputs": [
+            "success confirmation",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Progress Dashboard",
+          "purpose": "Summarize user reading and note-taking progress with visual indicators.",
+          "inputs": [],
+          "outputs": [
+            "reading status",
+            "note counts",
+            "recent activity"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/sources",
+          "title": "Literature Sources",
+          "purpose": "View, search, filter, and manage uploaded literature sources and metadata.",
+          "inputs": [
+            "search query",
+            "filters",
+            "pagination"
+          ],
+          "outputs": [
+            "list of sources",
+            "metadata details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/sources/upload",
+          "title": "Upload Literature Source",
+          "purpose": "Upload new literature files and enter bibliographic metadata.",
+          "inputs": [
+            "file upload",
+            "metadata fields"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/notes",
+          "title": "Notes and Annotations",
+          "purpose": "Create, edit, and link notes to specific literature sources with tagging.",
+          "inputs": [
+            "note content",
+            "source selection",
+            "tags"
+          ],
+          "outputs": [
+            "saved notes",
+            "error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/literature-map",
+          "title": "Thematic Literature Map",
+          "purpose": "Visualize conceptual connections between literature sources based on tags and notes.",
+          "inputs": [
+            "filter parameters",
+            "tag selection"
+          ],
+          "outputs": [
+            "interactive literature map visualization"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/export",
+          "title": "Export Bibliographies",
+          "purpose": "Generate and download formatted bibliographies and citation lists.",
+          "inputs": [
+            "source selection",
+            "citation style",
+            "export format"
+          ],
+          "outputs": [
+            "export file",
+            "export status"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/register",
+          "method": "POST",
+          "purpose": "Register new user account.",
+          "requestShape": "{ email: string, password: string, passwordConfirm: string }",
+          "responseShape": "{ success: boolean, userId?: string, error?: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/sources",
+          "method": "GET",
+          "purpose": "Retrieve paginated list of literature sources with optional search and filters.",
+          "requestShape": "{ search?: string, filters?: json, page?: number, pageSize?: number }",
+          "responseShape": "{ sources: LiteratureSource[], totalCount: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/sources",
+          "method": "POST",
+          "purpose": "Upload new literature source with metadata and file.",
+          "requestShape": "{ metadata: json, file: file }",
+          "responseShape": "{ success: boolean, sourceId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/notes",
+          "method": "POST",
+          "purpose": "Create or update a note linked to a literature source.",
+          "requestShape": "{ sourceId: string, content: string, tags?: string[] }",
+          "responseShape": "{ success: boolean, noteId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/notes",
+          "method": "GET",
+          "purpose": "Fetch notes for a user with optional filters by source or tags.",
+          "requestShape": "{ sourceId?: string, tags?: string[] }",
+          "responseShape": "{ notes: Note[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/literature-map",
+          "method": "GET",
+          "purpose": "Retrieve data for thematic literature map visualization.",
+          "requestShape": "{ filters?: json }",
+          "responseShape": "{ mapData: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export",
+          "method": "POST",
+          "purpose": "Generate and return formatted bibliography export file.",
+          "requestShape": "{ sourceIds: string[], citationStyle: string, format: string }",
+          "responseShape": "{ success: boolean, fileUrl?: string, error?: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "LiteratureMapGeneration",
+          "trigger": "Scheduled (e.g., daily) or on-demand after significant data changes",
+          "purpose": "Analyze tags, notes, and metadata to update thematic literature maps for each user."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or inconsistent bibliographic metadata input by users.",
+        "Sparse tagging or notes leading to weak or empty literature maps.",
+        "Large file uploads exceeding size limits or unsupported formats.",
+        "Simultaneous edits on notes causing conflicts.",
+        "Users uploading copyrighted content despite warnings.",
+        "Search queries returning no results or too many results.",
+        "Export failures due to malformed data or unsupported citation styles."
+      ],
+      "nonGoals": [
+        "Providing automated academic advice, peer review, or content validation.",
+        "Hosting or distributing copyrighted literature beyond user uploads.",
+        "Replacing full-featured institutional reference managers like EndNote or Zotero at launch.",
+        "Supporting real-time collaboration or multi-user editing in initial versions.",
+        "Implementing AI-assisted concept extraction or citation fetching in the initial release."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User visits frontend pages and interacts with UI components (e.g., login, upload, note-taking).",
+        "Frontend sends authenticated API requests to backend endpoints for data operations (CRUD on users, sources, notes, tags, exports).",
+        "API backend validates requests, enforces authorization, and interacts with the data storage layer via Prisma models.",
+        "Uploaded files are securely stored with access control, and metadata is indexed for search and filtering.",
+        "Background job (LiteratureMapGeneration) periodically or on-demand analyzes stored tags, notes, and metadata to generate literature maps, storing results for frontend consumption.",
+        "Export service generates formatted bibliography files based on user selections and parameters, logs export actions, and returns downloadable file URLs.",
+        "Frontend consumes API responses to update UI state, display data, and handle user workflows (e.g., dashboard progress, literature maps, export downloads)."
+      ],
+      "validationRules": [
+        "User registration: email must be valid format and unique; password minimum length and complexity; password confirmation must match password.",
+        "Login: email and password must be provided; credentials must match stored hashed password.",
+        "Literature source upload: required metadata fields (title) must be non-empty; optional fields validated for type; uploaded file must be of allowed types (e.g., PDF, DOCX) and within size limits.",
+        "Note creation/update: sourceId must exist and belong to user; content must be non-empty; tags, if provided, must be valid strings and belong to user or be created.",
+        "Search and filter inputs: pagination parameters must be positive integers; filters must conform to expected schema; search queries sanitized to prevent injection.",
+        "Export requests: sourceIds must belong to user; citationStyle and format must be from supported lists.",
+        "API requests with authentication must include valid tokens; unauthorized access rejected."
+      ],
+      "errorHandling": [
+        "API returns structured error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 404 for not found, 500 for server errors).",
+        "Frontend displays user-friendly error messages based on API error responses.",
+        "File upload errors (size, format) return specific messages guiding user to correct input.",
+        "Conflict errors on simultaneous note edits return conflict status with instructions to reload or merge.",
+        "Export failures return error with reason and suggest retry or contact support.",
+        "Search returning no results returns empty lists with informative messages.",
+        "Unhandled exceptions logged server-side with monitoring alerts; generic error messages returned to users."
+      ],
+      "securityNotes": [
+        "All API routes requiring user data enforce authentication and authorization checks.",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt).",
+        "Session tokens securely generated, stored, and validated; support token expiration and refresh.",
+        "Uploaded files scanned and stored with access control to prevent unauthorized downloads.",
+        "Input validation and sanitization to prevent injection attacks (SQL, XSS).",
+        "Rate limiting on authentication endpoints to prevent brute force attacks.",
+        "Sensitive error details not exposed to clients.",
+        "Export files served with secure URLs and limited lifetime.",
+        "CORS policies configured to restrict API access to frontend origins."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A new user on the registration page",
+          "when": "They submit a valid email, password, and matching password confirmation",
+          "then": "The user account is created, and a success confirmation is shown"
+        },
+        {
+          "id": "AT-002",
+          "given": "A registered user on the login page",
+          "when": "They submit correct credentials",
+          "then": "They receive an authentication token and are redirected to the dashboard"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on the upload source page",
+          "when": "They upload a valid literature file with required metadata",
+          "then": "The source is saved, and an upload confirmation is displayed"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user on the notes page",
+          "when": "They create a note linked to an existing source with tags",
+          "then": "The note is saved and visible in the notes list"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on the sources page",
+          "when": "They perform a search with filters and pagination",
+          "then": "A paginated list of matching literature sources is returned and displayed"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user on the literature map page",
+          "when": "They request the literature map data with filters",
+          "then": "An interactive literature map visualization is rendered based on returned data"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user on the export page",
+          "when": "They select sources and export options and submit",
+          "then": "A formatted bibliography file is generated, logged, and a download link is provided"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to upload a file exceeding size limits",
+          "when": "They submit the upload form",
+          "then": "An error message about file size is displayed and upload is rejected"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user tries to access a protected page without authentication",
+          "when": "They navigate to the page",
+          "then": "They are redirected to the login page"
+        },
+        {
+          "id": "AT-010",
+          "given": "Two users attempt to edit the same note simultaneously",
+          "when": "Conflicting updates are submitted",
+          "then": "The system detects conflict and prompts users to resolve it"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma data models and database schema for User, LiteratureSource, Note, Tag, ExportLog",
+        "Implement Authentication Service API routes (/api/auth/register, /api/auth/login) with password hashing and token management",
+        "Create frontend pages for login and registration with validation and error handling",
+        "Develop API routes for literature sources (/api/sources GET and POST) with file upload handling and metadata validation",
+        "Build frontend pages for sources listing, searching, filtering, pagination, and upload",
+        "Implement API routes for notes (/api/notes GET and POST) with tagging support and conflict detection",
+        "Create frontend notes page for creating, editing, and listing notes with tag management",
+        "Develop API route for literature map data retrieval (/api/literature-map GET)",
+        "Implement background job for LiteratureMapGeneration to analyze data and update maps",
+        "Build frontend literature map page with interactive visualization consuming map data API",
+        "Implement export service API (/api/export POST) with bibliography generation, logging, and secure file delivery",
+        "Create frontend export page with source selection, citation style, format options, and download",
+        "Develop dashboard page summarizing user progress from aggregated data",
+        "Add comprehensive input validation, error handling, and security hardening across all layers",
+        "Implement monitoring, logging, and rate limiting especially on auth endpoints",
+        "Conduct acceptance testing and edge case handling refinements"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/register",
+          "/dashboard",
+          "/sources",
+          "/sources/upload",
+          "/notes",
+          "/literature-map",
+          "/export"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/auth/register.ts",
+          "/api/sources/index.ts",
+          "/api/notes/index.ts",
+          "/api/literature-map/index.ts",
+          "/api/export/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { id String @id @default(uuid()) email String @unique hashedPassword String createdAt DateTime @default(now()) preferences Json? }",
+          "model LiteratureSource { id String @id @default(uuid()) userId String title String authors String? publication String? year Int? fileUrl String? summary String? createdAt DateTime @default(now()) @@index([userId]) @@index([title]) @@index([authors]) @@index([year]) }",
+          "model Note { id String @id @default(uuid()) sourceId String userId String content String tags Json? createdAt DateTime @default(now()) @@index([sourceId]) @@index([userId]) @@index([tags]) }",
+          "model Tag { id String @id @default(uuid()) userId String name String @@index([userId]) @@index([name]) }",
+          "model ExportLog { id String @id @default(uuid()) userId String exportType String parameters Json? createdAt DateTime @default(now()) @@index([userId]) @@index([exportType]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints or clarifications to further refine requirements and scope.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nWhat additional constraints, edge cases, or user needs should be clarified to improve the design?"
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed page structures, data models, and API routes based on refined requirements.",
+        "promptTemplate": "Based on the refined specs and current blueprint: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease finalize the list of pages, data models, and API endpoints needed for the application."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code scaffolding or stubs for frontend pages and API routes to start implementation.",
+        "promptTemplate": "Using the finalized design: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nGenerate code stubs or scaffolds for the pages and API routes defined."
+      },
+      {
+        "id": "integrator-wire",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate frontend pages with backend API and database models to ensure full data flow.",
+        "promptTemplate": "Given the implemented stubs and data models: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nDescribe the integration steps and code to connect frontend, API, and database layers."
+      }
+    ]
+  }
+}

@@ -12,6 +12,20 @@ type ToolPreset =
   | { label: string; input: string }
   | { label: string; prompt: string; hint?: string };
 
+type AtlasBuildStep = {
+  id: string;
+  title: string;
+  promptTemplate: string;
+};
+
+type AtlasBuildPlan = {
+  level?: "micro-tool" | "multi-page-app";
+  idea?: any;
+  blueprint?: any;
+  expanded?: any;
+  nextPrompts?: AtlasBuildStep[];
+};
+
 type ToolConfig = {
   slug: string;
   title: string;
@@ -29,6 +43,9 @@ type ToolConfig = {
 
   clarifyPrompt?: string;
   finalizePrompt?: string;
+
+  // ✅ NEW: optional build plan for "Build mode"
+  atlasBuildPlan?: AtlasBuildPlan;
 };
 
 export const dynamic = "force-dynamic";
@@ -106,6 +123,46 @@ function clampText(s: string, max = 190) {
   return { short: short + "…", long: t, clamped: true };
 }
 
+function normalizeBuildPlan(maybe: any): AtlasBuildPlan | undefined {
+  if (!maybe || typeof maybe !== "object") return undefined;
+
+  const plan: AtlasBuildPlan = {
+    level:
+      typeof maybe.level === "string" &&
+      (maybe.level === "micro-tool" || maybe.level === "multi-page-app")
+        ? (maybe.level as "micro-tool" | "multi-page-app")
+        : undefined,
+    idea: maybe.idea ?? undefined,
+    blueprint: maybe.blueprint ?? undefined,
+    expanded: maybe.expanded ?? undefined,
+    nextPrompts: Array.isArray(maybe.nextPrompts)
+      ? maybe.nextPrompts
+          .map((s: any) => {
+            const id = typeof s?.id === "string" ? s.id.trim().slice(0, 80) : "";
+            const title =
+              typeof s?.title === "string" ? s.title.trim().slice(0, 120) : "";
+            const promptTemplate =
+              typeof s?.promptTemplate === "string"
+                ? s?.promptTemplate.trim().slice(0, 4000)
+                : "";
+            if (!id || !title || !promptTemplate) return null;
+            return { id, title, promptTemplate } as AtlasBuildStep;
+          })
+          .filter(Boolean)
+      : undefined,
+  };
+
+  // If it’s empty-ish, treat as undefined
+  const hasAnything =
+    !!plan.level ||
+    !!plan.idea ||
+    !!plan.blueprint ||
+    !!plan.expanded ||
+    (Array.isArray(plan.nextPrompts) && plan.nextPrompts.length > 0);
+
+  return hasAnything ? plan : undefined;
+}
+
 export default async function ToolPage({
   params,
 }: {
@@ -155,6 +212,8 @@ export default async function ToolPage({
       typeof config.finalizePrompt === "string"
         ? config.finalizePrompt
         : undefined,
+
+    atlasBuildPlan: normalizeBuildPlan((config as any).atlasBuildPlan),
   };
 
   /* ---------- Auth ---------- */
@@ -325,6 +384,7 @@ export default async function ToolPage({
               jsonSchemaHint={normalized.jsonSchemaHint}
               clarifyPrompt={normalized.clarifyPrompt}
               finalizePrompt={normalized.finalizePrompt}
+              atlasBuildPlan={normalized.atlasBuildPlan}
             />
 
             <div className="mt-6 border-t border-white/5 pt-4 flex items-center justify-between gap-3">

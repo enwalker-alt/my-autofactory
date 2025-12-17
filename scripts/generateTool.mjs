@@ -1,3 +1,4 @@
+// scripts/generate-tools.mjs
 import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
@@ -16,27 +17,27 @@ if (!process.env.OPENAI_API_KEY) {
   process.exit(1);
 }
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /**
- * AVAILABLE FEATURES
- * ------------------
- * Keep extending this list over time.
+ * -------------------------------------------------------
+ * ATLAS GENERATION ENGINE (v2) — “Top-down decomposition”
+ * -------------------------------------------------------
  *
- * v1 upgrades:
- * - presets: refinement lenses (NOT example-fill) to help users get better results faster
- * - structured-output: tool can request output in "plain" or "json"
- * - clarify-first: two-step flow (ask questions, then finalize)
- * - saved-history: store recent runs (start client-side/localStorage)
+ * This upgrades the generator from "one-shot micro tool" to:
+ * - Stage A: pick a niche + problem worth solving
+ * - Stage B: generate a top-level SOFTWARE BLUEPRINT (architecture tree)
+ * - Stage C: expand each component into concrete specs (pages, data, APIs, jobs)
+ * - Stage D: emit a tool-config (backwards compatible) + a build-plan file
  *
- * NOTE ON FILE UPLOAD:
- * - "file-upload" includes:
- *   - text documents (txt, md, csv, json, etc.)
- *   - audio/video files (mp3, wav, m4a, mp4, mov, webm, etc.)
- *   - media is transcribed (AssemblyAI) -> text, then provided to the tool as input text.
+ * IMPORTANT:
+ * - Existing app expects tool-configs/*.json with the classic fields.
+ * - We keep those stable and add OPTIONAL fields that your current UI can ignore.
+ * - The new ToolClient update will start using these optional fields to enable
+ *   "deep build" flows later (planner -> builder -> iterators).
  */
+
+// Current UI-supported features (ToolClient reads these)
 const AVAILABLE_FEATURES = [
   "text-input",
   "file-upload",
@@ -46,7 +47,7 @@ const AVAILABLE_FEATURES = [
   "saved-history",
 ];
 
-// Default refinement lenses (generic, non-scenario, always useful)
+// Generic refinement lenses (safe defaults)
 const DEFAULT_LENSES = [
   {
     label: "Make it clearer",
@@ -80,7 +81,7 @@ const DEFAULT_LENSES = [
   },
 ];
 
-// Labels that are too scenario-specific (we reject these)
+// Reject scenario-specific preset labels
 function isTooSpecificPresetLabel(label) {
   const s = String(label || "").toLowerCase();
   return (
@@ -115,7 +116,7 @@ function stripCodeFences(raw) {
 function toKebabSlug(s) {
   const base = String(s || "")
     .toLowerCase()
-    .replace(/[\u2019']/g, "") // remove apostrophes
+    .replace(/[\u2019']/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .replace(/-+/g, "-")
@@ -130,7 +131,7 @@ function requireField(config, key, fallback) {
   return fallback;
 }
 
-async function repairJson(badJson) {
+async function repairJson(badJson, schemaHint = "unknown") {
   const system = `
 You are a JSON repair function.
 
@@ -138,15 +139,18 @@ Rules:
 - Output ONLY valid JSON.
 - Do not include markdown fences.
 - Do not add commentary.
+- Keep keys that exist; do not invent new keys not implied by the broken input.
 - If information is missing, use empty strings/arrays or null rather than inventing facts.
-  `.trim();
+- The JSON should match the intended schema described in SCHEMA_HINT.
+`.trim();
 
   const user = `
-Repair this into valid JSON that matches the expected schema for a tool config.
+SCHEMA_HINT:
+${schemaHint}
 
 BROKEN_JSON:
 ${badJson}
-  `.trim();
+`.trim();
 
   const completion = await client.chat.completions.create({
     model: "gpt-4.1-mini",
@@ -160,88 +164,215 @@ ${badJson}
   return stripCodeFences(completion.choices[0]?.message?.content ?? "");
 }
 
-const RUBRIC = `
-You are an expert product designer and idea generator for small, one-page AI tools.
+async function chatJson({ system, user, schemaHint, temperature = 0.6 }) {
+  const completion = await client.chat.completions.create({
+    model: "gpt-4.1-mini",
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ],
+    temperature,
+  });
 
-Your goal: generate tools that are:
-- truly useful in a specific real-world workflow
-- genuinely original (not prompt-wrapper clones)
-- niche-dominant (ideally the only tool someone would search for in that exact situation)
+  let raw = stripCodeFences(completion.choices[0]?.message?.content ?? "");
 
-HARD CONSTRAINTS (must follow):
-- Each tool must be usable as a single-page web app.
-- Input is plain text (textarea) and/or text extracted from uploaded files.
-  - If the user uploads audio/video, it is transcribed (AssemblyAI) into text first, then used as input text.
-- Output is plain text (but may also be valid JSON if "structured-output" is enabled).
-- Target a specific niche (role + scenario), not a broad audience.
-- Must be actually useful, not a joke.
-- Avoid: medical diagnosis, legal advice, unsafe content, or instructions enabling wrongdoing.
-- The niche AND use-case must be clearly different from existing tools:
-  - No overlapping user role AND overlapping input text type AND overlapping output purpose.
-  - Superficial rewording or swapping job titles does NOT count as different.
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const repaired = await repairJson(raw, schemaHint);
+    return JSON.parse(repaired);
+  }
+}
 
-AVAILABLE FEATURES (capabilities you can choose from for each tool):
+/**
+ * --------------------------------------
+ * Stage A: Pick a problem worth building
+ * --------------------------------------
+ *
+ * Output: a candidate "idea spec" with:
+ * - niche (role + scenario)
+ * - pain (repeated)
+ * - what “software” would actually do
+ * - whether it should become a “system” later
+ */
+const IDEA_RUBRIC = `
+You are Atlas's "market + product taste" module.
 
-1) "text-input"
-   - User can type or paste freeform text into a textarea.
-   - Most tools should include this.
+Goal: propose ONE niche problem where a software system (not a prompt wrapper) creates serious leverage.
 
-2) "file-upload"
-   - User can upload one or more files.
-   - Supported inputs include:
-     - text documents (txt, md, csv, json, html, xml, etc.)
-     - audio/video (mp3, wav, m4a, mp4, mov, webm, etc.) which will be transcribed into text.
-   - The app will feed extracted text and/or transcriptions to the AI alongside any typed input.
+Hard constraints:
+- Must be safe: no medical diagnosis, no legal advice, no wrongdoing.
+- Must be in a real workflow with repeated use.
+- Must be specific: role + scenario + inputs + outputs.
+- Must be clearly different from existing tools provided.
+- Must be feasible to start as a lightweight tool, but should have a clear upgrade path to a multi-page app/system.
 
-3) "presets"
-   - Provide 2–6 clickable REFINEMENT LENSES that DO NOT fill the input box.
-   - Each preset has: {label, prompt, hint?}
-   - The "prompt" is a short instruction that refines evaluation criteria or output style.
-   - Labels MUST be generic (e.g., "Make it clearer", "More structured", "More critical", "More actionable", "Shorter").
-   - DO NOT include scenario/example labels.
+Return ONLY JSON with this exact shape:
 
-4) "structured-output"
-   - The tool may request output format: "plain" or "json".
-   - If "json", output MUST be valid JSON (no markdown fences) that matches a small schema you define.
+{
+  "workingTitle": string,
+  "niche": { "role": string, "scenario": string },
+  "problem": string,
+  "inputs": string[],
+  "outputs": string[],
+  "whyItWins": string[],
+  "upgradePath": {
+    "today": string,
+    "in90Days": string,
+    "in12Months": string
+  },
+  "riskNotes": string[]
+}
+`.trim();
 
-5) "clarify-first"
-   - Two-step flow:
-     Step 1: Ask up to 3 clarifying questions if key info is missing.
-     Step 2: Produce the final artifact using the user's answers.
-   - The tool config should include a short "clarifyPrompt" and "finalizePrompt".
+/**
+ * ------------------------------------------
+ * Stage B: 1,000ft -> 100ft Software Blueprint
+ * ------------------------------------------
+ *
+ * Output: a top-level blueprint tree.
+ * This is the “decomposition backbone” Atlas will refine.
+ */
+const BLUEPRINT_RUBRIC = `
+You are Atlas's "software architect" module.
 
-6) "saved-history"
-   - The client stores the last ~10 runs per tool (input + output + timestamp).
+Given an idea spec, produce a top-level blueprint that can evolve from a simple tool into a complex app/system.
 
-SCALING & COMPLEXITY GUIDELINES:
-- Prefer tools that combine 2–4 features in a meaningful way.
-- Single-feature tools should be rare.
-- Use "clarify-first" for workflows with missing/variable info.
-- Use "structured-output" when the output is an artifact that could be parsed.
-- Use "saved-history" for tools people will run repeatedly.
+Hard constraints:
+- Keep the tree small and meaningful (3–8 main components).
+- Prefer clear boundaries: UI pages, API routes, data models, background jobs.
+- Identify what must be persisted (db) vs what is ephemeral.
+- Include edge cases and failure modes.
 
-IMPORTANT FEATURE RULES:
-- Every tool MUST include a "features" array listing which features it uses.
-- "features" may only contain feature names from the list above.
-- If using "structured-output", include:
-  - "outputFormatDefault": "plain" or "json"
-  - "jsonSchemaHint" describing keys (in plain English)
-- If using "presets", include 2–6 presets with {label, prompt, hint?}.
-- If using "clarify-first", include a "clarifyPrompt" and "finalizePrompt".
+Return ONLY JSON with this exact shape:
 
-SYSTEM PROMPT QUALITY BAR:
-- Clearly state niche user + exact artifact produced.
-- Enforce structure and constraints.
-- Include 3–6 hard rules.
-- Refuse disallowed requests.
+{
+  "level": "micro-tool" | "multi-page-app",
+  "summary": string,
+  "primaryUser": string,
+  "successMetrics": string[],
+  "components": [
+    {
+      "id": string,
+      "name": string,
+      "type": "ui" | "api" | "data" | "job" | "integration",
+      "responsibility": string,
+      "dependsOn": string[],
+      "notes": string[]
+    }
+  ],
+  "dataModels": [
+    {
+      "name": string,
+      "purpose": string,
+      "fields": [
+        { "name": string, "type": "string" | "number" | "boolean" | "date" | "json", "optional": boolean }
+      ],
+      "indexes": string[]
+    }
+  ],
+  "pages": [
+    {
+      "route": string,
+      "title": string,
+      "purpose": string,
+      "inputs": string[],
+      "outputs": string[],
+      "requiresAuth": boolean
+    }
+  ],
+  "apiRoutes": [
+    {
+      "route": string,
+      "method": "GET" | "POST",
+      "purpose": string,
+      "requestShape": string,
+      "responseShape": string,
+      "auth": "public" | "user"
+    }
+  ],
+  "backgroundJobs": [
+    { "name": string, "trigger": string, "purpose": string }
+  ],
+  "edgeCases": string[],
+  "nonGoals": string[]
+}
+`.trim();
 
-SLUG RULES:
-- kebab-case, lowercase, hyphens only.
-- unique vs existing tools.
+/**
+ * -------------------------------------------------
+ * Stage C: Expand each component into detailed specs
+ * -------------------------------------------------
+ *
+ * Output: expanded specs + acceptance tests.
+ */
+const EXPAND_RUBRIC = `
+You are Atlas's "system spec expander".
 
-TEMPERATURE:
-- 0.3–0.5 for structured/precision
-- 0.6–0.8 for creative-but-controlled
+Given a blueprint, expand it into a buildable plan:
+- clarify data flow
+- define page-to-api contracts
+- define validation rules
+- define error handling patterns
+- define acceptance tests
+
+Hard constraints:
+- Do NOT write full code here.
+- Be precise and structured.
+- Keep it implementable in a Next.js + API routes + Prisma-style stack.
+
+Return ONLY JSON with this exact shape:
+
+{
+  "dataFlow": string[],
+  "validationRules": string[],
+  "errorHandling": string[],
+  "securityNotes": string[],
+  "acceptanceTests": [
+    { "id": string, "given": string, "when": string, "then": string }
+  ],
+  "buildOrder": string[],
+  "scaffolds": {
+    "nextRoutesToCreate": string[],
+    "apiFilesToCreate": string[],
+    "prismaModelsToAdd": string[]
+  }
+}
+`.trim();
+
+/**
+ * -------------------------------------------------------
+ * Stage D: Emit a backwards-compatible TOOL CONFIG + extras
+ * -------------------------------------------------------
+ *
+ * The tool config remains one-page usable.
+ * But it now carries an optional "atlasBuildPlan" block that
+ * the UI (future ToolClient) can use to run the multi-step flow.
+ */
+const TOOL_CONFIG_RUBRIC = `
+You are Atlas's "tool config compiler".
+
+You are given:
+- an idea spec
+- a blueprint
+- expanded specs
+
+Your job:
+1) Produce a backwards-compatible tool config (single-page tool) that:
+   - captures the core workflow now
+   - is high-quality and safe
+   - uses available features meaningfully
+2) Embed OPTIONAL "atlasBuildPlan" metadata that:
+   - records the blueprint + expansion
+   - defines the next prompts the client can run later
+
+Hard constraints:
+- Tool must be usable as a single-page web app (input text + optional file upload).
+- Output is plain text, and optionally valid JSON if structured-output enabled.
+- Must be safe and refuse disallowed requests.
+- Presets must be refinement lenses (generic labels).
+- Features must be chosen ONLY from the provided features list.
+- Keep the systemPrompt extremely specific and enforce rules.
 
 Return ONLY strict JSON with this exact shape:
 
@@ -255,91 +386,123 @@ Return ONLY strict JSON with this exact shape:
   "temperature": number,
   "features": string[],
 
-  // optional, only if feature enabled:
   "presets"?: [{"label": string, "prompt": string, "hint"?: string}],
   "outputFormatDefault"?: "plain" | "json",
   "jsonSchemaHint"?: string,
-
   "clarifyPrompt"?: string,
-  "finalizePrompt"?: string
+  "finalizePrompt"?: string,
+
+  // NEW OPTIONAL METADATA (ignored by current UI, used by future UI):
+  "atlasBuildPlan"?: {
+    "level": "micro-tool" | "multi-page-app",
+    "idea": any,
+    "blueprint": any,
+    "expanded": any,
+    "nextPrompts": [
+      {
+        "id": string,
+        "title": string,
+        "purpose": string,
+        "promptTemplate": string
+      }
+    ]
+  }
 }
-`;
+`.trim();
 
 // ---- helpers to read existing tools ----
 function loadExistingTools() {
   const rootDir = path.join(__dirname, "..");
   const configDir = path.join(rootDir, "tool-configs");
-
   if (!fs.existsSync(configDir)) return [];
 
   const files = fs.readdirSync(configDir).filter((f) => f.endsWith(".json"));
 
-  const tools = files
+  return files
     .map((file) => {
-      const filePath = path.join(configDir, file);
-      const content = fs.readFileSync(filePath, "utf-8");
+      const fp = path.join(configDir, file);
+      const content = fs.readFileSync(fp, "utf-8");
       try {
         const json = JSON.parse(content);
-        return { slug: json.slug, title: json.title, description: json.description };
+        return {
+          slug: json.slug,
+          title: json.title,
+          description: json.description,
+        };
       } catch {
         return null;
       }
     })
     .filter(Boolean);
-
-  return tools;
 }
 
-// ---- OpenAI call ----
-async function generateToolConfig(existingTools) {
-  const existingSummary =
-    existingTools.length === 0
-      ? "There are currently no existing tools."
-      : "Existing tools:\n" +
-        existingTools
-          .map((t) => `- slug: ${t.slug}, title: ${t.title}, description: ${t.description}`)
-          .join("\n");
+function summarizeExisting(existingTools) {
+  if (!existingTools?.length) return "There are currently no existing tools.";
+  return (
+    "Existing tools:\n" +
+    existingTools
+      .map((t) => `- slug: ${t.slug}, title: ${t.title}, description: ${t.description}`)
+      .join("\n")
+  );
+}
 
-  const completion = await client.chat.completions.create({
-    model: "gpt-4.1-mini",
-    messages: [
-      { role: "system", content: RUBRIC },
-      {
-        role: "user",
-        content:
-          existingSummary +
-          "\n\nYou have access to these features: " +
-          AVAILABLE_FEATURES.join(", ") +
-          ".\n\n" +
-          "Generate ONE new tool config JSON now for a niche that is clearly different from ALL of the above. " +
-          "Avoid overlapping the same user role or type of input text.\n\n" +
-          "Prefer combining multiple features meaningfully (e.g., presets + structured-output, or file-upload + presets). " +
-          "Use clarify-first when the workflow often has missing info.\n\n" +
-          'If you include "presets", they MUST be refinement lenses (label + prompt + optional hint), not example inputs. ' +
-          "Labels MUST be generic (no domain examples).",
-      },
-    ],
-    temperature: 0.7,
-  });
+/**
+ * Decide if a config is too simple.
+ * With 6 features available, discourage only text-input.
+ */
+function isTooSimple(config) {
+  const feats = config.features || [];
+  if (AVAILABLE_FEATURES.length <= 2) return false;
+  if (feats.length === 1 && feats[0] === "text-input") return Math.random() < 0.85;
+  return false;
+}
 
-  let raw = stripCodeFences(completion.choices[0]?.message?.content ?? "");
+function normalizePresetsIfNeeded(features, presets) {
+  if (!features.includes("presets")) return undefined;
 
-  // Parse JSON (with one repair attempt)
-  let config;
-  try {
-    config = JSON.parse(raw);
-  } catch {
-    const repaired = await repairJson(raw);
-    config = JSON.parse(repaired);
+  let out = Array.isArray(presets) ? presets : [];
+  out = out
+    .slice(0, 6)
+    .map((p) => {
+      const label = typeof p?.label === "string" ? p.label.trim().slice(0, 60) : "Refine";
+
+      if (typeof p?.prompt === "string" && p.prompt.trim()) {
+        return {
+          label,
+          prompt: p.prompt.trim().slice(0, 1200),
+          hint: typeof p?.hint === "string" ? p.hint.trim().slice(0, 160) : undefined,
+        };
+      }
+
+      if (typeof p?.input === "string" && p.input.trim()) {
+        const input = p.input.trim().slice(0, 400);
+        return {
+          label,
+          prompt: `Use this lens while generating: ${input}`.slice(0, 1200),
+          hint: "Refinement lens (converted from legacy preset)",
+        };
+      }
+
+      return null;
+    })
+    .filter(Boolean);
+
+  if (out.length && out.some((p) => isTooSpecificPresetLabel(p.label))) {
+    out = DEFAULT_LENSES.slice(0, 4);
   }
 
-  // --- Safety: normalize / validate features ---
+  if (out.length < 2) out = DEFAULT_LENSES.slice(0, 4);
+  return out;
+}
+
+function normalizeToolConfig(config) {
+  // --- features ---
   let features = config.features;
   if (!Array.isArray(features)) features = ["text-input"];
   features = features.map((f) => String(f)).filter((f) => AVAILABLE_FEATURES.includes(f));
   if (features.length === 0) features = ["text-input"];
 
-  // ---- normalize slug + required fields ----
+  // ---- slug + required fields ----
   const normalizedSlug = toKebabSlug(config.slug || config.title);
   const title = requireField(config, "title", "Untitled Tool");
   const description = requireField(
@@ -354,64 +517,16 @@ async function generateToolConfig(existingTools) {
     "systemPrompt",
     "You are Atlas. Produce a useful, safe, and structured output. Do not invent facts."
   );
-
   const temperature = sanitizeTemperature(config.temperature);
 
-  // ---- normalize optional fields based on features ----
-  let presets = config.presets;
-
-  if (features.includes("presets")) {
-    if (!Array.isArray(presets)) presets = [];
-
-    presets = presets
-      .slice(0, 6)
-      .map((p) => {
-        const label =
-          typeof p?.label === "string" ? p.label.trim().slice(0, 60) : "Refine";
-
-        // Preferred: lens preset
-        if (typeof p?.prompt === "string" && p.prompt.trim()) {
-          return {
-            label,
-            prompt: p.prompt.trim().slice(0, 1200),
-            hint: typeof p?.hint === "string" ? p.hint.trim().slice(0, 160) : undefined,
-          };
-        }
-
-        // Back-compat: if model returns {input}, convert to a lens prompt
-        if (typeof p?.input === "string" && p.input.trim()) {
-          const input = p.input.trim().slice(0, 400);
-          return {
-            label,
-            prompt: `Use this lens while generating: ${input}`.slice(0, 1200),
-            hint: "Refinement lens (converted from legacy preset)",
-          };
-        }
-
-        return null;
-      })
-      .filter(Boolean);
-
-    // De-specificity guard: if any label looks scenario-like, replace with defaults
-    if (presets.length && presets.some((p) => isTooSpecificPresetLabel(p.label))) {
-      presets = DEFAULT_LENSES.slice(0, 4);
-    }
-
-    // If model forgot presets, use strong generic defaults
-    if (presets.length < 2) {
-      presets = DEFAULT_LENSES.slice(0, 4);
-    }
-  } else {
-    presets = undefined;
-  }
+  // ---- optional fields based on features ----
+  const presets = normalizePresetsIfNeeded(features, config.presets);
 
   let outputFormatDefault = config.outputFormatDefault;
   let jsonSchemaHint = config.jsonSchemaHint;
 
   if (features.includes("structured-output")) {
-    if (outputFormatDefault !== "json" && outputFormatDefault !== "plain") {
-      outputFormatDefault = "plain";
-    }
+    if (outputFormatDefault !== "json" && outputFormatDefault !== "plain") outputFormatDefault = "plain";
     if (typeof jsonSchemaHint !== "string") jsonSchemaHint = "";
   } else {
     outputFormatDefault = undefined;
@@ -435,6 +550,11 @@ async function generateToolConfig(existingTools) {
     finalizePrompt = undefined;
   }
 
+  // New optional metadata (kept if present)
+  const atlasBuildPlan = config.atlasBuildPlan && typeof config.atlasBuildPlan === "object"
+    ? config.atlasBuildPlan
+    : undefined;
+
   return {
     slug: normalizedSlug,
     title,
@@ -446,24 +566,133 @@ async function generateToolConfig(existingTools) {
     features,
     ...(presets ? { presets } : {}),
     ...(outputFormatDefault ? { outputFormatDefault } : {}),
-    ...(jsonSchemaHint ? { jsonSchemaHint } : {}),
+    ...(typeof jsonSchemaHint === "string" && jsonSchemaHint ? { jsonSchemaHint } : {}),
     ...(clarifyPrompt ? { clarifyPrompt } : {}),
     ...(finalizePrompt ? { finalizePrompt } : {}),
+    ...(atlasBuildPlan ? { atlasBuildPlan } : {}),
   };
 }
 
 /**
- * Decide if a config is "too simple" given the global feature set.
- * With 6 features, we should discourage ["text-input"] only.
+ * ----------------------------
+ * TOP-DOWN GENERATION PIPELINE
+ * ----------------------------
  */
-function isTooSimple(config) {
-  const feats = config.features || [];
-  if (AVAILABLE_FEATURES.length <= 2) return false;
+async function generateTopDown(existingTools) {
+  const existingSummary = summarizeExisting(existingTools);
 
-  if (feats.length === 1 && feats[0] === "text-input") {
-    return Math.random() < 0.85; // reject most single-feature tools
-  }
-  return false;
+  // Stage A: Idea
+  const idea = await chatJson({
+    system: IDEA_RUBRIC,
+    user: `${existingSummary}
+
+Generate ONE idea that is clearly different from the above.
+Avoid overlapping the same user role + scenario + output purpose.
+
+Also: Prefer ideas that can evolve into a multi-page app/system in the future.`,
+    schemaHint: "IDEA_SPEC schema",
+    temperature: 0.75,
+  });
+
+  // Stage B: Blueprint
+  const blueprint = await chatJson({
+    system: BLUEPRINT_RUBRIC,
+    user: `IDEA_SPEC:
+${JSON.stringify(idea, null, 2)}
+
+Produce the blueprint.`,
+    schemaHint: "BLUEPRINT schema",
+    temperature: 0.35,
+  });
+
+  // Stage C: Expand
+  const expanded = await chatJson({
+    system: EXPAND_RUBRIC,
+    user: `BLUEPRINT:
+${JSON.stringify(blueprint, null, 2)}
+
+Expand it into a build plan.`,
+    schemaHint: "EXPANDED schema",
+    temperature: 0.25,
+  });
+
+  // Stage D: Compile to tool-config (back-compat) + next prompts
+  const compiled = await chatJson({
+    system: TOOL_CONFIG_RUBRIC,
+    user: `AVAILABLE_FEATURES:
+${JSON.stringify(AVAILABLE_FEATURES, null, 2)}
+
+IDEA_SPEC:
+${JSON.stringify(idea, null, 2)}
+
+BLUEPRINT:
+${JSON.stringify(blueprint, null, 2)}
+
+EXPANDED:
+${JSON.stringify(expanded, null, 2)}
+
+Now compile a tool config.
+Important:
+- Must be single-page usable TODAY.
+- But include atlasBuildPlan with the above objects.
+- nextPrompts should include at least 4 prompts:
+  1) "Planner: refine requirements" (ask missing constraints)
+  2) "Architect: finalize pages + data models"
+  3) "Builder: generate page stubs"
+  4) "Integrator: wire pages -> API -> DB"
+Each promptTemplate should include placeholders like {{USER_INPUT}}, {{BLUEPRINT}}, etc.`,
+    schemaHint: "TOOL CONFIG schema",
+    temperature: 0.65,
+  });
+
+  // Ensure atlasBuildPlan is present and coherent
+  const atlasBuildPlan = {
+    level: blueprint?.level === "multi-page-app" ? "multi-page-app" : "micro-tool",
+    idea,
+    blueprint,
+    expanded,
+    nextPrompts: Array.isArray(compiled?.atlasBuildPlan?.nextPrompts)
+      ? compiled.atlasBuildPlan.nextPrompts.slice(0, 10)
+      : [
+          {
+            id: "planner_refine",
+            title: "Planner: refine requirements",
+            purpose: "Tighten constraints and clarify missing requirements.",
+            promptTemplate:
+              "You are Atlas Planner. Given {{USER_INPUT}} and {{IDEA}}, ask up to 5 clarifying questions. Then output a refined requirements JSON with constraints, data sources, and success criteria.",
+          },
+          {
+            id: "architect_finalize",
+            title: "Architect: finalize pages + data models",
+            purpose: "Finalize architecture boundaries (pages, APIs, data).",
+            promptTemplate:
+              "You are Atlas Architect. Using {{REQUIREMENTS}} and {{BLUEPRINT}}, output a finalized pages list, api contracts, and prisma-style data models.",
+          },
+          {
+            id: "builder_stubs",
+            title: "Builder: generate page stubs",
+            purpose: "Create Next.js route stubs and UI flows.",
+            promptTemplate:
+              "You are Atlas Builder. Using {{FINAL_ARCH}}, generate minimal Next.js route component stubs (TSX) for each page route, with TODOs for wiring and validation.",
+          },
+          {
+            id: "integrator_wire",
+            title: "Integrator: wire pages -> API -> DB",
+            purpose: "Connect UI to API and DB with safe validation and error handling.",
+            promptTemplate:
+              "You are Atlas Integrator. Using {{FINAL_ARCH}} and {{STUBS}}, produce wiring steps and code snippets for API routes and Prisma calls with error handling. Do not invent environment secrets.",
+          },
+        ],
+  };
+
+  compiled.atlasBuildPlan = atlasBuildPlan;
+
+  return {
+    idea,
+    blueprint,
+    expanded,
+    toolConfig: normalizeToolConfig(compiled),
+  };
 }
 
 async function generateUniqueToolConfig(existingTools, maxTries = 7) {
@@ -473,24 +702,24 @@ async function generateUniqueToolConfig(existingTools, maxTries = 7) {
   let last = null;
 
   for (let i = 0; i < maxTries; i++) {
-    const config = await generateToolConfig(existingTools);
-    last = config;
+    const { toolConfig } = await generateTopDown(existingTools);
+    last = toolConfig;
 
-    const slugLower = (config.slug || "").toLowerCase();
-    const titleLower = (config.title || "").toLowerCase();
+    const slugLower = (toolConfig.slug || "").toLowerCase();
+    const titleLower = (toolConfig.title || "").toLowerCase();
 
     const slugDup = existingSlugs.has(slugLower);
     const titleDup = existingTitles.has(titleLower);
-    const tooSimple = isTooSimple(config);
+    const tooSimple = isTooSimple(toolConfig);
 
     if (slugDup || titleDup) continue;
     if (tooSimple) continue;
 
-    return config;
+    return toolConfig;
   }
 
   console.warn("Retries exceeded; using last generated config as fallback.");
-  return last || (await generateToolConfig(existingTools));
+  return last || (await generateTopDown(existingTools)).toolConfig;
 }
 
 function getUniqueSlugAndPath(baseSlug, configDir) {
@@ -508,17 +737,70 @@ function getUniqueSlugAndPath(baseSlug, configDir) {
   return { slug, configPath };
 }
 
+function ensureDir(p) {
+  if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
+}
+
+function saveBuildPlanFiles(slug, atlasBuildPlan) {
+  const rootDir = path.join(__dirname, "..");
+  const planDir = path.join(rootDir, "tool-plans");
+  ensureDir(planDir);
+
+  const jsonPath = path.join(planDir, `${slug}.plan.json`);
+  fs.writeFileSync(jsonPath, JSON.stringify(atlasBuildPlan, null, 2), "utf-8");
+
+  // Also write a human-readable markdown snapshot
+  const mdPath = path.join(planDir, `${slug}.plan.md`);
+  const md = [
+    `# ${slug} — Atlas Build Plan`,
+    ``,
+    `## Level`,
+    `${atlasBuildPlan?.level || "micro-tool"}`,
+    ``,
+    `## Idea`,
+    "```json",
+    JSON.stringify(atlasBuildPlan?.idea ?? {}, null, 2),
+    "```",
+    ``,
+    `## Blueprint`,
+    "```json",
+    JSON.stringify(atlasBuildPlan?.blueprint ?? {}, null, 2),
+    "```",
+    ``,
+    `## Expanded Specs`,
+    "```json",
+    JSON.stringify(atlasBuildPlan?.expanded ?? {}, null, 2),
+    "```",
+    ``,
+    `## Next Prompts`,
+    ...(Array.isArray(atlasBuildPlan?.nextPrompts)
+      ? atlasBuildPlan.nextPrompts.map(
+          (p) =>
+            `### ${p.id} — ${p.title}\n\n**Purpose:** ${p.purpose}\n\n\`\`\`\n${p.promptTemplate}\n\`\`\`\n`
+        )
+      : []),
+  ].join("\n");
+
+  fs.writeFileSync(mdPath, md, "utf-8");
+
+  console.log(`Saved build plan:\n- ${jsonPath}\n- ${mdPath}`);
+}
+
 function saveToolConfig(config) {
   const rootDir = path.join(__dirname, "..");
   const configDir = path.join(rootDir, "tool-configs");
-  if (!fs.existsSync(configDir)) fs.mkdirSync(configDir, { recursive: true });
+  ensureDir(configDir);
 
   const { slug: uniqueSlug, configPath } = getUniqueSlugAndPath(config.slug, configDir);
-
   const finalConfig = { ...config, slug: uniqueSlug };
 
   fs.writeFileSync(configPath, JSON.stringify(finalConfig, null, 2), "utf-8");
-  console.log(`Saved config to ${configPath}`);
+  console.log(`Saved tool config to ${configPath}`);
+
+  // Save build plan snapshots if present
+  if (finalConfig?.atlasBuildPlan) {
+    saveBuildPlanFiles(uniqueSlug, finalConfig.atlasBuildPlan);
+  }
 
   return finalConfig.slug;
 }
@@ -526,9 +808,16 @@ function saveToolConfig(config) {
 async function main() {
   const existingTools = loadExistingTools();
 
-  console.log("Generating new tool...");
+  console.log("Generating new tool (top-down)...");
   const config = await generateUniqueToolConfig(existingTools);
-  console.log("Generated tool:", config.slug, "with features:", config.features);
+
+  console.log(
+    "Generated tool:",
+    config.slug,
+    "with features:",
+    config.features,
+    config?.atlasBuildPlan?.level ? `| plan: ${config.atlasBuildPlan.level}` : ""
+  );
 
   const finalSlug = saveToolConfig(config);
   console.log(`Saved config for slug "${finalSlug}".`);

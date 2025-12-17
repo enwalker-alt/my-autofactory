@@ -9,6 +9,19 @@ type ToolPreset =
   | { label: string; input: string }
   | { label: string; prompt: string; hint?: string };
 
+type AtlasBuildPlan = {
+  level?: "micro-tool" | "multi-page-app";
+  idea?: any;
+  blueprint?: any;
+  expanded?: any;
+  nextPrompts?: Array<{
+    id: string;
+    title: string;
+    purpose?: string;
+    promptTemplate: string;
+  }>;
+};
+
 type ToolClientProps = {
   slug: string;
   inputLabel: string;
@@ -21,6 +34,9 @@ type ToolClientProps = {
 
   clarifyPrompt?: string;
   finalizePrompt?: string;
+
+  // NEW (optional) — produced by generator v2
+  atlasBuildPlan?: AtlasBuildPlan;
 };
 
 type HistoryItem = {
@@ -34,6 +50,13 @@ type HistoryItem = {
 type ClarifyState = {
   questions: string[];
   answers: string[];
+};
+
+type BuildArtifacts = {
+  requirementsJson?: string; // step output
+  finalArchJson?: string; // step output
+  stubsCode?: string; // step output
+  wiringNotes?: string; // step output
 };
 
 function Star({
@@ -126,6 +149,12 @@ function safeJsonPretty(s: string) {
   return JSON.stringify(parsed, null, 2);
 }
 
+function looksLikeJson(s: string) {
+  const t = safeStr(s).trim();
+  if (!t) return false;
+  return t.startsWith("{") || t.startsWith("[");
+}
+
 function isSimpleDisplayObject(x: any) {
   if (!x || typeof x !== "object" || Array.isArray(x)) return false;
   const keys = Object.keys(x);
@@ -178,12 +207,6 @@ function normalizeToLens(
 }
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
-
-function looksLikeJson(s: string) {
-  const t = safeStr(s).trim();
-  if (!t) return false;
-  return t.startsWith("{") || t.startsWith("[");
-}
 
 function jsonToPlainText(x: any, opts?: { maxDepth?: number; maxLines?: number }) {
   const maxDepth = opts?.maxDepth ?? 6;
@@ -268,12 +291,27 @@ const MAX_MEDIA_MB = 500;
 const ACCEPT_ATTR =
   ".txt,.md,.csv,.json,.log,.html,.xml,.pdf,.mp3,.wav,.m4a,.mp4,.mov,.webm";
 
-// label-only chips; full details live in title tooltip
 const TYPE_BADGES = [
   { label: "Text", title: ".txt .md .csv .json .log .html .xml" },
   { label: "Audio", title: ".mp3 .wav .m4a" },
   { label: "Video", title: ".mp4 .mov .webm" },
 ];
+
+// -------- Build mode helpers --------
+function fillTemplate(tpl: string, vars: Record<string, string>) {
+  let out = tpl;
+  for (const [k, v] of Object.entries(vars)) {
+    const re = new RegExp(`\\{\\{\\s*${k}\\s*\\}\\}`, "g");
+    out = out.replace(re, v);
+  }
+  return out;
+}
+
+function pickPrompt(plan?: AtlasBuildPlan, id?: string) {
+  const arr = plan?.nextPrompts || [];
+  if (id) return arr.find((p) => p.id === id) || null;
+  return arr[0] || null;
+}
 
 export default function ToolClient({
   slug,
@@ -282,6 +320,7 @@ export default function ToolClient({
   features,
   presets,
   jsonSchemaHint,
+  atlasBuildPlan,
 }: ToolClientProps) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -291,6 +330,9 @@ export default function ToolClient({
   const supportsStructured = features?.includes("structured-output") ?? false;
   const supportsClarify = features?.includes("clarify-first") ?? false;
   const supportsHistory = features?.includes("saved-history") ?? false;
+
+  const hasBuildPlan = !!atlasBuildPlan && typeof atlasBuildPlan === "object";
+  const [mode, setMode] = useState<"tool" | "build">(hasBuildPlan ? "build" : "tool");
 
   const [input, setInput] = useState("");
   const [fileTexts, setFileTexts] = useState<string[]>([]);
@@ -334,7 +376,7 @@ export default function ToolClient({
   // QoL
   const [copied, setCopied] = useState(false);
 
-  // Focus lens
+  // Focus lens (tool mode)
   const [focusLabel, setFocusLabel] = useState<string>("");
   const [focusPrompt, setFocusPrompt] = useState<string>("");
 
@@ -343,6 +385,13 @@ export default function ToolClient({
 
   // Dropzone state
   const [dragOver, setDragOver] = useState(false);
+
+  // Build mode state
+  const [buildStepId, setBuildStepId] = useState<string>("planner_refine");
+  const [buildNote, setBuildNote] = useState<string>(""); // user-provided constraints/notes
+  const [buildArtifacts, setBuildArtifacts] = useState<BuildArtifacts>({});
+  const [buildRunning, setBuildRunning] = useState(false);
+  const [buildMsg, setBuildMsg] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -359,6 +408,12 @@ export default function ToolClient({
     setClarify(null);
     setJustGenerated(false);
 
+    setBuildRunning(false);
+    setBuildMsg(null);
+    setBuildArtifacts({});
+    setBuildNote("");
+    setBuildStepId("planner_refine");
+
     // upload UI reset
     setUploadStage("idle");
     setUploadProgress(null);
@@ -367,6 +422,9 @@ export default function ToolClient({
     setUploadSuccess(false);
     setFileTexts([]);
     setFileNames([]);
+
+    setMode(hasBuildPlan ? "build" : "tool");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   const hasAnyInput = useMemo(() => {
@@ -498,14 +556,12 @@ export default function ToolClient({
     });
 
     const data = (await res.json().catch(() => ({} as any))) as any;
-    if (!res.ok) {
-      throw new Error(data?.error || "Transcription failed");
-    }
+    if (!res.ok) throw new Error(data?.error || "Transcription failed");
 
     const id = String(data?.id || "");
     if (!id) throw new Error("Transcription failed (no transcript id returned)");
 
-    const maxAttempts = 90; // 90 * 2s = 3 minutes
+    const maxAttempts = 90;
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       await sleep(2000);
@@ -519,20 +575,14 @@ export default function ToolClient({
       });
 
       const sdata = (await sres.json().catch(() => ({} as any))) as any;
-      if (!sres.ok) {
-        throw new Error(sdata?.error || "Failed to check transcription status");
-      }
+      if (!sres.ok) throw new Error(sdata?.error || "Failed to check transcription status");
 
       const status = String(sdata?.status || "");
       if (status === "completed") {
         setUploadProgress(100);
-        const text = String(sdata?.text || "");
-        return text;
+        return String(sdata?.text || "");
       }
-
-      if (status === "error") {
-        throw new Error(String(sdata?.error || "AssemblyAI transcription error"));
-      }
+      if (status === "error") throw new Error(String(sdata?.error || "AssemblyAI transcription error"));
 
       setTranscribeNote(`Transcribing ${file.name}… (${status || "processing"})`);
     }
@@ -592,12 +642,7 @@ export default function ToolClient({
       setFileNames(names);
       setUploadSuccess(true);
 
-      if (mediaFiles.length > 0) {
-        setTranscribeNote("Transcription complete ✓");
-      } else {
-        setTranscribeNote("Files ready ✓");
-      }
-
+      setTranscribeNote(mediaFiles.length > 0 ? "Transcription complete ✓" : "Files ready ✓");
       setUploadStage("idle");
       setUploadProgress(null);
     } catch (err: any) {
@@ -733,7 +778,7 @@ export default function ToolClient({
     setJustGenerated(true);
   }
 
-  // ----- core submit -----
+  // ----- core submit (tool mode) -----
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!hasAnyInput || loading || transcribing) return;
@@ -943,474 +988,825 @@ export default function ToolClient({
     setDragOver(false);
   }
 
+  // ----- build mode runner -----
+  const buildPrompts = useMemo(() => {
+    const arr = atlasBuildPlan?.nextPrompts || [];
+    return Array.isArray(arr) ? arr.slice(0, 10) : [];
+  }, [atlasBuildPlan]);
+
+  const ideaCompact = useMemo(() => {
+    const idea = atlasBuildPlan?.idea;
+    if (!idea) return "";
+    try {
+      return JSON.stringify(idea, null, 2);
+    } catch {
+      return "";
+    }
+  }, [atlasBuildPlan]);
+
+  const blueprintCompact = useMemo(() => {
+    const bp = atlasBuildPlan?.blueprint;
+    if (!bp) return "";
+    try {
+      return JSON.stringify(bp, null, 2);
+    } catch {
+      return "";
+    }
+  }, [atlasBuildPlan]);
+
+  const expandedCompact = useMemo(() => {
+    const ex = atlasBuildPlan?.expanded;
+    if (!ex) return "";
+    try {
+      return JSON.stringify(ex, null, 2);
+    } catch {
+      return "";
+    }
+  }, [atlasBuildPlan]);
+
+  function buildContextBundle() {
+    // Keep it short-ish, but include enough for coherence.
+    // (You can later move these into server-side plan execution.)
+    const ctx = {
+      idea: atlasBuildPlan?.idea ?? null,
+      blueprint: atlasBuildPlan?.blueprint ?? null,
+      expanded: atlasBuildPlan?.expanded ?? null,
+      artifacts: buildArtifacts,
+      userNotes: buildNote || "",
+    };
+    return JSON.stringify(ctx, null, 2);
+  }
+
+  function inferRequestedFormatForBuild(stepId: string): "plain" | "json" {
+    // For build steps, JSON is usually better. But only request JSON if supported.
+    if (!supportsStructured) return "plain";
+    if (stepId.includes("builder") || stepId.includes("integrator")) return "plain";
+    return "json";
+  }
+
+  function saveBuildArtifact(stepId: string, out: string, outFmt: "plain" | "json") {
+    const trimmed = out || "";
+    setBuildArtifacts((prev) => {
+      const next: BuildArtifacts = { ...prev };
+
+      if (stepId === "planner_refine") next.requirementsJson = trimmed;
+      else if (stepId === "architect_finalize") next.finalArchJson = trimmed;
+      else if (stepId === "builder_stubs") next.stubsCode = trimmed;
+      else if (stepId === "integrator_wire") next.wiringNotes = trimmed;
+      else {
+        // best effort: slot based on id keywords
+        if (stepId.includes("planner")) next.requirementsJson = trimmed;
+        else if (stepId.includes("architect")) next.finalArchJson = trimmed;
+        else if (stepId.includes("stub") || stepId.includes("builder")) next.stubsCode = trimmed;
+        else if (stepId.includes("integr")) next.wiringNotes = trimmed;
+      }
+
+      return next;
+    });
+
+    // If server returned JSON and we are in build mode, keep raw as well for copy/export
+    if (outFmt === "json") {
+      setBuildMsg("Saved structured build output ✓");
+    } else {
+      setBuildMsg("Saved build output ✓");
+    }
+    window.setTimeout(() => setBuildMsg(null), 1400);
+  }
+
+  async function runBuildStep() {
+    if (!hasAnyInput || loading || transcribing || buildRunning) return;
+
+    const step = pickPrompt(atlasBuildPlan, buildStepId) || pickPrompt(atlasBuildPlan);
+    if (!step) {
+      setError("No build steps found for this tool.");
+      return;
+    }
+
+    setBuildRunning(true);
+    setError(null);
+    setOutput("");
+    setRawOutput("");
+    setFormatMismatch(false);
+    setShowRaw(false);
+    setJustGenerated(false);
+    setClarify(null);
+
+    const combinedInput = buildCombinedInput();
+    const ctx = buildContextBundle();
+
+    // Fill template with context + known artifacts
+    const prompt = fillTemplate(step.promptTemplate || "", {
+      USER_INPUT: combinedInput,
+      IDEA: ideaCompact || "",
+      BLUEPRINT: blueprintCompact || "",
+      EXPANDED: expandedCompact || "",
+      CONTEXT: ctx,
+      REQUIREMENTS: buildArtifacts.requirementsJson || "",
+      FINAL_ARCH: buildArtifacts.finalArchJson || "",
+      STUBS: buildArtifacts.stubsCode || "",
+    }).trim();
+
+    // We route this through the SAME tool API, using focusPrompt as the “instruction payload”.
+    // This makes it work immediately without server changes.
+    const requestedFormat = inferRequestedFormatForBuild(step.id);
+
+    try {
+      const data = await callToolApi({
+        input: combinedInput,
+        outputFormat: supportsStructured ? requestedFormat : "plain",
+        enforceOutputFormat: true,
+        jsonSchemaHint: supportsStructured ? jsonSchemaHint || "" : "",
+        mode: supportsClarify ? "auto" : "simple",
+        focusLabel: `Build: ${step.title}`,
+        focusPrompt: [
+          "You are operating in ATLAS BUILD MODE.",
+          "You are not a chat assistant. You are producing build artifacts.",
+          "Return ONLY what the prompt requests. Avoid filler.",
+          "",
+          prompt,
+        ].join("\n"),
+      });
+
+      // Clarify-first still supported, but for build steps we mostly want direct output
+      if (data?.step === "clarify" && Array.isArray(data?.questions) && data.questions.length > 0) {
+        const qs = data.questions
+          .map((q: any) => safeStr(q))
+          .filter(Boolean)
+          .slice(0, 6);
+
+        setClarify({
+          questions: qs,
+          answers: qs.map(() => ""),
+        });
+
+        setBuildMsg("Answer questions to continue the build step.");
+        window.setTimeout(() => setBuildMsg(null), 1600);
+        return;
+      }
+
+      const outRaw = String(data?.output || "");
+      const outFmt = data?.outputFormat === "json" ? "json" : "plain";
+
+      // Display it in the output area (so it feels unified)
+      setRawOutput(outRaw);
+      setShowRaw(false);
+      setOutput(outRaw);
+      setServerOutputFormat(outFmt);
+
+      // Save into build artifacts bucket
+      saveBuildArtifact(step.id, outRaw, outFmt);
+    } catch (e: any) {
+      console.error(e);
+      setError(e?.message || "Build step failed");
+    } finally {
+      setBuildRunning(false);
+    }
+  }
+
+  async function copyBuildBundle() {
+    const bundle = {
+      slug,
+      atlasBuildPlan: atlasBuildPlan || null,
+      artifacts: buildArtifacts,
+      userInput: buildCombinedInput(),
+      userNotes: buildNote || "",
+      exportedAt: new Date().toISOString(),
+    };
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(bundle, null, 2));
+      setBuildMsg("Copied full build bundle ✓");
+      window.setTimeout(() => setBuildMsg(null), 1200);
+    } catch {
+      setError("Failed to copy build bundle.");
+    }
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 mt-4">
-      {/* REFINE LENSES */}
-      {supportsPresets && lensPresets.length > 0 && (
-        <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
-          <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-            <div>
-              <div className="text-sm font-semibold text-slate-100">Refine lens</div>
-            </div>
-
-            {focusLabel ? (
-              <div className="text-[11px] text-slate-400">
-                Active: <span className="text-slate-100 font-medium">{focusLabel}</span>
-                <button
-                  type="button"
-                  className="ml-2 text-slate-400 hover:text-slate-200 transition"
-                  onClick={() => {
-                    setFocusLabel("");
-                    setFocusPrompt("");
-                  }}
-                  title="Clear refine lens"
-                >
-                  (clear)
-                </button>
-              </div>
-            ) : (
-              <div className="text-[11px] text-slate-500">Optional</div>
-            )}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {lensPresets.map((p) => {
-              const active = focusLabel === p.label;
-              return (
-                <button
-                  key={p.label}
-                  type="button"
-                  onClick={() => applyLens(p)}
-                  className={[
-                    "rounded-full border px-3.5 py-2 text-xs font-medium transition",
-                    active
-                      ? "border-white/30 bg-white/10 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
-                      : "border-white/10 bg-slate-900/40 text-slate-200 hover:border-white/25 hover:bg-slate-900/70",
-                  ].join(" ")}
-                  title={p.hint || "Applies a refinement lens (does not change your input)"}
-                >
-                  {p.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* OUTPUT FORMAT (compact) */}
-      {supportsStructured && (
+    <div className="space-y-5 mt-4">
+      {/* MODE TOGGLE (only if plan exists) */}
+      {hasBuildPlan && (
         <div className="flex items-center justify-between gap-3">
-          <div className="text-sm font-medium text-slate-200">Output</div>
+          <div className="text-sm font-medium text-slate-200">Mode</div>
 
           <div className="inline-flex rounded-full border border-white/10 bg-slate-950/30 p-1">
             <button
               type="button"
-              onClick={() => setOutputFormat("plain")}
+              onClick={() => setMode("build")}
               className={[
                 "rounded-full px-3 py-1 text-[11px] font-medium transition",
-                outputFormat === "plain"
-                  ? "bg-white/10 text-white"
-                  : "text-slate-300 hover:text-white",
+                mode === "build" ? "bg-white/10 text-white" : "text-slate-300 hover:text-white",
               ].join(" ")}
             >
-              Plain
+              Build
             </button>
             <button
               type="button"
-              onClick={() => setOutputFormat("json")}
+              onClick={() => setMode("tool")}
               className={[
                 "rounded-full px-3 py-1 text-[11px] font-medium transition",
-                outputFormat === "json"
-                  ? "bg-white/10 text-white"
-                  : "text-slate-300 hover:text-white",
+                mode === "tool" ? "bg-white/10 text-white" : "text-slate-300 hover:text-white",
               ].join(" ")}
             >
-              JSON
+              Tool
             </button>
           </div>
         </div>
       )}
 
-      {/* FILE UPLOAD */}
-      {supportsFileUpload && (
-        <div className="space-y-2">
-          <div className="flex items-end justify-between gap-3">
-            <label className="block text-sm font-medium text-slate-200">
-              Upload files (optional)
-            </label>
-            <div className="text-[11px] text-slate-500">Max media: {MAX_MEDIA_MB}MB each</div>
+      {/* INPUT is shared across modes */}
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* REFINE LENSES (tool mode primarily, but still useful) */}
+        {supportsPresets && lensPresets.length > 0 && (
+          <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+              <div>
+                <div className="text-sm font-semibold text-slate-100">Refine lens</div>
+              </div>
+
+              {focusLabel ? (
+                <div className="text-[11px] text-slate-400">
+                  Active: <span className="text-slate-100 font-medium">{focusLabel}</span>
+                  <button
+                    type="button"
+                    className="ml-2 text-slate-400 hover:text-slate-200 transition"
+                    onClick={() => {
+                      setFocusLabel("");
+                      setFocusPrompt("");
+                    }}
+                    title="Clear refine lens"
+                  >
+                    (clear)
+                  </button>
+                </div>
+              ) : (
+                <div className="text-[11px] text-slate-500">Optional</div>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {lensPresets.map((p) => {
+                const active = focusLabel === p.label;
+                return (
+                  <button
+                    key={p.label}
+                    type="button"
+                    onClick={() => applyLens(p)}
+                    className={[
+                      "rounded-full border px-3.5 py-2 text-xs font-medium transition",
+                      active
+                        ? "border-white/30 bg-white/10 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
+                        : "border-white/10 bg-slate-900/40 text-slate-200 hover:border-white/25 hover:bg-slate-900/70",
+                    ].join(" ")}
+                    title={p.hint || "Applies a refinement lens (does not change your input)"}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+        )}
 
-          <input
-            ref={fileInputRef}
-            id={`file-${slug}`}
-            type="file"
-            multiple
-            accept={ACCEPT_ATTR}
-            onChange={handleFileChange}
-            className="sr-only"
-          />
+        {/* OUTPUT FORMAT (compact) */}
+        {supportsStructured && mode === "tool" && (
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-sm font-medium text-slate-200">Output</div>
 
-          <div
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            onDragLeave={onDragLeave}
-            className={[
-              "rounded-2xl border p-4 transition",
-              dragOver
-                ? "border-white/30 bg-white/5"
-                : "border-white/10 bg-slate-950/20 hover:border-white/20",
-            ].join(" ")}
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="space-y-1">
-                <div className="text-sm text-slate-200 font-medium">
-                  Drag & drop files here
+            <div className="inline-flex rounded-full border border-white/10 bg-slate-950/30 p-1">
+              <button
+                type="button"
+                onClick={() => setOutputFormat("plain")}
+                className={[
+                  "rounded-full px-3 py-1 text-[11px] font-medium transition",
+                  outputFormat === "plain" ? "bg-white/10 text-white" : "text-slate-300 hover:text-white",
+                ].join(" ")}
+              >
+                Plain
+              </button>
+              <button
+                type="button"
+                onClick={() => setOutputFormat("json")}
+                className={[
+                  "rounded-full px-3 py-1 text-[11px] font-medium transition",
+                  outputFormat === "json" ? "bg-white/10 text-white" : "text-slate-300 hover:text-white",
+                ].join(" ")}
+              >
+                JSON
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* FILE UPLOAD */}
+        {supportsFileUpload && (
+          <div className="space-y-2">
+            <div className="flex items-end justify-between gap-3">
+              <label className="block text-sm font-medium text-slate-200">Upload files (optional)</label>
+              <div className="text-[11px] text-slate-500">Max media: {MAX_MEDIA_MB}MB each</div>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              id={`file-${slug}`}
+              type="file"
+              multiple
+              accept={ACCEPT_ATTR}
+              onChange={handleFileChange}
+              className="sr-only"
+            />
+
+            <div
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+              onDragLeave={onDragLeave}
+              className={[
+                "rounded-2xl border p-4 transition",
+                dragOver ? "border-white/30 bg-white/5" : "border-white/10 bg-slate-950/20 hover:border-white/20",
+              ].join(" ")}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="text-sm text-slate-200 font-medium">Drag & drop files here</div>
+
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {TYPE_BADGES.map((b) => (
+                      <span
+                        key={b.label}
+                        title={`Accepted: ${b.title}`}
+                        className="inline-flex items-center rounded-full border border-white/10 bg-slate-900/40 px-3 py-1 text-[11px] text-slate-200 hover:border-white/20 transition"
+                      >
+                        {b.label}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
-
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {TYPE_BADGES.map((b) => (
-                    <span
-                      key={b.label}
-                      title={`Accepted: ${b.title}`}
-                      className="inline-flex items-center rounded-full border border-white/10 bg-slate-900/40 px-3 py-1 text-[11px] text-slate-200 hover:border-white/20 transition"
+                <div className="flex items-center gap-2">
+                  {fileNames.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={clearFiles}
+                      className="rounded-full border border-white/10 bg-slate-900/40 px-3 py-1.5 text-[11px] text-slate-200 hover:border-white/20 hover:bg-slate-900/70 transition"
+                      title="Clear uploaded files"
                     >
-                      {b.label}
-                    </span>
-                  ))}
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <label
+                  htmlFor={`file-${slug}`}
+                  className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 transition cursor-pointer"
+                >
+                  Choose files
+                </label>
+
+                <div className="text-xs text-slate-400 truncate text-right">
+                  <span className="text-slate-500">Selected:</span> {fileSummary}
+                </div>
+              </div>
+
+              {(uploadStage !== "idle" || transcribeNote) && (
+                <div className="mt-3">
+                  <ProgressBar
+                    value={uploadProgress}
+                    indeterminate={uploadStage === "uploading" || uploadStage === "reading"}
+                    label={
+                      transcribeNote ||
+                      (uploadStage === "reading"
+                        ? "Reading files…"
+                        : uploadStage === "uploading"
+                        ? "Uploading large file…"
+                        : uploadStage === "transcribing"
+                        ? "Transcribing…"
+                        : "")
+                    }
+                  />
+                </div>
+              )}
+
+              {uploadSuccess && fileNames.length > 0 && !transcribing && (
+                <div className="mt-3 flex items-center gap-2 text-xs text-emerald-400">
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] text-black">
+                    ✓
+                  </span>
+                  <span>
+                    {fileNames.length} file{fileNames.length > 1 ? "s" : ""} ready
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* INPUT */}
+        <div className="space-y-2">
+          <div className="flex items-end justify-between gap-3">
+            <label className="block text-sm font-medium text-slate-200">{inputLabel}</label>
+            <div className="text-[11px] text-slate-500">
+              Tip: <span className="text-slate-300">Ctrl</span>+<span className="text-slate-300">Enter</span>
+            </div>
+          </div>
+
+          <textarea
+            ref={textareaRef}
+            className="w-full rounded-2xl border border-white/10 bg-slate-950/20 p-3 min-h-[170px] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400/30"
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              if (error) setError(null);
+            }}
+            onKeyDown={(e) => {
+              if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+                e.preventDefault();
+                if (hasAnyInput && !loading && !clarifySubmitting && !transcribing && mode === "tool") {
+                  (e.currentTarget.form as HTMLFormElement | null)?.requestSubmit();
+                }
+              }
+            }}
+            placeholder="Paste or type your text here..."
+          />
+        </div>
+
+        {/* BUILD MODE PANEL */}
+        {mode === "build" && hasBuildPlan && (
+          <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4 space-y-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-slate-100">Atlas Build</div>
+                <div className="text-[11px] text-slate-400">
+                  Top-down planning → architecture → stubs → wiring (using the same tool API today).
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                {fileNames.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={clearFiles}
-                    className="rounded-full border border-white/10 bg-slate-900/40 px-3 py-1.5 text-[11px] text-slate-200 hover:border-white/20 hover:bg-slate-900/70 transition"
-                    title="Clear uploaded files"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* swapped: button LEFT, selected RIGHT */}
-            <div className="mt-3 flex items-center justify-between gap-3">
-              <label
-                htmlFor={`file-${slug}`}
-                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 transition cursor-pointer"
-              >
-                Choose files
-              </label>
-
-              <div className="text-xs text-slate-400 truncate text-right">
-                <span className="text-slate-500">Selected:</span> {fileSummary}
-              </div>
-            </div>
-
-            {(uploadStage !== "idle" || transcribeNote) && (
-              <div className="mt-3">
-                <ProgressBar
-                  value={uploadProgress}
-                  indeterminate={uploadStage === "uploading" || uploadStage === "reading"}
-                  label={
-                    transcribeNote ||
-                    (uploadStage === "reading"
-                      ? "Reading files…"
-                      : uploadStage === "uploading"
-                      ? "Uploading large file…"
-                      : uploadStage === "transcribing"
-                      ? "Transcribing…"
-                      : "")
-                  }
-                />
-              </div>
-            )}
-
-            {uploadSuccess && fileNames.length > 0 && !transcribing && (
-              <div className="mt-3 flex items-center gap-2 text-xs text-emerald-400">
-                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] text-black">
-                  ✓
+                <span className="text-[11px] text-slate-500">
+                  Plan: <span className="text-slate-200">{atlasBuildPlan?.level || "micro-tool"}</span>
                 </span>
-                <span>
-                  {fileNames.length} file{fileNames.length > 1 ? "s" : ""} ready
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* INPUT */}
-      <div className="space-y-2">
-        <div className="flex items-end justify-between gap-3">
-          <label className="block text-sm font-medium text-slate-200">{inputLabel}</label>
-          <div className="text-[11px] text-slate-500">
-            Tip: <span className="text-slate-300">Ctrl</span>+<span className="text-slate-300">Enter</span>
-          </div>
-        </div>
-
-        <textarea
-          ref={textareaRef}
-          className="w-full rounded-2xl border border-white/10 bg-slate-950/20 p-3 min-h-[170px] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400/30"
-          value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-            if (error) setError(null);
-          }}
-          onKeyDown={(e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-              e.preventDefault();
-              if (hasAnyInput && !loading && !clarifySubmitting && !transcribing) {
-                (e.currentTarget.form as HTMLFormElement | null)?.requestSubmit();
-              }
-            }
-          }}
-          placeholder="Paste or type your text here..."
-        />
-      </div>
-
-      {/* CLARIFY UI */}
-      {clarify && (
-        <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4 space-y-3">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-slate-100">Quick questions</div>
-              <div className="text-[11px] text-slate-400">
-                Answer what you can — Atlas will generate a better result.
+                <button
+                  type="button"
+                  onClick={copyBuildBundle}
+                  className="rounded-full border border-white/10 bg-slate-900/40 px-3 py-1.5 text-[11px] font-semibold text-slate-100 hover:border-white/20 hover:bg-slate-900/70 transition"
+                  title="Copy plan + artifacts as JSON"
+                >
+                  Copy bundle
+                </button>
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={cancelClarify}
-              className="text-[11px] text-slate-400 hover:text-slate-200 transition"
-            >
-              ← Back
-            </button>
-          </div>
+            {/* Step picker */}
+            <div className="flex flex-col gap-2">
+              <div className="text-[11px] text-slate-500">Build step</div>
 
-          <div className="space-y-3">
-            {clarify.questions.map((q, idx) => (
-              <div key={`${idx}-${q}`} className="space-y-1">
-                <div className="text-xs font-medium text-slate-200">
-                  {idx + 1}. {q}
+              <div className="flex flex-wrap gap-2">
+                {(buildPrompts.length ? buildPrompts : []).map((p) => {
+                  const active = buildStepId === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setBuildStepId(p.id)}
+                      className={[
+                        "rounded-full border px-3 py-2 text-[11px] font-medium transition",
+                        active
+                          ? "border-white/30 bg-white/10 text-white"
+                          : "border-white/10 bg-slate-900/40 text-slate-200 hover:border-white/25 hover:bg-slate-900/70",
+                      ].join(" ")}
+                      title={p.purpose || ""}
+                    >
+                      {p.title}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-slate-900/20 p-3">
+                <div className="text-xs font-semibold text-slate-200">Notes / constraints (optional)</div>
+                <div className="text-[11px] text-slate-500 mb-2">
+                  Add hard constraints like data sources, auth needs, exports, roles, etc.
                 </div>
-                <input
-                  value={clarify.answers[idx] || ""}
-                  onChange={(e) => {
-                    const next = [...clarify.answers];
-                    next[idx] = e.target.value;
-                    setClarify({ ...clarify, answers: next });
-                    if (error) setError(null);
-                  }}
-                  className="w-full rounded-xl border border-white/10 bg-slate-900/40 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400/30"
-                  placeholder="Type your answer (optional)"
+                <textarea
+                  value={buildNote}
+                  onChange={(e) => setBuildNote(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-slate-950/30 p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400/30 min-h-[90px]"
+                  placeholder="Example: Must support Google login, saved projects, export to PDF, and a dashboard of past runs."
                 />
               </div>
-            ))}
-          </div>
 
-          <div className="flex items-center justify-between gap-3 pt-1">
-            <div className="text-[11px] text-slate-500">
-              Tip: You can leave some blank — we’ll proceed with partial answers.
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-[11px] text-slate-500">
+                  {buildMsg ? <span className="text-emerald-400">{buildMsg}</span> : " "}
+                </div>
+                <button
+                  type="button"
+                  onClick={runBuildStep}
+                  disabled={!hasAnyInput || transcribing || buildRunning}
+                  className={[
+                    "rounded-full px-4 py-2 text-xs font-semibold text-white transition",
+                    "bg-gradient-to-r from-purple-500 to-blue-500 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
+                  ].join(" ")}
+                >
+                  {buildRunning ? "Running…" : "Run step"}
+                </button>
+              </div>
+
+              {/* Quick artifact status */}
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div className="rounded-2xl border border-white/10 bg-slate-900/20 p-3">
+                  <div className="text-xs font-semibold text-slate-200">Requirements</div>
+                  <div className="text-[11px] text-slate-500">
+                    {buildArtifacts.requirementsJson ? "Captured ✓" : "Not yet"}
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-slate-900/20 p-3">
+                  <div className="text-xs font-semibold text-slate-200">Final architecture</div>
+                  <div className="text-[11px] text-slate-500">
+                    {buildArtifacts.finalArchJson ? "Captured ✓" : "Not yet"}
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-slate-900/20 p-3">
+                  <div className="text-xs font-semibold text-slate-200">Page stubs</div>
+                  <div className="text-[11px] text-slate-500">
+                    {buildArtifacts.stubsCode ? "Captured ✓" : "Not yet"}
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-slate-900/20 p-3">
+                  <div className="text-xs font-semibold text-slate-200">Wiring notes</div>
+                  <div className="text-[11px] text-slate-500">
+                    {buildArtifacts.wiringNotes ? "Captured ✓" : "Not yet"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Plan peek */}
+              <details className="rounded-2xl border border-white/10 bg-slate-900/10 p-3">
+                <summary className="cursor-pointer text-xs font-semibold text-slate-200">
+                  View Atlas plan (idea / blueprint / expanded)
+                </summary>
+                <div className="mt-3 space-y-3">
+                  {ideaCompact && (
+                    <div>
+                      <div className="text-[11px] text-slate-400 mb-1">Idea</div>
+                      <pre className="whitespace-pre-wrap rounded-xl border border-white/10 bg-white text-black p-3 font-mono text-[12px] leading-relaxed overflow-x-auto">
+                        {ideaCompact}
+                      </pre>
+                    </div>
+                  )}
+                  {blueprintCompact && (
+                    <div>
+                      <div className="text-[11px] text-slate-400 mb-1">Blueprint</div>
+                      <pre className="whitespace-pre-wrap rounded-xl border border-white/10 bg-white text-black p-3 font-mono text-[12px] leading-relaxed overflow-x-auto">
+                        {blueprintCompact}
+                      </pre>
+                    </div>
+                  )}
+                  {expandedCompact && (
+                    <div>
+                      <div className="text-[11px] text-slate-400 mb-1">Expanded specs</div>
+                      <pre className="whitespace-pre-wrap rounded-xl border border-white/10 bg-white text-black p-3 font-mono text-[12px] leading-relaxed overflow-x-auto">
+                        {expandedCompact}
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              </details>
+            </div>
+          </div>
+        )}
+
+        {/* CLARIFY UI (shared) */}
+        {clarify && (
+          <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4 space-y-3">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="text-sm font-semibold text-slate-100">Quick questions</div>
+                <div className="text-[11px] text-slate-400">
+                  Answer what you can — Atlas will generate a better result.
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={cancelClarify}
+                className="text-[11px] text-slate-400 hover:text-slate-200 transition"
+              >
+                ← Back
+              </button>
             </div>
 
+            <div className="space-y-3">
+              {clarify.questions.map((q, idx) => (
+                <div key={`${idx}-${q}`} className="space-y-1">
+                  <div className="text-xs font-medium text-slate-200">
+                    {idx + 1}. {q}
+                  </div>
+                  <input
+                    value={clarify.answers[idx] || ""}
+                    onChange={(e) => {
+                      const next = [...clarify.answers];
+                      next[idx] = e.target.value;
+                      setClarify({ ...clarify, answers: next });
+                      if (error) setError(null);
+                    }}
+                    className="w-full rounded-xl border border-white/10 bg-slate-900/40 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400/30"
+                    placeholder="Type your answer (optional)"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-between gap-3 pt-1">
+              <div className="text-[11px] text-slate-500">
+                Tip: You can leave some blank — we’ll proceed with partial answers.
+              </div>
+
+              <button
+                type="button"
+                onClick={submitClarifyAnswers}
+                disabled={clarifySubmitting || loading || transcribing || buildRunning}
+                className={[
+                  "rounded-full px-4 py-2 text-xs font-semibold text-white transition",
+                  "bg-gradient-to-r from-purple-500 to-blue-500 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                ].join(" ")}
+              >
+                {clarifySubmitting ? "Generating..." : "Generate with answers"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ACTIONS (tool mode submit button) */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          {mode === "tool" ? (
             <button
-              type="button"
-              onClick={submitClarifyAnswers}
-              disabled={clarifySubmitting || loading || transcribing}
+              type="submit"
+              disabled={loading || clarifySubmitting || transcribing || !hasAnyInput}
               className={[
-                "rounded-full px-4 py-2 text-xs font-semibold text-white transition",
+                "rounded-full px-5 py-2.5 text-sm font-semibold text-white transition",
                 "bg-gradient-to-r from-purple-500 to-blue-500 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
               ].join(" ")}
             >
-              {clarifySubmitting ? "Generating..." : "Generate with answers"}
+              {transcribing ? "Working…" : loading ? "Generating…" : supportsClarify ? "Generate (auto)" : "Generate"}
             </button>
+          ) : (
+            <div className="text-[11px] text-slate-500">
+              Build mode uses <span className="text-slate-300">Run step</span> above.
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-4">
+            {renderText && justGenerated && mode === "tool" && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-300 hidden sm:inline">Rate:</span>
+
+                <div className="flex items-center gap-1" onMouseLeave={() => setHoverStars(null)}>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <span key={n} onMouseEnter={() => setHoverStars(n)} className="inline-flex">
+                      <Star
+                        sizeClass="text-2xl"
+                        filled={n <= (hoverStars ?? selectedStars ?? 0)}
+                        disabled={ratingSubmitting}
+                        title={session?.user ? `Rate ${n} star${n > 1 ? "s" : ""}` : "Sign in to rate"}
+                        onClick={() => submitRating(n)}
+                      />
+                    </span>
+                  ))}
+                </div>
+
+                {ratingSubmitting && <span className="text-xs text-slate-400">Saving...</span>}
+                {ratingThanks && <span className="text-xs text-emerald-400">Thanks!</span>}
+                {ratingError && <span className="text-xs text-red-400">{ratingError}</span>}
+              </div>
+            )}
+
+            {renderText && (
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="rounded-full border border-white/10 bg-slate-900/40 px-4 py-2 text-xs font-semibold text-slate-100 hover:border-white/20 hover:bg-slate-900/70 transition"
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            )}
           </div>
         </div>
-      )}
 
-      {/* ACTIONS */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <button
-          type="submit"
-          disabled={loading || clarifySubmitting || transcribing || !hasAnyInput}
-          className={[
-            "rounded-full px-5 py-2.5 text-sm font-semibold text-white transition",
-            "bg-gradient-to-r from-purple-500 to-blue-500 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-          ].join(" ")}
-        >
-          {transcribing
-            ? "Working…"
-            : loading
-            ? "Generating…"
-            : supportsClarify
-            ? "Generate (auto)"
-            : "Generate"}
-        </button>
+        {error && <p className="text-red-400 text-sm">{error}</p>}
 
-        <div className="flex flex-wrap items-center gap-4">
-          {renderText && justGenerated && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-300 hidden sm:inline">Rate:</span>
+        {/* OUTPUT */}
+        {renderText && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-sm font-semibold text-slate-100">{outputLabel}</h3>
 
-              <div className="flex items-center gap-1" onMouseLeave={() => setHoverStars(null)}>
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <span key={n} onMouseEnter={() => setHoverStars(n)} className="inline-flex">
-                    <Star
-                      sizeClass="text-2xl"
-                      filled={n <= (hoverStars ?? selectedStars ?? 0)}
-                      disabled={ratingSubmitting}
-                      title={session?.user ? `Rate ${n} star${n > 1 ? "s" : ""}` : "Sign in to rate"}
-                      onClick={() => submitRating(n)}
-                    />
-                  </span>
+              <div className="flex items-center gap-2">
+                {formatMismatch && (
+                  <span className="text-[11px] text-amber-300">Returned JSON → converted to plain text</span>
+                )}
+
+                {rawOutput && looksLikeJson(rawOutput) && (
+                  <button
+                    type="button"
+                    onClick={() => setShowRaw((v) => !v)}
+                    className="text-[11px] text-slate-400 hover:text-slate-200 transition"
+                    title="Toggle raw output view"
+                  >
+                    {showRaw ? "Hide raw" : "View raw"}
+                  </button>
+                )}
+
+                {renderFormat === "json" && <span className="text-[11px] text-slate-400">Structured</span>}
+              </div>
+            </div>
+
+            {renderFormat === "json" && parsedJson && isSimpleDisplayObject(parsedJson) ? (
+              <div className="rounded-2xl border border-white/10 bg-white text-black p-4 space-y-4">
+                {Object.keys(parsedJson).map((k) => {
+                  const v = (parsedJson as any)[k];
+                  return (
+                    <div key={k} className="space-y-1">
+                      <div className="text-[12px] font-semibold uppercase tracking-wide text-slate-700">
+                        {titleCaseKey(k)}
+                      </div>
+
+                      {Array.isArray(v) ? (
+                        <ul className="list-disc pl-5 space-y-1 text-[14px] leading-relaxed">
+                          {v.map((item: string, idx: number) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className="text-[14px] leading-relaxed whitespace-pre-wrap">{String(v)}</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <pre className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-white text-black p-3 font-mono text-[13px] leading-relaxed overflow-x-auto">
+                {prettyOutput}
+              </pre>
+            )}
+          </div>
+        )}
+
+        {/* HISTORY */}
+        {supportsHistory && mode === "tool" && (
+          <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/30 p-4 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-sm font-semibold text-slate-100">Recent runs</div>
+              <button
+                type="button"
+                onClick={clearHistory}
+                className="text-[11px] text-slate-400 hover:text-slate-200 transition"
+              >
+                Clear history
+              </button>
+            </div>
+
+            {history.length === 0 ? (
+              <div className="text-[11px] text-slate-500">No history yet.</div>
+            ) : (
+              <div className="space-y-2">
+                {history.slice(0, 6).map((h) => (
+                  <button
+                    key={h.ts}
+                    type="button"
+                    onClick={() => {
+                      setInput(h.input);
+                      setOutput(h.output);
+                      setRawOutput("");
+                      setOutputFormat(h.outputFormat);
+                      setServerOutputFormat(h.outputFormat);
+                      setFormatMismatch(false);
+                      setShowRaw(false);
+                      setClarify(null);
+                      setJustGenerated(false);
+                      setError(null);
+                      setTimeout(() => textareaRef.current?.focus(), 50);
+                    }}
+                    className="w-full text-left rounded-2xl border border-white/10 bg-slate-900/30 p-3 hover:border-white/20 transition"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-xs text-slate-200 truncate">{new Date(h.ts).toLocaleString()}</div>
+                      <div className="text-[11px] text-slate-500">
+                        {h.outputFormat}
+                        {h.focusLabel ? ` • ${h.focusLabel}` : ""}
+                      </div>
+                    </div>
+                    <div className="mt-1 text-[11px] text-slate-400 line-clamp-2">{h.input.slice(0, 180)}</div>
+                  </button>
                 ))}
               </div>
-
-              {ratingSubmitting && <span className="text-xs text-slate-400">Saving...</span>}
-              {ratingThanks && <span className="text-xs text-emerald-400">Thanks!</span>}
-              {ratingError && <span className="text-xs text-red-400">{ratingError}</span>}
-            </div>
-          )}
-
-          {renderText && (
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="rounded-full border border-white/10 bg-slate-900/40 px-4 py-2 text-xs font-semibold text-slate-100 hover:border-white/20 hover:bg-slate-900/70 transition"
-            >
-              {copied ? "Copied!" : "Copy"}
-            </button>
-          )}
-        </div>
-      </div>
-
-      {error && <p className="text-red-400 text-sm">{error}</p>}
-
-      {/* OUTPUT */}
-      {renderText && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-sm font-semibold text-slate-100">{outputLabel}</h3>
-
-            <div className="flex items-center gap-2">
-              {formatMismatch && (
-                <span className="text-[11px] text-amber-300">
-                  Returned JSON → converted to plain text
-                </span>
-              )}
-
-              {rawOutput && looksLikeJson(rawOutput) && (
-                <button
-                  type="button"
-                  onClick={() => setShowRaw((v) => !v)}
-                  className="text-[11px] text-slate-400 hover:text-slate-200 transition"
-                  title="Toggle raw output view"
-                >
-                  {showRaw ? "Hide raw" : "View raw"}
-                </button>
-              )}
-
-              {renderFormat === "json" && (
-                <span className="text-[11px] text-slate-400">Structured</span>
-              )}
-            </div>
+            )}
           </div>
-
-          {renderFormat === "json" && parsedJson && isSimpleDisplayObject(parsedJson) ? (
-            <div className="rounded-2xl border border-white/10 bg-white text-black p-4 space-y-4">
-              {Object.keys(parsedJson).map((k) => {
-                const v = (parsedJson as any)[k];
-                return (
-                  <div key={k} className="space-y-1">
-                    <div className="text-[12px] font-semibold uppercase tracking-wide text-slate-700">
-                      {titleCaseKey(k)}
-                    </div>
-
-                    {Array.isArray(v) ? (
-                      <ul className="list-disc pl-5 space-y-1 text-[14px] leading-relaxed">
-                        {v.map((item: string, idx: number) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="text-[14px] leading-relaxed whitespace-pre-wrap">
-                        {String(v)}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <pre className="whitespace-pre-wrap rounded-2xl border border-white/10 bg-white text-black p-3 font-mono text-[13px] leading-relaxed overflow-x-auto">
-              {prettyOutput}
-            </pre>
-          )}
-        </div>
-      )}
-
-      {/* HISTORY */}
-      {supportsHistory && (
-        <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/30 p-4 space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <div className="text-sm font-semibold text-slate-100">Recent runs</div>
-            <button
-              type="button"
-              onClick={clearHistory}
-              className="text-[11px] text-slate-400 hover:text-slate-200 transition"
-            >
-              Clear history
-            </button>
-          </div>
-
-          {history.length === 0 ? (
-            <div className="text-[11px] text-slate-500">No history yet.</div>
-          ) : (
-            <div className="space-y-2">
-              {history.slice(0, 6).map((h) => (
-                <button
-                  key={h.ts}
-                  type="button"
-                  onClick={() => {
-                    setInput(h.input);
-                    setOutput(h.output);
-                    setRawOutput("");
-                    setOutputFormat(h.outputFormat);
-                    setServerOutputFormat(h.outputFormat);
-                    setFormatMismatch(false);
-                    setShowRaw(false);
-                    setClarify(null);
-                    setJustGenerated(false);
-                    setError(null);
-                    setTimeout(() => textareaRef.current?.focus(), 50);
-                  }}
-                  className="w-full text-left rounded-2xl border border-white/10 bg-slate-900/30 p-3 hover:border-white/20 transition"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-xs text-slate-200 truncate">
-                      {new Date(h.ts).toLocaleString()}
-                    </div>
-                    <div className="text-[11px] text-slate-500">
-                      {h.outputFormat}
-                      {h.focusLabel ? ` • ${h.focusLabel}` : ""}
-                    </div>
-                  </div>
-                  <div className="mt-1 text-[11px] text-slate-400 line-clamp-2">
-                    {h.input.slice(0, 180)}
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </form>
+        )}
+      </form>
+    </div>
   );
 }

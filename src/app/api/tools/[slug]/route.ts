@@ -18,6 +18,20 @@ type ToolPreset =
   | { label: string; input: string }
   | { label: string; prompt: string; hint?: string };
 
+type AtlasBuildStep = {
+  id: string;
+  title: string;
+  promptTemplate: string;
+};
+
+type AtlasBuildPlan = {
+  level?: "micro-tool" | "multi-page-app" | string;
+  idea?: any;
+  blueprint?: any;
+  expanded?: any;
+  nextPrompts?: AtlasBuildStep[];
+};
+
 type ToolConfig = {
   slug: string;
   title: string;
@@ -36,6 +50,9 @@ type ToolConfig = {
 
   clarifyPrompt?: string;
   finalizePrompt?: string;
+
+  // ✅ NEW: optional build plan
+  atlasBuildPlan?: AtlasBuildPlan;
 };
 
 type Step = "final" | "clarify";
@@ -152,7 +169,6 @@ Rules:
 - Do NOT invent facts.
 `.trim();
 
-  // Focus should influence what you ask (e.g., "Methods lens" asks about sample size, stats, etc.)
   return [clarify.length ? clarify : defaultClarify, focusBlock]
     .filter(Boolean)
     .join("\n\n---\n\n")
@@ -184,8 +200,86 @@ ${finalizeAddon}
 `
     : "";
 
-  // Focus should influence the final critique / response structure
   return [base, focusBlock, finalizeBlock, structuredAddon]
+    .filter(Boolean)
+    .join("\n\n---\n\n")
+    .trim();
+}
+
+function buildBuildSystemPrompt(opts: {
+  config: ToolConfig;
+  focusBlock: string;
+  outputFormat: "plain" | "json";
+  buildStepId?: string;
+  buildPrompt?: string;
+}) {
+  const { config, focusBlock, outputFormat, buildStepId, buildPrompt } = opts;
+
+  // In build-mode we want engineering-grade, incremental artifacts.
+  // Default to JSON to enable machine-like chaining.
+  const buildCore = `
+You are Atlas Build Engine.
+
+Goal:
+- Turn a high-level idea into real software by working top-down.
+- Produce incremental, structured build artifacts that can be executed or implemented.
+
+Rules:
+- Be specific and technical. Prefer concrete files, routes, DB tables, and logic.
+- Do NOT invent external project files that were not requested; instead propose them explicitly.
+- Keep changes incremental: output the smallest useful set of deliverables for this step.
+- If something is ambiguous, include 1–3 "openQuestions" fields instead of guessing.
+
+Output requirement:
+${
+  outputFormat === "json"
+    ? `- Output ONLY valid JSON. No markdown.
+- Use the schema below exactly.`
+    : `- Output plain text. Use headings and bullet points.`
+}
+
+JSON schema (if JSON output):
+{
+  "stepId": string,
+  "title": string,
+  "summary": string,
+  "assumptions": string[],
+  "openQuestions": string[],
+  "deliverables": [
+    {
+      "type": "files" | "db" | "routes" | "prompts" | "plan",
+      "items": any[]
+    }
+  ],
+  "nextSteps": [
+    { "id": string, "title": string, "prompt": string }
+  ]
+}
+
+Deliverable conventions:
+- If delivering code, include objects like:
+  { "path": "src/...", "purpose": "...", "content": "FULL FILE CONTENT" }
+- If delivering DB changes, include:
+  { "model": "...", "change": "...", "migrationNotes": "..." }
+- If delivering route contracts, include:
+  { "method": "POST", "path": "/api/...", "request": {...}, "response": {...} }
+
+Step context:
+- buildStepId: ${safeStr(buildStepId) || "(none)"}
+- buildPrompt (instructions): ${safeStr(buildPrompt) ? "provided" : "not provided"}
+`.trim();
+
+  // Tie in the tool’s base identity, but build-mode overrides tone/format.
+  const baseIdentity = safeStr(config.systemPrompt).trim();
+
+  const buildPromptBlock = safeStr(buildPrompt).trim()
+    ? `
+BUILD STEP INSTRUCTIONS:
+${safeStr(buildPrompt).trim()}
+`.trim()
+    : "";
+
+  return [buildCore, focusBlock, buildPromptBlock, baseIdentity]
     .filter(Boolean)
     .join("\n\n---\n\n")
     .trim();
@@ -201,9 +295,13 @@ export async function POST(
     const body = await req.json().catch(() => ({} as any));
 
     const input = safeStr(body?.input);
-    const mode = safeStr(body?.mode); // "simple" | "auto" (from ToolClient)
+    const mode = safeStr(body?.mode); // "simple" | "auto" | "build"
     const outputFormat = asOutputFormat(body?.outputFormat);
     const answers = Array.isArray(body?.answers) ? body.answers : null;
+
+    // NEW: build step support
+    const buildStepId = safeStr(body?.buildStepId);
+    const buildPrompt = safeStr(body?.buildPrompt);
 
     // NEW: focus lens
     const focusLabel = safeStr(body?.focusLabel);
@@ -241,13 +339,72 @@ export async function POST(
     const supportsStructured = features.includes("structured-output");
 
     // If tool doesn't support structured output, force plain.
-    const effectiveOutputFormat = supportsStructured ? outputFormat : "plain";
+    // BUT: build-mode should still be allowed to use JSON even if the tool didn't declare structured-output
+    // because "Build mode" is platform-level behavior.
+    const isBuildMode = mode === "build";
+    const effectiveOutputFormat =
+      isBuildMode ? (outputFormat || "json") : supportsStructured ? outputFormat : "plain";
 
     // Decide if we run clarify-first:
-    // - only if tool supports it
-    // - only if client asked for auto mode
-    // - Step B occurs when body.answers is provided
-    const useClarify = supportsClarify && mode === "auto";
+    const useClarify = supportsClarify && mode === "auto" && !isBuildMode;
+
+    // -------------------------
+    // BUILD MODE (top-down step execution)
+    // -------------------------
+    if (isBuildMode) {
+      const system = buildBuildSystemPrompt({
+        config,
+        focusBlock,
+        outputFormat: effectiveOutputFormat,
+        buildStepId,
+        buildPrompt,
+      });
+
+      const completion = await client.chat.completions.create({
+        model: "gpt-4.1-mini",
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: input },
+        ],
+        temperature: clamp(Number(config.temperature ?? 0.35), 0, 1),
+      });
+
+      let output = stripCodeFences(completion.choices[0]?.message?.content ?? "");
+
+      if (effectiveOutputFormat === "json") {
+        if (!isJsonValid(output)) {
+          const repaired = await repairJson({
+            badJson: output,
+            schemaHint: `{
+  "stepId": string,
+  "title": string,
+  "summary": string,
+  "assumptions": string[],
+  "openQuestions": string[],
+  "deliverables": [{"type": "files"|"db"|"routes"|"prompts"|"plan", "items": any[]}],
+  "nextSteps": [{"id": string, "title": string, "prompt": string}]
+}`,
+          });
+          output = stripCodeFences(repaired);
+
+          if (!isJsonValid(output)) {
+            return NextResponse.json(
+              {
+                error: "Build mode returned invalid JSON and repair failed",
+                details: output.slice(0, 800),
+              },
+              { status: 500 }
+            );
+          }
+        }
+      }
+
+      return NextResponse.json({
+        step: "final" as Step,
+        output,
+        outputFormat: effectiveOutputFormat,
+      });
+    }
 
     // -------------------------
     // STEP A: Clarify
@@ -270,7 +427,6 @@ export async function POST(
       try {
         parsed = JSON.parse(rawOut);
       } catch {
-        // If model didn't return JSON, do a quick repair attempt
         const repaired = await repairJson({
           badJson: rawOut,
           schemaHint: `{"needClarification": boolean, "questions": string[]}`,
@@ -287,7 +443,6 @@ export async function POST(
         ? parsed.questions.map((q: any) => String(q)).slice(0, 6)
         : [];
 
-      // If no clarification needed, fall through to final generation
       if (needClarification && questions.length > 0) {
         return NextResponse.json({
           step: "clarify" as Step,
@@ -295,7 +450,7 @@ export async function POST(
           outputFormat: effectiveOutputFormat,
         });
       }
-      // else continue to final (below)
+      // else continue to final
     }
 
     // -------------------------
@@ -307,7 +462,6 @@ export async function POST(
       focusBlock
     );
 
-    // If answers are provided, include them in the user content
     const userContent = answers
       ? `
 USER INPUT:
@@ -330,7 +484,6 @@ ${answers.map((a: any, i: number) => `Q${i + 1}: ${String(a)}`).join("\n")}
     let output = completion.choices[0]?.message?.content ?? "";
     output = stripCodeFences(output);
 
-    // If structured output required, enforce valid JSON
     if (effectiveOutputFormat === "json") {
       if (!isJsonValid(output)) {
         const repaired = await repairJson({

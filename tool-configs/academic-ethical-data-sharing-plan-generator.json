@@ -1,0 +1,681 @@
+{
+  "slug": "academic-ethical-data-sharing-plan-generator",
+  "title": "Academic Research Ethical Data Sharing Plan Generator",
+  "description": "A single-page tool for academic research data managers to input project details, upload relevant documents, and generate a detailed, tailored ethical data sharing plan addressing privacy, compliance, and stakeholder roles.",
+  "inputLabel": "Enter project details and upload related documents",
+  "outputLabel": "Generated Ethical Data Sharing Plan",
+  "systemPrompt": "You are an assistant specialized in generating detailed, structured ethical data sharing plans for academic research projects involving sensitive or proprietary data. Given the user's project inputs and uploaded documents, generate a comprehensive, sectioned data sharing plan that addresses participant privacy safeguards, access controls, intellectual property considerations, and compliance with funder and institutional policies. Your output must be advisory, clearly flag any areas requiring legal or IRB consultation, and avoid providing direct legal advice. Reject requests missing required project details or containing disallowed personal participant data. Enforce strict content safety and confidentiality rules. Output as plain text unless structured output is requested, in which case provide valid JSON with plan sections and compliance checklist. Always include disclaimers about advisory nature and recommend institutional approval.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Balanced Ethical Focus",
+      "prompt": "Generate a detailed ethical data sharing plan that carefully balances participant privacy, intellectual property rights, and funder compliance requirements. Include clear rationale sections and a compliance checklist."
+    },
+    {
+      "label": "Privacy Priority",
+      "prompt": "Generate an ethical data sharing plan emphasizing participant privacy safeguards and data anonymization workflows. Clearly flag any areas needing IRB consultation."
+    },
+    {
+      "label": "Compliance-Centric",
+      "prompt": "Generate a plan focused on meeting funder and institutional data sharing policies, highlighting access controls, stakeholder responsibilities, and compliance checklists."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, produce JSON with keys: 'planSections' (array of section titles and content), 'complianceChecklist' (array of checklist items), and 'disclaimers' (array of advisory notes).",
+  "clarifyPrompt": "Please provide complete project details including title, description, data types, sensitivity classifications, stakeholder roles, and upload relevant documents (project description, consent summaries, policies). Avoid uploading any personal participant data.",
+  "finalizePrompt": "Review the generated ethical data sharing plan carefully. Ensure all privacy, compliance, and stakeholder considerations are addressed. Consult institutional review boards or legal experts for flagged areas. Edit or annotate the plan as needed before finalizing.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Ethical Data Sharing Plan Generator",
+      "niche": {
+        "role": "Academic Research Data Manager",
+        "scenario": "Preparing ethical data sharing and access plans for research projects involving sensitive or proprietary data"
+      },
+      "problem": "Academic data managers must create detailed, compliant data sharing plans that balance ethical considerations, participant privacy, intellectual property rights, and funder requirements. Existing tools address compliance checklists or data management plans broadly but lack focused support for drafting nuanced, ethical data sharing strategies integrating multiple constraints and stakeholder perspectives.",
+      "inputs": [
+        "Project description document",
+        "Data types and sensitivity classifications",
+        "Participant consent form summaries or templates",
+        "Funder and institutional data sharing policies",
+        "Legal and ethical guidelines related to data privacy and IP",
+        "Preliminary data access request scenarios or stakeholder roles"
+      ],
+      "outputs": [
+        "Structured, tailored ethical data sharing plan document",
+        "Sectioned rationale addressing privacy safeguards, access controls, and compliance",
+        "Recommended data anonymization and access approval workflows",
+        "Stakeholder role definitions and responsibilities for data use",
+        "Compliance checklist aligned with funder and institutional policies"
+      ],
+      "whyItWins": [
+        "Fills a gap by focusing specifically on ethical and practical complexities of data sharing in sensitive academic research contexts",
+        "Supports repeated use across projects, enabling consistent, policy-aligned data sharing practices",
+        "Reduces risk of non-compliance and participant privacy breaches through clear, structured plans",
+        "Facilitates collaboration by clarifying stakeholder roles and data access conditions",
+        "Provides actionable, document-ready outputs that streamline review and approval processes"
+      ],
+      "upgradePath": {
+        "today": "A single-page app where data managers input project details, upload relevant documents, and receive a detailed draft ethical data sharing plan with compliance pointers.",
+        "in90Days": "Add interactive editing, templated workflows for common data types, integration with consent management systems, and export options for institutional repositories.",
+        "in12Months": "Expand into a multi-page platform including user role management, workflow automation for access requests, audit trail logging, dynamic policy updates, and collaboration features for multi-institutional research teams."
+      },
+      "riskNotes": [
+        "Must avoid providing legal advice; outputs should advise consultation with institutional review boards or legal experts where needed.",
+        "Handles potentially sensitive project and policy documents securely with strict data privacy and access controls.",
+        "Ensure no personal participant data is required or stored to maintain privacy compliance.",
+        "Clear disclaimers needed that generated plans are advisory and require institutional approval."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An ethical data sharing plan generator tailored for academic research data managers to create compliant, nuanced, and actionable data sharing plans addressing privacy, IP, and funder requirements.",
+      "primaryUser": "Academic Research Data Manager",
+      "successMetrics": [
+        "Number of ethical data sharing plans generated",
+        "User satisfaction with plan relevance and clarity",
+        "Reduction in compliance issues or privacy breaches reported",
+        "Frequency of repeated use across multiple projects",
+        "Engagement with collaboration and editing features"
+      ],
+      "components": [
+        {
+          "id": "ui-input",
+          "name": "Input & Document Upload UI",
+          "type": "ui",
+          "responsibility": "Allow users to input project details, upload relevant documents, and specify data types, policies, and stakeholder roles.",
+          "dependsOn": [],
+          "notes": [
+            "Must validate inputs to prevent sensitive personal data upload.",
+            "Support multiple document formats (PDF, DOCX, text).",
+            "Provide guidance and disclaimers about advisory nature."
+          ]
+        },
+        {
+          "id": "ui-plan-editor",
+          "name": "Plan Drafting & Editing UI",
+          "type": "ui",
+          "responsibility": "Display generated ethical data sharing plans with sectioned rationale and allow interactive editing and annotation.",
+          "dependsOn": [
+            "api-plan-generator"
+          ],
+          "notes": [
+            "Support versioning and change tracking for collaboration.",
+            "Enable export to institutional repository formats."
+          ]
+        },
+        {
+          "id": "api-plan-generator",
+          "name": "Ethical Plan Generation API",
+          "type": "api",
+          "responsibility": "Process inputs and documents to generate structured, tailored ethical data sharing plans including compliance checklists and recommended workflows.",
+          "dependsOn": [
+            "data-projects",
+            "integration-policy-updates"
+          ],
+          "notes": [
+            "Incorporate rule-based logic and templates for common data types.",
+            "Flag areas needing legal or IRB consultation.",
+            "Handle failures gracefully with clear error messages."
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Project & Plan Data Store",
+          "type": "data",
+          "responsibility": "Persist project metadata, uploaded document metadata (not personal data), generated plans, user edits, and compliance checklists.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive stored data at rest.",
+            "Implement strict access controls per user role.",
+            "Avoid storing any personal participant data."
+          ]
+        },
+        {
+          "id": "integration-consent-mgmt",
+          "name": "Consent Management System Integration",
+          "type": "integration",
+          "responsibility": "Integrate with external consent management systems to import consent form summaries and templates.",
+          "dependsOn": [],
+          "notes": [
+            "Support secure API connections with institutional systems.",
+            "Fallback to manual upload if integration unavailable."
+          ]
+        },
+        {
+          "id": "background-policy-updates",
+          "name": "Policy Update Background Job",
+          "type": "job",
+          "responsibility": "Periodically fetch and update funder and institutional data sharing policies and legal guidelines to keep plan generation current.",
+          "dependsOn": [
+            "integration-policy-sources",
+            "data-policies"
+          ],
+          "notes": [
+            "Notify users of significant policy changes affecting existing plans."
+          ]
+        },
+        {
+          "id": "integration-policy-sources",
+          "name": "Policy Source Integration",
+          "type": "integration",
+          "responsibility": "Connect to external repositories or APIs providing up-to-date data sharing policies and legal guidelines.",
+          "dependsOn": [],
+          "notes": [
+            "Handle rate limits and data format changes gracefully."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Project",
+          "purpose": "Store metadata and references for research projects including descriptions, data types, and stakeholder roles.",
+          "fields": [
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dataTypes",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "sensitivityClassifications",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "stakeholderRoles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "createdByUserId"
+          ]
+        },
+        {
+          "name": "UploadedDocument",
+          "purpose": "Metadata for uploaded project documents such as project description, consent summaries, and policies.",
+          "fields": [
+            {
+              "name": "documentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "uploadedByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "storageReference",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "documentId",
+            "projectId"
+          ]
+        },
+        {
+          "name": "EthicalDataSharingPlan",
+          "purpose": "Generated ethical data sharing plan with rationale, compliance checklist, workflows, and stakeholder responsibilities.",
+          "fields": [
+            {
+              "name": "planId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "createdByUserId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "planId",
+            "projectId"
+          ]
+        },
+        {
+          "name": "Policy",
+          "purpose": "Stored versions of funder and institutional data sharing policies and legal guidelines.",
+          "fields": [
+            {
+              "name": "policyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "retrievedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "policyId",
+            "source"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Project Input & Document Upload",
+          "purpose": "Collect project details, upload relevant documents, and specify data and stakeholder information.",
+          "inputs": [
+            "Project title and description",
+            "Data types and sensitivity classifications",
+            "Upload project description, consent summaries, policies"
+          ],
+          "outputs": [
+            "Validated input data",
+            "Stored document metadata"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/plan",
+          "title": "Ethical Data Sharing Plan Editor",
+          "purpose": "Display generated plan with rationale, allow editing, annotations, and export.",
+          "inputs": [
+            "Selected project ID",
+            "Generated plan content"
+          ],
+          "outputs": [
+            "Edited plan versions",
+            "Exported plan documents"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/policies",
+          "title": "Policy Reference & Updates",
+          "purpose": "View current funder and institutional policies and legal guidelines relevant to data sharing.",
+          "inputs": [],
+          "outputs": [
+            "Current policy documents and summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/collaboration",
+          "title": "Collaboration & User Management",
+          "purpose": "Manage user roles, share projects, and track plan editing history for multi-institutional teams.",
+          "inputs": [
+            "User role assignments",
+            "Project sharing invitations"
+          ],
+          "outputs": [
+            "Access control enforcement",
+            "Audit logs"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project with metadata and initial inputs.",
+          "requestShape": "{ title: string, description: string, dataTypes: json, sensitivityClassifications: json, stakeholderRoles: json }",
+          "responseShape": "{ projectId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents/upload",
+          "method": "POST",
+          "purpose": "Upload project-related documents securely.",
+          "requestShape": "{ projectId: string, file: binary, fileType: string }",
+          "responseShape": "{ documentId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/plan/generate",
+          "method": "POST",
+          "purpose": "Generate an ethical data sharing plan based on project inputs and policies.",
+          "requestShape": "{ projectId: string }",
+          "responseShape": "{ planId: string, content: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/plan/edit",
+          "method": "POST",
+          "purpose": "Save edits or annotations to an existing plan version.",
+          "requestShape": "{ planId: string, content: json }",
+          "responseShape": "{ status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/policies",
+          "method": "GET",
+          "purpose": "Retrieve current data sharing policies and legal guidelines.",
+          "requestShape": "{}",
+          "responseShape": "{ policies: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaboration/invite",
+          "method": "POST",
+          "purpose": "Invite users to collaborate on a project with defined roles.",
+          "requestShape": "{ projectId: string, userEmail: string, role: string }",
+          "responseShape": "{ status: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Policy Update Fetcher",
+          "trigger": "Scheduled (daily or weekly)",
+          "purpose": "Fetch latest funder and institutional policies and legal guidelines to update internal policy store."
+        },
+        {
+          "name": "Plan Compliance Notifier",
+          "trigger": "On policy update or plan generation",
+          "purpose": "Notify users if existing plans may be impacted by policy changes or require review."
+        }
+      ],
+      "edgeCases": [
+        "User uploads documents containing personal participant data despite warnings — system must detect and reject or flag.",
+        "Conflicting funder and institutional policies requiring user clarification or override.",
+        "Network failures during document upload or policy fetching — must retry and inform user.",
+        "User attempts to generate plan with incomplete or inconsistent inputs.",
+        "Multiple collaborators editing the same plan concurrently causing version conflicts.",
+        "Policy source API changes or downtime affecting background job reliability."
+      ],
+      "nonGoals": [
+        "Providing legal advice or definitive compliance guarantees.",
+        "Storing or processing personal participant data.",
+        "Automating institutional IRB or legal approval workflows.",
+        "Replacing institutional consent management systems (only integrate).",
+        "Handling non-academic or commercial data sharing contexts."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses the Project Input & Document Upload page (/).",
+        "User inputs project metadata (title, description, data types, sensitivity classifications, stakeholder roles) and submits.",
+        "Frontend validates inputs and calls POST /api/projects to create a new Project record.",
+        "User uploads documents related to the project via the UI, which calls POST /api/documents/upload with file and metadata.",
+        "Uploaded documents are scanned for personal participant data; if detected, upload is rejected or flagged.",
+        "Document metadata (not file content) is stored in UploadedDocument model with secure storage references.",
+        "User navigates to the Plan Editor page (/plan) selecting a project.",
+        "Frontend calls POST /api/plan/generate with projectId to generate an ethical data sharing plan.",
+        "API aggregates project data, uploaded document metadata, and current policies from the Policy model.",
+        "API applies rule-based logic and templates to generate plan content, flags legal/IRB consultation areas.",
+        "Generated plan is stored in EthicalDataSharingPlan model with versioning and returned to frontend.",
+        "User edits or annotates the plan; frontend calls POST /api/plan/edit to save changes as new plan versions.",
+        "User can export plan documents in institutional repository formats from the Plan Editor UI.",
+        "User accesses /policies page to view current policies; frontend calls GET /api/policies to retrieve them.",
+        "Collaboration page (/collaboration) allows managing user roles and sharing projects; calls POST /api/collaboration/invite.",
+        "Background job 'Policy Update Fetcher' runs periodically to fetch latest policies from external sources via integration-policy-sources.",
+        "Fetched policies are stored/updated in Policy model; significant changes trigger 'Plan Compliance Notifier' job.",
+        "Notifier job sends alerts to users whose existing plans may be impacted, prompting review.",
+        "All data storage enforces encryption at rest and strict access controls based on user roles.",
+        "System handles network failures with retries and user notifications for uploads and policy fetches.",
+        "Concurrent plan edits are managed with versioning and conflict detection to prevent data loss."
+      ],
+      "validationRules": [
+        "Project title and description: required, non-empty strings, max length limits (e.g., 255 chars for title).",
+        "Data types, sensitivity classifications, stakeholder roles: required JSON objects, validated against predefined schemas.",
+        "Uploaded documents: file type must be one of PDF, DOCX, or plain text; file size limits enforced.",
+        "Uploaded documents scanned to detect and reject any containing personal participant data.",
+        "Plan generation requests require existing projectId linked to authenticated user with access rights.",
+        "Plan edit requests must include valid planId, content JSON validated against plan schema, and user authorization.",
+        "Collaboration invites require valid projectId, userEmail format validation, and role from allowed set.",
+        "API requests require authentication tokens; unauthorized requests rejected with 401.",
+        "Input fields sanitized to prevent injection attacks and XSS.",
+        "Version numbers incremented sequentially for plan edits to maintain history integrity."
+      ],
+      "errorHandling": [
+        "API returns structured error responses with HTTP status codes and descriptive messages (e.g., 400 for validation errors, 401 for auth failures, 500 for server errors).",
+        "Document upload failures due to invalid file type, size, or personal data detection return clear error messages to user.",
+        "Plan generation failures due to incomplete inputs or policy fetch issues return user-friendly messages suggesting corrective actions.",
+        "Background jobs log errors and retry on transient failures; persistent failures trigger alerts to system admins.",
+        "Concurrent plan edit conflicts detected by version mismatch result in 409 Conflict responses with instructions to refresh or merge.",
+        "Network failures during API calls trigger frontend retry logic with exponential backoff and user notifications.",
+        "Policy source integration handles rate limits by backing off and caching last successful data.",
+        "Fallback to manual document upload if consent management integration is unavailable, with user notification.",
+        "All errors logged with context for auditing and debugging."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication and enforce authorization checks based on user roles and project access.",
+        "Sensitive data stored (e.g., project metadata, plan content) is encrypted at rest using strong encryption standards.",
+        "No personal participant data is stored or processed; document uploads are scanned to enforce this.",
+        "Access controls prevent unauthorized users from viewing or editing projects, plans, or documents.",
+        "File uploads stored securely with randomized storage references to prevent direct URL guessing.",
+        "API endpoints validate and sanitize all inputs to prevent injection and cross-site scripting attacks.",
+        "Collaboration invites require verification of user emails and role assignments to prevent privilege escalation.",
+        "Background jobs and integrations use secure API connections with institutional systems, including authentication and encryption.",
+        "Audit logs maintained for user actions related to project creation, document upload, plan edits, and collaboration changes.",
+        "Exported plan documents do not contain sensitive or personal data and are generated securely."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the Project Input page with valid project metadata inputs",
+          "when": "The user submits the project creation form",
+          "then": "A new project is created in the database with correct metadata and the user receives a success confirmation"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user uploading a document with an allowed file type and no personal data",
+          "when": "The user uploads the document",
+          "then": "The document metadata is stored, the file is securely saved, and the user receives a success message"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user attempts to upload a document containing personal participant data",
+          "when": "The upload is processed",
+          "then": "The upload is rejected with a clear error message indicating prohibited content"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with access to a project on the Plan Editor page",
+          "when": "The user requests plan generation",
+          "then": "A tailored ethical data sharing plan is generated, stored, and displayed with rationale and compliance checklist"
+        },
+        {
+          "id": "AT-005",
+          "given": "Multiple collaborators editing the same plan concurrently",
+          "when": "A user attempts to save edits with an outdated plan version",
+          "then": "The system detects conflict, rejects the save, and prompts the user to refresh or merge changes"
+        },
+        {
+          "id": "AT-006",
+          "given": "The background job runs to fetch updated policies",
+          "when": "New policies are detected",
+          "then": "Policies are updated in the database and affected users receive notifications to review impacted plans"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user accesses the Policies page",
+          "when": "The page loads",
+          "then": "Current funder and institutional policies are displayed accurately"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user invites a collaborator with a valid email and role",
+          "when": "The invitation is sent",
+          "then": "The collaborator receives an invitation and gains appropriate access upon acceptance"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user attempts to generate a plan with incomplete project inputs",
+          "when": "The generation request is made",
+          "then": "The API returns a validation error with instructions to complete missing inputs"
+        },
+        {
+          "id": "AT-010",
+          "given": "Network failure occurs during document upload",
+          "when": "The user attempts to upload",
+          "then": "The system retries upload and informs the user of the failure and retry status"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for Project, UploadedDocument, EthicalDataSharingPlan, and Policy with indexes and encryption.",
+        "Implement authentication and authorization middleware for API routes.",
+        "Develop /api/projects POST endpoint with validation and project creation logic.",
+        "Develop /api/documents/upload POST endpoint with file handling, scanning for personal data, and metadata storage.",
+        "Build Project Input & Document Upload UI page with form validation and document upload components.",
+        "Implement /api/plan/generate POST endpoint integrating project data, policies, and rule-based plan generation logic.",
+        "Develop /api/plan/edit POST endpoint for saving plan edits with versioning and conflict detection.",
+        "Build Plan Drafting & Editing UI page with plan display, editing, annotation, versioning, and export features.",
+        "Implement /api/policies GET endpoint to retrieve current policies.",
+        "Build Policy Reference & Updates UI page to display policies.",
+        "Implement /api/collaboration/invite POST endpoint for user invitations and role assignments.",
+        "Build Collaboration & User Management UI page for managing roles, invitations, and audit logs.",
+        "Develop background jobs: Policy Update Fetcher and Plan Compliance Notifier with scheduling and notification mechanisms.",
+        "Integrate with external policy sources and consent management systems with fallback handling.",
+        "Implement error handling, logging, and retry mechanisms across API and background jobs.",
+        "Conduct security audits and enforce encryption, access controls, and input sanitization.",
+        "Perform acceptance testing and edge case validation."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/plan",
+          "/policies",
+          "/collaboration"
+        ],
+        "apiFilesToCreate": [
+          "api/projects.js",
+          "api/documents/upload.js",
+          "api/plan/generate.js",
+          "api/plan/edit.js",
+          "api/policies.js",
+          "api/collaboration/invite.js"
+        ],
+        "prismaModelsToAdd": [
+          "Project",
+          "UploadedDocument",
+          "EthicalDataSharingPlan",
+          "Policy"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, clarifications, or additional requirements related to the ethical data sharing plan generator.",
+        "promptTemplate": "You are the planner refining the project requirements. Given the current blueprint and expanded specs: {{BLUEPRINT}}\nUser input so far: {{USER_INPUT}}\nPlease ask targeted questions to clarify missing constraints or requirements related to project inputs, data sensitivity, stakeholder roles, compliance needs, or risk considerations."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the application pages, UI components, API routes, and data models based on the refined requirements and blueprint.",
+        "promptTemplate": "You are the architect finalizing the app design. Given the refined requirements: {{REFINED_REQUIREMENTS}}\nAnd the initial blueprint: {{BLUEPRINT}}\nPlease produce a detailed specification of pages, UI components, API endpoints, and data models to be implemented."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code or scaffolding for the UI pages and components defined by the architect.",
+        "promptTemplate": "You are the builder generating page stubs. Using the finalized page specifications: {{PAGES_SPEC}}\nPlease produce code scaffolds or templates for each page and UI component, including input forms and file upload controls."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the frontend pages and components to backend API endpoints and database models, implementing data flow and validation.",
+        "promptTemplate": "You are the integrator wiring frontend to backend. Given the API routes: {{API_ROUTES}}, data models: {{DATA_MODELS}}, and page stubs: {{PAGE_STUBS}}\nPlease generate integration code to connect UI inputs and file uploads to API calls, handle responses, and persist data reliably with validation and security."
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "weekly-financial-team-meeting-action-item-extractor",
+  "title": "Weekly Financial Team Meeting Action Item Extractor",
+  "description": "Upload or paste transcripts or notes from weekly financial team meetings to automatically extract clear, actionable tasks with assigned responsibilities and deadlines to streamline follow-up and accountability.",
+  "inputLabel": "Paste or upload meeting transcript or notes",
+  "outputLabel": "Structured action items and follow-up tasks",
+  "systemPrompt": "You are a financial team assistant. Analyze the provided meeting transcript or notes and extract all actionable tasks, assigning responsible roles and deadlines if mentioned. Present the output as a structured list of action items for efficient team follow-up.",
+  "temperature": 0,
+  "features": [
+    "file-upload",
+    "text-input",
+    "structured-output"
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "actionItems: array of {task: string, responsible: string, deadline: string (optional)}"
+}

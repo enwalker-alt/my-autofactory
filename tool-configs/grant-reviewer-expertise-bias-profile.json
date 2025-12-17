@@ -1,0 +1,616 @@
+{
+  "slug": "grant-reviewer-expertise-bias-profile",
+  "title": "Academic Grant Reviewer Expertise & Bias Profile Generator",
+  "description": "Upload your CV/publications and assigned grant proposals to generate a data-driven textual expertise profile and bias risk assessment to support balanced, fair grant reviewing. Includes demographic input and optional funder guideline upload with explicit consent. Provides advisory insights highlighting expertise strengths, gaps, and bias risk indicators.",
+  "inputLabel": "Upload your CV/publications (PDF or text), paste or upload assigned proposals, complete demographic questionnaire, and optionally upload funder guidelines. Consent is required.",
+  "outputLabel": "Generated Expertise & Bias Profile Report",
+  "systemPrompt": "You are an expert assistant helping an academic research grant reviewer generate a detailed, safe, and advisory expertise and bias risk profile report. Only process inputs with explicit user consent. Extract reviewer expertise areas from CV/publications and analyze assigned proposals abstracts and keywords to highlight expertise strengths and gaps. Use demographic and professional background questionnaire data to generate unbiased, non-accusatory bias risk indicators. If funder guidelines are provided, assess compliance risks. Always include clear disclaimers stating outputs are advisory, not definitive judgments. Reject any inputs that are malformed, exceed size limits, or lack consent. Output a comprehensive plain text report summarizing expertise coverage, bias risk indicators with contextual explanations, and recommendations for assignment adjustments or training. Do not generate legally or ethically contentious labels. Use neutral, respectful language. If requested data is missing or insufficient, clearly state limitations. Format output for readability. Refuse to process requests missing consent or disallowed content.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Expertise & Bias Summary",
+      "prompt": "Generate a clear, advisory expertise and bias risk profile based on the provided CV/publications, assigned proposals, demographic data, and optional funder guidelines. Highlight expertise strengths and gaps relative to proposals, indicate potential bias risk areas with explanations, and provide recommendations for proposal assignments and reviewer training. Include disclaimers about advisory nature and data privacy."
+    },
+    {
+      "label": "Expertise Focused Summary",
+      "prompt": "Focus primarily on extracting and summarizing the reviewer's expertise areas from the CV/publications and comparing them to the assigned proposals to identify strengths and gaps. Include brief bias risk disclaimers but minimize bias assessment details."
+    },
+    {
+      "label": "Bias Risk Assessment Focus",
+      "prompt": "Generate a detailed advisory bias risk assessment based on demographic and professional background data relative to assigned proposals. Emphasize neutral, non-accusatory risk indicators with contextual explanations. Include brief expertise summary and recommendations."
+    },
+    {
+      "label": "Compliance & Recommendations Emphasis",
+      "prompt": "Prioritize assessment of compliance with optional funder guidelines and generate actionable recommendations for proposal assignment adjustments and training resources. Include concise expertise and bias risk summaries."
+    }
+  ],
+  "clarifyPrompt": "To generate an accurate expertise and bias profile, please upload a CV/publications file (PDF or text), provide assigned proposals (text or file), complete the demographic questionnaire, upload funder guidelines if available, and confirm consent for data use.",
+  "finalizePrompt": "Please confirm all inputs are correct, consent is given, and you are ready to generate your expertise and bias profile report.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Reviewer Expertise & Bias Profile Generator",
+      "niche": {
+        "role": "Academic Research Grant Reviewer",
+        "scenario": "Preparing to review multiple grant proposals across diverse subfields with potential unconscious biases and varying expertise levels"
+      },
+      "problem": "Grant reviewers often receive many proposals from varied disciplines but lack a clear, data-driven profile of their own expertise coverage and potential unconscious biases relative to the proposals assigned. This hinders balanced, fair evaluations and risks uneven quality of review across topics.",
+      "inputs": [
+        "Reviewer CV or publication list (PDF/text upload)",
+        "List of assigned grant proposals with abstracts and keywords (uploaded or pasted)",
+        "Reviewer demographic and professional background questionnaire",
+        "Funder-specific conflict of interest and review guidelines (optional upload)"
+      ],
+      "outputs": [
+        "Structured reviewer expertise profile highlighting strengths and gaps relative to assigned proposals",
+        "Bias risk assessment report showing potential areas of unconscious bias based on demographic, institutional, or topical factors",
+        "Customized recommendations for proposal assignment adjustments or reviewer training materials",
+        "Clear visual dashboard summarizing expertise coverage, bias flags, and compliance with funder guidelines"
+      ],
+      "whyItWins": [
+        "No current tool clearly profiles reviewer expertise gaps and bias risks relative to assigned proposals",
+        "Supports reviewers and funding agencies in improving fairness and rigor of grant review",
+        "Data-driven insights enable more balanced proposal assignments and targeted reviewer development",
+        "Automates complex manual self-assessment and conflict identification processes"
+      ],
+      "upgradePath": {
+        "today": "Single-page app to upload CV and proposals, generating a basic expertise and bias profile report with textual summaries",
+        "in90Days": "Add interactive visual dashboards, integration with common grant management systems, and customizable bias assessment parameters",
+        "in12Months": "Full multi-page platform offering reviewer team coordination, longitudinal tracking of expertise development, batch proposal assignment optimization, and training resource recommendations"
+      },
+      "riskNotes": [
+        "Must carefully handle sensitive personal data with strong privacy and security protections",
+        "Avoid generating legally or ethically contentious bias labels—focus on risk indicators, not accusations",
+        "Users must understand outputs are advisory, not absolute judgments",
+        "Requires clear disclaimers about limitations and data use consent"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A platform for academic research grant reviewers to upload their CVs and assigned proposals to generate data-driven expertise profiles and bias risk assessments, helping improve fairness and rigor in grant review through visual dashboards, recommendations, and compliance checks.",
+      "primaryUser": "Academic research grant reviewers and funding agency administrators",
+      "successMetrics": [
+        "Number of reviewers generating expertise and bias profiles",
+        "Reviewer satisfaction with profile accuracy and usefulness",
+        "Reduction in reviewer assignment conflicts and bias risk flags over time",
+        "Usage of recommendations for assignment adjustments or training",
+        "Compliance adherence rates with funder guidelines"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Upload & Input UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload CV/publication lists, grant proposals, demographic questionnaires, and optional funder guidelines; validate inputs and provide upload feedback.",
+          "dependsOn": [],
+          "notes": [
+            "Support PDF and text uploads with file size limits",
+            "Input validation and error messaging for malformed files",
+            "Sensitive data entry with clear consent prompts"
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Expertise & Bias Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display interactive visualizations summarizing expertise coverage, bias risk indicators, and guideline compliance; provide textual summaries and recommendations.",
+          "dependsOn": [
+            "api-profile",
+            "api-bias",
+            "api-recommendations"
+          ],
+          "notes": [
+            "Visualize expertise gaps relative to assigned proposals",
+            "Highlight bias risk areas with contextual explanations",
+            "Show compliance status with funder guidelines",
+            "Allow filtering and drill-down by topic or proposal"
+          ]
+        },
+        {
+          "id": "api-profile",
+          "name": "Expertise Profile API",
+          "type": "api",
+          "responsibility": "Process uploaded CV/publications and proposals to generate structured expertise profiles highlighting strengths and gaps.",
+          "dependsOn": [
+            "data-reviewer",
+            "data-proposals"
+          ],
+          "notes": [
+            "Use NLP and topic modeling to extract expertise areas",
+            "Compare expertise topics with proposal topics",
+            "Handle incomplete or inconsistent input data gracefully"
+          ]
+        },
+        {
+          "id": "api-bias",
+          "name": "Bias Risk Assessment API",
+          "type": "api",
+          "responsibility": "Analyze demographic, institutional, and topical data to identify potential unconscious bias risk indicators without making accusatory labels.",
+          "dependsOn": [
+            "data-reviewer",
+            "data-proposals",
+            "data-funderGuidelines"
+          ],
+          "notes": [
+            "Focus on risk indicators, not definitive bias claims",
+            "Incorporate customizable bias parameters",
+            "Respect privacy and ethical considerations"
+          ]
+        },
+        {
+          "id": "api-recommendations",
+          "name": "Recommendations & Compliance API",
+          "type": "api",
+          "responsibility": "Generate customized recommendations for proposal assignment adjustments, reviewer training, and compliance with funder-specific guidelines.",
+          "dependsOn": [
+            "api-profile",
+            "api-bias",
+            "data-funderGuidelines"
+          ],
+          "notes": [
+            "Provide actionable, advisory recommendations",
+            "Flag potential conflicts of interest per guidelines",
+            "Allow funder guideline updates and versioning"
+          ]
+        },
+        {
+          "id": "data-reviewer",
+          "name": "Reviewer Data Store",
+          "type": "data",
+          "responsibility": "Persist reviewer profiles, uploaded CVs/publications, demographic info, and generated expertise and bias assessment results.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive personal data at rest",
+            "Support versioning for longitudinal tracking",
+            "Access controls to protect privacy"
+          ]
+        },
+        {
+          "id": "data-proposals",
+          "name": "Proposals Data Store",
+          "type": "data",
+          "responsibility": "Store uploaded grant proposals with abstracts, keywords, and metadata for analysis and comparison.",
+          "dependsOn": [],
+          "notes": [
+            "Support batch uploads and updates",
+            "Link proposals to reviewers and funders",
+            "Maintain data integrity and confidentiality"
+          ]
+        },
+        {
+          "id": "data-funderGuidelines",
+          "name": "Funder Guidelines Store",
+          "type": "data",
+          "responsibility": "Persist funder-specific conflict of interest and review guidelines to support compliance checks and recommendations.",
+          "dependsOn": [],
+          "notes": [
+            "Allow optional upload and updates by funders",
+            "Version control for guideline changes",
+            "Structured format for automated processing"
+          ]
+        },
+        {
+          "id": "job-profile-generation",
+          "name": "Expertise & Bias Profile Generation Job",
+          "type": "job",
+          "responsibility": "Background job triggered on data upload to process inputs and generate expertise profiles and bias risk assessments asynchronously.",
+          "dependsOn": [
+            "data-reviewer",
+            "data-proposals",
+            "api-profile",
+            "api-bias"
+          ],
+          "notes": [
+            "Handle large files and complex NLP processing",
+            "Retry on transient failures",
+            "Notify users of completion or errors"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Reviewer",
+          "purpose": "Store reviewer personal, demographic, and professional background data along with uploaded CV/publications and generated profiles.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "demographics",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "professionalBackground",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "cvFileReference",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "expertiseProfile",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "biasAssessment",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "consentGiven",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Proposal",
+          "purpose": "Store grant proposal metadata including abstracts, keywords, and assigned reviewer links.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "abstract",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "keywords",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "assignedReviewerIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "assignedReviewerIds"
+          ]
+        },
+        {
+          "name": "FunderGuideline",
+          "purpose": "Store funder-specific conflict of interest and review guidelines for compliance checks.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "guidelineDocumentReference",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "structuredGuidelines",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "funderName",
+            "version"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Data",
+          "purpose": "Page for reviewers to upload CV/publications, proposals, demographic info, and optional funder guidelines.",
+          "inputs": [
+            "CV/publication files",
+            "Proposal files or text",
+            "Demographic questionnaire",
+            "Funder guidelines file (optional)"
+          ],
+          "outputs": [
+            "Upload status",
+            "Validation errors",
+            "Consent confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Expertise & Bias Dashboard",
+          "purpose": "Interactive dashboard summarizing expertise coverage, bias risk indicators, and compliance with funder guidelines.",
+          "inputs": [
+            "Reviewer ID or session context"
+          ],
+          "outputs": [
+            "Visualizations",
+            "Textual summaries",
+            "Recommendations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/recommendations",
+          "title": "Recommendations & Compliance",
+          "purpose": "Display customized recommendations for proposal assignments, training, and guideline compliance.",
+          "inputs": [
+            "Reviewer ID"
+          ],
+          "outputs": [
+            "Assignment adjustment suggestions",
+            "Training resources",
+            "Compliance flags"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/admin/funders",
+          "title": "Funder Guidelines Management",
+          "purpose": "Admin page for funders or system admins to upload and manage conflict of interest and review guidelines.",
+          "inputs": [
+            "Funder guideline files",
+            "Metadata"
+          ],
+          "outputs": [
+            "Upload status",
+            "Version history"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/profile/generate",
+          "method": "POST",
+          "purpose": "Trigger generation of expertise profile from uploaded CV and proposals.",
+          "requestShape": "{ reviewerId: string }",
+          "responseShape": "{ status: string, jobId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/bias/assess",
+          "method": "POST",
+          "purpose": "Trigger bias risk assessment based on demographic and proposal data.",
+          "requestShape": "{ reviewerId: string }",
+          "responseShape": "{ status: string, jobId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/recommendations/get",
+          "method": "GET",
+          "purpose": "Retrieve customized recommendations and compliance flags for a reviewer.",
+          "requestShape": "{ reviewerId: string }",
+          "responseShape": "{ recommendations: json, complianceFlags: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funder-guidelines/upload",
+          "method": "POST",
+          "purpose": "Upload or update funder-specific guidelines.",
+          "requestShape": "{ funderName: string, guidelineFile: file }",
+          "responseShape": "{ status: string, version: string, error?: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ProfileGenerationJob",
+          "trigger": "Triggered by API calls on data upload or update",
+          "purpose": "Process uploaded data asynchronously to generate expertise profiles and bias assessments."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or poorly formatted CV/publication uploads leading to partial expertise extraction",
+        "Proposals with missing abstracts or keywords reducing analysis accuracy",
+        "Reviewer demographic data omitted or partially filled impacting bias risk assessment",
+        "Conflicting or outdated funder guidelines causing compliance ambiguity",
+        "Large batch uploads causing processing delays or timeouts",
+        "Users revoking consent after data upload requiring data deletion",
+        "False positives in bias risk indicators causing user concern",
+        "Network failures during upload or processing requiring retries"
+      ],
+      "nonGoals": [
+        "Making definitive or legally binding bias accusations",
+        "Replacing human judgment in grant review decisions",
+        "Providing exhaustive reviewer training content (only recommendations)",
+        "Managing proposal submissions or full grant management workflows",
+        "Storing or processing full proposal documents beyond abstracts and keywords"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses /upload page to submit CV/publications, proposals, demographic info, and optional funder guidelines with consent confirmation.",
+        "Upload UI validates file types (PDF, text), file sizes, and questionnaire completeness; on success, uploads data to respective API endpoints and stores in data stores (Reviewer, Proposal, FunderGuideline).",
+        "Upon successful upload, /api/profile/generate and /api/bias/assess endpoints are called with reviewerId to trigger asynchronous ProfileGenerationJob.",
+        "ProfileGenerationJob processes uploaded CVs and proposals using NLP/topic modeling to generate expertise profiles and bias risk assessments, storing results back in Reviewer data store.",
+        "Dashboard UI (/dashboard) fetches expertise profiles, bias assessments, and compliance data via /api/profile, /api/bias, and /api/recommendations endpoints using reviewerId from session.",
+        "Recommendations API (/api/recommendations/get) aggregates data from expertise profiles, bias assessments, and funder guidelines to provide actionable recommendations and compliance flags.",
+        "Admin UI (/admin/funders) allows authorized users to upload/update funder guidelines via /api/funder-guidelines/upload, storing structured guidelines with versioning.",
+        "Background job handles large file processing, retries on transient failures, and notifies users of completion or errors via UI feedback or notifications."
+      ],
+      "validationRules": [
+        "File uploads accept only PDF and plain text formats with size limits (e.g., max 10MB per file).",
+        "Uploaded CVs and proposals must contain parsable text; reject or flag malformed files with clear error messages.",
+        "Demographic questionnaire requires mandatory fields (e.g., age range, gender identity) with optional fields allowed.",
+        "Consent checkbox must be explicitly checked before accepting any sensitive data upload.",
+        "Funder guideline uploads require valid structured format (e.g., JSON schema) and metadata including funderName and version.",
+        "API requests must include authenticated user context and valid reviewerId matching session user.",
+        "Proposal uploads require at minimum title and abstract; keywords are optional but recommended.",
+        "Reviewer email must be unique and valid email format.",
+        "Version strings for funder guidelines follow semantic versioning pattern (e.g., '1.0.0')."
+      ],
+      "errorHandling": [
+        "Upload UI displays specific validation errors per input field or file with guidance for correction.",
+        "API endpoints return structured error responses with HTTP status codes (400 for validation errors, 401 for auth failures, 500 for server errors) and descriptive messages.",
+        "Background job retries transient failures up to configurable limits with exponential backoff; persistent failures trigger user notifications.",
+        "Partial processing results (e.g., incomplete expertise extraction) are saved with warnings rather than failing entire job.",
+        "Network or timeout errors during upload or processing prompt user to retry with preserved input data where possible.",
+        "Consent revocation triggers secure deletion of all associated personal data and invalidates related profiles.",
+        "False positives in bias risk assessments are accompanied by contextual explanations and disclaimers to mitigate user concern.",
+        "Admin guideline uploads validate version conflicts and reject duplicates or outdated versions with clear feedback."
+      ],
+      "securityNotes": [
+        "All sensitive personal data (demographics, CV content) must be encrypted at rest in the database.",
+        "Access controls enforce that reviewers can only access their own data and profiles; admins have elevated access for funder guidelines.",
+        "API routes require authenticated user sessions with role-based authorization checks.",
+        "Consent must be explicitly obtained and recorded before processing or storing sensitive data.",
+        "File uploads are scanned and sanitized to prevent injection or malware attacks.",
+        "Data transmission uses HTTPS to protect data in transit.",
+        "Audit logs record data uploads, profile generations, and guideline changes for compliance and troubleshooting.",
+        "Background jobs run in isolated environments with limited permissions to minimize attack surface."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated reviewer on the /upload page with valid CV and demographic data",
+          "when": "The reviewer uploads a PDF CV, fills demographic questionnaire, checks consent, and submits",
+          "then": "The system validates inputs, stores data securely, triggers profile generation job, and shows upload success message"
+        },
+        {
+          "id": "AT-002",
+          "given": "A reviewer with uploaded data and completed profile generation job",
+          "when": "The reviewer accesses the /dashboard page",
+          "then": "The dashboard displays expertise visualizations, bias risk indicators with explanations, and compliance status with filtering options"
+        },
+        {
+          "id": "AT-003",
+          "given": "A reviewer with generated expertise and bias profiles",
+          "when": "The reviewer accesses /recommendations page",
+          "then": "The system shows actionable assignment adjustment suggestions, training resources, and compliance flags based on latest data"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated admin on /admin/funders page",
+          "when": "The admin uploads a new funder guideline file with metadata",
+          "then": "The system validates, stores the guideline with versioning, and displays updated version history"
+        },
+        {
+          "id": "AT-005",
+          "given": "A reviewer uploads a malformed CV file exceeding size limits",
+          "when": "The upload is attempted",
+          "then": "The system rejects the file with a clear validation error and prevents submission"
+        },
+        {
+          "id": "AT-006",
+          "given": "A reviewer revokes consent after data upload",
+          "when": "The system processes the revocation request",
+          "then": "All personal data and generated profiles are securely deleted and user is notified"
+        },
+        {
+          "id": "AT-007",
+          "given": "A background job processing a large batch upload encounters a transient failure",
+          "when": "The failure occurs",
+          "then": "The job retries automatically and notifies the user upon success or persistent failure"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Reviewer, Proposal, and FunderGuideline with encryption and indexing",
+        "Implement authentication and authorization middleware for API routes and pages",
+        "Develop /upload page UI with file inputs, demographic form, consent checkbox, and client-side validation",
+        "Create API endpoints for uploading reviewer data, proposals, and funder guidelines with server-side validation",
+        "Implement background job infrastructure for ProfileGenerationJob with retry and notification mechanisms",
+        "Build /api/profile/generate and /api/bias/assess POST endpoints to trigger background jobs",
+        "Develop /dashboard page UI fetching data from profile, bias, and recommendations APIs with interactive visualizations",
+        "Implement /api/recommendations/get GET endpoint aggregating data and generating recommendations",
+        "Create /recommendations page UI displaying recommendations and compliance flags",
+        "Build /admin/funders page UI and /api/funder-guidelines/upload POST endpoint with version control",
+        "Add error handling and user feedback mechanisms across UI and API layers",
+        "Implement security features: encryption, access controls, consent management, and audit logging",
+        "Write comprehensive acceptance tests and edge case handling",
+        "Perform load testing and optimize background job processing for large uploads"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/dashboard",
+          "/recommendations",
+          "/admin/funders"
+        ],
+        "apiFilesToCreate": [
+          "/api/profile/generate.ts",
+          "/api/bias/assess.ts",
+          "/api/recommendations/get.ts",
+          "/api/funder-guidelines/upload.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Reviewer { id String @id @default(uuid()) name String email String @unique demographics Json? professionalBackground Json? cvFileReference String? expertiseProfile Json? biasAssessment Json? consentGiven Boolean }",
+          "model Proposal { id String @id title String abstract String keywords Json? assignedReviewerIds Json? funderId String? }",
+          "model FunderGuideline { id String @id funderName String version String? guidelineDocumentReference String? structuredGuidelines Json? }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing or unclear constraints and details about the grant reviewer expertise and bias profile tool requirements.",
+        "promptTemplate": "Please provide any additional constraints, missing details, or clarifications needed to refine the requirements for the Academic Research Grant Reviewer Expertise & Bias Profile Generator. Current blueprint: {{BLUEPRINT}}. Current expanded specs: {{EXPANDED}}. Your input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the final page routes, UI components, API endpoints, and data models needed for the tool based on refined requirements.",
+        "promptTemplate": "Based on the refined requirements for the Academic Research Grant Reviewer Expertise & Bias Profile Generator, finalize the list of pages, API routes, and data models. Current blueprint: {{BLUEPRINT}}. Expanded specs: {{EXPANDED}}. Your input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial code stubs for the main pages and UI components for the single-page app to gather inputs and display profiles.",
+        "promptTemplate": "Generate code stubs for the key pages and UI components of the Academic Research Grant Reviewer Expertise & Bias Profile Generator single-page app, including upload forms and textual output display. Blueprint: {{BLUEPRINT}}. Expanded specs: {{EXPANDED}}. Your input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate the UI pages with backend API endpoints and data stores to enable data upload, processing, and profile generation.",
+        "promptTemplate": "Describe how to wire the UI pages of the Academic Research Grant Reviewer Expertise & Bias Profile Generator to backend API endpoints and databases, ensuring secure data flow, consent checks, and asynchronous profile generation. Blueprint: {{BLUEPRINT}}. Expanded specs: {{EXPANDED}}. Your input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

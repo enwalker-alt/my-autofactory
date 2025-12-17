@@ -1,0 +1,772 @@
+{
+  "slug": "academic-research-code-dep-repro-tracker",
+  "title": "Academic Research Code Dependency & Reproducibility Tracker",
+  "description": "Upload your computational research code files and environment specifications to generate structured reproducibility and dependency reports with checklists. Designed for academic researchers to track code dependencies, environment snapshots, and reproducibility status with ease and minimal DevOps expertise.",
+  "inputLabel": "Upload code files and environment specs (e.g., requirements.txt, Dockerfiles) and optionally paste experiment metadata JSON or notes.",
+  "outputLabel": "Generated reproducibility and dependency report with environment snapshot summary and reproducibility checklist.",
+  "systemPrompt": "You are a specialized assistant for academic research software developers. Accept only valid code files (.py, .R, .yaml, .txt) and environment spec files. Also accept optional JSON experiment metadata. Validate all inputs strictly. Refuse uploads with disallowed file types or invalid metadata. Produce a clear, structured reproducibility report summarizing detected code dependencies with versions, environment snapshot details highlighting reproducibility risks, and a checklist of reproducibility steps completed or pending. Output plain text report with optional JSON structured output if requested. Do not provide medical, legal, or diagnostic advice. Enforce safe handling of potentially sensitive research code. If inputs are invalid or unsupported, respond with a clear error message. Use a friendly, precise tone suitable for academic researchers. Do not execute code or fetch external data. Do not store or expose user data beyond the session.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic reproducibility report",
+      "prompt": "Generate a reproducibility and dependency report based on the uploaded code files, environment specs, and experiment metadata. Highlight potential reproducibility risks and checklist status.",
+      "hint": "Use this to get a comprehensive report of your project's reproducibility status."
+    },
+    {
+      "label": "Dependency summary only",
+      "prompt": "Provide a summary of code dependencies and their versions extracted from the uploaded code files and environment specs.",
+      "hint": "Focus on listing dependencies and versions without environment or checklist details."
+    },
+    {
+      "label": "Checklist status review",
+      "prompt": "Summarize the reproducibility checklist steps completed and those pending based on uploaded experiment metadata and environment snapshots.",
+      "hint": "Useful for quickly reviewing reproducibility tasks progress."
+    },
+    {
+      "label": "Environment snapshot analysis",
+      "prompt": "Analyze and summarize environment specifications and highlight any potential reproducibility risks or inconsistencies.",
+      "hint": "Focus on environment files such as requirements.txt, environment.yml, or Dockerfiles."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, produce JSON with fields: dependencies (list of {name, version}), environmentSnapshot (summary string), reproducibilityChecklist (list of {step, status}), and notes (optional messages).",
+  "clarifyPrompt": "Please upload your code files and environment specification files. Optionally include experiment metadata as JSON or notes. Ensure files are valid types (.py, .R, .yaml, .txt) and under size limits. How can I assist you with your reproducibility tracking today?",
+  "finalizePrompt": "Based on the uploaded inputs, generate a detailed reproducibility and dependency report with environment snapshot and checklist summary. Ensure output is clear, structured, and suitable for academic documentation.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Code Dependency & Reproducibility Tracker",
+      "niche": {
+        "role": "Academic Research Software Developer",
+        "scenario": "Managing and documenting computational research codebases to ensure reproducibility and ease of collaboration during iterative research cycles"
+      },
+      "problem": "Academic researchers who develop computational code for data analysis or simulations often struggle to track evolving code dependencies, environment configurations, and reproducibility status across multiple experiments. Existing tools focus on individual code comments or basic version control, but do not provide structured, researcher-friendly tracking of software dependencies, computational environment snapshots, and reproducibility checklists integrated with research workflows. This leads to reproducibility risks, collaboration bottlenecks, and lost time during manuscript preparation or peer review.",
+      "inputs": [
+        "Source code files or repository links",
+        "Environment specification files (e.g., requirements.txt, environment.yml, Dockerfiles)",
+        "Experiment metadata (e.g., dataset versions, parameter settings)",
+        "Researcher notes on code changes and experiment outcomes"
+      ],
+      "outputs": [
+        "Structured report of code dependencies with version details",
+        "Environment snapshot summaries highlighting potential reproducibility risks",
+        "Checklist of reproducibility steps completed and pending",
+        "Collaborative dashboard tracking code changes, experiment runs, and reproducibility status over time"
+      ],
+      "whyItWins": [
+        "Addresses a critical gap in computational research workflows by integrating reproducibility tracking with code and environment management in one tool",
+        "Tailored specifically for academic researchers with lightweight inputs and outputs that do not require deep DevOps expertise",
+        "Facilitates repeated use across multiple experiments and manuscript iterations, improving collaboration and transparency",
+        "Helps researchers prepare reproducibility documentation for publications and peer review with minimal manual effort"
+      ],
+      "upgradePath": {
+        "today": "A simple web app where users upload code files and environment specs to generate static reproducibility and dependency reports with checklists",
+        "in90Days": "Add experiment metadata input and a versioned dashboard that tracks changes in code, environments, and reproducibility status, enabling iterative updates and collaboration among research team members",
+        "in12Months": "Develop into a multi-page collaborative system with integrations to popular code repositories, automated environment snapshotting, experiment run tracking, reproducibility issue alerts, and exportable reproducibility documentation tailored for academic journals"
+      },
+      "riskNotes": [
+        "Does not provide medical, legal, or diagnostic advice; purely focused on research software workflow",
+        "Requires clear user guidance on uploading code and environment files to avoid privacy or IP risks",
+        "Must ensure data security for potentially sensitive unpublished research code"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web-based system tailored for academic research software developers to track code dependencies, environment configurations, and reproducibility status across experiments. It evolves from a simple report generator into a collaborative dashboard with versioning, integrations, and automated reproducibility monitoring.",
+      "primaryUser": "Academic research software developers and research teams managing computational experiments",
+      "successMetrics": [
+        "Number of active research projects tracked",
+        "Frequency of reproducibility report generations",
+        "User engagement on collaborative dashboard features",
+        "Reduction in reproducibility-related issues reported by users",
+        "Positive feedback on ease of preparing reproducibility documentation"
+      ],
+      "components": [
+        {
+          "id": "ui-landing",
+          "name": "Landing and Authentication UI",
+          "type": "ui",
+          "responsibility": "Provide user onboarding, authentication, and access to main app features.",
+          "dependsOn": [],
+          "notes": [
+            "Supports user sign-up, login, password reset",
+            "Handles user session management",
+            "Must ensure secure authentication and privacy"
+          ]
+        },
+        {
+          "id": "ui-upload-report",
+          "name": "Code & Environment Upload and Report UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload code files, environment specs, and experiment metadata; display generated reproducibility and dependency reports with checklists.",
+          "dependsOn": [
+            "api-upload",
+            "api-report"
+          ],
+          "notes": [
+            "Supports drag-and-drop or repo link input",
+            "Displays structured reports with version details and reproducibility checklist",
+            "Initial MVP feature"
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Collaborative Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide a versioned dashboard tracking code changes, environment snapshots, experiment runs, and reproducibility status over time for teams.",
+          "dependsOn": [
+            "api-dashboard",
+            "api-experiment",
+            "api-user"
+          ],
+          "notes": [
+            "Supports collaboration features like comments and status updates",
+            "Visualizes timeline of experiments and reproducibility progress",
+            "Requires authentication and role-based access control"
+          ]
+        },
+        {
+          "id": "api-upload",
+          "name": "Upload and Parsing API",
+          "type": "api",
+          "responsibility": "Accept and validate uploaded code files, environment specs, and experiment metadata; parse and extract dependency and environment details.",
+          "dependsOn": [
+            "data-projects",
+            "job-parse"
+          ],
+          "notes": [
+            "Validates file types and sizes",
+            "Triggers background parsing jobs",
+            "Handles errors for invalid or corrupted uploads"
+          ]
+        },
+        {
+          "id": "api-report",
+          "name": "Report Generation API",
+          "type": "api",
+          "responsibility": "Generate structured reproducibility and dependency reports and checklists based on parsed data.",
+          "dependsOn": [
+            "data-projects",
+            "data-reports"
+          ],
+          "notes": [
+            "Supports report versioning",
+            "Handles requests for report retrieval and updates",
+            "Caches reports for performance"
+          ]
+        },
+        {
+          "id": "api-dashboard",
+          "name": "Dashboard Data API",
+          "type": "api",
+          "responsibility": "Serve aggregated data for the collaborative dashboard including experiment runs, reproducibility status, and code/environment version history.",
+          "dependsOn": [
+            "data-projects",
+            "data-experiments",
+            "data-users"
+          ],
+          "notes": [
+            "Supports filtering and pagination",
+            "Enforces access control per user/team",
+            "Handles concurrent updates"
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Project and Codebase Data Store",
+          "type": "data",
+          "responsibility": "Persist user projects, uploaded code metadata, environment specs, and versioning information.",
+          "dependsOn": [],
+          "notes": [
+            "Stores file metadata, repository links, and version snapshots",
+            "Includes access control metadata for collaboration"
+          ]
+        },
+        {
+          "id": "data-experiments",
+          "name": "Experiment Metadata Store",
+          "type": "data",
+          "responsibility": "Store experiment metadata including dataset versions, parameter settings, researcher notes, and reproducibility checklist status.",
+          "dependsOn": [
+            "data-projects"
+          ],
+          "notes": [
+            "Supports multiple experiments per project",
+            "Tracks reproducibility checklist progress"
+          ]
+        },
+        {
+          "id": "data-reports",
+          "name": "Reproducibility Reports Store",
+          "type": "data",
+          "responsibility": "Persist generated reproducibility and dependency reports with version history.",
+          "dependsOn": [
+            "data-projects",
+            "data-experiments"
+          ],
+          "notes": [
+            "Supports export formats (PDF, JSON)",
+            "Stores report generation timestamps"
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User and Team Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, authentication credentials, and team collaboration data.",
+          "dependsOn": [],
+          "notes": [
+            "Supports roles and permissions",
+            "Stores user preferences and settings"
+          ]
+        },
+        {
+          "id": "job-parse",
+          "name": "Background Parsing Job",
+          "type": "job",
+          "responsibility": "Process uploaded files asynchronously to extract dependency trees, environment snapshots, and validate reproducibility checklist items.",
+          "dependsOn": [
+            "data-projects",
+            "data-experiments",
+            "data-reports"
+          ],
+          "notes": [
+            "Handles large or complex codebases without blocking API",
+            "Retries on transient failures",
+            "Logs errors for user feedback"
+          ]
+        },
+        {
+          "id": "integration-gitrepo",
+          "name": "Code Repository Integration",
+          "type": "integration",
+          "responsibility": "Connect to popular code hosting platforms (e.g., GitHub, GitLab) to import code and track repository changes automatically.",
+          "dependsOn": [
+            "api-upload",
+            "data-projects"
+          ],
+          "notes": [
+            "Supports OAuth authentication",
+            "Fetches commit history and tags",
+            "Handles private repository access securely"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user authentication and profile information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Represent a research software project with codebase and environment metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "repositoryLink",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "accessControl",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "ownerId",
+            "repositoryLink"
+          ]
+        },
+        {
+          "name": "Experiment",
+          "purpose": "Store metadata and reproducibility checklist status for individual experiments.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetVersion",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "parameterSettings",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "researcherNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "reproChecklist",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId"
+          ]
+        },
+        {
+          "name": "DependencyReport",
+          "purpose": "Persist generated reports detailing code dependencies and environment snapshots.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "experimentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "reportContent",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "experimentId",
+            "version"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Landing Page",
+          "purpose": "Welcome users, provide info about the tool, and prompt login or sign-up.",
+          "inputs": [],
+          "outputs": [],
+          "requiresAuth": false
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate existing users.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/projects",
+          "title": "User Projects",
+          "purpose": "List and manage user projects and codebases.",
+          "inputs": [],
+          "outputs": [
+            "project list",
+            "project details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/upload",
+          "title": "Upload Code & Environment Specs",
+          "purpose": "Upload code files, environment specifications, and experiment metadata for a specific project.",
+          "inputs": [
+            "code files",
+            "environment files",
+            "experiment metadata"
+          ],
+          "outputs": [
+            "upload status",
+            "parsing feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/reports/:reportId",
+          "title": "Reproducibility Report",
+          "purpose": "View generated reproducibility and dependency reports with checklists.",
+          "inputs": [],
+          "outputs": [
+            "dependency report",
+            "environment snapshot",
+            "checklist status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Collaborative Dashboard",
+          "purpose": "Track code changes, experiment runs, and reproducibility status over time across projects.",
+          "inputs": [
+            "filters",
+            "date ranges",
+            "team selection"
+          ],
+          "outputs": [
+            "dashboard visualizations",
+            "collaboration comments",
+            "status updates"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Accept uploaded code files, environment specs, and experiment metadata for parsing.",
+          "requestShape": "{ projectId: string, files: File[], metadata: json }",
+          "responseShape": "{ uploadId: string, status: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:reportId",
+          "method": "GET",
+          "purpose": "Retrieve a reproducibility and dependency report by ID.",
+          "requestShape": "{ reportId: string }",
+          "responseShape": "{ reportContent: json, version: string, createdAt: date }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/dashboard",
+          "method": "GET",
+          "purpose": "Fetch aggregated dashboard data for projects and experiments.",
+          "requestShape": "{ filters?: json }",
+          "responseShape": "{ dashboardData: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "List projects accessible to the authenticated user.",
+          "requestShape": "{}",
+          "responseShape": "{ projects: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/experiments",
+          "method": "POST",
+          "purpose": "Create or update experiment metadata and reproducibility checklist status.",
+          "requestShape": "{ experimentData: json }",
+          "responseShape": "{ experimentId: string, status: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ParseUploadedFiles",
+          "trigger": "On file upload completion",
+          "purpose": "Asynchronously parse uploaded code and environment files to extract dependencies and environment snapshots."
+        },
+        {
+          "name": "ReproducibilityStatusChecker",
+          "trigger": "Scheduled (e.g., daily)",
+          "purpose": "Analyze stored data to detect reproducibility risks and update checklist statuses or alert users."
+        },
+        {
+          "name": "RepositorySyncJob",
+          "trigger": "Scheduled or webhook from code repo",
+          "purpose": "Sync code changes and metadata from integrated code repositories to keep project data up to date."
+        }
+      ],
+      "edgeCases": [
+        "User uploads incomplete or corrupted environment specification files causing parsing failures.",
+        "Large codebases causing timeouts or memory issues during parsing jobs.",
+        "Conflicting experiment metadata updates from multiple collaborators simultaneously.",
+        "Private repository access denied due to insufficient permissions or revoked OAuth tokens.",
+        "Users accidentally upload sensitive or proprietary code without proper access controls.",
+        "Network interruptions during file uploads or API calls leading to partial data persistence.",
+        "Version mismatch between environment files and code dependencies causing false reproducibility alerts."
+      ],
+      "nonGoals": [
+        "Providing medical, legal, or diagnostic advice related to research.",
+        "Replacing full-featured DevOps or CI/CD pipelines for environment management.",
+        "Automating experiment execution or data analysis beyond metadata tracking.",
+        "Hosting or running computational experiments or simulations.",
+        "Serving as a general-purpose version control system."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses Landing Page (/) and optionally signs up or logs in via /login.",
+        "Authenticated user fetches projects list from /api/projects (GET).",
+        "User selects a project and navigates to /projects/:projectId/upload to upload code files, environment specs, and experiment metadata.",
+        "Upload UI sends POST /api/upload with projectId, files, and metadata.",
+        "API validates inputs, stores upload metadata, and triggers ParseUploadedFiles background job asynchronously.",
+        "ParseUploadedFiles job processes uploaded files, extracts dependency trees and environment snapshots, updates data-projects and data-experiments accordingly, and logs errors if any.",
+        "User can view generated reports at /projects/:projectId/reports/:reportId by fetching GET /api/reports/:reportId.",
+        "Report API retrieves report content, version, and timestamp from data-reports store.",
+        "User accesses /dashboard to view collaborative dashboard; frontend calls GET /api/dashboard with optional filters.",
+        "Dashboard API aggregates data from data-projects, data-experiments, and data-users, applies access control, and returns dashboardData.",
+        "Users create or update experiment metadata via POST /api/projects/:projectId/experiments with experimentData JSON payload.",
+        "API updates data-experiments store and returns experimentId and status.",
+        "Integration-gitrepo synchronizes code repository changes via OAuth, updating data-projects and triggering RepositorySyncJob on schedule or webhook.",
+        "ReproducibilityStatusChecker job runs daily to analyze stored data, detect reproducibility risks, update checklist statuses in data-experiments, and notify users if needed."
+      ],
+      "validationRules": [
+        "User authentication inputs: email must be valid format; password minimum length and complexity enforced.",
+        "Upload API: projectId must exist and belong to authenticated user or team with access.",
+        "Uploaded files: validate file types (e.g., .py, .R, .yaml, .txt), size limits per file and total upload size.",
+        "Experiment metadata JSON must conform to expected schema with required fields (e.g., datasetVersion optional, reproducibility checklist optional but if present must be valid JSON).",
+        "Report retrieval: reportId must exist and be accessible by requesting user.",
+        "Dashboard API filters must be validated for allowed keys and value types.",
+        "Project creation and updates must validate title presence and repositoryLink format if provided.",
+        "Role-based access control enforced on all APIs requiring authentication.",
+        "Background jobs must validate input data integrity before processing.",
+        "OAuth tokens for repository integration must be validated for expiration and permissions before use."
+      ],
+      "errorHandling": [
+        "API responses use consistent JSON error format: { errorCode: string, message: string, details?: any }.",
+        "Authentication failures return 401 Unauthorized with clear messages.",
+        "Authorization failures return 403 Forbidden when user lacks access.",
+        "Validation errors return 400 Bad Request with field-specific error details.",
+        "Upload API returns partial success with errors array if some files fail validation or parsing.",
+        "Background jobs log errors with context and retry transient failures with exponential backoff.",
+        "API rate limiting and request size limits enforced with 429 Too Many Requests or 413 Payload Too Large.",
+        "Network or database errors return 500 Internal Server Error with generic message; detailed logs stored server-side.",
+        "Client-side UI displays friendly error messages and guidance for recovery or retry.",
+        "Sensitive error details never exposed to clients to prevent information leakage."
+      ],
+      "securityNotes": [
+        "All API routes requiring authentication enforce JWT or session-based auth with secure cookie flags.",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt) and never logged or sent in plaintext.",
+        "Role-based access control enforced on project, experiment, and report data to prevent unauthorized access.",
+        "File uploads scanned for malware and restricted by allowed file types and sizes.",
+        "OAuth tokens for repository integration stored encrypted and refreshed securely.",
+        "Sensitive data such as proprietary code or environment specs accessible only to authorized users and teams.",
+        "CSRF protection enabled on all state-changing API endpoints.",
+        "Input sanitization applied to prevent injection attacks in metadata and comments.",
+        "HTTPS enforced for all client-server communication.",
+        "Audit logs maintained for critical actions such as project creation, uploads, and permission changes."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A new user visits the landing page",
+          "when": "They navigate to the sign-up page and submit valid credentials",
+          "then": "They receive confirmation and can log in successfully"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user accesses /projects",
+          "when": "They request their project list",
+          "then": "They receive a list of projects they own or collaborate on"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user uploads code files and environment specs to /api/upload with valid projectId",
+          "when": "The upload completes",
+          "then": "They receive an uploadId and status 'pending parsing', and parsing job is triggered"
+        },
+        {
+          "id": "AT-004",
+          "given": "Uploaded files include unsupported file types or exceed size limits",
+          "when": "User submits upload",
+          "then": "API returns errors indicating invalid files and does not process them"
+        },
+        {
+          "id": "AT-005",
+          "given": "Parsing job processes uploaded files",
+          "when": "Parsing succeeds",
+          "then": "Dependency and environment data are stored and linked to the project and experiment"
+        },
+        {
+          "id": "AT-006",
+          "given": "User requests a reproducibility report via /api/reports/:reportId",
+          "when": "Report exists and user has access",
+          "then": "API returns report content, version, and creation date"
+        },
+        {
+          "id": "AT-007",
+          "given": "User accesses /dashboard with filters",
+          "when": "Dashboard API is called",
+          "then": "Aggregated data is returned respecting access control and filters"
+        },
+        {
+          "id": "AT-008",
+          "given": "Multiple users update experiment metadata concurrently",
+          "when": "Updates are submitted",
+          "then": "System handles conflicts gracefully, preserving data integrity and notifying users if needed"
+        },
+        {
+          "id": "AT-009",
+          "given": "User attempts to access project or report without permission",
+          "when": "API request is made",
+          "then": "Access is denied with 403 Forbidden error"
+        },
+        {
+          "id": "AT-010",
+          "given": "OAuth token for repository integration is revoked",
+          "when": "Sync job runs",
+          "then": "Sync fails securely and user is notified to reauthorize"
+        }
+      ],
+      "buildOrder": [
+        "data-users model and authentication system",
+        "ui-landing and /login pages with authentication flows",
+        "data-projects model and /api/projects GET route",
+        "ui-upload-report page and /api/upload POST route with file validation",
+        "job-parse background job for processing uploads",
+        "data-experiments model and /api/projects/:projectId/experiments POST route",
+        "data-reports model and /api/reports/:reportId GET route",
+        "ui-dashboard page and /api/dashboard GET route with filtering and access control",
+        "integration-gitrepo OAuth integration and RepositorySyncJob",
+        "ReproducibilityStatusChecker background job",
+        "Error handling and security hardening across all components",
+        "Acceptance testing and validation"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/login",
+          "/projects",
+          "/projects/[projectId]/upload",
+          "/projects/[projectId]/reports/[reportId]",
+          "/dashboard"
+        ],
+        "apiFilesToCreate": [
+          "api/upload.ts",
+          "api/reports/[reportId].ts",
+          "api/dashboard.ts",
+          "api/projects/index.ts",
+          "api/projects/[projectId]/experiments.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "Experiment",
+          "DependencyReport"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather missing constraints or details about the research reproducibility tracking tool requirements.",
+        "promptTemplate": "Please help refine the requirements for the Academic Research Code Dependency & Reproducibility Tracker. Current blueprint: {{BLUEPRINT}}. User input: {{USER_INPUT}}. What constraints or details are missing or need clarification?"
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the pages, data models, and API routes needed for the tool based on the refined requirements.",
+        "promptTemplate": "Based on the idea and blueprint: {{BLUEPRINT}}, and refined requirements: {{REFINED_REQUIREMENTS}}, please finalize the list of pages, data models, and API routes for the Academic Research Code Dependency & Reproducibility Tracker."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for the pages defined in the blueprint to scaffold the tool UI.",
+        "promptTemplate": "Using the finalized pages: {{FINALIZED_PAGES}}, generate code stubs for each page of the Academic Research Code Dependency & Reproducibility Tracker web app."
+      },
+      {
+        "id": "integrator-wire-components",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the frontend pages with API routes and data models to build a working prototype.",
+        "promptTemplate": "Integrate the pages {{PAGES}}, API routes {{API_ROUTES}}, and data models {{DATA_MODELS}} to create the working Academic Research Code Dependency & Reproducibility Tracker. Provide wiring code and integration notes."
+      }
+    ]
+  }
+}

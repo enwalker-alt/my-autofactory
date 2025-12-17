@@ -1,0 +1,669 @@
+{
+  "slug": "museum-conservation-treatment-plan-generator",
+  "title": "Museum Conservation Treatment Plan Generator",
+  "description": "Generate structured, prioritized conservation treatment plans for artifacts by integrating condition assessments, historical data, scientific analyses, and institutional policies. Upload reports or notes to receive a draft treatment plan including risk assessments, resource needs, compliance checklist, and summary report.",
+  "inputLabel": "Paste artifact condition reports, historical provenance, and scientific analysis notes here, or upload text files:",
+  "outputLabel": "Generated Conservation Treatment Plan (draft):",
+  "systemPrompt": "You are a museum conservation treatment plan assistant. Your task is to generate a detailed, stepwise conservation treatment plan for a given artifact based on the provided condition assessment reports, historical provenance, scientific analysis data, and institutional policy guidelines. Do NOT provide medical or legal advice. Your output must include: 1) a prioritized list of treatment steps with clear procedural actions; 2) risk assessment for each step; 3) materials and resource requirements; 4) a compliance checklist aligned with institutional policies; 5) a concise summary report for stakeholders. If inputs are incomplete or insufficient, politely request more detailed, relevant information. Always respect privacy and confidentiality by not disclosing sensitive provenance information. Refuse to process inputs unrelated to artifact conservation or that violate institutional policies. Output the treatment plan as clear plain text. If structured-output feature is enabled, output valid JSON matching the specified schema. Use the input text and any uploaded files ONLY. Be concise but thorough in the treatment plan generation.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Comprehensive Plan",
+      "prompt": "Generate a full conservation treatment plan with detailed stepwise actions, risk assessments, resource lists, compliance checklists, and a summary report."
+    },
+    {
+      "label": "Summary Focus",
+      "prompt": "Generate a concise conservation treatment plan summary highlighting key treatment steps and compliance notes."
+    },
+    {
+      "label": "Risk Assessment Focus",
+      "prompt": "Generate a treatment plan emphasizing detailed risk assessments and mitigation strategies for each step."
+    },
+    {
+      "label": "Compliance Focus",
+      "prompt": "Generate a treatment plan with special attention to institutional policy compliance and checklist generation."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If returning JSON, output an object with keys: steps (array of step descriptions), riskAssessments (array of risk details by step), resourceRequirements (list of materials and resources), complianceChecklist (list of compliance items), summaryReport (string).",
+  "clarifyPrompt": "Please provide all relevant condition reports, historical provenance, scientific analysis data, and any applicable institutional policy guidelines to generate a comprehensive conservation treatment plan.",
+  "finalizePrompt": "Review the generated conservation treatment plan draft carefully. Confirm that all treatment steps, risk assessments, resource needs, and compliance items meet your institutional standards before final use.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Museum Conservation Treatment Plan Generator",
+      "niche": {
+        "role": "Museum Conservator",
+        "scenario": "Developing detailed, stepwise conservation treatment plans for artifacts requiring restoration or preservation"
+      },
+      "problem": "Museum conservators spend significant time synthesizing condition reports, historical data, and material analyses to create comprehensive, prioritized conservation treatment plans. Existing tools focus on condition reporting or acquisition evaluation but do not assist in generating structured, actionable conservation plans that integrate multiple inputs and comply with institutional standards.",
+      "inputs": [
+        "Artifact condition assessment reports (text or structured notes)",
+        "Historical provenance and previous treatment records",
+        "Material composition and scientific analysis data",
+        "Institutional conservation policies and priority guidelines"
+      ],
+      "outputs": [
+        "Structured, prioritized conservation treatment plan including stepwise procedural actions",
+        "Risk assessment for each treatment step",
+        "Materials and resource requirements",
+        "Compliance checklist aligned with institutional policies",
+        "Summary report for stakeholder review"
+      ],
+      "whyItWins": [
+        "Fills a unique gap by focusing specifically on conservation treatment planning rather than reporting or evaluation",
+        "Reduces manual integration workload from heterogeneous sources of artifact data",
+        "Supports repeated use as new artifacts and treatments are evaluated",
+        "Can improve consistency and compliance of conservation plans across institutions",
+        "Provides a foundation for institutional knowledge capture and reuse"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web tool that generates draft conservation treatment plans from uploaded text-based condition reports and historical notes",
+        "in90Days": "Add support for integrating structured scientific data (e.g., spectroscopy, imaging metadata) and institutional policy templates; enable multi-artifact batch processing",
+        "in12Months": "Develop a full multi-page system with artifact database, versioned treatment plan management, collaborative conservator workflows, resource scheduling, and compliance audit features"
+      },
+      "riskNotes": [
+        "Must ensure no medical or legal advice is given; strictly focused on artifact conservation",
+        "Outputs are advisory; conservators retain final responsibility for treatment decisions",
+        "Requires careful handling of sensitive provenance or cultural information respecting privacy and institutional policies",
+        "Data input quality varies; tool should guide users to provide sufficiently detailed and accurate source materials"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized web application to assist museum conservators in generating structured, prioritized conservation treatment plans by integrating diverse artifact data sources, ensuring compliance with institutional policies, and facilitating collaborative workflows.",
+      "primaryUser": "Museum Conservator",
+      "successMetrics": [
+        "Reduction in time spent synthesizing artifact data into treatment plans",
+        "Increased consistency and compliance of conservation treatment plans",
+        "User adoption rate among conservators within partner institutions",
+        "Number of treatment plans generated and reused over time",
+        "Positive user feedback on integration and guidance features"
+      ],
+      "components": [
+        {
+          "id": "ui-artifact-management",
+          "name": "Artifact Management UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for uploading, viewing, and managing artifact data including condition reports, historical records, and scientific analyses.",
+          "dependsOn": [
+            "api-artifact",
+            "data-artifact"
+          ],
+          "notes": [
+            "Supports batch upload and metadata editing",
+            "Includes validation and guidance on input data quality"
+          ]
+        },
+        {
+          "id": "ui-treatment-plan",
+          "name": "Treatment Plan Editor UI",
+          "type": "ui",
+          "responsibility": "Enable creation, editing, prioritization, and versioning of conservation treatment plans with risk assessments, resource requirements, and compliance checklists.",
+          "dependsOn": [
+            "api-treatment-plan",
+            "data-treatment-plan",
+            "api-policy"
+          ],
+          "notes": [
+            "Supports stepwise procedural action input",
+            "Displays compliance checklist dynamically based on institutional policies"
+          ]
+        },
+        {
+          "id": "api-artifact",
+          "name": "Artifact Data API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for artifact data including condition reports, historical provenance, and scientific analyses.",
+          "dependsOn": [
+            "data-artifact"
+          ],
+          "notes": [
+            "Validates input formats and enforces data privacy rules",
+            "Supports structured and unstructured data inputs"
+          ]
+        },
+        {
+          "id": "api-treatment-plan",
+          "name": "Treatment Plan API",
+          "type": "api",
+          "responsibility": "Manage treatment plan generation, updates, prioritization, risk assessments, and compliance checks.",
+          "dependsOn": [
+            "data-treatment-plan",
+            "api-policy"
+          ],
+          "notes": [
+            "Generates advisory treatment plans without medical/legal advice",
+            "Supports versioning and audit trails"
+          ]
+        },
+        {
+          "id": "api-policy",
+          "name": "Institutional Policy API",
+          "type": "api",
+          "responsibility": "Provide access to institutional conservation policies and priority guidelines for compliance validation and checklist generation.",
+          "dependsOn": [
+            "data-policy"
+          ],
+          "notes": [
+            "Supports policy template uploads and updates",
+            "Enables dynamic compliance checklist creation"
+          ]
+        },
+        {
+          "id": "data-artifact",
+          "name": "Artifact Data Store",
+          "type": "data",
+          "responsibility": "Persist artifact metadata, condition reports, historical provenance, and scientific analysis data.",
+          "dependsOn": [],
+          "notes": [
+            "Stores both structured and unstructured data",
+            "Includes access controls for sensitive provenance information"
+          ]
+        },
+        {
+          "id": "data-treatment-plan",
+          "name": "Treatment Plan Data Store",
+          "type": "data",
+          "responsibility": "Persist versioned conservation treatment plans, including stepwise actions, risk assessments, resource requirements, and compliance checklists.",
+          "dependsOn": [],
+          "notes": [
+            "Supports plan versioning and audit logs",
+            "Stores advisory outputs only"
+          ]
+        },
+        {
+          "id": "data-policy",
+          "name": "Institutional Policy Store",
+          "type": "data",
+          "responsibility": "Persist institutional conservation policies and priority guidelines used for compliance checking.",
+          "dependsOn": [],
+          "notes": [
+            "Allows updates and versioning of policies",
+            "Accessible for compliance validation"
+          ]
+        },
+        {
+          "id": "job-plan-generation",
+          "name": "Treatment Plan Generation Job",
+          "type": "job",
+          "responsibility": "Background process that synthesizes uploaded artifact data and institutional policies to generate draft conservation treatment plans.",
+          "dependsOn": [
+            "data-artifact",
+            "data-policy",
+            "data-treatment-plan"
+          ],
+          "notes": [
+            "Handles batch processing for multiple artifacts",
+            "Includes error handling for incomplete or low-quality inputs"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Artifact",
+          "purpose": "Store detailed information about museum artifacts including condition, history, and scientific data.",
+          "fields": [
+            {
+              "name": "artifactId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "conditionReports",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "historicalProvenance",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "scientificAnalyses",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "sensitiveFlags",
+              "type": "boolean",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "artifactId",
+            "title"
+          ]
+        },
+        {
+          "name": "TreatmentPlan",
+          "purpose": "Represent a structured, prioritized conservation treatment plan for an artifact including procedural steps, risk assessments, and compliance data.",
+          "fields": [
+            {
+              "name": "planId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "artifactId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "steps",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "riskAssessments",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "resourceRequirements",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "complianceChecklist",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "summaryReport",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "planId",
+            "artifactId",
+            "version"
+          ]
+        },
+        {
+          "name": "InstitutionalPolicy",
+          "purpose": "Store conservation policies and priority guidelines used to validate treatment plans for compliance.",
+          "fields": [
+            {
+              "name": "policyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "policyId",
+            "title"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/artifacts",
+          "title": "Artifact Management",
+          "purpose": "Upload, view, and manage artifact data including condition reports and scientific analyses.",
+          "inputs": [
+            "Artifact metadata",
+            "Condition reports",
+            "Historical provenance",
+            "Scientific data files"
+          ],
+          "outputs": [
+            "Artifact list",
+            "Artifact detail views",
+            "Upload status and validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/treatment-plans",
+          "title": "Treatment Plan Editor",
+          "purpose": "Create, edit, and version conservation treatment plans with integrated risk and compliance information.",
+          "inputs": [
+            "Selected artifact",
+            "Stepwise treatment actions",
+            "Risk assessments",
+            "Resource details"
+          ],
+          "outputs": [
+            "Draft and finalized treatment plans",
+            "Compliance checklists",
+            "Summary reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/policies",
+          "title": "Institutional Policies",
+          "purpose": "View and manage institutional conservation policies and priority guidelines.",
+          "inputs": [
+            "Policy templates and updates"
+          ],
+          "outputs": [
+            "Policy list",
+            "Policy detail views",
+            "Compliance validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Dashboard",
+          "purpose": "Overview of recent artifacts, treatment plans, batch processing status, and compliance audit summaries.",
+          "inputs": [],
+          "outputs": [
+            "Recent activity",
+            "Batch job statuses",
+            "Compliance alerts"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/artifacts",
+          "method": "POST",
+          "purpose": "Create or update artifact data including condition reports and scientific analyses.",
+          "requestShape": "JSON with artifact metadata and data fields",
+          "responseShape": "Success or error message with artifactId",
+          "auth": "user"
+        },
+        {
+          "route": "/api/artifacts/{artifactId}",
+          "method": "GET",
+          "purpose": "Retrieve detailed artifact data by artifactId.",
+          "requestShape": "artifactId path parameter",
+          "responseShape": "JSON artifact data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/treatment-plans",
+          "method": "POST",
+          "purpose": "Create or update a treatment plan for an artifact.",
+          "requestShape": "JSON with plan details and artifactId",
+          "responseShape": "Success or error message with planId and version",
+          "auth": "user"
+        },
+        {
+          "route": "/api/treatment-plans/{planId}",
+          "method": "GET",
+          "purpose": "Retrieve a treatment plan by planId.",
+          "requestShape": "planId path parameter",
+          "responseShape": "JSON treatment plan data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/policies",
+          "method": "GET",
+          "purpose": "Retrieve institutional policies for compliance validation.",
+          "requestShape": "None",
+          "responseShape": "JSON list of policies",
+          "auth": "user"
+        },
+        {
+          "route": "/api/generate-plan",
+          "method": "POST",
+          "purpose": "Trigger background generation of draft treatment plans from uploaded artifact data.",
+          "requestShape": "JSON with artifactIds and optional batch parameters",
+          "responseShape": "Job submission confirmation with jobId",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Treatment Plan Generation Job",
+          "trigger": "Triggered by API call or batch schedule",
+          "purpose": "Process artifact data and institutional policies to generate draft conservation treatment plans asynchronously."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or low-quality input data leading to partial or no plan generation",
+        "Conflicting or outdated institutional policies causing compliance validation errors",
+        "Sensitive provenance data requiring restricted access and masking",
+        "Concurrent edits to treatment plans causing version conflicts",
+        "Batch processing failures due to malformed artifact data or system errors"
+      ],
+      "nonGoals": [
+        "Providing medical or legal advice related to artifact conservation",
+        "Replacing conservator expertise or final decision-making",
+        "Handling artifact acquisition or condition reporting as primary function",
+        "Managing physical resource scheduling beyond basic resource requirement listing",
+        "Supporting artifact conservation outside institutional policy frameworks"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages (/artifacts, /treatment-plans, /policies, /dashboard).",
+        "Artifact Management UI (/artifacts) sends POST requests to /api/artifacts to create or update artifact data including metadata, condition reports, and scientific analyses.",
+        "Artifact Management UI fetches artifact lists and details via GET /api/artifacts/{artifactId}.",
+        "Treatment Plan Editor UI (/treatment-plans) fetches artifact data and institutional policies via GET /api/artifacts/{artifactId} and GET /api/policies to dynamically generate compliance checklists.",
+        "Treatment Plan Editor UI sends POST requests to /api/treatment-plans to create or update treatment plans with stepwise actions, risk assessments, resource requirements, and compliance data.",
+        "Institutional Policies UI (/policies) fetches policies via GET /api/policies and allows uploading or updating policy templates through API (not explicitly defined but implied).",
+        "Dashboard UI (/dashboard) aggregates recent artifacts, treatment plans, batch job statuses, and compliance alerts by querying respective APIs.",
+        "User triggers background job for batch treatment plan generation via POST /api/generate-plan with artifactIds and optional parameters.",
+        "Treatment Plan Generation Job asynchronously processes artifact data and policies from data stores to generate draft treatment plans, storing results in the Treatment Plan Data Store.",
+        "APIs validate inputs, enforce access controls, and return structured success or error responses to UIs.",
+        "Versioning and audit trails are maintained in data stores for treatment plans and policies to support concurrency and history."
+      ],
+      "validationRules": [
+        "Artifact data must include non-empty artifactId and title; conditionReports, historicalProvenance, and scientificAnalyses must be valid JSON if provided.",
+        "SensitiveFlags boolean must be handled with access control and masking in responses.",
+        "Treatment plans require planId, artifactId, version (incremental), and non-empty steps JSON array.",
+        "Risk assessments, resource requirements, and compliance checklist JSON fields are optional but must conform to defined schema if present.",
+        "Institutional policies require policyId, title, content (valid JSON), and version number; effectiveDate is optional but must be a valid date if provided.",
+        "API inputs must be validated for correct types, required fields, and JSON schema compliance before processing.",
+        "Batch job inputs must include valid artifactIds existing in the Artifact Data Store.",
+        "Version conflicts in treatment plan updates must be detected and rejected with appropriate error messages.",
+        "Uploaded files and metadata in artifact management must be validated for format, size, and completeness.",
+        "Compliance checklist generation must validate policy applicability and flag conflicts or outdated policies."
+      ],
+      "errorHandling": [
+        "API endpoints return structured error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 404 for not found, 409 for version conflicts, 500 for server errors).",
+        "Validation errors include detailed messages specifying missing or invalid fields.",
+        "Batch job failures due to incomplete or low-quality inputs log errors and report partial success with details on skipped artifacts.",
+        "Conflicting or outdated policies trigger compliance validation errors with explanatory messages in treatment plan responses.",
+        "Sensitive data access attempts without proper authorization return 403 Forbidden and mask sensitive fields in responses.",
+        "Concurrent edits causing version conflicts return 409 Conflict with instructions to refresh and retry.",
+        "Unhandled exceptions are logged with context and return generic 500 Internal Server Error to clients.",
+        "Background job errors are logged and surfaced in dashboard batch job status with retry options.",
+        "File upload errors provide user feedback on format or size violations."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user sessions; enforce role-based access control for sensitive operations.",
+        "Sensitive provenance data fields are masked or omitted in API responses unless user has explicit access rights.",
+        "Input validation prevents injection attacks and ensures data integrity.",
+        "Audit logs for treatment plan versioning and policy updates support traceability and accountability.",
+        "Background jobs run with limited privileges and validate inputs rigorously to avoid processing malformed data.",
+        "File uploads are scanned and sanitized to prevent malicious content.",
+        "API rate limiting and monitoring should be implemented to prevent abuse.",
+        "Data stores enforce access controls at the query level for sensitive artifact information.",
+        "Compliance checklist data is generated dynamically to prevent stale or unauthorized policy exposure.",
+        "Session management and CSRF protections are enforced on UI pages."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated conservator accesses the Artifact Management page",
+          "when": "They upload a batch of artifact metadata with condition reports and scientific analyses",
+          "then": "The system validates inputs, stores the artifacts, and displays upload status with validation feedback"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user requests artifact details via GET /api/artifacts/{artifactId}",
+          "when": "The artifact exists and user has access rights",
+          "then": "The system returns complete artifact data with sensitive fields masked if applicable"
+        },
+        {
+          "id": "AT-003",
+          "given": "A conservator creates a new treatment plan with valid steps and compliance data",
+          "when": "They submit the plan via POST /api/treatment-plans",
+          "then": "The system stores the plan with versioning, returns success with planId and version, and updates audit logs"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user attempts to update a treatment plan with an outdated version number",
+          "when": "They submit the update",
+          "then": "The system rejects the update with a 409 Conflict error indicating version conflict"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user triggers batch treatment plan generation for multiple artifactIds",
+          "when": "The job is accepted",
+          "then": "The system returns a jobId confirmation and asynchronously processes the artifacts, logging errors for incomplete data"
+        },
+        {
+          "id": "AT-006",
+          "given": "Institutional policies are updated with new versions",
+          "when": "Treatment plans are created or edited",
+          "then": "Compliance checklists reflect the latest policies and flag any conflicts or outdated items"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user without proper authorization requests sensitive provenance data",
+          "when": "They access artifact details",
+          "then": "The system masks sensitive fields and returns 403 Forbidden for restricted data"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user accesses the dashboard",
+          "when": "They view recent activity and batch job statuses",
+          "then": "The system displays up-to-date summaries including compliance alerts and job error reports"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma models for Artifact, TreatmentPlan, InstitutionalPolicy with fields and indexes",
+        "Implement data stores with access control and versioning support",
+        "Develop API routes for artifacts (/api/artifacts POST, GET), treatment plans (/api/treatment-plans POST, GET), policies (/api/policies GET), and plan generation (/api/generate-plan POST)",
+        "Implement input validation and error handling middleware for APIs",
+        "Build Artifact Management UI page (/artifacts) with upload, list, detail views, and validation feedback",
+        "Build Institutional Policies UI page (/policies) with policy list, detail views, and update capability",
+        "Build Treatment Plan Editor UI page (/treatment-plans) with stepwise input, risk assessment, resource details, and dynamic compliance checklist",
+        "Build Dashboard UI page (/dashboard) aggregating recent artifacts, treatment plans, batch job statuses, and compliance alerts",
+        "Implement Treatment Plan Generation background job with batch processing, error handling, and integration with data stores",
+        "Add authentication and authorization layers across UI and API routes",
+        "Implement audit logging and version conflict detection mechanisms",
+        "Add security features including sensitive data masking, input sanitization, and session protections",
+        "Write and run acceptance tests to validate functionality, error handling, and security"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/artifacts",
+          "/treatment-plans",
+          "/policies",
+          "/dashboard"
+        ],
+        "apiFilesToCreate": [
+          "/api/artifacts/index.ts",
+          "/api/artifacts/[artifactId].ts",
+          "/api/treatment-plans/index.ts",
+          "/api/treatment-plans/[planId].ts",
+          "/api/policies/index.ts",
+          "/api/generate-plan.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Artifact { artifactId String @id; title String; conditionReports Json?; historicalProvenance Json?; scientificAnalyses Json?; sensitiveFlags Boolean?; createdAt DateTime; updatedAt DateTime; @@index([artifactId]); @@index([title]) }",
+          "model TreatmentPlan { planId String @id; artifactId String; version Int; steps Json; riskAssessments Json?; resourceRequirements Json?; complianceChecklist Json?; summaryReport String?; createdBy String; createdAt DateTime; updatedAt DateTime; @@index([planId]); @@index([artifactId]); @@index([version]) }",
+          "model InstitutionalPolicy { policyId String @id; title String; content Json; version Int; effectiveDate DateTime?; createdAt DateTime; updatedAt DateTime; @@index([policyId]); @@index([title]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user to clarify or add missing constraints and details about the conservation treatment plan needs.",
+        "promptTemplate": "You are a planner refining the requirements for the Museum Conservation Treatment Plan Generator. Given the current blueprint:\n\n{{BLUEPRINT}}\n\nAnd user input:\n\n{{USER_INPUT}}\n\nPlease ask clarifying questions or propose refinements to ensure all necessary constraints and details are captured."
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Finalize the web application pages, data models, and API endpoints based on refined requirements.",
+        "promptTemplate": "You are the architect finalizing the design for the Museum Conservation Treatment Plan Generator. Using the refined requirements:\n\n{{REFINED_REQUIREMENTS}}\n\nPlease produce a detailed design including pages, data models, API routes, and integration notes."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for the UI pages and API endpoints to scaffold development.",
+        "promptTemplate": "You are a builder tasked with generating code stubs for the Museum Conservation Treatment Plan Generator. Based on the architecture:\n\n{{ARCHITECTURE_DESIGN}}\n\nPlease produce starter code snippets or file templates for the UI pages and API endpoints."
+      },
+      {
+        "id": "integrator-wire-up",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages with the API endpoints and underlying database models for a functional workflow.",
+        "promptTemplate": "You are an integrator connecting components of the Museum Conservation Treatment Plan Generator. Given the code stubs:\n\n{{CODE_STUBS}}\n\nAnd the data models:\n\n{{DATA_MODELS}}\n\nPlease describe how to wire the UI pages to the API and database, ensuring data flow and validation."
+      }
+    ]
+  }
+}

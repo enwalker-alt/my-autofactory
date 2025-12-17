@@ -1,0 +1,706 @@
+{
+  "slug": "academic-research-methodology-navigator",
+  "title": "Academic Research Methodology Decision Navigator",
+  "description": "A lightweight web app for early career academic researchers to input research objectives, context, data types, and constraints to receive a structured, stepwise methodology plan draft with tailored method recommendations, rationale, risk assessments, and literature suggestions. Supports iterative refinement with clear, jargon-minimized guidance.",
+  "inputLabel": "Enter your research objectives, project context, preliminary data types, and any constraints",
+  "outputLabel": "Generated structured research methodology plan with recommendations and rationale",
+  "systemPrompt": "You are an expert academic research methodology advisor. Given user inputs describing research objectives, project context including disciplinary fields, preliminary data types, and constraints such as timeline, budget, and skills, generate a clear, structured, stepwise research methodology plan draft. Provide recommended methods and data collection techniques matched to the objectives, summarize rationale for each choice focusing on interdisciplinary integration, note potential risks or challenges, and suggest relevant methodological literature references. Present all recommendations as suggestions, not prescriptions. Refuse to provide any medical, legal, or ethical advice. Use clear language accessible to early career researchers. If inputs are incomplete or conflicting, respond with polite requests for clarification or additional information.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Balanced Mixed Methods Plan",
+      "prompt": "Generate a balanced mixed-methods research methodology plan that integrates qualitative interviews and quantitative surveys for interdisciplinary social sciences and health studies, considering typical timeline and budget constraints."
+    },
+    {
+      "label": "Qualitative-Focused Plan",
+      "prompt": "Generate a research methodology plan emphasizing qualitative data collection (e.g., interviews, focus groups) for interdisciplinary humanities and social sciences, with notes on rationale and potential risks."
+    },
+    {
+      "label": "Quantitative-Focused Plan",
+      "prompt": "Generate a research methodology plan emphasizing quantitative data collection (e.g., surveys, experiments) for interdisciplinary STEM fields, including method recommendations and literature references."
+    },
+    {
+      "label": "Highlight Constraints Impact",
+      "prompt": "Generate a research methodology plan that explicitly addresses how timeline, budget, and resource constraints shape method choices and trade-offs."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "The output JSON should include keys: planSteps (array of steps with descriptions), methodRecommendations (list of recommended methods with rationale), rationaleSummaries (explanations for choices), riskAssessments (identified risks/challenges), literatureReferences (suggested key references).",
+  "clarifyPrompt": "Please provide missing information or resolve ambiguities in your research objectives, project context, data types, or constraints to enable generation of a meaningful methodology plan.",
+  "finalizePrompt": "Review the generated methodology plan draft carefully. You may refine your inputs or constraints to iterate and improve the plan for your interdisciplinary research project.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Methodology Decision Navigator",
+      "niche": {
+        "role": "Early Career Academic Researchers",
+        "scenario": "Designing a research methodology plan for a new interdisciplinary study involving mixed qualitative and quantitative data"
+      },
+      "problem": "Early career researchers struggle to select optimal, coherent research methodologies and data collection approaches when combining qualitative and quantitative methods, especially in interdisciplinary contexts. Existing tools help with literature or data management but do not guide structured, context-aware decision-making for methodology design. This leads to inefficient study designs, misaligned methods, and funding proposal weaknesses.",
+      "inputs": [
+        "Research objectives and hypotheses text",
+        "Brief project context and disciplinary fields involved",
+        "Preliminary data types envisioned (qualitative interviews, surveys, experimental data, etc.)",
+        "Constraints such as timeline, budget, and available skills/resources"
+      ],
+      "outputs": [
+        "Structured, stepwise research methodology plan draft",
+        "Recommended methods and data collection techniques matched to objectives",
+        "Rationale summaries explaining each method choice aligned with interdisciplinary integration",
+        "Potential risks or challenges for chosen methods",
+        "Suggestions for methodological literature and best practices references"
+      ],
+      "whyItWins": [
+        "Addresses a critical gap for early researchers planning complex mixed-methods interdisciplinary studies",
+        "Supports repeated iterative refinement as project scope or constraints evolve",
+        "Goes beyond simple checklists by providing contextualized, rationale-driven guidance",
+        "Facilitates clearer communication in grant applications and study protocols",
+        "Lays groundwork for mentoring and training features in future upgrades"
+      ],
+      "upgradePath": {
+        "today": "Lightweight web app where users input research goals, context, and constraints to get a structured methodology plan template with method recommendations and explanatory notes.",
+        "in90Days": "Add interactive decision trees, method comparison matrices, and user feedback loops to refine method choices; enable saving and exporting detailed study design documents.",
+        "in12Months": "Develop into a full research project management system integrating literature sourcing, protocol drafting, team collaboration features, and automated compliance checks to support end-to-end study planning and execution."
+      },
+      "riskNotes": [
+        "Must avoid providing any prescriptive medical, legal, or ethical advice; focus is on methodology planning guidance only.",
+        "Recommendations should be framed as suggestions, not definitive prescriptions, to respect disciplinary diversity and researcher autonomy.",
+        "Data privacy considerations for any uploaded project details must be addressed with secure handling.",
+        "Care needed to keep complexity manageable for target users without overwhelming them with technical jargon."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web application to assist early career academic researchers in designing structured, coherent, and context-aware research methodology plans for interdisciplinary mixed-methods studies. It guides users through inputting research goals, context, and constraints, then generates tailored methodology recommendations with rationale and risks, supporting iterative refinement and clear communication.",
+      "primaryUser": "Early career academic researchers planning interdisciplinary mixed qualitative and quantitative studies",
+      "successMetrics": [
+        "User adoption and retention rates among early career researchers",
+        "Number of methodology plans created and iteratively refined",
+        "User satisfaction scores regarding clarity and usefulness of recommendations",
+        "Reduction in reported confusion or misalignment in methodology planning",
+        "Positive user feedback on exportable study design documents and rationale clarity"
+      ],
+      "components": [
+        {
+          "id": "ui-input",
+          "name": "User Input Interface",
+          "type": "ui",
+          "responsibility": "Collects user inputs including research objectives, project context, data types, and constraints through guided forms and interactive elements.",
+          "dependsOn": [],
+          "notes": [
+            "Must provide clear, jargon-minimized prompts and tooltips.",
+            "Supports iterative editing and saving of inputs.",
+            "Validates inputs for completeness and logical consistency."
+          ]
+        },
+        {
+          "id": "ui-output",
+          "name": "Methodology Plan Visualization",
+          "type": "ui",
+          "responsibility": "Displays the generated structured methodology plan, including recommended methods, rationale summaries, risk assessments, and literature suggestions in an organized, user-friendly format.",
+          "dependsOn": [
+            "api-plan-generation"
+          ],
+          "notes": [
+            "Supports iterative refinement by allowing users to adjust inputs and see updated plans.",
+            "Enables exporting plans as documents (e.g., PDF).",
+            "Highlights key rationale and risk notes for clarity."
+          ]
+        },
+        {
+          "id": "api-plan-generation",
+          "name": "Methodology Recommendation Engine API",
+          "type": "api",
+          "responsibility": "Processes user inputs to generate tailored methodology plans, recommending methods and data collection techniques with contextual rationale and risk notes.",
+          "dependsOn": [
+            "data-method-library"
+          ],
+          "notes": [
+            "Implements rule-based and heuristic logic to match methods to inputs.",
+            "Frames all recommendations as suggestions, not prescriptions.",
+            "Handles edge cases where inputs are incomplete or conflicting."
+          ]
+        },
+        {
+          "id": "data-method-library",
+          "name": "Methodology and Literature Reference Database",
+          "type": "data",
+          "responsibility": "Stores structured data on research methods, data collection techniques, rationale explanations, risks, and curated literature references for interdisciplinary mixed-methods research.",
+          "dependsOn": [],
+          "notes": [
+            "Supports efficient querying by method type, discipline, and context.",
+            "Regularly updated to reflect best practices and new methodologies.",
+            "Ensures data privacy by not storing user-specific inputs here."
+          ]
+        },
+        {
+          "id": "job-plan-export",
+          "name": "Plan Export and Document Generation Job",
+          "type": "job",
+          "responsibility": "Generates downloadable study design documents (e.g., PDF or DOCX) from finalized methodology plans for user export and sharing.",
+          "dependsOn": [
+            "api-plan-generation"
+          ],
+          "notes": [
+            "Runs asynchronously to avoid blocking UI.",
+            "Handles formatting edge cases for complex plans.",
+            "Ensures exported documents include disclaimers about advisory nature."
+          ]
+        },
+        {
+          "id": "integration-auth",
+          "name": "User Authentication and Data Privacy Integration",
+          "type": "integration",
+          "responsibility": "Manages secure user authentication, session management, and ensures secure handling of user project data with privacy best practices.",
+          "dependsOn": [],
+          "notes": [
+            "Supports account creation, login, and password recovery.",
+            "Encrypts sensitive user inputs in transit and at rest.",
+            "Implements role-based access if mentoring features added later."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents registered users of the system with authentication and profile data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "ResearchProject",
+          "purpose": "Stores user-submitted research project inputs and metadata for iterative methodology planning.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "objectivesText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contextText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "disciplinaryFields",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "dataTypes",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "constraints",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "MethodologyPlan",
+          "purpose": "Represents generated structured methodology plans with recommendations, rationales, risks, and references linked to a research project.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "planSteps",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "methodRecommendations",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "rationaleSummaries",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "riskAssessments",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "literatureReferences",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "MethodEntry",
+          "purpose": "Catalogs research methods, data collection techniques, rationale explanations, risks, and literature references used by the recommendation engine.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "applicableDisciplines",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rationale",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "risks",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "literatureReferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "name",
+            "type"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Home / Project Dashboard",
+          "purpose": "Landing page showing user projects overview and quick access to create or continue methodology plans.",
+          "inputs": [],
+          "outputs": [
+            "List of user projects with status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/new",
+          "title": "New Research Project Input",
+          "purpose": "Form page to input research objectives, context, data types, and constraints for a new project.",
+          "inputs": [
+            "Research objectives text",
+            "Project context and disciplinary fields",
+            "Preliminary data types",
+            "Constraints (timeline, budget, skills)"
+          ],
+          "outputs": [
+            "Saved project draft"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:id/plan",
+          "title": "Methodology Plan Viewer and Editor",
+          "purpose": "Displays generated methodology plan with recommendations, rationale, risks, and literature; allows iterative refinement.",
+          "inputs": [
+            "Project inputs",
+            "User adjustments to plan"
+          ],
+          "outputs": [
+            "Updated methodology plan"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:id/export",
+          "title": "Export Methodology Plan",
+          "purpose": "Page to trigger and download exportable study design documents based on finalized methodology plans.",
+          "inputs": [
+            "Selected plan version"
+          ],
+          "outputs": [
+            "Downloadable document (PDF/DOCX)"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access their projects and plans securely.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token/session"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/register",
+          "title": "User Registration",
+          "purpose": "Create new user accounts for accessing the system.",
+          "inputs": [
+            "Email",
+            "Password",
+            "Password confirmation"
+          ],
+          "outputs": [
+            "New user account"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new research project with user inputs.",
+          "requestShape": "{objectivesText:string, contextText:string, disciplinaryFields:array, dataTypes:array, constraints:object}",
+          "responseShape": "{projectId:string, status:string}",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:id",
+          "method": "GET",
+          "purpose": "Retrieve details of a specific research project.",
+          "requestShape": "{projectId:string}",
+          "responseShape": "{project:ResearchProject}",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:id/plan",
+          "method": "POST",
+          "purpose": "Generate or update a methodology plan based on project inputs and user adjustments.",
+          "requestShape": "{projectId:string, adjustments:object}",
+          "responseShape": "{methodologyPlan:MethodologyPlan}",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:id/plan/export",
+          "method": "POST",
+          "purpose": "Trigger export of the finalized methodology plan as a document.",
+          "requestShape": "{projectId:string, format:string}",
+          "responseShape": "{exportUrl:string}",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and create session.",
+          "requestShape": "{email:string, password:string}",
+          "responseShape": "{token:string, userId:string}",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/register",
+          "method": "POST",
+          "purpose": "Register a new user account.",
+          "requestShape": "{email:string, password:string, passwordConfirm:string}",
+          "responseShape": "{userId:string}",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "GenerateExportDocument",
+          "trigger": "User requests plan export",
+          "purpose": "Asynchronously generate downloadable documents from methodology plans to avoid UI blocking and handle complex formatting."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or ambiguous user inputs leading to insufficient data for meaningful recommendations.",
+        "Conflicting constraints (e.g., very tight timeline with resource-heavy methods) requiring warnings or alternative suggestions.",
+        "User inputs containing sensitive or proprietary information requiring strict data privacy and encryption.",
+        "Users iteratively changing inputs invalidating previous plans, necessitating clear versioning and update mechanisms.",
+        "Handling interdisciplinary fields with no clear dominant methodology traditions, requiring balanced and flexible recommendations.",
+        "Network interruptions during plan generation or export requiring retry and user notification mechanisms."
+      ],
+      "nonGoals": [
+        "Providing prescriptive medical, legal, or ethical advice related to research.",
+        "Serving as a comprehensive literature management or citation tool.",
+        "Replacing expert human mentorship or peer consultation in methodology design.",
+        "Supporting full research project execution, data collection, or analysis workflows at this stage.",
+        "Automated compliance or IRB approval processes beyond advisory risk notes."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses the app and authenticates via /login or /register endpoints.",
+        "Authenticated user views project dashboard (/) showing list of their ResearchProjects fetched via GET /api/projects.",
+        "User creates a new ResearchProject via form at /project/new, submitting inputs to POST /api/projects.",
+        "User navigates to /project/:id/plan to view or edit methodology plan.",
+        "On /project/:id/plan, frontend fetches ResearchProject data (GET /api/projects/:id) and existing MethodologyPlan if any.",
+        "User submits adjustments or requests plan generation via POST /api/projects/:id/plan with project inputs and adjustments.",
+        "API processes inputs, queries MethodEntry data from data-method-library, applies heuristics to generate MethodologyPlan, stores it, and returns it.",
+        "Frontend displays structured methodology plan with recommendations, rationale, risks, and literature references.",
+        "User may iteratively adjust inputs and regenerate plans, updating MethodologyPlan records.",
+        "User triggers export on /project/:id/export, sending POST /api/projects/:id/plan/export with format choice.",
+        "Export job is queued asynchronously (GenerateExportDocument background job) to generate downloadable document (PDF/DOCX).",
+        "Once export is ready, frontend receives exportUrl to download the document.",
+        "Throughout, authentication and session management handled by integration-auth component ensuring secure access and data privacy."
+      ],
+      "validationRules": [
+        "User registration: email must be valid format, password minimum length 8, passwordConfirm must match password.",
+        "Login: email and password required, email format validated.",
+        "ResearchProject creation: objectivesText and contextText required and non-empty strings.",
+        "disciplinaryFields and dataTypes must be non-empty arrays with valid entries.",
+        "constraints is optional but if present must be an object with allowed keys (timeline, budget, skills) and valid value types.",
+        "Methodology plan generation: projectId must exist and belong to authenticated user.",
+        "Adjustments object must conform to expected schema (e.g., method preferences, exclusions).",
+        "Export request: format must be one of allowed types (e.g., 'pdf', 'docx').",
+        "All inputs must be sanitized to prevent injection attacks.",
+        "Inputs must be checked for logical consistency, e.g., timeline constraints not contradictory with selected methods.",
+        "Iterative edits must maintain required fields and valid data types."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Validation errors return 400 Bad Request with detailed field error descriptions.",
+        "Accessing projects or plans not owned by user returns 403 Forbidden.",
+        "Missing resources (e.g., project or plan not found) return 404 Not Found.",
+        "Plan generation errors due to incomplete or conflicting inputs return 422 Unprocessable Entity with guidance messages.",
+        "Export job failures return 500 Internal Server Error with retry suggestions.",
+        "Network or server errors return 503 Service Unavailable with user-friendly retry prompts.",
+        "API responses include consistent error object structure: {errorCode, message, details?}.",
+        "Frontend displays error notifications and tooltips to guide user correction.",
+        "Retries for transient failures (e.g., network interruptions) implemented with exponential backoff.",
+        "Sensitive error details are logged server-side but not exposed to clients."
+      ],
+      "securityNotes": [
+        "All API routes requiring user data enforce authentication and verify user ownership of resources.",
+        "Passwords stored as salted hashes using strong algorithms (e.g., bcrypt).",
+        "All data transmissions use HTTPS to encrypt data in transit.",
+        "Sensitive user inputs encrypted at rest in database where applicable.",
+        "Session tokens use secure, httpOnly cookies or JWTs with short expiry and refresh mechanisms.",
+        "Input sanitization prevents injection attacks (SQL, XSS).",
+        "Role-based access control prepared for future mentoring features.",
+        "Export documents include disclaimers about advisory nature to avoid liability.",
+        "User data isolation enforced in database queries to prevent data leakage.",
+        "Regular security audits and dependency updates planned."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A new user registers with valid email and matching passwords",
+          "when": "They submit the registration form",
+          "then": "A new user account is created and user is redirected to login"
+        },
+        {
+          "id": "AT-002",
+          "given": "An existing user logs in with correct credentials",
+          "when": "They submit the login form",
+          "then": "They receive an authentication token and access to their project dashboard"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user submits a new research project with valid inputs",
+          "when": "They POST to /api/projects",
+          "then": "A new ResearchProject is created and projectId returned"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user views their project dashboard",
+          "when": "They access / and the system fetches their projects",
+          "then": "They see a list of their projects with status"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user requests methodology plan generation with valid project inputs",
+          "when": "They POST to /api/projects/:id/plan with adjustments",
+          "then": "A MethodologyPlan is generated, stored, and returned with recommendations and rationale"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user views the methodology plan page",
+          "when": "They load /project/:id/plan",
+          "then": "They see the structured methodology plan with clear recommendations, risks, and literature"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user triggers export of a finalized methodology plan",
+          "when": "They POST to /api/projects/:id/plan/export with format 'pdf'",
+          "then": "An export job is queued and an exportUrl is returned for download"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user submits incomplete or conflicting inputs for plan generation",
+          "when": "They POST to /api/projects/:id/plan",
+          "then": "They receive a 422 error with clear messages about input issues"
+        },
+        {
+          "id": "AT-009",
+          "given": "An unauthenticated user attempts to access a protected route",
+          "when": "They request /project/:id/plan",
+          "then": "They are redirected to login or receive 401 Unauthorized"
+        },
+        {
+          "id": "AT-010",
+          "given": "Network interruption occurs during plan generation",
+          "when": "User retries the request",
+          "then": "The system handles retry gracefully and returns consistent results or error messages"
+        }
+      ],
+      "buildOrder": [
+        "integration-auth for user registration and login",
+        "prismaModelsToAdd: User, ResearchProject",
+        "API routes: /api/auth/register, /api/auth/login, /api/projects POST and GET",
+        "UI pages: /login, /register, / (dashboard), /project/new",
+        "prismaModelsToAdd: MethodEntry, MethodologyPlan",
+        "data-method-library data import and query implementation",
+        "API route: /api/projects/:id/plan POST for methodology plan generation",
+        "UI page: /project/:id/plan for plan viewing and editing",
+        "background job: GenerateExportDocument for plan export",
+        "API route: /api/projects/:id/plan/export POST",
+        "UI page: /project/:id/export for export triggering and download",
+        "Implement validation, error handling, and security hardening",
+        "Acceptance testing and iterative refinements"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/login",
+          "/register",
+          "/project/new",
+          "/project/[id]/plan",
+          "/project/[id]/export"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/register.ts",
+          "api/auth/login.ts",
+          "api/projects/index.ts",
+          "api/projects/[id].ts",
+          "api/projects/[id]/plan.ts",
+          "api/projects/[id]/plan/export.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "ResearchProject",
+          "MethodEntry",
+          "MethodologyPlan"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints or clarification about research objectives, data types, or interdisciplinary context to improve methodology plan generation.",
+        "promptTemplate": "You are a planner helping refine the requirements for the Academic Research Methodology Decision Navigator. Given the current user inputs: {{USER_INPUT}}, and the blueprint: {{BLUEPRINT}}, identify missing or ambiguous constraints or details, especially about timeline, budget, skills, disciplinary fields, or data types. Ask the user to provide this information clearly and politely."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Finalize the detailed page routes, API endpoints, and data models for the application based on the current blueprint and expanded specs.",
+        "promptTemplate": "You are the architect finalizing the design for the Academic Research Methodology Decision Navigator. Using the blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, produce a comprehensive list of UI pages with routes, API routes with methods and request/response shapes, and data models with fields and types. Ensure consistency and coverage of all required functionality."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code stubs for the main UI pages and API endpoints to accelerate development.",
+        "promptTemplate": "You are the builder creating initial code scaffolds for the Academic Research Methodology Decision Navigator. Based on the blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, generate stub code files for each UI page route and API endpoint, including minimal placeholder components or handlers. Ensure appropriate input validation placeholders and comments indicating future implementation areas."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate frontend pages with backend API routes and data models to enable end-to-end functionality.",
+        "promptTemplate": "You are the integrator connecting the UI pages, API routes, and database models for the Academic Research Methodology Decision Navigator. Using the blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, write integration code examples that demonstrate fetching and posting data between pages and APIs, handling authentication, and updating the database. Include error handling and security best practices."
+      }
+    ]
+  }
+}

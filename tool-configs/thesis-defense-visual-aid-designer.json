@@ -1,0 +1,791 @@
+{
+  "slug": "thesis-defense-visual-aid-designer",
+  "title": "Academic Thesis Defense Visual Aid Designer",
+  "description": "A single-page tool to help graduate students prepare effective thesis defense slide decks by generating structured slide outlines and visual hierarchy recommendations from uploaded thesis text and draft slide content. Supports file uploads and text input with actionable, safe, and privacy-conscious guidance.",
+  "inputLabel": "Upload thesis documents (PDF, DOCX, images, data snippets) and/or enter draft slide text or bullet points",
+  "outputLabel": "Structured slide deck outline and visual hierarchy suggestions",
+  "systemPrompt": "You are an expert assistant specialized in helping graduate students design effective visual aids for thesis oral defense presentations. Given uploaded thesis documents and draft slide text or bullet points, generate a structured slide deck outline aligned with the defense narrative, including clear visual hierarchy and layout recommendations. Do NOT rewrite or evaluate thesis content. Provide actionable, non-evaluative advice on integrating figures, tables, and data visuals, and balancing text and visuals for clarity and engagement. Enforce safety: reject unsupported file types or malformed input, refuse requests without proper input, and never expose or store data insecurely. Respond only in plain text unless structured-output is enabled, in which case produce valid JSON conforming to the outline and recommendations schema. Disclaim that this tool is an aid and not a substitute for advisor or committee guidance. Maintain user privacy and confidentiality at all times.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Outline Focus",
+      "prompt": "Generate a clear and concise structured slide deck outline from the uploaded thesis documents and draft slide text, emphasizing logical narrative flow and key defense points.",
+      "hint": "Focus on the arrangement and prioritization of slide content."
+    },
+    {
+      "label": "Visual Hierarchy Focus",
+      "prompt": "Provide detailed visual hierarchy recommendations including emphasis, layout suggestions, and guidance for integrating figures and tables effectively in the slide deck.",
+      "hint": "Focus on slide visual design and data integration."
+    },
+    {
+      "label": "Balanced Advice",
+      "prompt": "Generate a combined response with a structured slide outline and visual hierarchy recommendations, including advice on balancing text and visuals for clarity and engagement.",
+      "hint": "Comprehensive guidance for slide deck preparation."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output JSON should include keys: 'slideOutline' (an array of slide objects with titles and content summaries) and 'visualHierarchyRecommendations' (an array of suggestions per slide).",
+  "clarifyPrompt": "Please upload your thesis documents (PDF, DOCX, PNG, JPG, CSV, JSON snippets) and/or enter your draft slide text or bullet points in valid JSON format. Ensure files are within size limits and formats supported. What would you like assistance with today: outline generation, visual hierarchy advice, or both?",
+  "finalizePrompt": "Based on your inputs, I will generate a structured slide deck outline aligned with your thesis defense narrative, along with visual hierarchy and data integration recommendations. Confirm to proceed or specify refinements.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Thesis Defense Visual Aid Designer",
+      "niche": {
+        "role": "Graduate Student",
+        "scenario": "Preparing visual aids for thesis oral defense presentations"
+      },
+      "problem": "Graduate students often struggle to create effective, visually coherent, and persuasive slide decks for their thesis oral defense due to lack of structured guidance on slide content prioritization, visual hierarchy, and integration of complex data and arguments. Existing tools focus on abstract simplification or slide text optimization but do not assist specifically in designing comprehensive visual aids that align with defense goals and narrative flow.",
+      "inputs": [
+        "Uploaded thesis chapters or thesis summary documents",
+        "Draft slide text or bullet points",
+        "Research data snippets and figure/image files",
+        "Defense committee guidelines or evaluation criteria (optional)"
+      ],
+      "outputs": [
+        "Structured slide deck outline aligned with defense narrative",
+        "Visual hierarchy recommendations for slides (e.g., emphasis, layout suggestions)",
+        "Suggestions for integrating figures, tables, and data visuals effectively",
+        "Advice on balancing text and visuals for clarity and engagement",
+        "Customizable slide templates tailored for thesis defense styles"
+      ],
+      "whyItWins": [
+        "Targets the specific and high-stakes scenario of thesis oral defense preparation where visual aids critically impact presentation success",
+        "Goes beyond text optimization by integrating visual design principles and data visualization guidance in one system",
+        "Supports iterative refinement with actionable, structured feedback rather than generic style tips",
+        "Facilitates repeated use as students prepare multiple defense presentations or revisions",
+        "Lays foundation for a multi-page system that can manage slide assets, rehearsal notes, and committee feedback integration"
+      ],
+      "upgradePath": {
+        "today": "Lightweight tool generating slide deck outline and visual hierarchy suggestions from uploaded thesis text and draft slide content",
+        "in90Days": "Add interactive visual template editor with drag-and-drop functionality, figure/table integration assistant, and basic rehearsal timing planner",
+        "in12Months": "Develop a full multi-page app incorporating slide asset management, committee feedback tracking, rehearsal video upload and annotation, peer review collaboration, and export to popular presentation software formats"
+      },
+      "riskNotes": [
+        "Must avoid direct content rewriting that might breach academic integrity or originality",
+        "Should not provide any evaluative feedback on thesis content correctness or scientific validity",
+        "Needs to clearly disclaim that it is an aid tool, not a substitute for advisor or committee guidance",
+        "Ensure privacy and security of potentially unpublished thesis materials and data"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized multi-page application to assist graduate students in designing effective, visually coherent thesis defense slide decks by providing structured outlines, visual hierarchy recommendations, data integration advice, and customizable templates, evolving from a lightweight outline generator to a comprehensive defense preparation platform.",
+      "primaryUser": "Graduate Student preparing thesis oral defense presentations",
+      "successMetrics": [
+        "User adoption rate among graduate students preparing thesis defenses",
+        "User satisfaction with slide deck quality and visual coherence",
+        "Frequency of iterative slide deck refinements using the tool",
+        "Reduction in user-reported stress or difficulty in slide preparation",
+        "Engagement with advanced features like template editor and rehearsal planner"
+      ],
+      "components": [
+        {
+          "id": "ui-pages",
+          "name": "User Interface Pages",
+          "type": "ui",
+          "responsibility": "Provide interactive pages for uploading thesis content, drafting slide text, viewing structured slide outlines, receiving visual hierarchy recommendations, editing slide templates, managing rehearsal plans, and tracking committee feedback.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Pages must handle file uploads securely with size and format validations.",
+            "UI should clearly disclaim tool limitations per risk notes.",
+            "Support iterative workflows with autosave and versioning hints."
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API Layer",
+          "type": "api",
+          "responsibility": "Expose endpoints for content ingestion, slide outline generation, visual hierarchy and data integration suggestions, template management, rehearsal planning, and committee feedback handling.",
+          "dependsOn": [
+            "data-storage",
+            "nlp-service",
+            "visual-analysis-service"
+          ],
+          "notes": [
+            "Must enforce authentication and authorization for user data privacy.",
+            "Validate inputs to prevent malicious uploads or data corruption.",
+            "Implement rate limiting to prevent abuse."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store user accounts, uploaded thesis documents, draft slide content, generated slide outlines, visual hierarchy recommendations, slide templates, rehearsal plans, and committee feedback securely and with version control.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure encryption at rest and in transit for sensitive thesis materials.",
+            "Implement backup and recovery strategies.",
+            "Support indexing for efficient retrieval of slide assets and feedback."
+          ]
+        },
+        {
+          "id": "nlp-service",
+          "name": "Natural Language Processing Service",
+          "type": "integration",
+          "responsibility": "Analyze uploaded thesis text and draft slide content to extract key points, structure narrative flow, and generate slide deck outlines aligned with defense goals.",
+          "dependsOn": [],
+          "notes": [
+            "Must avoid rewriting or altering original content to preserve academic integrity.",
+            "Provide confidence scores and highlight uncertainties in analysis.",
+            "Handle diverse academic writing styles and disciplines."
+          ]
+        },
+        {
+          "id": "visual-analysis-service",
+          "name": "Visual Hierarchy and Data Integration Service",
+          "type": "integration",
+          "responsibility": "Analyze slide content and uploaded figures/tables to recommend visual hierarchy, layout suggestions, and effective integration of data visuals for clarity and engagement.",
+          "dependsOn": [],
+          "notes": [
+            "Generate actionable, non-evaluative design advice.",
+            "Support common figure and table formats with metadata extraction.",
+            "Include fallback recommendations when data visuals are missing or insufficient."
+          ]
+        },
+        {
+          "id": "background-jobs",
+          "name": "Background Processing Jobs",
+          "type": "job",
+          "responsibility": "Handle asynchronous tasks such as processing uploaded documents, generating slide outlines and visual suggestions, sending notification emails, and backing up user data.",
+          "dependsOn": [
+            "data-storage",
+            "nlp-service",
+            "visual-analysis-service"
+          ],
+          "notes": [
+            "Implement retry and failure handling with alerting.",
+            "Ensure jobs are idempotent to avoid duplicate processing.",
+            "Prioritize jobs based on user activity and resource availability."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user account information and preferences.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLoginAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "ThesisDocument",
+          "purpose": "Store uploaded thesis chapters or summary documents.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contentType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        },
+        {
+          "name": "SlideDraft",
+          "purpose": "Store draft slide text or bullet points input by the user.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastEditedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        },
+        {
+          "name": "SlideOutline",
+          "purpose": "Store generated structured slide deck outlines aligned with defense narrative.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "outlineData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        },
+        {
+          "name": "VisualHierarchyRecommendation",
+          "purpose": "Store visual hierarchy and layout suggestions for slides.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "slideOutlineId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "recommendations",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "slideOutlineId"
+          ]
+        },
+        {
+          "name": "SlideTemplate",
+          "purpose": "Store customizable slide templates tailored for thesis defense styles.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "templateData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        },
+        {
+          "name": "RehearsalPlan",
+          "purpose": "Store rehearsal timing plans and notes.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "planData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        },
+        {
+          "name": "CommitteeFeedback",
+          "purpose": "Store defense committee guidelines and feedback notes.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "feedbackData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "receivedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Thesis Documents",
+          "purpose": "Allow users to securely upload thesis chapters or summaries and related research data files.",
+          "inputs": [
+            "File uploads (PDF, DOCX, images, data snippets)"
+          ],
+          "outputs": [
+            "Upload status",
+            "List of uploaded documents"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/slide-drafts",
+          "title": "Draft Slide Content",
+          "purpose": "Enable users to input and edit draft slide text or bullet points.",
+          "inputs": [
+            "Text input",
+            "Bullet point editor"
+          ],
+          "outputs": [
+            "Saved draft slide content"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/slide-outline",
+          "title": "Slide Deck Outline & Recommendations",
+          "purpose": "Display structured slide deck outline with visual hierarchy and data integration suggestions.",
+          "inputs": [
+            "User selection of thesis documents and slide drafts"
+          ],
+          "outputs": [
+            "Generated slide outline",
+            "Visual hierarchy recommendations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/template-editor",
+          "title": "Slide Template Editor",
+          "purpose": "Provide interactive drag-and-drop editor for customizing slide templates and integrating figures/tables.",
+          "inputs": [
+            "Template components",
+            "Figure/table uploads"
+          ],
+          "outputs": [
+            "Saved customized templates"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/rehearsal-planner",
+          "title": "Rehearsal Timing Planner",
+          "purpose": "Allow users to plan rehearsal timings and add notes for each slide or section.",
+          "inputs": [
+            "Timing inputs",
+            "Notes"
+          ],
+          "outputs": [
+            "Saved rehearsal plans"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/committee-feedback",
+          "title": "Committee Feedback Tracker",
+          "purpose": "Enable users to upload, view, and manage defense committee guidelines and feedback.",
+          "inputs": [
+            "Feedback uploads or manual entry"
+          ],
+          "outputs": [
+            "Organized feedback notes"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload-document",
+          "method": "POST",
+          "purpose": "Accept and store uploaded thesis documents or data files.",
+          "requestShape": "{ userId: string, file: binary, metadata: json }",
+          "responseShape": "{ success: boolean, documentId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/save-slide-draft",
+          "method": "POST",
+          "purpose": "Save or update draft slide text content.",
+          "requestShape": "{ userId: string, content: json }",
+          "responseShape": "{ success: boolean, draftId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/generate-slide-outline",
+          "method": "POST",
+          "purpose": "Trigger generation of structured slide deck outline and visual recommendations.",
+          "requestShape": "{ userId: string, thesisDocumentIds: string[], slideDraftId: string }",
+          "responseShape": "{ success: boolean, outlineId?: string, recommendationsId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/get-slide-outline",
+          "method": "GET",
+          "purpose": "Retrieve generated slide deck outline and visual hierarchy recommendations.",
+          "requestShape": "{ userId: string, outlineId: string }",
+          "responseShape": "{ outlineData: json, recommendations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/save-slide-template",
+          "method": "POST",
+          "purpose": "Save customized slide templates.",
+          "requestShape": "{ userId: string, templateData: json }",
+          "responseShape": "{ success: boolean, templateId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/save-rehearsal-plan",
+          "method": "POST",
+          "purpose": "Create or update rehearsal timing plans.",
+          "requestShape": "{ userId: string, planData: json }",
+          "responseShape": "{ success: boolean, planId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/save-committee-feedback",
+          "method": "POST",
+          "purpose": "Upload or add defense committee guidelines and feedback.",
+          "requestShape": "{ userId: string, feedbackData: json }",
+          "responseShape": "{ success: boolean, feedbackId?: string, error?: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "DocumentProcessingJob",
+          "trigger": "On thesis document upload",
+          "purpose": "Extract text and metadata from uploaded documents for NLP analysis."
+        },
+        {
+          "name": "SlideOutlineGenerationJob",
+          "trigger": "On user request to generate slide outline",
+          "purpose": "Run NLP and visual analysis services asynchronously to produce slide outlines and recommendations."
+        },
+        {
+          "name": "NotificationJob",
+          "trigger": "On job completion or important user events",
+          "purpose": "Send email or in-app notifications about processing status or reminders."
+        },
+        {
+          "name": "DataBackupJob",
+          "trigger": "Scheduled periodic",
+          "purpose": "Backup user data and uploaded content securely."
+        }
+      ],
+      "edgeCases": [
+        "User uploads unsupported or corrupted file formats.",
+        "NLP or visual analysis services fail or return low-confidence results.",
+        "User attempts to generate slide outline without sufficient input data.",
+        "Concurrent edits to slide drafts or templates causing conflicts.",
+        "Large thesis documents causing processing timeouts or resource exhaustion.",
+        "User loses internet connection during upload or editing sessions.",
+        "Unauthorized access attempts to user data or API endpoints.",
+        "User deletes uploaded documents referenced in slide outlines."
+      ],
+      "nonGoals": [
+        "Providing evaluative or scientific feedback on thesis content correctness.",
+        "Automatically rewriting or generating thesis content to preserve academic integrity.",
+        "Replacing advisor or committee guidance on thesis defense preparation.",
+        "Supporting general-purpose slide design unrelated to thesis defense.",
+        "Hosting or streaming rehearsal videos in initial versions.",
+        "Integrating with external presentation software beyond export formats."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages requiring authentication.",
+        "On /upload page, user uploads thesis documents (PDF, DOCX, images, data snippets) with client-side validation; files and metadata sent to /api/upload-document endpoint.",
+        "API validates file type, size, and user authorization; stores document in data-storage with encryption; triggers DocumentProcessingJob asynchronously.",
+        "DocumentProcessingJob extracts text and metadata, stores processed content for NLP analysis.",
+        "User drafts slide content on /slide-drafts page; inputs saved via /api/save-slide-draft endpoint with autosave and versioning hints.",
+        "User requests slide outline generation on /slide-outline page by selecting thesis documents and slide drafts; request sent to /api/generate-slide-outline endpoint.",
+        "API validates inputs and user authorization; triggers SlideOutlineGenerationJob asynchronously.",
+        "SlideOutlineGenerationJob calls NLP service to analyze thesis text and slide drafts, generating structured slide outlines with confidence scores.",
+        "SlideOutlineGenerationJob calls Visual Analysis service to generate visual hierarchy and data integration recommendations.",
+        "Results stored in data-storage as SlideOutline and VisualHierarchyRecommendation linked to user.",
+        "User retrieves generated outline and recommendations via /api/get-slide-outline endpoint for display on /slide-outline page.",
+        "User customizes slide templates on /template-editor page; changes saved via /api/save-slide-template endpoint with autosave and conflict detection.",
+        "User plans rehearsal timings and notes on /rehearsal-planner page; data saved via /api/save-rehearsal-plan endpoint.",
+        "User uploads or enters committee feedback on /committee-feedback page; data saved via /api/save-committee-feedback endpoint.",
+        "NotificationJob sends emails or in-app notifications on job completions or important events.",
+        "DataBackupJob runs periodically to backup user data and uploaded content securely."
+      ],
+      "validationRules": [
+        "File uploads must be limited to allowed formats: PDF, DOCX, PNG, JPG, CSV, JSON snippets; reject unsupported or corrupted files.",
+        "Maximum file size limits enforced per upload (e.g., 20MB for documents, 5MB for images).",
+        "All API requests must include valid authenticated userId matching session.",
+        "Slide draft content must be valid JSON structure representing text or bullet points; reject malformed JSON.",
+        "Slide outline generation requires at least one thesisDocumentId and a valid slideDraftId; reject requests missing inputs.",
+        "Template data must conform to defined JSON schema for slide components; reject invalid or incomplete templates.",
+        "Rehearsal plan data must include timing and notes in JSON format; validate timing values are positive and notes are strings.",
+        "Committee feedback data must be valid JSON with required fields; reject empty or malformed feedback.",
+        "Autosave operations must validate partial inputs and maintain version consistency.",
+        "Rate limiting applied per user to API endpoints to prevent abuse (e.g., max 10 uploads per hour)."
+      ],
+      "errorHandling": [
+        "Return standardized error response with { success: false, error: string } for all API failures.",
+        "For file uploads, detect unsupported formats or corrupted files and return descriptive error messages.",
+        "On NLP or visual analysis service failures, return partial success with warnings and log errors for retry.",
+        "If slide outline generation requested without sufficient data, return 400 Bad Request with explanation.",
+        "Handle concurrent edits by implementing optimistic concurrency control; reject conflicting updates with informative errors.",
+        "For large documents causing timeouts, return 503 Service Unavailable with retry instructions.",
+        "Detect lost internet connection during uploads or edits via client-side timeout and retry mechanisms.",
+        "Unauthorized access attempts return 401 Unauthorized or 403 Forbidden with no sensitive data exposure.",
+        "If user deletes documents referenced in slide outlines, mark outlines as stale and notify user to regenerate.",
+        "Background jobs implement retry logic with exponential backoff and alerting on repeated failures."
+      ],
+      "securityNotes": [
+        "Enforce authentication and authorization on all API routes; verify user owns or has access to requested resources.",
+        "Encrypt all sensitive data at rest using database encryption features and in transit via HTTPS/TLS.",
+        "Sanitize all inputs to prevent injection attacks, including file metadata and JSON content.",
+        "Implement CSRF protection on state-changing API endpoints.",
+        "Use secure cookies or tokens for session management with appropriate expiration and renewal.",
+        "Limit file upload types and scan for malware or malicious content.",
+        "Implement rate limiting and IP throttling to mitigate abuse and denial-of-service attacks.",
+        "Log security-relevant events and monitor for suspicious activity.",
+        "Ensure background jobs do not expose sensitive data in logs or error messages.",
+        "Regularly update dependencies and patch known vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated graduate student on the /upload page",
+          "when": "They upload a valid PDF thesis document under size limit",
+          "then": "The document is accepted, stored securely, and upload status with document ID is returned"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user attempts to upload an unsupported file format",
+          "when": "They submit the file via /api/upload-document",
+          "then": "The API rejects the upload with an error indicating unsupported format"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user edits slide drafts on /slide-drafts page",
+          "when": "They save draft content with valid JSON structure",
+          "then": "The draft is saved with a draft ID and autosave versioning hints are updated"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user requests slide outline generation with valid thesis document IDs and slide draft ID",
+          "when": "They call /api/generate-slide-outline",
+          "then": "The system triggers asynchronous job and returns success with outline and recommendations IDs"
+        },
+        {
+          "id": "AT-005",
+          "given": "The background job completes slide outline generation",
+          "when": "User retrieves outline via /api/get-slide-outline",
+          "then": "The API returns the structured outline data and visual hierarchy recommendations"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user edits slide templates on /template-editor",
+          "when": "They save customized template data",
+          "then": "The template is saved with a template ID and conflicts are detected and resolved"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user plans rehearsal timings with valid timing and notes",
+          "when": "They save the plan via /api/save-rehearsal-plan",
+          "then": "The plan is saved and a plan ID is returned"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads committee feedback data",
+          "when": "They submit feedback via /api/save-committee-feedback",
+          "then": "The feedback is stored and a feedback ID is returned"
+        },
+        {
+          "id": "AT-009",
+          "given": "An unauthenticated user attempts to access /slide-drafts page",
+          "when": "They navigate to the page",
+          "then": "They are redirected to login page"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user deletes a thesis document referenced in a slide outline",
+          "when": "They attempt to view the outline",
+          "then": "The system marks the outline as stale and prompts user to regenerate"
+        }
+      ],
+      "buildOrder": [
+        "Set up data-storage with Prisma models and database schema for all data models.",
+        "Implement authentication and authorization middleware for API routes and pages.",
+        "Develop core API endpoints for document upload, slide draft saving, and template saving.",
+        "Create UI pages for /upload and /slide-drafts with client-side validation and autosave.",
+        "Implement background jobs for document processing and slide outline generation.",
+        "Integrate NLP and visual analysis services with API and background jobs.",
+        "Develop /slide-outline page and related API endpoints for outline retrieval.",
+        "Build /template-editor page with drag-and-drop UI and template saving API.",
+        "Implement rehearsal planner UI and API endpoints.",
+        "Develop committee feedback UI and API endpoints.",
+        "Add notification system and background job for sending notifications.",
+        "Implement data backup background job.",
+        "Add comprehensive error handling, validation, and security features.",
+        "Write acceptance tests and perform iterative QA and user feedback incorporation."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/slide-drafts",
+          "/slide-outline",
+          "/template-editor",
+          "/rehearsal-planner",
+          "/committee-feedback"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload-document.ts",
+          "/api/save-slide-draft.ts",
+          "/api/generate-slide-outline.ts",
+          "/api/get-slide-outline.ts",
+          "/api/save-slide-template.ts",
+          "/api/save-rehearsal-plan.ts",
+          "/api/save-committee-feedback.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "ThesisDocument",
+          "SlideDraft",
+          "SlideOutline",
+          "VisualHierarchyRecommendation",
+          "SlideTemplate",
+          "RehearsalPlan",
+          "CommitteeFeedback"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Gather missing constraints, clarify ambiguous features, and refine the tool requirements to ensure completeness and feasibility.",
+        "promptTemplate": "Given the current blueprint and idea for the Thesis Defense Visual Aid Designer:\n\n{{BLUEPRINT}}\n\nPlease ask detailed questions or request clarifications about any missing constraints, user needs, or edge cases not fully specified. Use the user's input: {{USER_INPUT}} to focus your inquiry."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages, data models, and API routes to support the tool's workflows based on refined requirements.",
+        "promptTemplate": "Using the refined idea and blueprint:\n\n{{IDEA}}\n\n{{BLUEPRINT}}\n\nDesign and finalize all necessary UI pages with their inputs and outputs, data models including fields and indexes, and API routes with request and response shapes. Incorporate any clarifications from {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial UI page stubs with basic layout and input/output elements for early testing and iteration.",
+        "promptTemplate": "Given the finalized page designs and data models:\n\n{{BLUEPRINT.pages}}\n\nGenerate code stubs or detailed descriptions for each UI page, including input controls, file upload components, and output display areas, suitable for a single-page app or multi-page app scaffold. Use {{USER_INPUT}} to customize or prioritize pages."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to backend API routes and data storage layers, ensuring secure and validated data flow.",
+        "promptTemplate": "Based on the API routes, data models, and UI pages:\n\n{{BLUEPRINT.apiRoutes}}\n\n{{BLUEPRINT.dataModels}}\n\nPlan and describe the integration of UI pages with API endpoints and database models. Include authentication, validation, error handling, and asynchronous job triggers. Use {{USER_INPUT}} for integration preferences or known constraints."
+      }
+    ]
+  }
+}

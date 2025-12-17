@@ -1,0 +1,693 @@
+{
+  "slug": "academic-conference-networking-matchmaker",
+  "title": "Academic Conference Networking Matchmaker",
+  "description": "Upload your research interests and conference attendee list to receive a ranked list of prioritized networking contacts with suggested meeting times to maximize meaningful connections during your event.",
+  "inputLabel": "Enter your research interests keywords (comma separated) or upload a research summary, and upload the conference attendee list file (CSV or JSON)",
+  "outputLabel": "Ranked list of recommended networking contacts with match highlights and suggested meeting time slots",
+  "systemPrompt": "You are an academic conference networking assistant. Given the user's research interests keywords or uploaded research summary, the conference attendee list, user's networking goals, and availability, generate a ranked list of recommended contacts. For each contact, highlight matching research interests and collaboration points. Suggest personalized meeting time slots based on mutual availability. Refuse requests that are unsafe, irrelevant, or violate privacy. Only output plain text or valid JSON as requested. Validate input formats and inform user of any errors. Do not perform any scheduling or calendar integration. Keep suggestions relevant, concise, and actionable.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "General Networking",
+      "prompt": "Find potential collaborators and mentors whose research interests align closely with mine.",
+      "hint": "Use this for broad collaboration and mentorship networking."
+    },
+    {
+      "label": "Job Opportunities",
+      "prompt": "Identify contacts relevant for job search and career advancement.",
+      "hint": "Focus on attendees from institutions or roles relevant to job hunting."
+    },
+    {
+      "label": "Region Focused",
+      "prompt": "Prioritize contacts from specific geographic regions I prefer.",
+      "hint": "Good for regional collaboration or local networking."
+    },
+    {
+      "label": "Early Career Focus",
+      "prompt": "Find contacts at similar or slightly advanced career stages for peer networking.",
+      "hint": "Useful for early career researchers."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output a JSON array of contacts with fields: attendeeId, name, institution, matchedKeywords, matchScore, suggestedMeetingSlots (ISO 8601 strings), and a brief collaboration summary.",
+  "clarifyPrompt": "Please provide your research interests keywords or upload a research summary document, your networking goals (e.g., collaborators, mentors, jobs), and your available time slots during the conference. Optionally, specify preferences such as preferred career stage or geographic region.",
+  "finalizePrompt": "Based on the provided inputs, generate a ranked list of networking contacts with matching highlights and suggest personalized meeting times. Ensure recommendations are clear, actionable, and respect privacy and data security constraints.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Conference Networking Matchmaker",
+      "niche": {
+        "role": "Academic conference attendee",
+        "scenario": "Before attending a large academic conference, researchers want to identify and prioritize potential networking contacts whose research interests, collaboration goals, and availability align closely with their own, to maximize meaningful connections during the event."
+      },
+      "problem": "Researchers attending large academic conferences struggle to identify and organize high-value networking opportunities due to the volume of attendees and limited time. Existing tools provide session scheduling and paper management but lack personalized, research-interest-based matchmaking and meeting planning features.",
+      "inputs": [
+        "User's current research interests keywords or uploaded research summary",
+        "Conference attendee list and profiles (imported from conference organizer or public attendee directory)",
+        "User's networking goals (e.g., find collaborators, mentors, job opportunities)",
+        "User's available time slots during the conference",
+        "Optional user preferences (e.g., preferred career stage, geographic region)"
+      ],
+      "outputs": [
+        "Ranked list of prioritized networking contacts with matching interest highlights",
+        "Suggested personalized meeting time slots based on mutual availability",
+        "Contact briefs summarizing shared research topics and potential collaboration points",
+        "Customizable meeting agenda templates for initial networking conversations",
+        "Exportable meeting schedule and contact list integrated with calendar apps"
+      ],
+      "whyItWins": [
+        "Fills a critical gap in academic conference preparation by focusing on personalized, interest-aligned networking rather than just session attendance",
+        "Leverages structured data about attendees and user preferences to create actionable, timely networking plans",
+        "Supports repeated use across conferences with evolving user profiles and historical networking data",
+        "Integrates meeting scheduling with contact insights to reduce friction and increase networking effectiveness",
+        "Starts lightweight with attendee list import and keyword matching, scaling to multi-page system with profile management, analytics, and in-app messaging"
+      ],
+      "upgradePath": {
+        "today": "A simple tool where users upload their research interests and conference attendee lists to receive a ranked list of recommended contacts with suggested meeting times.",
+        "in90Days": "Add user profiles with saved preferences, integrate calendar syncing and reminders, allow users to input feedback on meetings to refine future recommendations.",
+        "in12Months": "Develop a comprehensive multi-page web app with full attendee profile management, AI-enhanced interest matching, in-app messaging, meeting outcome tracking, and analytics dashboards to optimize networking ROI over multiple conferences."
+      },
+      "riskNotes": [
+        "Privacy and data security concerns when handling user profiles and attendee data must be carefully addressed, ensuring compliance with data protection laws and conference policies.",
+        "Accurate and up-to-date attendee information availability may be limited or inconsistent depending on conference organizer cooperation.",
+        "Users may over-rely on automated matchmaking and neglect organic networking opportunities; the system should encourage balanced networking strategies.",
+        "Scheduling conflicts may arise if calendar integrations are not robust or if multiple users propose overlapping meetings."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A personalized academic conference networking matchmaker that helps researchers identify, prioritize, and schedule meetings with relevant attendees based on research interests, goals, and availability, evolving from a simple keyword matching tool to a comprehensive multi-conference networking platform.",
+      "primaryUser": "Academic conference attendees (researchers) seeking to maximize meaningful networking opportunities.",
+      "successMetrics": [
+        "User engagement rate during conference preparation period",
+        "Number of meetings scheduled through the platform",
+        "User satisfaction with match relevance and meeting outcomes",
+        "Repeat usage rate across multiple conferences",
+        "Reduction in user-reported scheduling conflicts"
+      ],
+      "components": [
+        {
+          "id": "ui-landing",
+          "name": "Landing and Onboarding UI",
+          "type": "ui",
+          "responsibility": "Provide user registration, onboarding flow to upload research interests and attendee lists, and initial matchmaking results display.",
+          "dependsOn": [],
+          "notes": [
+            "Must handle file uploads and keyword inputs gracefully.",
+            "Lightweight UI for quick first-time use.",
+            "Includes privacy notices and consent for data usage."
+          ]
+        },
+        {
+          "id": "ui-profile-management",
+          "name": "User Profile and Preferences UI",
+          "type": "ui",
+          "responsibility": "Allow users to create and update profiles, save networking goals, preferences, availability, and past conference data.",
+          "dependsOn": [
+            "api-user",
+            "data-userProfile"
+          ],
+          "notes": [
+            "Supports multi-conference profiles and historical data.",
+            "Enables editing of preferences and availability.",
+            "Privacy controls for profile visibility."
+          ]
+        },
+        {
+          "id": "ui-networking-dashboard",
+          "name": "Networking Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display ranked contact lists, meeting suggestions, contact briefs, agenda templates, and calendar integration status.",
+          "dependsOn": [
+            "api-matching",
+            "api-scheduling",
+            "data-meetings"
+          ],
+          "notes": [
+            "Interactive UI for filtering and sorting matches.",
+            "Supports exporting schedules and contact lists.",
+            "Visual indicators for mutual availability and meeting status."
+          ]
+        },
+        {
+          "id": "api-user",
+          "name": "User Management API",
+          "type": "api",
+          "responsibility": "Handle user authentication, profile CRUD operations, and preferences storage.",
+          "dependsOn": [
+            "data-userProfile"
+          ],
+          "notes": [
+            "Secure authentication and authorization required.",
+            "Supports profile versioning for historical data."
+          ]
+        },
+        {
+          "id": "api-matching",
+          "name": "Matchmaking Engine API",
+          "type": "api",
+          "responsibility": "Process user inputs and attendee data to generate ranked networking contact lists and meeting suggestions based on research interests, goals, and availability.",
+          "dependsOn": [
+            "data-attendees",
+            "data-userProfile"
+          ],
+          "notes": [
+            "Initial simple keyword matching evolving to AI-enhanced semantic matching.",
+            "Handles incomplete or inconsistent attendee data gracefully.",
+            "Supports feedback input to refine future matches."
+          ]
+        },
+        {
+          "id": "api-scheduling",
+          "name": "Meeting Scheduling API",
+          "type": "api",
+          "responsibility": "Manage meeting proposals, mutual availability checks, calendar integration, and meeting agenda templates.",
+          "dependsOn": [
+            "data-meetings",
+            "integration-calendar"
+          ],
+          "notes": [
+            "Conflict detection and resolution mechanisms.",
+            "Supports exporting schedules to external calendar apps.",
+            "Handles time zone differences and updates."
+          ]
+        },
+        {
+          "id": "data-userProfile",
+          "name": "User Profile Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, preferences, research interests, networking goals, availability, and historical networking data.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage for sensitive data.",
+            "Versioning or timestamping for profile evolution."
+          ]
+        },
+        {
+          "id": "data-attendees",
+          "name": "Conference Attendee Data Store",
+          "type": "data",
+          "responsibility": "Store imported conference attendee lists and profiles including research interests and public data.",
+          "dependsOn": [],
+          "notes": [
+            "Data import validation and normalization required.",
+            "May include partial or anonymized data depending on source."
+          ]
+        },
+        {
+          "id": "data-meetings",
+          "name": "Meetings and Scheduling Data Store",
+          "type": "data",
+          "responsibility": "Persist proposed meetings, confirmed schedules, agenda templates, and meeting feedback.",
+          "dependsOn": [],
+          "notes": [
+            "Tracks meeting status and history.",
+            "Supports conflict detection queries."
+          ]
+        },
+        {
+          "id": "integration-calendar",
+          "name": "Calendar Integration Service",
+          "type": "integration",
+          "responsibility": "Interface with external calendar providers (e.g., Google Calendar, Outlook) to sync meeting schedules and reminders.",
+          "dependsOn": [
+            "api-scheduling"
+          ],
+          "notes": [
+            "Handles OAuth and permission scopes securely.",
+            "Manages sync conflicts and updates."
+          ]
+        },
+        {
+          "id": "job-feedback-processing",
+          "name": "Feedback Processing Background Job",
+          "type": "job",
+          "responsibility": "Periodically analyze user feedback on meetings to improve matchmaking algorithms and update user profiles.",
+          "dependsOn": [
+            "data-meetings",
+            "data-userProfile",
+            "api-matching"
+          ],
+          "notes": [
+            "Runs asynchronously to avoid blocking user interactions.",
+            "Supports incremental learning and profile updates."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "UserProfile",
+          "purpose": "Store user identity, research interests, networking goals, availability, preferences, and historical conference data.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "researchKeywords",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "networkingGoals",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "availabilitySlots",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "conferenceHistory",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "profileVersion",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "email"
+          ]
+        },
+        {
+          "name": "AttendeeProfile",
+          "purpose": "Store imported conference attendee information including research interests and public profile data.",
+          "fields": [
+            {
+              "name": "attendeeId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "researchKeywords",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "careerStage",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "geographicRegion",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "attendeeId",
+            "name"
+          ]
+        },
+        {
+          "name": "Meeting",
+          "purpose": "Represent proposed and confirmed meetings between users and attendees including scheduling and agenda data.",
+          "fields": [
+            {
+              "name": "meetingId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "attendeeId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposedTimeSlots",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "confirmedTime",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "agendaTemplate",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "feedback",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "meetingId",
+            "userId",
+            "attendeeId",
+            "status"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Welcome and Onboarding",
+          "purpose": "Allow new users to register, upload research interests and attendee lists, and see initial matchmaking results.",
+          "inputs": [
+            "research interests keywords",
+            "attendee list file",
+            "networking goals",
+            "availability"
+          ],
+          "outputs": [
+            "ranked contact list"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/profile",
+          "title": "User Profile and Preferences",
+          "purpose": "Enable users to manage their profile, networking goals, preferences, and availability.",
+          "inputs": [
+            "profile data",
+            "networking goals",
+            "availability",
+            "preferences"
+          ],
+          "outputs": [
+            "updated profile confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/networking",
+          "title": "Networking Dashboard",
+          "purpose": "Display prioritized contacts, meeting suggestions, contact briefs, and allow scheduling and exporting meetings.",
+          "inputs": [
+            "filters",
+            "meeting proposals",
+            "agenda templates"
+          ],
+          "outputs": [
+            "ranked contacts",
+            "meeting schedules",
+            "export files"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "Settings and Integrations",
+          "purpose": "Manage calendar integrations, notification preferences, and privacy settings.",
+          "inputs": [
+            "calendar credentials",
+            "notification preferences",
+            "privacy settings"
+          ],
+          "outputs": [
+            "integration status",
+            "settings confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/user",
+          "method": "POST",
+          "purpose": "Create or update user profile and preferences.",
+          "requestShape": "JSON with user profile fields",
+          "responseShape": "Success or error message with updated profile data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/match",
+          "method": "POST",
+          "purpose": "Generate ranked networking matches based on user inputs and attendee data.",
+          "requestShape": "JSON with userId and optional updated inputs",
+          "responseShape": "JSON list of ranked contacts with match scores and highlights",
+          "auth": "user"
+        },
+        {
+          "route": "/api/schedule",
+          "method": "POST",
+          "purpose": "Propose, confirm, or update meetings including availability checks and agenda templates.",
+          "requestShape": "JSON with meeting details and user decisions",
+          "responseShape": "Meeting status and scheduling confirmation or conflict errors",
+          "auth": "user"
+        },
+        {
+          "route": "/api/attendees/import",
+          "method": "POST",
+          "purpose": "Import and validate conference attendee lists.",
+          "requestShape": "File upload or JSON attendee data",
+          "responseShape": "Import summary with success and error counts",
+          "auth": "user"
+        },
+        {
+          "route": "/api/calendar/connect",
+          "method": "POST",
+          "purpose": "Connect and authorize external calendar services.",
+          "requestShape": "OAuth tokens or credentials",
+          "responseShape": "Connection status and error messages",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Feedback Processing Job",
+          "trigger": "Scheduled (e.g., nightly)",
+          "purpose": "Analyze meeting feedback to improve matchmaking algorithms and update user profiles."
+        },
+        {
+          "name": "Calendar Sync Job",
+          "trigger": "Periodic or webhook-triggered",
+          "purpose": "Sync meeting schedules and updates with connected external calendars."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or inconsistent attendee data causing poor match quality or missing contacts.",
+        "User uploads malformed or incompatible attendee lists or research summaries.",
+        "Scheduling conflicts due to overlapping availability or calendar sync failures.",
+        "Privacy concerns if user data or attendee data is exposed or misused.",
+        "Users providing minimal or vague research interests leading to low relevance matches.",
+        "Multiple users attempting to schedule meetings with the same attendee at overlapping times.",
+        "Network failures during calendar integration or data import processes.",
+        "Users neglecting to update availability leading to inaccurate scheduling suggestions."
+      ],
+      "nonGoals": [
+        "Providing full conference session scheduling or paper management functionality.",
+        "Replacing organic, spontaneous networking opportunities entirely.",
+        "Hosting or managing the conference attendee registration process.",
+        "Offering a general-purpose social networking platform outside academic conferences.",
+        "Building a comprehensive AI research assistant beyond matchmaking and scheduling."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User visits '/' landing page and optionally registers or logs in.",
+        "User uploads research interests keywords and attendee list file via landing page UI.",
+        "Landing page calls '/api/attendees/import' to validate and store attendee data in 'data-attendees'.",
+        "Landing page calls '/api/user' to create or update user profile with research interests, networking goals, and availability stored in 'data-userProfile'.",
+        "Landing page calls '/api/match' with userId and inputs to generate ranked contact list from 'data-attendees' and 'data-userProfile'.",
+        "User navigates to '/profile' to view and update profile, networking goals, preferences, and availability.",
+        "Profile page calls '/api/user' to update profile data in 'data-userProfile'.",
+        "User navigates to '/networking' dashboard to view ranked contacts, meeting suggestions, and schedule meetings.",
+        "Networking dashboard calls '/api/match' to refresh matches and '/api/schedule' to propose or confirm meetings stored in 'data-meetings'.",
+        "Networking dashboard supports exporting schedules and contacts, integrating with calendar via '/api/calendar/connect'.",
+        "User navigates to '/settings' to manage calendar integrations and privacy settings.",
+        "Settings page calls '/api/calendar/connect' to authorize external calendar providers, storing tokens securely.",
+        "Background job 'Feedback Processing Job' runs periodically to analyze meeting feedback from 'data-meetings' and update matchmaking models and user profiles.",
+        "Background job 'Calendar Sync Job' runs periodically or via webhook to sync meetings between 'data-meetings' and external calendars via 'integration-calendar'."
+      ],
+      "validationRules": [
+        "User profile creation/update requires valid email format, non-empty name, and researchKeywords as non-empty JSON array or object.",
+        "Attendee list import validates file format (CSV, JSON), required fields (attendeeId, name), and normalizes researchKeywords.",
+        "Networking goals, availabilitySlots, and preferences must conform to defined JSON schemas with allowed keys and value types.",
+        "Meeting proposals must include valid userId, attendeeId, and proposedTimeSlots with ISO 8601 date-time strings and no overlaps.",
+        "Confirmed meeting times must be within user and attendee availability and not conflict with existing meetings.",
+        "OAuth tokens for calendar integration must be validated for expiration and required scopes before acceptance.",
+        "API requests require authentication tokens for user-bound routes; unauthenticated requests to protected routes return 401.",
+        "Inputs must be sanitized to prevent injection attacks, especially in file uploads and JSON fields.",
+        "Profile versioning increments on each update to track history and enable rollback if needed."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with descriptive error messages for validation failures (e.g., malformed attendee file, invalid profile data).",
+        "Return 401 Unauthorized for API calls requiring authentication if token is missing or invalid.",
+        "Return 409 Conflict for scheduling conflicts detected during meeting proposals with details on conflicting time slots.",
+        "Gracefully handle incomplete or inconsistent attendee data by logging warnings and excluding problematic entries from matches.",
+        "Return 500 Internal Server Error for unexpected failures with generic message and log detailed error for diagnostics.",
+        "For calendar integration errors (OAuth failure, token expiration), return 403 Forbidden with instructions to reauthorize.",
+        "File upload errors return 422 Unprocessable Entity with information on expected formats and size limits.",
+        "API responses include standardized error codes and messages to enable consistent client-side handling.",
+        "Background jobs log errors and retry transient failures without blocking user interactions."
+      ],
+      "securityNotes": [
+        "All user-sensitive data including research interests, availability, and preferences must be encrypted at rest in 'data-userProfile'.",
+        "Authentication tokens must be securely stored and transmitted over HTTPS only.",
+        "Authorization checks on all API routes to ensure users can only access and modify their own profiles and meetings.",
+        "File uploads must be scanned and sanitized to prevent malicious content or injection.",
+        "OAuth tokens for calendar integration stored securely with limited scopes and refreshed as needed.",
+        "Privacy notices and consent must be presented during onboarding and profile management, with options to control profile visibility.",
+        "Rate limiting and brute force protection on authentication endpoints to prevent abuse.",
+        "Audit logs maintained for profile updates, meeting scheduling, and calendar integrations for traceability.",
+        "Data exports and sharing features must respect user privacy settings and only include authorized information."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A new user visits the landing page without authentication",
+          "when": "They submit valid research interests keywords and an attendee list file",
+          "then": "The system imports attendee data, creates a user profile, and returns a ranked contact list without errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user accesses the profile page",
+          "when": "They update their networking goals and availability with valid data",
+          "then": "The profile is updated successfully, profileVersion increments, and confirmation is shown"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on the networking dashboard",
+          "when": "They propose a meeting with an attendee at a time slot overlapping an existing meeting",
+          "then": "The API returns a conflict error with details, and the meeting is not scheduled"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user attempts to import an attendee list with malformed data",
+          "when": "They submit the file via the import API",
+          "then": "The system returns validation errors specifying the issues and does not import invalid entries"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user connects their Google Calendar via the settings page",
+          "when": "They provide valid OAuth tokens",
+          "then": "The system stores tokens securely, confirms integration status, and syncs meetings successfully"
+        },
+        {
+          "id": "AT-006",
+          "given": "A background job runs to process meeting feedback",
+          "when": "There is new feedback data available",
+          "then": "The matchmaking engine updates user profiles and match rankings without impacting user API responsiveness"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user attempts to access '/profile' or '/networking'",
+          "when": "They navigate to these routes or call protected APIs",
+          "then": "They are redirected to login or receive 401 Unauthorized errors"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads minimal or vague research interests",
+          "when": "They request matchmaking",
+          "then": "The system returns matches with lower confidence scores and suggests refining inputs"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for UserProfile, AttendeeProfile, and Meeting with required fields and indexes",
+        "Implement authentication and authorization middleware for API routes",
+        "Build '/api/user' route for user profile CRUD with validation and encryption",
+        "Build '/api/attendees/import' route to handle file uploads, validation, and data normalization",
+        "Build '/api/match' route to generate ranked matches using initial keyword matching logic",
+        "Build '/api/schedule' route to propose, confirm, and update meetings with conflict detection",
+        "Implement calendar integration service and '/api/calendar/connect' route with OAuth flow",
+        "Develop landing page '/' with onboarding UI and calls to user, attendees import, and match APIs",
+        "Develop profile management page '/profile' with forms to update profile and preferences",
+        "Develop networking dashboard '/networking' with contact lists, meeting proposals, and export features",
+        "Develop settings page '/settings' for calendar integration and privacy controls",
+        "Implement background jobs for feedback processing and calendar synchronization",
+        "Add comprehensive validation, error handling, and security measures across all components",
+        "Write acceptance tests and perform end-to-end testing",
+        "Deploy and monitor usage metrics for success evaluation"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/profile",
+          "/networking",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "api/user.ts",
+          "api/match.ts",
+          "api/schedule.ts",
+          "api/attendees/import.ts",
+          "api/calendar/connect.ts"
+        ],
+        "prismaModelsToAdd": [
+          "UserProfile",
+          "AttendeeProfile",
+          "Meeting"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-req",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather any missing constraints or details to complete the requirements for the networking matchmaker tool.",
+        "promptTemplate": "You are a planner refining the academic conference networking matchmaker requirements. Given the current blueprint:\n{{BLUEPRINT}}\n\nAnd the expanded specs:\n{{EXPANDED}}\n\nAsk the user for any missing constraints, edge cases, or special conditions needed to finalize the requirements.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the final detailed page routes, data models, and API contracts for the networking matchmaker system.",
+        "promptTemplate": "You are the architect finalizing the multi-page app design for the academic conference networking matchmaker.\nBlueprint:\n{{BLUEPRINT}}\n\nExpanded specs:\n{{EXPANDED}}\n\nUser input / clarifications:\n{{USER_INPUT}}\n\nProduce a detailed final list of pages with inputs/outputs, data models with fields and indexes, and API route definitions."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code stubs for each page and API endpoint defined in the blueprint for rapid prototyping.",
+        "promptTemplate": "You are the builder generating code stubs for the academic conference networking matchmaker app.\nBlueprint:\n{{BLUEPRINT}}\n\nExpanded specs:\n{{EXPANDED}}\n\nUser input:\n{{USER_INPUT}}\n\nGenerate minimal functional page components and API route handlers for each defined page and API."
+      },
+      {
+        "id": "integrator-wire",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the frontend pages to backend APIs and database models, ensuring data flow and interactions work end-to-end.",
+        "promptTemplate": "You are the integrator wiring the academic conference networking matchmaker system.\nBlueprint:\n{{BLUEPRINT}}\n\nExpanded specs:\n{{EXPANDED}}\n\nUser input:\n{{USER_INPUT}}\n\nDescribe step-by-step how to connect frontend UI to API endpoints and database models, handle validations, error states, and user interactions."
+      }
+    ]
+  }
+}

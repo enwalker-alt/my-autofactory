@@ -1,0 +1,823 @@
+{
+  "slug": "lab-equipment-booking-optimizer",
+  "title": "Academic Research Equipment Booking Optimizer",
+  "description": "Optimize shared academic lab equipment bookings and maintenance scheduling to avoid conflicts, improve utilization, and automate maintenance alerts.",
+  "inputLabel": "Enter equipment list, booking requests, maintenance logs, user roles, and lab calendar constraints (JSON or text)",
+  "outputLabel": "Optimized booking schedule, conflict alerts, usage summary, and maintenance tasks",
+  "systemPrompt": "You are an expert assistant for managing academic research lab equipment bookings and maintenance. Given input data including equipment details, booking requests, maintenance logs, user roles, and lab calendar constraints, generate an optimized, conflict-free booking schedule, highlight conflicts with priority-based resolution suggestions, and produce maintenance scheduling alerts. Validate all inputs carefully, reject disallowed or malformed requests, ensure lab calendar constraints are respected, and never expose sensitive user credentials. Output must be plain text summarizing the schedule and conflicts clearly. Refuse requests missing required fields or with invalid dates. Always prioritize safety, data privacy and clarity.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Conflict-Free Booking",
+      "prompt": "Optimize the following equipment booking requests against availability and lab calendar constraints. Generate a conflict-free booking calendar and highlight any conflicts with suggestions."
+    },
+    {
+      "label": "Include Maintenance Scheduling",
+      "prompt": "Optimize booking requests and incorporate equipment maintenance logs and manufacturer schedules to generate booking calendar and maintenance alerts."
+    },
+    {
+      "label": "Priority-Based Conflict Resolution",
+      "prompt": "Optimize bookings applying user roles and priority levels to resolve conflicts. Provide conflict alerts with recommended manual overrides."
+    },
+    {
+      "label": "Generate Usage Report Summary",
+      "prompt": "Analyze bookings and equipment usage to produce a report summarizing utilization rates and patterns."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output JSON with fields: bookingCalendar (array), conflicts (array), maintenanceAlerts (array), usageSummary (object).",
+  "clarifyPrompt": "Please provide the equipment list, booking requests, maintenance logs, user roles, and lab calendar constraints in JSON or structured text format. Specify any special constraints or priority rules.",
+  "finalizePrompt": "Confirm that all input data is correct and complete. Approve generation of optimized booking schedule with conflict resolution and maintenance alerts.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Equipment Usage & Booking Optimizer",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Managing shared lab equipment usage schedules and maintenance in a busy multi-user research lab"
+      },
+      "problem": "Academic research labs with many shared instruments struggle to efficiently coordinate equipment booking, usage tracking, and maintenance scheduling, leading to conflicts, underutilization, and unexpected downtime.",
+      "inputs": [
+        "List of lab equipment with specifications and availability",
+        "Researcher booking requests with time windows and usage details",
+        "Equipment maintenance logs and manufacturer maintenance schedules",
+        "Lab user roles and priority levels",
+        "Lab calendar constraints (holidays, lab closed days)"
+      ],
+      "outputs": [
+        "Optimized, conflict-free equipment booking calendar",
+        "Usage reports highlighting utilization rates and patterns",
+        "Automated maintenance scheduling alerts and task lists",
+        "Priority-based booking recommendations and conflict resolutions",
+        "Notifications for users on booking confirmations, changes, or maintenance downtime"
+      ],
+      "whyItWins": [
+        "Fills a gap not addressed by generic calendar or booking apps by integrating lab-specific constraints and equipment maintenance needs",
+        "Saves lab managers significant time by automating complex scheduling and maintenance coordination",
+        "Improves equipment utilization and reduces downtime through proactive maintenance planning",
+        "Enhances communication and transparency across multiple lab users with varied priorities",
+        "Scalable from a simple booking tool to a comprehensive lab equipment management system"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app allowing manual input of equipment and booking requests, generating conflict-free booking schedules with basic maintenance reminders.",
+        "in90Days": "Add user accounts, automated booking request submissions, conflict resolution suggestions, and calendar sync integration with email notifications.",
+        "in12Months": "Develop full equipment lifecycle management with predictive maintenance analytics, usage pattern dashboards, role-based access controls, and integration with institutional research resource management systems."
+      },
+      "riskNotes": [
+        "Ensure data privacy for researcher booking information and lab schedules.",
+        "Avoid over-automation that could reduce user flexibility or create scheduling bottlenecks.",
+        "Maintain clear communication channels so users are always informed of booking statuses and maintenance impacts.",
+        "System should allow manual overrides by lab managers to handle exceptional cases."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web application to optimize academic research lab equipment booking, usage tracking, and maintenance scheduling, tailored for multi-user research labs with complex constraints and priorities.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Reduction in booking conflicts and scheduling overlaps",
+        "Increased equipment utilization rates",
+        "Decrease in unexpected equipment downtime",
+        "User satisfaction with booking and notification system",
+        "Time saved by lab managers in scheduling and maintenance coordination"
+      ],
+      "components": [
+        {
+          "id": "ui-booking",
+          "name": "Booking & Scheduling UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for users to view equipment availability, submit booking requests, view booking calendars, and receive notifications.",
+          "dependsOn": [
+            "api-booking",
+            "api-user",
+            "api-notifications"
+          ],
+          "notes": [
+            "Must support role-based views (e.g., manager vs researcher)",
+            "Should allow manual overrides by lab managers",
+            "Include conflict resolution suggestions"
+          ]
+        },
+        {
+          "id": "ui-reports",
+          "name": "Usage & Maintenance Reports UI",
+          "type": "ui",
+          "responsibility": "Display equipment utilization statistics, maintenance schedules, and predictive analytics dashboards.",
+          "dependsOn": [
+            "api-reports",
+            "api-maintenance"
+          ],
+          "notes": [
+            "Visualize usage patterns over time",
+            "Highlight upcoming maintenance and equipment downtime"
+          ]
+        },
+        {
+          "id": "api-booking",
+          "name": "Booking Management API",
+          "type": "api",
+          "responsibility": "Handle booking requests, conflict detection, priority-based scheduling, and calendar generation.",
+          "dependsOn": [
+            "data-equipment",
+            "data-bookings",
+            "data-users",
+            "data-labcalendar",
+            "api-notifications"
+          ],
+          "notes": [
+            "Enforce booking rules and priority levels",
+            "Provide conflict resolution suggestions",
+            "Allow manual booking overrides by managers"
+          ]
+        },
+        {
+          "id": "api-maintenance",
+          "name": "Maintenance Scheduling API",
+          "type": "api",
+          "responsibility": "Manage equipment maintenance logs, schedule automated maintenance tasks, and trigger alerts for upcoming maintenance.",
+          "dependsOn": [
+            "data-equipment",
+            "data-maintenance",
+            "background-maintenanceScheduler",
+            "api-notifications"
+          ],
+          "notes": [
+            "Integrate manufacturer maintenance schedules",
+            "Support manual maintenance entries",
+            "Generate maintenance task lists"
+          ]
+        },
+        {
+          "id": "api-user",
+          "name": "User & Role Management API",
+          "type": "api",
+          "responsibility": "Manage user accounts, roles, authentication, and authorization.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Support role-based access control",
+            "Ensure data privacy and secure authentication"
+          ]
+        },
+        {
+          "id": "api-notifications",
+          "name": "Notification Service API",
+          "type": "api",
+          "responsibility": "Send booking confirmations, changes, maintenance alerts, and priority notifications to users via email or in-app.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Support configurable notification preferences",
+            "Ensure timely delivery of critical alerts"
+          ]
+        },
+        {
+          "id": "data-equipment",
+          "name": "Equipment Data Store",
+          "type": "data",
+          "responsibility": "Persist equipment details, specifications, availability, and maintenance schedules.",
+          "dependsOn": [],
+          "notes": [
+            "Must support updates to equipment status and specs",
+            "Store manufacturer maintenance guidelines"
+          ]
+        },
+        {
+          "id": "data-bookings",
+          "name": "Booking Data Store",
+          "type": "data",
+          "responsibility": "Persist booking requests, confirmed bookings, and booking history.",
+          "dependsOn": [
+            "data-users",
+            "data-equipment"
+          ],
+          "notes": [
+            "Track booking status and conflicts",
+            "Store priority and usage details"
+          ]
+        },
+        {
+          "id": "data-maintenance",
+          "name": "Maintenance Logs Data Store",
+          "type": "data",
+          "responsibility": "Persist maintenance records, schedules, and task completions.",
+          "dependsOn": [
+            "data-equipment"
+          ],
+          "notes": [
+            "Support manual and automated maintenance entries",
+            "Track maintenance impact on equipment availability"
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, roles, priorities, and authentication credentials.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure secure storage of sensitive user data",
+            "Support role and priority level management"
+          ]
+        },
+        {
+          "id": "data-labcalendar",
+          "name": "Lab Calendar Data Store",
+          "type": "data",
+          "responsibility": "Persist lab-wide calendar constraints such as holidays and closed days.",
+          "dependsOn": [],
+          "notes": [
+            "Used to block out unavailable dates for bookings and maintenance"
+          ]
+        },
+        {
+          "id": "background-maintenanceScheduler",
+          "name": "Maintenance Scheduler Job",
+          "type": "job",
+          "responsibility": "Periodically analyze equipment usage and manufacturer schedules to trigger maintenance tasks and alerts.",
+          "dependsOn": [
+            "data-equipment",
+            "data-maintenance",
+            "api-notifications"
+          ],
+          "notes": [
+            "Run daily or weekly depending on lab needs",
+            "Detect overdue maintenance and notify managers"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Equipment",
+          "purpose": "Store details about lab equipment including specifications and availability.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "specifications",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "availabilityStatus",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manufacturerMaintenanceSchedule",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastMaintenanceDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "Booking",
+          "purpose": "Represent equipment booking requests and confirmed bookings.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "priorityLevel",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "usageDetails",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "conflictResolvedBy",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "userId",
+            "startTime",
+            "endTime",
+            "status"
+          ]
+        },
+        {
+          "name": "MaintenanceLog",
+          "purpose": "Track maintenance activities and schedules for equipment.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "maintenanceDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "maintenanceType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "performedBy",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "nextScheduledDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "maintenanceDate"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user profiles, roles, and priorities.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "priorityLevel",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "authCredentials",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email",
+            "role"
+          ]
+        },
+        {
+          "name": "LabCalendar",
+          "purpose": "Store lab-wide calendar constraints such as holidays and closed days.",
+          "fields": [
+            {
+              "name": "date",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "isClosed",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "date"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "user role"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/equipment",
+          "title": "Equipment List & Details",
+          "purpose": "View and manage lab equipment details and availability.",
+          "inputs": [],
+          "outputs": [
+            "equipment list",
+            "equipment details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/bookings",
+          "title": "Booking Calendar & Requests",
+          "purpose": "View booking calendar, submit booking requests, and manage bookings.",
+          "inputs": [
+            "booking request details"
+          ],
+          "outputs": [
+            "booking calendar",
+            "booking status",
+            "conflict alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/maintenance",
+          "title": "Maintenance Schedule & Logs",
+          "purpose": "View and manage equipment maintenance schedules and logs.",
+          "inputs": [
+            "maintenance entry details"
+          ],
+          "outputs": [
+            "maintenance calendar",
+            "maintenance alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Usage & Maintenance Reports",
+          "purpose": "View reports and dashboards on equipment usage and maintenance.",
+          "inputs": [
+            "report filters"
+          ],
+          "outputs": [
+            "usage statistics",
+            "maintenance analytics"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/admin",
+          "title": "Admin Panel",
+          "purpose": "Manage users, roles, lab calendar constraints, and system settings.",
+          "inputs": [
+            "user management inputs",
+            "calendar constraints"
+          ],
+          "outputs": [
+            "user list",
+            "role assignments",
+            "lab calendar"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/bookings",
+          "method": "POST",
+          "purpose": "Submit a new booking request or update an existing booking.",
+          "requestShape": "Booking details JSON including equipmentId, userId, startTime, endTime, usageDetails",
+          "responseShape": "Booking confirmation status, conflict info if any",
+          "auth": "user"
+        },
+        {
+          "route": "/api/bookings",
+          "method": "GET",
+          "purpose": "Retrieve booking calendar and booking details for equipment or user.",
+          "requestShape": "Query parameters: equipmentId or userId, date range",
+          "responseShape": "List of bookings with status and priority",
+          "auth": "user"
+        },
+        {
+          "route": "/api/equipment",
+          "method": "GET",
+          "purpose": "Retrieve list of lab equipment and details.",
+          "requestShape": "Optional filters (e.g., availability status)",
+          "responseShape": "List of equipment with specifications and availability",
+          "auth": "user"
+        },
+        {
+          "route": "/api/maintenance",
+          "method": "GET",
+          "purpose": "Retrieve maintenance schedules and logs for equipment.",
+          "requestShape": "Query parameters: equipmentId, date range",
+          "responseShape": "List of maintenance logs and upcoming schedules",
+          "auth": "user"
+        },
+        {
+          "route": "/api/maintenance",
+          "method": "POST",
+          "purpose": "Add or update maintenance records.",
+          "requestShape": "Maintenance log details JSON",
+          "responseShape": "Confirmation of maintenance record update",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users",
+          "method": "POST",
+          "purpose": "User login and authentication.",
+          "requestShape": "User credentials JSON",
+          "responseShape": "Authentication token and user profile",
+          "auth": "public"
+        },
+        {
+          "route": "/api/users",
+          "method": "GET",
+          "purpose": "Retrieve user profiles and roles.",
+          "requestShape": "Optional filters",
+          "responseShape": "List of users with roles and priorities",
+          "auth": "user"
+        },
+        {
+          "route": "/api/notifications",
+          "method": "POST",
+          "purpose": "Send notifications to users about bookings and maintenance.",
+          "requestShape": "Notification payload JSON",
+          "responseShape": "Notification delivery status",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Maintenance Scheduler Job",
+          "trigger": "Scheduled (daily or weekly)",
+          "purpose": "Analyze equipment usage and manufacturer schedules to generate maintenance tasks and send alerts."
+        }
+      ],
+      "edgeCases": [
+        "Simultaneous booking requests causing conflicts requiring priority-based resolution or manual override.",
+        "Equipment unexpectedly becoming unavailable due to emergency maintenance or failure.",
+        "Users submitting booking requests outside lab calendar constraints (holidays, closed days).",
+        "Maintenance tasks overlapping with existing bookings requiring rescheduling or notifications.",
+        "User role changes impacting booking priority or access during active bookings.",
+        "Network or system failures during booking submission or notification dispatch.",
+        "Data privacy breaches exposing sensitive booking or user information.",
+        "Over-automation causing rigid scheduling that reduces user flexibility."
+      ],
+      "nonGoals": [
+        "Managing non-equipment lab resources such as consumables or reagents.",
+        "Handling detailed experimental protocols or data beyond equipment usage.",
+        "Replacing institutional research resource management systems entirely.",
+        "Supporting external calendar integrations beyond basic sync and notifications in early phases.",
+        "Providing predictive maintenance analytics beyond manufacturer schedules in initial versions."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI pages (e.g., /login, /equipment, /bookings) via Next.js routes.",
+        "UI components fetch data from corresponding API routes (e.g., /api/bookings, /api/equipment) using authenticated requests.",
+        "Booking UI submits booking requests to /api/bookings POST endpoint; API validates, checks conflicts, applies priority rules, and persists bookings in data-bookings store.",
+        "Booking API triggers notifications via /api/notifications POST endpoint to inform users of booking confirmations or conflicts.",
+        "Maintenance UI fetches maintenance logs and schedules from /api/maintenance GET endpoint; submits maintenance entries via POST endpoint.",
+        "Maintenance API manages maintenance logs in data-maintenance store, integrates manufacturer schedules, and triggers notifications for upcoming maintenance.",
+        "User & Role Management API handles authentication at /api/users POST and user data retrieval at /api/users GET; manages roles and priorities stored in data-users.",
+        "Notification Service API sends emails or in-app notifications based on payloads received; respects user notification preferences stored in data-users.",
+        "Background Maintenance Scheduler job runs periodically, analyzing equipment usage and schedules from data-equipment and data-maintenance, generates maintenance tasks, and sends alerts via Notification API.",
+        "Lab calendar constraints from data-labcalendar are used by Booking and Maintenance APIs to block unavailable dates.",
+        "Role-based access control enforced at API and UI layers to restrict data and actions based on user roles."
+      ],
+      "validationRules": [
+        "Booking requests must include valid equipmentId, userId, startTime, endTime, and usageDetails.",
+        "Booking startTime must be before endTime and within lab calendar open days.",
+        "Booking requests must not overlap with existing confirmed bookings unless overridden by manager role.",
+        "Priority levels must be numeric and within defined range; higher priority bookings can override lower priority ones.",
+        "Maintenance entries require equipmentId, maintenanceDate, and maintenanceType; nextScheduledDate if provided must be after maintenanceDate.",
+        "User authentication requires valid email format and password matching stored credentials.",
+        "Role assignments must be from predefined roles (e.g., manager, researcher).",
+        "Notification payloads must include recipient userId(s), message content, and notification type.",
+        "API request payloads must be sanitized to prevent injection attacks.",
+        "All date/time inputs must be validated for correct ISO format and timezone consistency."
+      ],
+      "errorHandling": [
+        "API endpoints return standardized error responses with HTTP status codes and error messages (e.g., 400 for validation errors, 401 for unauthorized, 409 for booking conflicts).",
+        "Booking conflicts return detailed conflict info and suggestions for resolution in response body.",
+        "Authentication failures return 401 Unauthorized with generic error messages to avoid information leakage.",
+        "Server errors return 500 Internal Server Error with logged details for diagnostics but generic messages to clients.",
+        "APIs validate input and return 400 Bad Request with field-specific error details.",
+        "Background job failures are logged and retried according to configured policy; critical alerts sent to admin users.",
+        "Notification failures are logged; retry mechanisms implemented for transient errors.",
+        "UI displays user-friendly error messages and guides users to corrective actions.",
+        "Concurrent booking requests causing race conditions are handled via database transaction isolation and optimistic locking.",
+        "Access denied errors return 403 Forbidden with explanation."
+      ],
+      "securityNotes": [
+        "All API routes except /login require authentication tokens (e.g., JWT) validated on each request.",
+        "Role-based access control enforced both in API and UI to restrict sensitive operations (e.g., manual overrides, user management).",
+        "Passwords stored securely using strong hashing algorithms (e.g., bcrypt).",
+        "Sensitive user data (authCredentials) stored encrypted and never exposed in API responses.",
+        "Input validation and sanitization prevent injection and XSS attacks.",
+        "Use HTTPS for all client-server communications.",
+        "Notification system respects user preferences and avoids leaking sensitive info in messages.",
+        "Audit logs maintained for critical actions such as booking overrides and role changes.",
+        "Rate limiting and throttling applied to APIs to prevent abuse.",
+        "Background jobs and APIs run with least privilege principle accessing only necessary data."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A researcher is logged in and views equipment availability",
+          "when": "They submit a booking request within available time slots",
+          "then": "The booking is confirmed and visible on their booking calendar without conflicts"
+        },
+        {
+          "id": "AT-002",
+          "given": "Two users simultaneously submit overlapping booking requests for the same equipment",
+          "when": "The system processes both requests",
+          "then": "The system detects conflict, applies priority rules, confirms one booking, and notifies the other user of conflict with resolution suggestions"
+        },
+        {
+          "id": "AT-003",
+          "given": "A lab manager attempts to override a booking conflict manually",
+          "when": "They submit the override request with proper authorization",
+          "then": "The booking is updated accordingly and notifications are sent to affected users"
+        },
+        {
+          "id": "AT-004",
+          "given": "A maintenance task is scheduled overlapping with an existing booking",
+          "when": "The maintenance scheduler triggers the task",
+          "then": "The system notifies affected users and suggests rescheduling options"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user attempts to book equipment on a lab holiday",
+          "when": "They submit the booking request",
+          "then": "The system rejects the booking with an error indicating lab closure"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user logs in with valid credentials",
+          "when": "They submit login form",
+          "then": "They receive an authentication token and their role is correctly assigned"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthorized user attempts to access the /bookings page",
+          "when": "They navigate to the page",
+          "then": "They are redirected to the login page"
+        },
+        {
+          "id": "AT-008",
+          "given": "The background maintenance scheduler runs",
+          "when": "It detects overdue maintenance",
+          "then": "It creates maintenance tasks and sends alerts to lab managers"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user changes their notification preferences",
+          "when": "They update settings in the UI",
+          "then": "Notifications are sent according to updated preferences"
+        },
+        {
+          "id": "AT-010",
+          "given": "A network failure occurs during booking submission",
+          "when": "The user submits a booking request",
+          "then": "The UI shows an error and allows retry without data loss"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Equipment, Booking, MaintenanceLog, User, LabCalendar",
+        "Implement User & Role Management API with authentication and authorization",
+        "Implement Equipment API to retrieve equipment data",
+        "Implement Booking Management API with booking creation, conflict detection, priority rules",
+        "Implement Notification Service API for sending notifications",
+        "Implement Maintenance Scheduling API for maintenance logs and schedules",
+        "Build Login page and authentication flow",
+        "Build Equipment List & Details UI page",
+        "Build Booking Calendar & Requests UI page with conflict alerts and manual override UI for managers",
+        "Build Maintenance Schedule & Logs UI page",
+        "Build Usage & Maintenance Reports UI page",
+        "Build Admin Panel for user and lab calendar management",
+        "Implement Background Maintenance Scheduler job",
+        "Implement role-based access control enforcement in UI and APIs",
+        "Implement error handling and validation across APIs and UI",
+        "Implement notification preferences and delivery mechanisms",
+        "Perform acceptance testing and edge case validations"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/equipment",
+          "/bookings",
+          "/maintenance",
+          "/reports",
+          "/admin"
+        ],
+        "apiFilesToCreate": [
+          "/api/users/index.ts",
+          "/api/equipment/index.ts",
+          "/api/bookings/index.ts",
+          "/api/maintenance/index.ts",
+          "/api/notifications/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Equipment",
+          "Booking",
+          "MaintenanceLog",
+          "User",
+          "LabCalendar"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints, rules, or preferences about lab equipment booking and maintenance.",
+        "promptTemplate": "Given the current blueprint:\n{{BLUEPRINT}}\n\nPlease specify any missing constraints, priority rules, lab calendar exceptions, or user role details to refine the requirements for the Academic Research Equipment Booking Optimizer.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design and finalize all UI pages, API routes, and data models for the system.",
+        "promptTemplate": "Based on the refined requirements and blueprint:\n{{BLUEPRINT}}\n\nPlease finalize the list of pages, their purposes, API endpoints, data models, and relationships needed to implement the Academic Research Equipment Booking Optimizer.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffolded code stubs for UI pages and APIs as per the architecture.",
+        "promptTemplate": "Given the finalized architecture including pages and APIs:\n{{BLUEPRINT}}\n\nGenerate code stubs and file scaffolds for the UI routes and API endpoints for the Academic Research Equipment Booking Optimizer.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wireup",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages with API routes and database models for full functionality.",
+        "promptTemplate": "With page stubs and database models in place:\n{{BLUEPRINT}}\n\nDescribe how to wire the UI pages to API endpoints and database models, including authentication, authorization, and error handling, to complete the Academic Research Equipment Booking Optimizer.\nUser input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

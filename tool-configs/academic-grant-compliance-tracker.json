@@ -1,0 +1,760 @@
+{
+  "slug": "academic-grant-compliance-tracker",
+  "title": "Academic Research Grant Compliance Tracker",
+  "description": "A lightweight web app for academic research grant managers to upload grant documents and funder guidelines and receive a customized compliance checklist with deadline tracking and basic reminders to ensure timely compliance and risk management.",
+  "inputLabel": "Paste grant details or upload grant award letters, contracts, and compliance guidelines (PDF or text)",
+  "outputLabel": "Generated compliance checklist with deadlines and risk flags",
+  "systemPrompt": "You are an expert compliance assistant for academic research grant managers. Accept input as pasted text or uploaded PDF/text files containing grant award letters, contracts, and funder-specific compliance guidelines. Analyze the inputs to produce a centralized, interactive compliance checklist for the grant with key deadlines, milestone tracking, and risk flags. Do not provide legal advice or definitive compliance decisions; all outputs are advisory with disclaimers. Refuse disallowed content or unsupported file types. Output plain text summary with clear deadline dates and checklist items. Enforce strict data confidentiality and avoid including sensitive personal data in outputs. If inputs are insufficient or unclear, ask for clarifications. Only process one grant at a time. Enforce safety and privacy rules strictly.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Generate Compliance Checklist",
+      "prompt": "Analyze the uploaded grant documents and funder guidelines and produce a detailed compliance checklist including all key deadlines, reporting obligations, ethical approvals, and risk flags. Provide the checklist as a structured JSON object with item descriptions, due dates, and status placeholders.",
+      "hint": "Use this to get a comprehensive compliance checklist from grant documents."
+    },
+    {
+      "label": "Summarize Key Deadlines",
+      "prompt": "Summarize the key compliance and reporting deadlines extracted from the uploaded grant documents and guidelines in a clear, chronological list with brief descriptions.",
+      "hint": "Use this to quickly identify upcoming deadlines."
+    },
+    {
+      "label": "Identify Compliance Risks",
+      "prompt": "From the grant documents and funder guidelines, identify potential compliance risk flags with explanations and recommend actions to mitigate them. Present results as a structured list.",
+      "hint": "Use this to highlight compliance risks."
+    },
+    {
+      "label": "Help me clarify my input",
+      "prompt": "Ask the user for any missing or unclear information needed to generate an accurate compliance checklist, such as missing grant details, unclear deadlines, or incomplete documents.",
+      "hint": "Use this to clarify inputs before processing."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "When structured-output is enabled, output JSON with fields: checklist (array of items with description, dueDate, status), riskFlags (array), and deadlines (array).",
+  "clarifyPrompt": "Please provide any missing grant details, clarify ambiguous deadlines, or upload additional documents to proceed with generating the compliance checklist.",
+  "finalizePrompt": "Review the generated compliance checklist and risk flags carefully. All outputs are advisory and should be validated with institutional policies. Confirm if you want to save or export the checklist.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Compliance & Reporting Tracker",
+      "niche": {
+        "role": "Academic Research Grant Manager",
+        "scenario": "Managing ongoing compliance, documentation, and reporting obligations for multiple active research grants"
+      },
+      "problem": "Grant managers struggle to track and ensure timely compliance with diverse and complex reporting requirements, ethical approvals, budget restrictions, and documentation for multiple concurrent research grants. Manual tracking risks missed deadlines, inconsistent documentation, and funder noncompliance, which can threaten funding continuation.",
+      "inputs": [
+        "Grant award letters and contracts (uploaded PDFs or text)",
+        "Funder-specific compliance and reporting guidelines",
+        "Project timeline and milestone data",
+        "Uploaded periodic progress reports and financial statements",
+        "Ethical approval documentation and renewal dates",
+        "Internal notes or audit findings"
+      ],
+      "outputs": [
+        "Centralized, interactive compliance checklist per grant with deadlines",
+        "Automated reminders for upcoming reporting and ethical renewals",
+        "Structured progress and financial report drafts synthesizing input data",
+        "Compliance risk flags with explanations and recommended actions",
+        "Exportable compliance status dashboards and summary reports for stakeholders"
+      ],
+      "whyItWins": [
+        "Fills a gap by combining compliance tracking, documentation synthesis, and risk management in a single tool tailored to academic research grant managers",
+        "Reduces administrative burden and human error inherent in manual tracking of complex, variable funder requirements",
+        "Supports repeated, ongoing use across multiple grants and reporting cycles within institutions",
+        "Provides actionable insights and proactive alerts, improving compliance and funding security",
+        "Unlike existing proposal or progress report generators, this system integrates multiple data types and workflows into a continuous compliance monitoring platform"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app allowing grant managers to upload grant documents and guidelines and receive a customized compliance checklist with deadline tracking and basic reminders",
+        "in90Days": "Add progress and financial report draft generation from uploaded notes and data, plus dashboard views showing compliance status across multiple grants with manual status updates",
+        "in12Months": "Develop a full multi-page system with integrations to institutional databases (e.g., financial systems, IRB approvals), automated document parsing and version control, collaborative task assignment, and regulatory audit trail reporting"
+      },
+      "riskNotes": [
+        "Must ensure strict data security and confidentiality for sensitive grant documents and institutional data",
+        "Should avoid giving legal advice or definitive compliance decisions; outputs must be advisory with disclaimers",
+        "Requires regular updates to incorporate changes in diverse funder guidelines to remain accurate",
+        "User training needed to correctly interpret risk flags and manage workflow integration"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A compliance and reporting tracker tailored for academic research grant managers to monitor, document, and manage multiple concurrent research grants' complex obligations, providing centralized checklists, automated reminders, risk flags, and exportable reports.",
+      "primaryUser": "Academic Research Grant Manager",
+      "successMetrics": [
+        "Reduction in missed compliance deadlines across tracked grants",
+        "User adoption rate and frequency of active grant tracking",
+        "Accuracy and timeliness of automated reminders and risk flags",
+        "User satisfaction with synthesized report drafts and dashboards",
+        "Number of exported compliance reports used in stakeholder communications"
+      ],
+      "components": [
+        {
+          "id": "ui-grantDashboard",
+          "name": "Grant Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provides an overview of all active grants with compliance status, deadlines, risk flags, and quick access to detailed grant views and reports.",
+          "dependsOn": [
+            "api-grantData",
+            "api-reminders",
+            "data-grants"
+          ],
+          "notes": [
+            "Must support filtering and sorting by grant status, deadlines, and risk levels.",
+            "Should display summary compliance checklists and upcoming deadlines prominently."
+          ]
+        },
+        {
+          "id": "ui-grantDetail",
+          "name": "Grant Detail & Compliance Checklist UI",
+          "type": "ui",
+          "responsibility": "Displays detailed compliance checklist per grant, milestone timelines, uploaded documents, notes, and allows manual status updates and document uploads.",
+          "dependsOn": [
+            "api-grantData",
+            "api-documentUpload",
+            "api-notes",
+            "data-grants",
+            "data-documents"
+          ],
+          "notes": [
+            "Interactive checklist with ability to mark items complete or pending.",
+            "Supports viewing and uploading ethical approvals, progress reports, and financial statements."
+          ]
+        },
+        {
+          "id": "ui-reportingDashboard",
+          "name": "Reporting & Export UI",
+          "type": "ui",
+          "responsibility": "Enables users to generate, view, and export compliance status dashboards, summary reports, and draft progress/financial reports synthesized from input data.",
+          "dependsOn": [
+            "api-reportGeneration",
+            "data-grants",
+            "data-documents",
+            "data-notes"
+          ],
+          "notes": [
+            "Export formats include PDF and Excel.",
+            "Draft reports should be editable before export."
+          ]
+        },
+        {
+          "id": "api-grantData",
+          "name": "Grant Data API",
+          "type": "api",
+          "responsibility": "Manages CRUD operations for grants, compliance checklists, milestones, deadlines, and risk flags; serves grant-related data to UI components.",
+          "dependsOn": [
+            "data-grants"
+          ],
+          "notes": [
+            "Includes logic for deadline calculations and risk flag generation based on funder guidelines.",
+            "Must enforce strict access controls and data confidentiality."
+          ]
+        },
+        {
+          "id": "api-documentUpload",
+          "name": "Document Upload & Parsing API",
+          "type": "api",
+          "responsibility": "Handles upload, storage, and versioning of grant documents, contracts, progress reports, and ethical approvals; performs automated parsing to extract relevant metadata and deadlines.",
+          "dependsOn": [
+            "data-documents",
+            "job-documentParsing"
+          ],
+          "notes": [
+            "Parsing results feed into compliance checklist and deadline tracking.",
+            "Must support multiple file formats (PDF, text)."
+          ]
+        },
+        {
+          "id": "api-reminders",
+          "name": "Reminder & Notification API",
+          "type": "api",
+          "responsibility": "Manages scheduling and delivery of automated reminders for upcoming deadlines, ethical renewals, and risk flags via email or in-app notifications.",
+          "dependsOn": [
+            "data-reminders",
+            "job-reminderScheduler"
+          ],
+          "notes": [
+            "Configurable reminder lead times and escalation policies.",
+            "Supports user opt-in/out preferences."
+          ]
+        },
+        {
+          "id": "job-documentParsing",
+          "name": "Document Parsing Background Job",
+          "type": "job",
+          "responsibility": "Processes uploaded documents asynchronously to extract compliance requirements, deadlines, and metadata to update compliance checklists and risk assessments.",
+          "dependsOn": [
+            "data-documents",
+            "api-grantData"
+          ],
+          "notes": [
+            "Handles parsing failures gracefully with retry and manual override options.",
+            "Must log parsing errors for audit and improvement."
+          ]
+        },
+        {
+          "id": "job-reminderScheduler",
+          "name": "Reminder Scheduling Background Job",
+          "type": "job",
+          "responsibility": "Periodically scans deadlines and compliance statuses to trigger timely reminders and notifications to users.",
+          "dependsOn": [
+            "data-reminders",
+            "api-reminders"
+          ],
+          "notes": [
+            "Ensures reminders are sent reliably even after system restarts.",
+            "Supports batching to optimize notification delivery."
+          ]
+        },
+        {
+          "id": "data-grants",
+          "name": "Grant Data Store",
+          "type": "data",
+          "responsibility": "Persists grant metadata, compliance checklists, milestones, deadlines, risk flags, and user status updates.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive data must be encrypted at rest.",
+            "Supports versioning for audit trails."
+          ]
+        },
+        {
+          "id": "data-documents",
+          "name": "Document Store",
+          "type": "data",
+          "responsibility": "Stores uploaded documents with version control, metadata, and parsing results.",
+          "dependsOn": [],
+          "notes": [
+            "Access controls to prevent unauthorized viewing or download.",
+            "Supports retention policies per institutional requirements."
+          ]
+        },
+        {
+          "id": "data-notes",
+          "name": "Internal Notes & Audit Findings Store",
+          "type": "data",
+          "responsibility": "Stores user-entered notes, audit findings, and manual compliance observations linked to grants.",
+          "dependsOn": [],
+          "notes": [
+            "Supports rich text or markdown input.",
+            "Versioned for audit and collaboration."
+          ]
+        },
+        {
+          "id": "data-reminders",
+          "name": "Reminders & Notifications Store",
+          "type": "data",
+          "responsibility": "Persists scheduled reminders, notification history, and user preferences.",
+          "dependsOn": [],
+          "notes": [
+            "Supports retry and failure tracking for notifications."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Grant",
+          "purpose": "Represents an academic research grant with metadata, compliance requirements, milestones, and status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funder",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "awardDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "complianceChecklist",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "milestones",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "riskFlags",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "funder",
+            "status"
+          ]
+        },
+        {
+          "name": "Document",
+          "purpose": "Stores uploaded documents related to grants, including contracts, reports, and approvals.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "parsedMetadata",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "grantId",
+            "type"
+          ]
+        },
+        {
+          "name": "Note",
+          "purpose": "Captures internal notes, audit findings, and manual observations linked to grants.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "grantId",
+            "authorId"
+          ]
+        },
+        {
+          "name": "Reminder",
+          "purpose": "Represents scheduled reminders for compliance deadlines and notifications.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scheduledTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "sent",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "recipientId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "grantId",
+            "scheduledTime"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Grant Dashboard",
+          "purpose": "Overview of all active grants with compliance status, deadlines, and risk flags.",
+          "inputs": [],
+          "outputs": [
+            "Grant list with statuses",
+            "Upcoming deadlines",
+            "Risk flags"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grant/:id",
+          "title": "Grant Detail",
+          "purpose": "Detailed view of a single grant's compliance checklist, milestones, documents, and notes.",
+          "inputs": [
+            "Grant ID"
+          ],
+          "outputs": [
+            "Compliance checklist",
+            "Milestones",
+            "Uploaded documents",
+            "Internal notes"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reporting & Export",
+          "purpose": "Generate and export compliance dashboards and draft reports for selected grants.",
+          "inputs": [
+            "Grant selection",
+            "Report parameters"
+          ],
+          "outputs": [
+            "Exportable reports",
+            "Draft progress and financial reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "Username",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token or session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/grants",
+          "method": "GET",
+          "purpose": "Retrieve list of grants for the authenticated user.",
+          "requestShape": "None",
+          "responseShape": "Array of Grant objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id",
+          "method": "GET",
+          "purpose": "Retrieve detailed data for a specific grant.",
+          "requestShape": "Grant ID in URL",
+          "responseShape": "Grant object with related compliance checklist, milestones, and risk flags",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents/upload",
+          "method": "POST",
+          "purpose": "Upload a document related to a grant.",
+          "requestShape": "{ grantId: string, type: string, file: binary }",
+          "responseShape": "{ success: boolean, documentId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/notes",
+          "method": "POST",
+          "purpose": "Add or update internal notes for a grant.",
+          "requestShape": "{ grantId: string, content: string }",
+          "responseShape": "{ success: boolean, noteId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reminders",
+          "method": "GET",
+          "purpose": "Retrieve upcoming reminders for the authenticated user.",
+          "requestShape": "None",
+          "responseShape": "Array of Reminder objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Generate compliance dashboards or draft reports based on selected grants and parameters.",
+          "requestShape": "{ grantIds: string[], reportType: string, parameters: json }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Document Parsing Job",
+          "trigger": "Triggered asynchronously after document upload",
+          "purpose": "Extract metadata, deadlines, and compliance requirements from uploaded documents to update grant compliance data."
+        },
+        {
+          "name": "Reminder Scheduler Job",
+          "trigger": "Runs periodically (e.g., hourly or daily)",
+          "purpose": "Scan upcoming deadlines and compliance statuses to schedule and send reminders and notifications."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded documents fail parsing due to format or content issues; system should allow manual metadata entry or correction.",
+        "Conflicting compliance requirements from multiple funders on a single grant; system flags conflicts and advises manual review.",
+        "User uploads outdated or superseded documents; version control and clear labeling required to prevent confusion.",
+        "Network or server downtime during reminder dispatch; system retries and logs failures for audit.",
+        "User attempts unauthorized access to grants or documents; strict authentication and authorization enforced.",
+        "Changes in funder guidelines requiring updates to compliance checklists; system supports manual override and guideline versioning."
+      ],
+      "nonGoals": [
+        "Providing legal advice or definitive compliance decisions; outputs are advisory only with disclaimers.",
+        "Replacing institutional financial or IRB systems; integration planned but not initial scope.",
+        "Automated full report generation without user review; drafts require manual validation and editing.",
+        "Handling proposal submission or grant application workflows; focus is on post-award compliance tracking."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receives session token.",
+        "On /dashboard page load, UI calls GET /api/grants to fetch list of grants with compliance status, deadlines, and risk flags.",
+        "User filters/sorts grants on dashboard; UI applies client-side filtering or requests filtered data from API if supported.",
+        "User selects a grant on dashboard, navigates to /grant/:id page.",
+        "Grant Detail page calls GET /api/grants/:id to fetch detailed grant data including compliance checklist, milestones, risk flags.",
+        "Grant Detail page calls GET APIs (if any) or uses embedded data to display uploaded documents and notes related to the grant.",
+        "User uploads documents via /grant/:id page; UI sends POST /api/documents/upload with grantId, type, and file binary.",
+        "Document Upload API stores document, triggers Document Parsing Job asynchronously.",
+        "Document Parsing Job extracts metadata, deadlines, compliance requirements, updates grant compliance checklist and risk flags via api-grantData.",
+        "User adds or updates notes via POST /api/notes with grantId and content; API stores note linked to grant.",
+        "Reminder Scheduler Job runs periodically, scans deadlines and compliance statuses from data-grants and data-reminders, schedules reminders in data-reminders store.",
+        "Reminder & Notification API sends reminders via email or in-app notifications based on scheduled reminders and user preferences.",
+        "User accesses /reports page, selects grants and report parameters.",
+        "UI calls POST /api/reports/generate with selected grantIds, reportType, and parameters.",
+        "Report Generation API synthesizes data from grants, documents, notes, generates draft reports, returns report URL.",
+        "User views and edits draft reports before exporting to PDF or Excel."
+      ],
+      "validationRules": [
+        "Authentication required for all API routes except /login.",
+        "Grant ID must be a valid UUID or string matching stored grant IDs.",
+        "Uploaded document file types must be restricted to supported formats (PDF, text).",
+        "Document upload requires non-empty grantId and type fields.",
+        "Compliance checklist updates must conform to predefined schema and allowed status values (e.g., 'complete', 'pending').",
+        "Notes content must not exceed defined max length and support markdown or rich text safely.",
+        "Reminder scheduling must validate scheduledTime is in the future and recipientId matches authenticated user or authorized users.",
+        "Report generation parameters must include valid reportType and non-empty grantIds array.",
+        "User input on filtering and sorting must be sanitized to prevent injection attacks.",
+        "All JSON inputs must be validated against expected schemas to prevent malformed data."
+      ],
+      "errorHandling": [
+        "API responses must include HTTP status codes: 400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors.",
+        "Document parsing failures must be logged with error details and expose manual override options to users.",
+        "Background jobs must implement retry logic with exponential backoff on transient failures.",
+        "Unauthorized access attempts must return 403 Forbidden and log incident for audit.",
+        "File upload errors (e.g., unsupported format, size limits) must return clear error messages to UI.",
+        "Reminder dispatch failures must be logged with retry attempts and escalate if persistent.",
+        "API endpoints must return consistent error response shapes with error codes and human-readable messages.",
+        "UI must display user-friendly error notifications and guidance on corrective actions.",
+        "System must handle network or server downtime gracefully, queuing requests or informing users appropriately.",
+        "Conflicting compliance data must trigger warnings and require manual user review."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /login; use secure session or JWT tokens.",
+        "Access control enforced to ensure users can only access grants and documents they are authorized for.",
+        "Sensitive data (e.g., grant metadata, compliance info) encrypted at rest in data stores.",
+        "Document storage enforces strict access controls to prevent unauthorized download or viewing.",
+        "User inputs sanitized to prevent injection attacks (SQL, XSS).",
+        "File uploads scanned and validated to prevent malware or harmful content.",
+        "Audit logging enabled for critical operations: document uploads, note edits, compliance updates.",
+        "Reminder notifications respect user opt-in/out preferences and privacy.",
+        "Background jobs run with least privilege and secure credentials.",
+        "Versioning and audit trails maintained for compliance data and notes to support accountability."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /dashboard page with multiple active grants",
+          "when": "The user views the dashboard",
+          "then": "They see a list of grants with correct compliance statuses, upcoming deadlines, and risk flags, and can filter and sort the list"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the /grant/:id page for a valid grant ID",
+          "when": "The user views the grant detail page",
+          "then": "They see the compliance checklist, milestones, uploaded documents, and internal notes related to the grant"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user uploads a valid PDF document for a grant",
+          "when": "The upload completes successfully",
+          "then": "The document is stored, parsing job is triggered, and extracted metadata updates the compliance checklist"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user submits a new note for a grant",
+          "when": "The note is saved",
+          "then": "The note appears linked to the grant and is versioned for audit"
+        },
+        {
+          "id": "AT-005",
+          "given": "The Reminder Scheduler Job runs",
+          "when": "There are upcoming deadlines within configured lead times",
+          "then": "Reminders are scheduled and sent to users respecting their preferences"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user requests report generation with valid grant IDs and parameters",
+          "when": "The report is generated",
+          "then": "A draft report URL is returned and the user can view and export the report"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to access a grant they are not authorized for",
+          "when": "They request grant details via API",
+          "then": "The system returns 403 Forbidden and denies access"
+        },
+        {
+          "id": "AT-008",
+          "given": "A document upload fails parsing due to unsupported format",
+          "when": "The parsing job completes",
+          "then": "An error is logged, and the user is notified with option for manual metadata entry"
+        },
+        {
+          "id": "AT-009",
+          "given": "The system experiences network downtime during reminder dispatch",
+          "when": "Reminder sending fails",
+          "then": "The system retries sending and logs failures for audit"
+        },
+        {
+          "id": "AT-010",
+          "given": "User inputs invalid data in API requests",
+          "when": "The API receives the request",
+          "then": "The API returns 400 Bad Request with descriptive validation error messages"
+        }
+      ],
+      "buildOrder": [
+        "Setup authentication and user session management (/login page and auth middleware)",
+        "Implement prisma models for Grant, Document, Note, Reminder with encryption and versioning",
+        "Develop api-grantData with CRUD and access control",
+        "Develop api-documentUpload with file validation and storage",
+        "Implement Document Parsing Job with error handling and update logic",
+        "Develop api-notes for note creation and updates",
+        "Develop api-reminders and Reminder Scheduler Job with notification logic",
+        "Build /dashboard page with grant list, filtering, sorting, and data fetching",
+        "Build /grant/:id page with detailed compliance checklist, documents, notes, and upload UI",
+        "Build /reports page with report generation UI and api-reportGeneration backend",
+        "Implement error handling and validation across APIs and UI",
+        "Implement security measures: encryption, access control, input sanitization",
+        "Implement acceptance tests and fix issues",
+        "Deploy and monitor background jobs and notification delivery"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/grant/[id]",
+          "/reports",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "api/grants/index.ts (GET list)",
+          "api/grants/[id].ts (GET detail)",
+          "api/documents/upload.ts (POST upload)",
+          "api/notes/index.ts (POST add/update)",
+          "api/reminders/index.ts (GET upcoming reminders)",
+          "api/reports/generate.ts (POST report generation)"
+        ],
+        "prismaModelsToAdd": [
+          "Grant",
+          "Document",
+          "Note",
+          "Reminder"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, clarifications, or additional requirements needed to refine the tool specification.",
+        "promptTemplate": "You are a planner refining the requirements for the Academic Research Grant Compliance Tracker. Based on the current blueprint and expanded specs, ask the user for any missing constraints, clarifications, or details needed to finalize the requirements.\n\nUser Input: {{USER_INPUT}}\n\nBlueprint: {{BLUEPRINT}}\n\nExpanded Specs: {{EXPANDED}}"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the pages, API routes, and data models needed to implement the compliance tracker app.",
+        "promptTemplate": "You are an architect tasked with finalizing the pages, API routes, and data models for the Academic Research Grant Compliance Tracker. Using the refined requirements and blueprint, produce a detailed design of pages, data models, and API endpoints.\n\nUser Input: {{USER_INPUT}}\n\nBlueprint: {{BLUEPRINT}}\n\nExpanded Specs: {{EXPANDED}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code stubs and UI scaffolds for the planned pages and components of the compliance tracker.",
+        "promptTemplate": "You are a builder generating page stubs and UI scaffolds for the Academic Research Grant Compliance Tracker. Use the finalized design to produce starter code and component outlines for each page.\n\nUser Input: {{USER_INPUT}}\n\nBlueprint: {{BLUEPRINT}}\n\nExpanded Specs: {{EXPANDED}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the integration between UI pages, backend APIs, and the database with authentication and security.",
+        "promptTemplate": "You are an integrator wiring the UI pages to backend APIs and database for the Academic Research Grant Compliance Tracker. Implement authentication, data fetching, updates, and secure access controls.\n\nUser Input: {{USER_INPUT}}\n\nBlueprint: {{BLUEPRINT}}\n\nExpanded Specs: {{EXPANDED}}"
+      }
+    ]
+  }
+}

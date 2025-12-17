@@ -1,0 +1,746 @@
+{
+  "slug": "lab-equipment-maintenance-scheduler",
+  "title": "Lab Equipment Maintenance Scheduler & Compliance Tracker",
+  "description": "A simple web tool for academic research lab managers to input equipment details, upload maintenance manuals, and receive automated recurring maintenance task schedules with reminders to ensure timely compliance and reduce equipment downtime.",
+  "inputLabel": "Enter your lab equipment details and upload maintenance manuals",
+  "outputLabel": "Generated maintenance schedule and compliance task reminders",
+  "systemPrompt": "You are a helpful assistant specialized in academic research lab equipment maintenance scheduling and compliance tracking. For given equipment details and uploaded maintenance manuals, generate a clear, personalized recurring maintenance task schedule, including calibration, safety checks, and inspection reminders. Enforce strict input validation: equipment must include ID, name, category, and a positive maintenance interval. Manuals must be valid PDF files or URLs. Output a plain text maintenance calendar with task due dates and notes. Reject any requests with disallowed content or missing required fields. Do not provide legal or medical advice. Always ensure user data confidentiality. Respond only with the requested maintenance schedule and task list, no extraneous commentary.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Maintenance Schedule",
+      "prompt": "Generate a recurring maintenance schedule for the provided lab equipment list with uploaded maintenance manuals. Include task types, due dates, and reminder notes."
+    },
+    {
+      "label": "Compliance Task Reminder List",
+      "prompt": "From the provided equipment details and manuals, create a compliance checklist with upcoming and overdue tasks highlighted, suitable for audit preparation."
+    },
+    {
+      "label": "Detailed Maintenance Log Template",
+      "prompt": "Using the input equipment information and maintenance guidelines, generate a detailed maintenance log structure including task history fields and notes."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with fields: equipmentId, taskType, scheduledDate (ISO 8601 string), reminderNotes.",
+  "clarifyPrompt": "Please provide complete equipment details including unique ID, name, category, and maintenance interval. Upload maintenance manuals as PDFs or provide valid URLs. If unsure, specify the types of maintenance tasks you want scheduled.",
+  "finalizePrompt": "Review the generated maintenance schedule and confirm if it meets your lab's compliance requirements. Request adjustments or additional reports if needed.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Research Lab Equipment Maintenance Scheduler & Compliance Tracker",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Managing routine maintenance schedules and compliance documentation for diverse lab equipment to ensure operational safety, reliability, and regulatory adherence."
+      },
+      "problem": "Lab managers struggle to track and schedule recurring maintenance tasks, calibration, safety inspections, and compliance reporting for a wide variety of research equipment. Current manual or spreadsheet-based systems cause missed maintenance, unclear compliance status, and inefficient documentation retrieval, risking equipment downtime and regulatory noncompliance.",
+      "inputs": [
+        "List of lab equipment with specifications and maintenance requirements",
+        "Manufacturer maintenance manuals or guidelines (uploaded PDFs or links)",
+        "Lab usage logs or operational notes",
+        "Regulatory and institutional compliance checklists",
+        "Maintenance task completion records and timestamps"
+      ],
+      "outputs": [
+        "Personalized, automated recurring maintenance calendar and task reminders",
+        "Compliance status dashboards with overdue and upcoming tasks highlighted",
+        "Structured maintenance logs with detailed task histories per equipment",
+        "Actionable alerts for upcoming calibration, safety checks, or inspections",
+        "Exportable compliance reports for institutional audits or regulatory bodies"
+      ],
+      "whyItWins": [
+        "Addresses a critical but underserved operational workflow specific to academic labs, distinct from research data or protocol tools.",
+        "Combines task scheduling, compliance tracking, and documentation in one integrated system, reducing fragmentation.",
+        "Automates recurring maintenance reminders and compliance alerts, reducing human error and risk.",
+        "Supports uploading equipment manuals and guidelines to customize maintenance schedules dynamically.",
+        "Scales from a lightweight scheduling tool to a comprehensive, multi-equipment lab management system."
+      ],
+      "upgradePath": {
+        "today": "Simple web tool allowing lab managers to input equipment lists, upload maintenance instructions, and receive automated maintenance task schedules with email reminders.",
+        "in90Days": "Add interactive compliance dashboards, detailed task logging, document management (manuals, checklists), and mobile notifications for maintenance teams.",
+        "in12Months": "Develop a full multi-user lab equipment management system with role-based access, integration with institutional asset management, real-time usage analytics, predictive maintenance suggestions, and compliance audit report generation."
+      },
+      "riskNotes": [
+        "Does not provide medical or legal advice, only operational scheduling and compliance assistance.",
+        "Relies on user-provided maintenance and regulatory data; accuracy depends on input quality.",
+        "Must ensure secure handling of institutional compliance and equipment data to protect confidentiality."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive system for academic research lab managers to schedule, track, and document maintenance and compliance of lab equipment, integrating task automation, compliance dashboards, document management, and reporting.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Reduction in missed or overdue maintenance tasks",
+        "Improved compliance audit pass rates",
+        "User adoption rate among lab managers and maintenance teams",
+        "Reduction in equipment downtime due to maintenance issues",
+        "Timely generation and export of compliance reports"
+      ],
+      "components": [
+        {
+          "id": "ui-equipment-management",
+          "name": "Equipment Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to add, edit, and view lab equipment details, upload manuals, and specify maintenance requirements.",
+          "dependsOn": [
+            "api-equipment",
+            "api-document-management"
+          ],
+          "notes": [
+            "Supports bulk import of equipment lists",
+            "Uploads support PDF and link references",
+            "Validation on equipment specifications and maintenance intervals"
+          ]
+        },
+        {
+          "id": "ui-maintenance-dashboard",
+          "name": "Maintenance & Compliance Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display personalized maintenance calendars, compliance status, overdue tasks, and alerts with filtering and export options.",
+          "dependsOn": [
+            "api-tasks",
+            "api-compliance",
+            "api-reporting"
+          ],
+          "notes": [
+            "Interactive calendar with task reminders",
+            "Visual indicators for compliance status",
+            "Exportable views for reports"
+          ]
+        },
+        {
+          "id": "api-equipment",
+          "name": "Equipment Management API",
+          "type": "api",
+          "responsibility": "CRUD operations for equipment data, maintenance requirements, and associated manuals or guidelines.",
+          "dependsOn": [
+            "data-equipment",
+            "data-documents"
+          ],
+          "notes": [
+            "Validates maintenance schedules against uploaded manuals",
+            "Supports linking equipment to compliance checklists"
+          ]
+        },
+        {
+          "id": "api-tasks",
+          "name": "Maintenance Task Scheduler API",
+          "type": "api",
+          "responsibility": "Generate, update, and track recurring maintenance tasks and completion records per equipment.",
+          "dependsOn": [
+            "data-tasks",
+            "data-equipment"
+          ],
+          "notes": [
+            "Supports dynamic task generation based on equipment specs and manuals",
+            "Handles task status updates and timestamps"
+          ]
+        },
+        {
+          "id": "api-compliance",
+          "name": "Compliance Tracking API",
+          "type": "api",
+          "responsibility": "Evaluate compliance status, manage regulatory checklists, and provide data for dashboard visualization and alerts.",
+          "dependsOn": [
+            "data-compliance",
+            "data-tasks"
+          ],
+          "notes": [
+            "Calculates overdue and upcoming compliance tasks",
+            "Supports institutional and regulatory checklist customization"
+          ]
+        },
+        {
+          "id": "api-reporting",
+          "name": "Reporting & Export API",
+          "type": "api",
+          "responsibility": "Generate exportable compliance reports and maintenance logs for audits and regulatory submission.",
+          "dependsOn": [
+            "data-tasks",
+            "data-compliance",
+            "data-equipment"
+          ],
+          "notes": [
+            "Supports PDF and CSV export formats",
+            "Includes filters for date ranges and equipment subsets"
+          ]
+        },
+        {
+          "id": "data-equipment",
+          "name": "Equipment Data Store",
+          "type": "data",
+          "responsibility": "Persist equipment details, specifications, maintenance requirements, and associated documents.",
+          "dependsOn": [],
+          "notes": [
+            "Stores metadata for uploaded manuals and links",
+            "Indexes on equipment ID and category"
+          ]
+        },
+        {
+          "id": "data-tasks",
+          "name": "Maintenance Task Data Store",
+          "type": "data",
+          "responsibility": "Persist recurring maintenance tasks, schedules, completion records, and timestamps.",
+          "dependsOn": [
+            "data-equipment"
+          ],
+          "notes": [
+            "Supports task status tracking",
+            "Indexes on equipment ID and due dates"
+          ]
+        },
+        {
+          "id": "data-compliance",
+          "name": "Compliance Data Store",
+          "type": "data",
+          "responsibility": "Persist regulatory and institutional compliance checklists, status, and audit history.",
+          "dependsOn": [
+            "data-tasks"
+          ],
+          "notes": [
+            "Stores checklist versions and updates",
+            "Indexes on equipment and compliance category"
+          ]
+        },
+        {
+          "id": "data-documents",
+          "name": "Document Storage",
+          "type": "data",
+          "responsibility": "Store uploaded manuals, guidelines, and compliance documents securely.",
+          "dependsOn": [],
+          "notes": [
+            "Supports secure access controls",
+            "Stores metadata for search and retrieval"
+          ]
+        },
+        {
+          "id": "job-task-reminder",
+          "name": "Task Reminder Background Job",
+          "type": "job",
+          "responsibility": "Send automated reminders and alerts for upcoming and overdue maintenance tasks via email or notifications.",
+          "dependsOn": [
+            "data-tasks",
+            "api-notifications"
+          ],
+          "notes": [
+            "Runs daily to evaluate task schedules",
+            "Handles retry on failure"
+          ]
+        },
+        {
+          "id": "integration-notifications",
+          "name": "Notification Integration",
+          "type": "integration",
+          "responsibility": "Interface with email and push notification services to deliver task reminders and alerts.",
+          "dependsOn": [],
+          "notes": [
+            "Supports SMTP and mobile push services",
+            "Handles delivery failures and retries"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Equipment",
+          "purpose": "Store lab equipment details and maintenance requirements",
+          "fields": [
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "category",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manufacturer",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "model",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "serialNumber",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "maintenanceIntervalDays",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "manuals",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "category"
+          ]
+        },
+        {
+          "name": "MaintenanceTask",
+          "purpose": "Track recurring maintenance tasks and their completion status",
+          "fields": [
+            {
+              "name": "taskId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "taskType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scheduledDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "completed",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "completionDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "scheduledDate",
+            "completed"
+          ]
+        },
+        {
+          "name": "ComplianceChecklist",
+          "purpose": "Store regulatory and institutional compliance checklists and their status",
+          "fields": [
+            {
+              "name": "checklistId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "category",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "items",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "category"
+          ]
+        },
+        {
+          "name": "Document",
+          "purpose": "Store metadata and references for uploaded manuals and compliance documents",
+          "fields": [
+            {
+              "name": "documentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "url",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "type"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/equipment",
+          "title": "Equipment Management",
+          "purpose": "Manage lab equipment details, upload manuals, and define maintenance requirements",
+          "inputs": [
+            "Equipment details form",
+            "File upload for manuals",
+            "Maintenance schedule inputs"
+          ],
+          "outputs": [
+            "List of equipment",
+            "Equipment detail view"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Maintenance & Compliance Dashboard",
+          "purpose": "View maintenance calendar, compliance status, overdue tasks, and alerts",
+          "inputs": [
+            "Date filters",
+            "Equipment filters",
+            "Compliance category filters"
+          ],
+          "outputs": [
+            "Calendar view",
+            "Compliance status indicators",
+            "Task alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/tasks",
+          "title": "Maintenance Task Log",
+          "purpose": "View and update maintenance task completion records",
+          "inputs": [
+            "Task completion forms",
+            "Notes input"
+          ],
+          "outputs": [
+            "Task list with status",
+            "Completion history per equipment"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Compliance Reports",
+          "purpose": "Generate and export compliance and maintenance reports for audits",
+          "inputs": [
+            "Date range selectors",
+            "Equipment selection",
+            "Report format options"
+          ],
+          "outputs": [
+            "Exported PDF/CSV reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Authentication",
+          "purpose": "Authenticate users to access the system",
+          "inputs": [
+            "Username",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token/session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/equipment",
+          "method": "GET",
+          "purpose": "Retrieve list of equipment",
+          "requestShape": "None or filters (category, name)",
+          "responseShape": "Array of Equipment objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/equipment",
+          "method": "POST",
+          "purpose": "Create or update equipment record",
+          "requestShape": "Equipment object",
+          "responseShape": "Created/updated Equipment object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "GET",
+          "purpose": "Retrieve maintenance tasks for equipment",
+          "requestShape": "Filters (equipmentId, date range, status)",
+          "responseShape": "Array of MaintenanceTask objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Update maintenance task completion status",
+          "requestShape": "MaintenanceTask object with updated fields",
+          "responseShape": "Updated MaintenanceTask object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance/status",
+          "method": "GET",
+          "purpose": "Get compliance status summary for equipment",
+          "requestShape": "EquipmentId or filters",
+          "responseShape": "Compliance status summary JSON",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/export",
+          "method": "POST",
+          "purpose": "Generate and export compliance or maintenance reports",
+          "requestShape": "Report parameters (equipmentIds, date range, format)",
+          "responseShape": "URL or binary of exported report",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents/upload",
+          "method": "POST",
+          "purpose": "Upload equipment manuals or compliance documents",
+          "requestShape": "Multipart form data with file and metadata",
+          "responseShape": "Document metadata object",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Daily Maintenance Task Reminder",
+          "trigger": "Scheduled daily at configurable time",
+          "purpose": "Evaluate upcoming and overdue maintenance tasks and send reminders/alerts to assigned users"
+        }
+      ],
+      "edgeCases": [
+        "Handling equipment with irregular or manufacturer-customized maintenance schedules",
+        "Users uploading incorrect or incomplete maintenance manuals impacting task generation",
+        "Network or service failures delaying reminder notifications",
+        "Multiple users updating the same maintenance task concurrently",
+        "Compliance checklist updates requiring retroactive task adjustments",
+        "Handling equipment decommissioning or replacement mid-cycle",
+        "Data privacy and access control breaches exposing sensitive compliance data"
+      ],
+      "nonGoals": [
+        "Providing medical, legal, or regulatory advice beyond operational scheduling",
+        "Direct integration with lab experimental data or research protocols",
+        "Real-time sensor-based predictive maintenance (planned for future upgrades)",
+        "Full institutional asset management beyond lab equipment scope"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /equipment page and submits equipment details and manuals -> Equipment Management UI sends POST /api/equipment with equipment data and files -> api-equipment validates and persists data in data-equipment and data-documents stores.",
+        "User views equipment list on /equipment page -> Equipment Management UI calls GET /api/equipment with optional filters -> api-equipment fetches from data-equipment and returns equipment array.",
+        "Maintenance dashboard on /dashboard fetches maintenance tasks, compliance status, and reports data by calling GET /api/tasks, GET /api/compliance/status, and reporting APIs -> APIs query data-tasks, data-compliance, and data-equipment accordingly and return aggregated data for UI visualization.",
+        "User updates maintenance task completion on /tasks page -> UI sends POST /api/tasks with updated task data -> api-tasks updates data-tasks store and returns updated task.",
+        "User generates reports on /reports page -> UI sends POST /api/reports/export with filters and format -> api-reporting queries data-tasks, data-compliance, data-equipment, generates report, and returns export URL or binary.",
+        "Background job runs daily -> queries data-tasks for upcoming/overdue tasks -> sends reminders via integration-notifications API -> notifications service handles delivery and retries.",
+        "Document uploads via /api/documents/upload -> api-document-management stores files securely in data-documents and returns metadata."
+      ],
+      "validationRules": [
+        "Equipment POST: equipmentId (required, unique), name (required, non-empty), category (required, non-empty), maintenanceIntervalDays (required, positive integer), manuals (optional, must be valid URLs or PDFs), notes (optional, max length 1000).",
+        "MaintenanceTask POST: taskId (required), equipmentId (required, must exist), taskType (required, non-empty), scheduledDate (required, valid date), completed (required, boolean), completionDate (optional, must be present if completed=true and >= scheduledDate), notes (optional, max length 1000).",
+        "ComplianceChecklist: checklistId (required), equipmentId (required), category (required), items (required, valid JSON array of checklist items), lastUpdated (required, date), status (required, enum: 'compliant', 'non-compliant', 'pending').",
+        "Document upload: file must be PDF or accepted link format, file size limit enforced (e.g. 10MB), metadata fields required: type (manual, compliance), equipmentId (optional, must exist if provided).",
+        "API request filters: validate date ranges (start <= end), equipmentId exists if provided, status values valid (e.g. completed, pending).",
+        "Authentication: all protected API routes require valid user session/token.",
+        "Bulk import: validate each equipment entry individually, reject entire batch if critical errors found."
+      ],
+      "errorHandling": [
+        "API returns 400 Bad Request with descriptive error messages for validation failures.",
+        "API returns 401 Unauthorized if authentication fails or missing.",
+        "API returns 404 Not Found if requested equipment, task, or document does not exist.",
+        "API returns 409 Conflict on concurrent updates to the same maintenance task with versioning or timestamps.",
+        "API returns 500 Internal Server Error for unexpected failures with logging and retry mechanisms where applicable.",
+        "File upload errors return 413 Payload Too Large or 415 Unsupported Media Type as appropriate.",
+        "Background job logs failures and retries sending notifications with exponential backoff.",
+        "UI displays user-friendly error messages and prompts for corrective actions.",
+        "API rate limiting and throttling to prevent abuse."
+      ],
+      "securityNotes": [
+        "All API routes except /login require authentication and authorization checks.",
+        "Role-based access control to restrict equipment and task modifications to lab managers and authorized maintenance personnel.",
+        "Secure file upload handling with virus scanning and storage in protected buckets or encrypted storage.",
+        "Use HTTPS for all client-server and server-server communications.",
+        "Sanitize all inputs to prevent injection attacks.",
+        "Implement CSRF protection on state-changing API endpoints.",
+        "Audit logging for critical operations such as equipment updates, task completions, and compliance checklist changes.",
+        "Data access limited to user's institution or lab scope to prevent data leakage.",
+        "Background job credentials and notification service keys stored securely and rotated regularly."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A logged-in lab manager on the /equipment page",
+          "when": "They submit a new equipment form with valid details and upload a PDF manual",
+          "then": "The equipment is created, stored in the database, the manual is uploaded, and the equipment appears in the equipment list"
+        },
+        {
+          "id": "AT-002",
+          "given": "A logged-in user on the /dashboard page",
+          "when": "They filter maintenance tasks by date range and equipment category",
+          "then": "The dashboard displays only the relevant tasks with correct compliance status indicators"
+        },
+        {
+          "id": "AT-003",
+          "given": "A logged-in user on the /tasks page",
+          "when": "They mark a maintenance task as completed with a completion date",
+          "then": "The task status updates in the database and the updated status is reflected in subsequent API calls"
+        },
+        {
+          "id": "AT-004",
+          "given": "A logged-in user on the /reports page",
+          "when": "They generate a compliance report for selected equipment and date range in PDF format",
+          "then": "The system returns a downloadable PDF report matching the selected filters"
+        },
+        {
+          "id": "AT-005",
+          "given": "The daily maintenance task reminder job runs",
+          "when": "There are overdue or upcoming tasks",
+          "then": "Reminder notifications are sent to assigned users and failures are logged and retried"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user attempts to upload a non-PDF file as a manual",
+          "when": "They submit the upload form",
+          "then": "The system rejects the upload with an appropriate error message"
+        },
+        {
+          "id": "AT-007",
+          "given": "Multiple users attempt to update the same maintenance task concurrently",
+          "when": "Conflicting updates occur",
+          "then": "The system prevents data corruption by rejecting conflicting updates and informing users"
+        },
+        {
+          "id": "AT-008",
+          "given": "An unauthenticated user tries to access /equipment page or API",
+          "when": "They attempt to view or modify data",
+          "then": "Access is denied and they are redirected to /login or receive 401 Unauthorized"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Equipment, MaintenanceTask, ComplianceChecklist, Document",
+        "Implement authentication system and /login page",
+        "Develop api-equipment with GET and POST endpoints and data-equipment integration",
+        "Develop api-documents upload endpoint and data-documents integration",
+        "Build Equipment Management UI at /equipment with form, list, and file upload",
+        "Develop api-tasks with GET and POST endpoints and data-tasks integration",
+        "Build Maintenance Task Log UI at /tasks with task list and completion forms",
+        "Develop api-compliance with compliance status endpoint and data-compliance integration",
+        "Build Maintenance & Compliance Dashboard UI at /dashboard with calendar and filters",
+        "Develop api-reporting with export functionality",
+        "Build Compliance Reports UI at /reports with filters and export options",
+        "Implement background job for daily maintenance task reminders integrating with notification service",
+        "Integrate notification service for email and push notifications",
+        "Implement validation, error handling, and security features across all APIs and UIs",
+        "Write acceptance tests and perform end-to-end testing",
+        "Deploy and monitor system"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/equipment",
+          "/dashboard",
+          "/tasks",
+          "/reports",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "/api/equipment/index.ts",
+          "/api/tasks/index.ts",
+          "/api/compliance/status.ts",
+          "/api/reports/export.ts",
+          "/api/documents/upload.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Equipment",
+          "MaintenanceTask",
+          "ComplianceChecklist",
+          "Document"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and collect missing constraints or details to fully specify the maintenance scheduler and compliance tracker requirements.",
+        "promptTemplate": "You are the Planner. Given the current blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}} Please ask the user for any missing constraints, priorities, or use case details about the lab equipment maintenance scheduler and compliance tracker. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the detailed pages, data models, and API endpoints necessary for the system.",
+        "promptTemplate": "You are the Architect. Using the idea spec and blueprint: {{IDEA}} {{BLUEPRINT}} Review and finalize the detailed page routes, data models, and API routes required for the lab equipment maintenance scheduler and compliance tracker. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial code stubs for the UI pages and API endpoints to accelerate development.",
+        "promptTemplate": "You are the Builder. Based on the finalized design: {{BLUEPRINT}} Generate code stubs for the UI pages and API endpoints for the lab equipment maintenance scheduler and compliance tracker. Include placeholders for authentication, data validation, and file uploads. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration between UI, API, and data layers ensuring secure, validated data flow.",
+        "promptTemplate": "You are the Integrator. Given the code stubs and data models: {{BLUEPRINT}} {{EXPANDED}} Integrate the UI pages with API endpoints and database layers for the lab equipment maintenance scheduler and compliance tracker. Ensure secure authentication, input validation, error handling, and file upload support. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

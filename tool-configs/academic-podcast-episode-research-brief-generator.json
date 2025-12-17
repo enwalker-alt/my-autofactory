@@ -1,0 +1,40 @@
+{
+  "slug": "academic-podcast-episode-research-brief-generator",
+  "title": "Academic Podcast Episode Research Brief Generator",
+  "description": "Help academic podcast producers and researchers convert uploaded episode transcripts or audio/video files (transcribed) into concise, structured research briefs that summarize key topics, cited studies, and expert insights discussed, producing useful notes for academic listeners and promotional use.",
+  "inputLabel": "Paste episode transcript text or upload podcast audio/video files",
+  "outputLabel": "Structured academic research brief summarizing episode content",
+  "systemPrompt": "You are an AI assistant specialized in academic podcast production. Given a podcast episode transcript or transcribed audio/video, your task is to extract and synthesize a concise research brief that includes: key discussion topics, main studies or papers cited with their findings, expert opinions or insights shared, and any notable terminology or concepts explained. Present the output clearly and structured, suitable for academic audiences and podcast promotional materials. Avoid general podcast summaries; focus on research content and scholarly relevance.",
+  "temperature": 0.4,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "More concise",
+      "prompt": "Summarize the episode content into a shorter brief focusing on only the most critical research points.",
+      "hint": "Reduces length, prioritizing key findings and study mentions."
+    },
+    {
+      "label": "More detailed",
+      "prompt": "Include comprehensive explanations of studies, expert insights, and terminology with clear citations.",
+      "hint": "Expands detail to support academic listeners seeking depth."
+    },
+    {
+      "label": "More promotional",
+      "prompt": "Highlight engaging and notable research highlights suitable for podcast marketing and audience attraction.",
+      "hint": "Focus on compelling points to attract listeners."
+    },
+    {
+      "label": "More structured",
+      "prompt": "Organize the brief into clearly labeled sections: Topics, Studies Cited, Expert Insights, Terminology.",
+      "hint": "Improves clarity and navigability of the output."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "An object with keys: topics (array of key discussion topics), studiesCited (array of {title, authors, findings}), expertInsights (array of summarized expert opinions), terminology (array of key terms with definitions)."
+}

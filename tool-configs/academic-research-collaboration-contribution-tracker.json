@@ -1,0 +1,795 @@
+{
+  "slug": "academic-research-collaboration-contribution-tracker",
+  "title": "Academic Research Collaboration Contribution Tracker",
+  "description": "A lightweight single-page web tool for academic research team leads to input project milestones, member contributions, and optionally upload communication records to generate structured contribution summaries, authorship order suggestions, formatted journal-compliant statements, and flags for ambiguous contributions.",
+  "inputLabel": "Enter project milestones, team member contributions, draft author list, and optionally upload communication records",
+  "outputLabel": "Generated contribution summary, authorship order suggestions, formatted contribution statements, and dispute flags",
+  "systemPrompt": "You are an expert assistant specialized in academic research collaboration tracking. Given user input describing project milestones, individual team member contribution notes or activity logs, draft author list and optionally uploaded communication records, analyze and generate a structured contribution report mapping tasks to contributors, suggest a fair authorship order based on contribution types and effort, produce standardized contribution statements formatted per common journal submission guidelines, and flag any ambiguous or overlapping contributions for manual review. Refuse to process requests missing required data or lacking explicit privacy consent for communication records. Do not enforce authorship decisions but assist transparently. Output must be safe, unbiased, and respect privacy. Output plain text or valid JSON if requested. Validate input format and return clear error messages on invalid or disallowed inputs.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Focus",
+      "prompt": "Focus on generating a clear, concise contribution summary report mapping tasks and milestones to individual team members with estimated effort.",
+      "hint": "Use this to get a straightforward summary of contributions."
+    },
+    {
+      "label": "Authorship Suggestions",
+      "prompt": "Provide authorship order suggestions based on contribution types, effort estimates, and draft author list.",
+      "hint": "Use this to help determine fair authorship order."
+    },
+    {
+      "label": "Formatted Statements",
+      "prompt": "Generate standardized contribution statements formatted for journal submission guidelines, highlighting contributions per author.",
+      "hint": "Use this to prepare ready-to-submit contribution statements."
+    },
+    {
+      "label": "Flag Ambiguities",
+      "prompt": "Analyze input for overlapping or ambiguous contributions and generate dispute flags requiring manual review.",
+      "hint": "Use this to identify potential conflicts or unclear contributions."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with fields: contributionSummary (string), authorshipOrder (string[]), formattedStatements (string[]), disputeFlags (string[]).",
+  "clarifyPrompt": "Please provide detailed project milestones, individual contributions with member names, and draft author list. If uploading communication records, confirm explicit privacy consent. What would you like to focus on: summary, authorship suggestions, formatted statements, or dispute flags?",
+  "finalizePrompt": "Review the generated contribution summary, authorship order suggestions, formatted statements, and dispute flags. Confirm if you want to save this report or refine any inputs further.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Collaboration Contribution Tracker",
+      "niche": {
+        "role": "Academic Research Team Lead",
+        "scenario": "Managing and documenting individual contributions in multi-author research projects"
+      },
+      "problem": "Academic research teams often struggle to fairly and transparently track and document each member's specific contributions throughout a collaborative project. This leads to disputes over authorship order, unclear accountability, and difficulties preparing contribution statements for journal submissions or funding reports.",
+      "inputs": [
+        "Project milestones and task descriptions",
+        "Individual team member activity logs or contribution notes",
+        "Uploaded communication records (e.g., emails or meeting notes)",
+        "Draft author list and roles"
+      ],
+      "outputs": [
+        "Structured contribution reports mapping tasks to individual members",
+        "Authorship order suggestions based on contribution types and effort",
+        "Standardized contribution statements formatted for journal submission guidelines",
+        "Dispute flags for ambiguous or overlapping contributions"
+      ],
+      "whyItWins": [
+        "Fills a gap between generic project management and academic authorship documentation tools",
+        "Supports repeated use across multiple projects with evolving team compositions",
+        "Facilitates transparent, fair collaboration and reduces conflicts",
+        "Generates formatted, ready-to-submit contribution statements compliant with journal standards",
+        "Lightweight start with clear path to comprehensive collaboration management"
+      ],
+      "upgradePath": {
+        "today": "A simple web tool where team leads upload project task lists and member notes to generate contribution summaries and formatted authorship statements.",
+        "in90Days": "Add role-based permission features, integrate with common academic communication platforms (e.g., Slack, email), and support automated activity log parsing to enrich contribution data.",
+        "in12Months": "Develop a full multi-page collaboration management system with task assignment, progress tracking, real-time contribution analytics, conflict resolution workflows, and integration with journal submission systems and ORCID profiles."
+      },
+      "riskNotes": [
+        "Must ensure privacy and consent when processing communication records and contribution data.",
+        "Avoid replacing nuanced human judgment in authorship disputes; tool should assist, not enforce.",
+        "Sensitive to varying authorship conventions across disciplines; configurable templates needed.",
+        "Data security must be prioritized when handling internal team communications."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An academic research collaboration contribution tracker that helps team leads document, analyze, and report individual contributions in multi-author projects, facilitating transparent authorship decisions and generating journal-compliant contribution statements.",
+      "primaryUser": "Academic Research Team Lead",
+      "successMetrics": [
+        "Number of projects successfully documented with contribution reports",
+        "User satisfaction with authorship order suggestions",
+        "Reduction in reported authorship disputes among teams using the tool",
+        "Frequency of generated formatted contribution statements used in journal submissions",
+        "Adoption rate of integration features with communication platforms"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide an overview of projects, recent activity, and quick access to contribution reports and dispute flags.",
+          "dependsOn": [
+            "api-projects",
+            "api-contributions"
+          ],
+          "notes": [
+            "Must handle authentication and role-based access in future upgrades."
+          ]
+        },
+        {
+          "id": "ui-projectManagement",
+          "name": "Project & Team Management UI",
+          "type": "ui",
+          "responsibility": "Allow creation and editing of projects, milestones, task descriptions, team member profiles, and draft author lists.",
+          "dependsOn": [
+            "api-projects",
+            "api-teamMembers"
+          ],
+          "notes": [
+            "Supports input of contribution notes and upload of communication records."
+          ]
+        },
+        {
+          "id": "ui-contributionReports",
+          "name": "Contribution Reporting UI",
+          "type": "ui",
+          "responsibility": "Display structured contribution reports, authorship order suggestions, formatted contribution statements, and dispute flags.",
+          "dependsOn": [
+            "api-contributions",
+            "api-authorship"
+          ],
+          "notes": [
+            "Supports export of reports in journal-compliant formats."
+          ]
+        },
+        {
+          "id": "api-projects",
+          "name": "Project Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for projects, milestones, tasks, and team members.",
+          "dependsOn": [
+            "data-projects",
+            "data-teamMembers"
+          ],
+          "notes": [
+            "Validates input data and enforces data consistency."
+          ]
+        },
+        {
+          "id": "api-contributions",
+          "name": "Contribution Data API",
+          "type": "api",
+          "responsibility": "Manage contribution notes, activity logs, communication record uploads, and generate contribution summaries.",
+          "dependsOn": [
+            "data-contributions",
+            "data-communicationRecords"
+          ],
+          "notes": [
+            "Processes uploaded files with privacy checks; supports parsing in future versions."
+          ]
+        },
+        {
+          "id": "api-authorship",
+          "name": "Authorship Suggestion API",
+          "type": "api",
+          "responsibility": "Analyze contributions to suggest authorship order and generate standardized contribution statements.",
+          "dependsOn": [
+            "data-contributions",
+            "data-authorshipTemplates"
+          ],
+          "notes": [
+            "Includes configurable templates for different journal standards and disciplines."
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Project Data Store",
+          "type": "data",
+          "responsibility": "Persist project metadata, milestones, tasks, and team member associations.",
+          "dependsOn": [],
+          "notes": [
+            "Indexes on project ID and team member IDs for efficient queries."
+          ]
+        },
+        {
+          "id": "data-teamMembers",
+          "name": "Team Member Data Store",
+          "type": "data",
+          "responsibility": "Store profiles of team members including roles and contact info.",
+          "dependsOn": [],
+          "notes": [
+            "Supports evolving team compositions across projects."
+          ]
+        },
+        {
+          "id": "data-contributions",
+          "name": "Contribution Records Store",
+          "type": "data",
+          "responsibility": "Persist individual contribution notes, activity logs, and links to tasks/milestones.",
+          "dependsOn": [],
+          "notes": [
+            "Supports versioning for audit trails and dispute resolution."
+          ]
+        },
+        {
+          "id": "data-communicationRecords",
+          "name": "Communication Records Store",
+          "type": "data",
+          "responsibility": "Store uploaded communication files (emails, meeting notes) with metadata and privacy flags.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage and access control to protect sensitive data."
+          ]
+        },
+        {
+          "id": "data-authorshipTemplates",
+          "name": "Authorship Templates Store",
+          "type": "data",
+          "responsibility": "Store configurable templates for contribution statements compliant with various journal guidelines and disciplines.",
+          "dependsOn": [],
+          "notes": [
+            "Allows customization per project or user preferences."
+          ]
+        },
+        {
+          "id": "job-contributionSummaryGenerator",
+          "name": "Contribution Summary Generator",
+          "type": "job",
+          "responsibility": "Background job to aggregate contribution data and generate structured reports and authorship suggestions.",
+          "dependsOn": [
+            "data-contributions",
+            "data-projects",
+            "data-authorshipTemplates"
+          ],
+          "notes": [
+            "Runs on demand or scheduled; handles large datasets asynchronously."
+          ]
+        },
+        {
+          "id": "integration-communicationPlatforms",
+          "name": "Communication Platform Integrations",
+          "type": "integration",
+          "responsibility": "Connect with platforms like Slack and email to import activity logs and communication records automatically.",
+          "dependsOn": [
+            "api-contributions"
+          ],
+          "notes": [
+            "Requires user consent and secure OAuth flows; planned for 90-day upgrade."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Project",
+          "purpose": "Store project metadata, milestones, tasks, and team associations.",
+          "fields": [
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "milestones",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "tasks",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "teamMemberIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "teamMemberIds"
+          ]
+        },
+        {
+          "name": "TeamMember",
+          "purpose": "Store information about individual team members and their roles.",
+          "fields": [
+            {
+              "name": "memberId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "orcid",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "memberId",
+            "email"
+          ]
+        },
+        {
+          "name": "Contribution",
+          "purpose": "Record individual contributions linked to tasks and milestones.",
+          "fields": [
+            {
+              "name": "contributionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "memberId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "taskId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "milestoneId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "effortEstimate",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "contributionId",
+            "projectId",
+            "memberId",
+            "taskId"
+          ]
+        },
+        {
+          "name": "CommunicationRecord",
+          "purpose": "Store uploaded communication files with metadata and privacy flags.",
+          "fields": [
+            {
+              "name": "recordId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contentHash",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "privacyConsent",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "recordId",
+            "projectId",
+            "uploadedBy"
+          ]
+        },
+        {
+          "name": "AuthorshipTemplate",
+          "purpose": "Store templates for standardized contribution statements per journal or discipline.",
+          "fields": [
+            {
+              "name": "templateId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "discipline",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "journal",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "templateContent",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "templateId",
+            "journal",
+            "discipline"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access their projects and data.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Dashboard",
+          "purpose": "Provide an overview of user's projects, recent activity, and notifications.",
+          "inputs": [],
+          "outputs": [
+            "project summaries",
+            "dispute flags",
+            "recent contribution reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/new",
+          "title": "Create Project",
+          "purpose": "Create a new research project with milestones, tasks, and team members.",
+          "inputs": [
+            "project title",
+            "description",
+            "milestones",
+            "tasks",
+            "team member info"
+          ],
+          "outputs": [
+            "confirmation",
+            "project ID",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId",
+          "title": "Project Details",
+          "purpose": "View and edit project details, milestones, tasks, team members, and upload communication records.",
+          "inputs": [
+            "projectId",
+            "edits to milestones/tasks/team",
+            "uploaded files"
+          ],
+          "outputs": [
+            "project data",
+            "upload status",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/contributions",
+          "title": "Contribution Reports",
+          "purpose": "View structured contribution reports, authorship suggestions, formatted statements, and dispute flags.",
+          "inputs": [
+            "projectId"
+          ],
+          "outputs": [
+            "contribution summaries",
+            "authorship order suggestions",
+            "formatted statements",
+            "dispute flags"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project with milestones, tasks, and team members.",
+          "requestShape": "{ title: string, description?: string, milestones?: json, tasks?: json, teamMemberIds: string[] }",
+          "responseShape": "{ projectId: string, success: boolean, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId",
+          "method": "GET",
+          "purpose": "Retrieve detailed project information including milestones, tasks, and team members.",
+          "requestShape": "{ projectId: string }",
+          "responseShape": "{ project: Project, success: boolean, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/contributions",
+          "method": "POST",
+          "purpose": "Submit or update individual contribution notes and activity logs.",
+          "requestShape": "{ projectId: string, memberId: string, taskId?: string, milestoneId?: string, description: string, effortEstimate?: number }",
+          "responseShape": "{ contributionId: string, success: boolean, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/communication/upload",
+          "method": "POST",
+          "purpose": "Upload communication records with privacy consent.",
+          "requestShape": "{ projectId: string, uploadedBy: string, file: binary, privacyConsent: boolean }",
+          "responseShape": "{ recordId: string, success: boolean, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/authorship/suggestions",
+          "method": "GET",
+          "purpose": "Generate authorship order suggestions and formatted contribution statements for a project.",
+          "requestShape": "{ projectId: string, templateId?: string }",
+          "responseShape": "{ authorshipOrder: string[], formattedStatements: string[], disputeFlags: string[], success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Contribution Summary Generator",
+          "trigger": "On-demand or scheduled after contribution data updates",
+          "purpose": "Aggregate and analyze contribution data to produce structured reports, authorship suggestions, and dispute flags."
+        },
+        {
+          "name": "Communication Record Parser",
+          "trigger": "After communication record upload (future feature)",
+          "purpose": "Automatically parse communication files to extract relevant contribution information and enrich contribution data."
+        }
+      ],
+      "edgeCases": [
+        "Overlapping or conflicting contribution descriptions from multiple team members requiring manual review.",
+        "Missing privacy consent on uploaded communication records preventing processing or display.",
+        "Discipline-specific authorship conventions that do not fit standard templates, requiring customization.",
+        "Large projects with many contributors and tasks causing performance bottlenecks in report generation.",
+        "Partial or inconsistent data entry leading to incomplete contribution summaries.",
+        "Unauthorized access attempts to sensitive communication records or contribution data.",
+        "Handling deleted or archived projects while preserving contribution history for audit."
+      ],
+      "nonGoals": [
+        "Replacing human judgment in final authorship decisions or dispute resolutions.",
+        "Providing a full-featured project management suite beyond contribution tracking.",
+        "Automatically enforcing authorship order without user override.",
+        "Handling legal or institutional compliance beyond data privacy and security best practices.",
+        "Supporting real-time collaboration or chat features in the initial versions."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/auth endpoint (not detailed here) to receive authentication token.",
+        "Authenticated user accesses /dashboard page which calls /api/projects (GET) and /api/contributions (GET) to fetch project summaries, recent activities, and dispute flags.",
+        "User navigates to /projects/new page to create a new project, submits project details to /api/projects (POST) with title, description, milestones, tasks, and teamMemberIds.",
+        "/api/projects validates and persists project data in Project and TeamMember tables; returns projectId on success.",
+        "User views or edits project details at /projects/:projectId, which fetches project data from /api/projects/:projectId (GET).",
+        "User submits edits or uploads communication records via /api/projects/:projectId page, which calls /api/projects/:projectId (PUT or PATCH) for edits and /api/communication/upload (POST) for file uploads.",
+        "/api/communication/upload validates privacyConsent and stores encrypted files metadata in CommunicationRecord store.",
+        "Users submit or update individual contributions via /api/contributions (POST) with projectId, memberId, taskId/milestoneId, description, and effortEstimate.",
+        "/api/contributions validates and stores contributions with versioning for audit trail.",
+        "User views contribution reports at /projects/:projectId/contributions page, which calls /api/authorship/suggestions (GET) with projectId and optional templateId.",
+        "/api/authorship analyzes contributions and templates to generate authorship order suggestions, formatted statements, and dispute flags.",
+        "Background job Contribution Summary Generator runs on-demand or scheduled to aggregate contributions and update reports and dispute flags asynchronously.",
+        "Future integration with communication platforms imports activity logs and communication records via secure OAuth flows, feeding data into /api/contributions."
+      ],
+      "validationRules": [
+        "Project creation requires non-empty title and at least one teamMemberId; milestones and tasks are optional but if provided must be valid JSON arrays with expected structure.",
+        "TeamMember emails, if provided, must be valid email format; memberId and name are mandatory.",
+        "Contribution submissions require valid projectId, memberId, and non-empty description; effortEstimate if provided must be a positive number.",
+        "Communication record uploads require projectId, uploadedBy (valid user), file binary data, and explicit privacyConsent=true; reject uploads without consent.",
+        "Authorship suggestion requests require valid projectId; templateId if provided must exist in AuthorshipTemplate store.",
+        "All IDs (projectId, memberId, contributionId, recordId, templateId) must conform to UUID or defined string format and exist in the database for related operations.",
+        "For edits to projects or contributions, ensure user has authorization (future enhancement) and input data consistency (e.g., milestones/tasks references valid IDs).",
+        "Versioning on Contribution records must increment on updates to maintain audit trail integrity."
+      ],
+      "errorHandling": [
+        "API endpoints return structured error responses with success=false and an errors array containing descriptive messages.",
+        "Validation failures return 400 Bad Request with details on invalid fields.",
+        "Unauthorized access attempts return 401 Unauthorized or 403 Forbidden with appropriate messages.",
+        "File upload errors (e.g., missing privacy consent, invalid file type) return 400 with clear error messages.",
+        "Database errors or unexpected failures return 500 Internal Server Error with generic message; detailed errors logged server-side.",
+        "Background job failures are logged with retry mechanisms; failures do not block user operations but notify admins if persistent.",
+        "Missing or invalid IDs in requests return 404 Not Found with explanation.",
+        "Conflicting contribution descriptions or data inconsistencies flagged in disputeFlags output for manual review rather than automatic rejection."
+      ],
+      "securityNotes": [
+        "All API routes except /login require authentication token validation (JWT or session-based) to protect user data.",
+        "Access control to ensure users can only view or modify projects and contributions they are authorized for (future role-based access control).",
+        "Communication records stored encrypted at rest; access restricted to authorized users with audit logging.",
+        "File uploads validated for privacy consent before storage; no processing or display without explicit consent.",
+        "Sensitive data such as emails and ORCID IDs handled per privacy best practices; no public exposure without user consent.",
+        "OAuth flows for communication platform integrations must use secure redirect URIs and token storage.",
+        "Rate limiting and input sanitization applied to prevent abuse and injection attacks.",
+        "Audit trails maintained for contributions and edits to support dispute resolution and compliance."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on /projects/new page with valid project details and team members",
+          "when": "The user submits the project creation form",
+          "then": "The system creates the project, returns a projectId, and the project is retrievable via /api/projects/:projectId"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user viewing /projects/:projectId page",
+          "when": "The user edits milestones and uploads a communication record with privacyConsent=true",
+          "then": "The edits are saved, the communication record is stored encrypted, and upload status is successful"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user submits a contribution with valid projectId, memberId, and description",
+          "when": "The contribution is posted to /api/contributions",
+          "then": "The contribution is stored with a unique contributionId and versioning starts at 1"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user requests authorship suggestions for a project with contributions",
+          "when": "The user calls /api/authorship/suggestions with projectId",
+          "then": "The system returns authorshipOrder array, formattedStatements, disputeFlags if any, and success=true"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user attempts to upload a communication record without privacyConsent",
+          "when": "The upload is submitted to /api/communication/upload",
+          "then": "The system rejects the upload with a 400 error and descriptive message about missing consent"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user tries to access /dashboard without authentication",
+          "when": "The user navigates to /dashboard",
+          "then": "The system redirects to /login or returns 401 Unauthorized"
+        },
+        {
+          "id": "AT-007",
+          "given": "A project has overlapping conflicting contributions from multiple members",
+          "when": "Authorship suggestions are generated",
+          "then": "Dispute flags are included in the response indicating manual review is needed"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user submits invalid data (e.g., missing required fields) to /api/projects",
+          "when": "The request is processed",
+          "then": "The system returns 400 with validation error details and does not create the project"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma models for Project, TeamMember, Contribution, CommunicationRecord, AuthorshipTemplate",
+        "Implement API routes for /api/projects (POST, GET), /api/contributions (POST), /api/communication/upload (POST), /api/authorship/suggestions (GET)",
+        "Build /login page with authentication mechanism (out of scope but stubbed)",
+        "Develop /dashboard page fetching project summaries and dispute flags",
+        "Develop /projects/new page with form to create projects and team members",
+        "Develop /projects/:projectId page for viewing/editing project details and uploading communication records",
+        "Develop /projects/:projectId/contributions page to display contribution reports and authorship suggestions",
+        "Implement background job Contribution Summary Generator for aggregation and report generation",
+        "Add validation and error handling middleware for API routes",
+        "Add security layers for authentication and authorization checks",
+        "Implement encrypted storage and privacy consent enforcement for communication records",
+        "Write acceptance tests and perform integration testing",
+        "Plan for future integration with communication platforms and role-based access control"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/projects/new",
+          "/projects/[projectId]",
+          "/projects/[projectId]/contributions"
+        ],
+        "apiFilesToCreate": [
+          "api/projects/index.ts (POST for create)",
+          "api/projects/[projectId].ts (GET for details, PUT/PATCH for edits)",
+          "api/contributions/index.ts (POST for contributions)",
+          "api/communication/upload.ts (POST for file uploads)",
+          "api/authorship/suggestions.ts (GET for authorship suggestions)"
+        ],
+        "prismaModelsToAdd": [
+          "Project",
+          "TeamMember",
+          "Contribution",
+          "CommunicationRecord",
+          "AuthorshipTemplate"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user to provide any missing constraints, preferences, or details to clarify the tool's requirements for academic research collaboration contribution tracking.",
+        "promptTemplate": "You are a planner refining the requirements for the Academic Research Collaboration Contribution Tracker. User input: {{USER_INPUT}}. Blueprint summary: {{BLUEPRINT.summary}}. What additional constraints, preferences, or clarifications are needed to finalize the requirements?"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed page layouts, API routes, and data models for the contribution tracker based on refined requirements and blueprint.",
+        "promptTemplate": "You are an architect finalizing pages and data models for the Academic Research Collaboration Contribution Tracker. User input: {{USER_INPUT}}. Blueprint components: {{BLUEPRINT.components}}. Define the detailed pages, API endpoints, and database models needed."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate stub code and basic UI scaffolds for the tool's pages to start implementation.",
+        "promptTemplate": "You are a builder generating page stubs for the Academic Research Collaboration Contribution Tracker. User input: {{USER_INPUT}}. Blueprint pages: {{BLUEPRINT.pages}}. Generate stub code and UI scaffolds for each page."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect front-end pages with API routes and database models to build functional workflows.",
+        "promptTemplate": "You are an integrator wiring the pages to APIs and database for the Academic Research Collaboration Contribution Tracker. User input: {{USER_INPUT}}. Blueprint API routes: {{BLUEPRINT.apiRoutes}}. Scaffold code to connect UI, API, and data layers."
+      }
+    ]
+  }
+}

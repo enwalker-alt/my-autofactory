@@ -1,0 +1,685 @@
+{
+  "slug": "academic-research-grant-impact-projection-simulator",
+  "title": "Academic Research Grant Impact Projection Simulator",
+  "description": "A single-page web tool for academic researchers and grant writers to input research project details and funding agency priorities, then generate a structured, data-informed impact projection report preview with narrative highlights and simple visualizations. Supports optional preliminary data upload and enforces ethical constraints to avoid overpromising impacts.",
+  "inputLabel": "Enter your research project summary, objectives, keywords, funding agency, timeline, and optional preliminary data (upload JSON file or paste).",
+  "outputLabel": "Generated impact projection report preview including scientific, societal, and economic outcomes, funder alignment narratives, and recommended evidence sources.",
+  "systemPrompt": "You are an academic research grant impact projection assistant. Given a detailed research project summary, objectives, field keywords, selected funding agency priorities, timeline with milestones, and optional preliminary data, generate a structured, quantitatively-informed impact projection report preview. Include potential scientific, societal, and economic outcomes, tailored narratives aligning with funder priorities, and recommended evidence sources. Enforce ethical guidelines strictly: do not overpromise or guarantee outcomes, include disclaimers about projections being supportive aids only. Refuse any requests that attempt to exaggerate impact or include disallowed content. Output must be plain text summarizing the impact projection, or valid JSON if structured output is requested. Always respect user privacy and data security. Validate all inputs and return clear error messages for missing or invalid data.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Balanced Impact Projection",
+      "prompt": "Generate a balanced impact projection report that highlights realistic scientific, societal, and economic outcomes based on the provided project details and funding agency priorities. Include disclaimers and avoid overpromising."
+    },
+    {
+      "label": "Funder-Aligned Narrative Focus",
+      "prompt": "Focus the impact projection report on aligning the project outcomes with the selected funding agency's priority areas. Emphasize how the research supports funder goals and includes recommended evidence sources."
+    },
+    {
+      "label": "Data-Driven Quantitative Projection",
+      "prompt": "Emphasize quantitative aspects of the impact projection using available preliminary data and research benchmarks. Provide numeric estimates and comparisons to field trends while maintaining ethical constraints."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, return a JSON object with keys: 'scientificOutcomes', 'societalOutcomes', 'economicOutcomes', 'funderAlignmentNarrative', 'recommendedEvidence', 'disclaimer'.",
+  "clarifyPrompt": "Please provide all required inputs: project summary, objectives, field keywords, funding agency selection, and timeline. Upload any preliminary data as a JSON file if available. Ensure inputs are complete and valid to generate an accurate impact projection.",
+  "finalizePrompt": "Review the generated impact projection report preview carefully. Confirm that it aligns with your project goals and funding agency priorities. Use the report to refine your grant proposal impact sections with confidence and ethical clarity.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Impact Projection Simulator",
+      "niche": {
+        "role": "Academic Researchers and Grant Writers",
+        "scenario": "Planning and drafting grant proposals to demonstrate potential long-term impact and outcomes of proposed research projects"
+      },
+      "problem": "Researchers and grant writers struggle to convincingly estimate and communicate the potential future impact, broader societal benefits, and translational pathways of their proposed research projects in grant applications. Existing tools focus mostly on budget, compliance, or document clarity but lack interactive, data-driven impact projection support that integrates research field trends and funding agency priorities.",
+      "inputs": [
+        "Research project summary and objectives",
+        "Preliminary data or pilot study results (optional)",
+        "Research field and topic keywords",
+        "Funding agency impact goals and priority areas (uploaded or selected)",
+        "Proposed timeline and milestones"
+      ],
+      "outputs": [
+        "Structured, quantitatively-informed impact projection report including potential scientific, societal, and economic outcomes",
+        "Visualized impact pathway maps linking project activities to short-, medium-, and long-term outcomes",
+        "Tailored narrative sections highlighting alignment with funder priorities and impact metrics",
+        "Recommended evidence sources or references to support impact claims"
+      ],
+      "whyItWins": [
+        "Fills a critical unmet need in grant proposal development by providing a data-informed, structured approach to projecting research impact",
+        "Supports repeated iterative refinement with clear feedback loops and visualization aids",
+        "Enhances persuasiveness and clarity of grant applications, potentially increasing funding success rates",
+        "Integrates funder-specific impact criteria, making proposals more targeted and competitive",
+        "Lightweight at start but designed to expand into a comprehensive multi-page system supporting multiple projects, collaborative team inputs, and historical impact tracking"
+      ],
+      "upgradePath": {
+        "today": "A web tool that accepts project descriptions and funder priorities, then produces a structured impact projection report with simple visualizations and narrative templates",
+        "in90Days": "Add interactive impact pathway mapping with customizable milestones, integration of research field publication and citation data for benchmarking, and user accounts for saving and comparing multiple simulations",
+        "in12Months": "Develop a full multi-page platform supporting team collaboration, longitudinal tracking of funded project outcomes, automated updates from research impact databases, personalized coaching on impact statement writing, and export to funder-specific application formats"
+      },
+      "riskNotes": [
+        "Avoid overstating or guaranteeing impacts to maintain ethical and realistic projections",
+        "Ensure secure handling of sensitive unpublished project data",
+        "Clarify that tool-generated projections are supportive aids, not guarantees of funding or outcomes",
+        "Regularly update funder priorities and research impact data sources to keep projections relevant"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web platform that enables academic researchers and grant writers to create data-informed, structured projections of research impact for grant proposals. It supports input of project details and funder priorities, generates quantitative and narrative impact reports with visualizations, and evolves into a collaborative multi-project management system with benchmarking and coaching features.",
+      "primaryUser": "Academic researchers and grant writers preparing grant proposals",
+      "successMetrics": [
+        "Number of impact projection reports generated",
+        "User engagement with iterative refinements and visualizations",
+        "User-reported increase in clarity and persuasiveness of grant proposals",
+        "Repeat usage and multi-project management adoption",
+        "Positive feedback on alignment with funder priorities and benchmarking features"
+      ],
+      "components": [
+        {
+          "id": "ui-landing",
+          "name": "Landing and Project Input UI",
+          "type": "ui",
+          "responsibility": "Provide initial project and funder priority input forms, display generated impact projection reports with visualizations and narrative templates.",
+          "dependsOn": [
+            "api-report-generation",
+            "data-funder-priorities"
+          ],
+          "notes": [
+            "Supports optional preliminary data upload.",
+            "Includes guidance to avoid overstating impacts.",
+            "Must handle sensitive unpublished data securely."
+          ]
+        },
+        {
+          "id": "ui-project-management",
+          "name": "Project Management and Collaboration UI",
+          "type": "ui",
+          "responsibility": "Enable users to save, edit, and compare multiple projects; support team collaboration and milestone customization.",
+          "dependsOn": [
+            "api-projects",
+            "api-user-auth"
+          ],
+          "notes": [
+            "Supports iterative refinements and versioning.",
+            "Requires user authentication and authorization."
+          ]
+        },
+        {
+          "id": "api-report-generation",
+          "name": "Impact Projection Report API",
+          "type": "api",
+          "responsibility": "Process project inputs and funder priorities to generate structured quantitative and narrative impact projections with visualizations.",
+          "dependsOn": [
+            "data-funder-priorities",
+            "data-research-benchmarks"
+          ],
+          "notes": [
+            "Includes logic to integrate field trends and funding priorities.",
+            "Implements ethical constraints to avoid overpromising.",
+            "Returns structured data for UI rendering."
+          ]
+        },
+        {
+          "id": "api-projects",
+          "name": "Project and User Data API",
+          "type": "api",
+          "responsibility": "Manage persistence and retrieval of user projects, milestones, collaboration data, and user profiles.",
+          "dependsOn": [
+            "data-projects",
+            "data-users"
+          ],
+          "notes": [
+            "Supports multi-user collaboration with access controls.",
+            "Enables project versioning and history tracking."
+          ]
+        },
+        {
+          "id": "data-funder-priorities",
+          "name": "Funder Priorities Data Store",
+          "type": "data",
+          "responsibility": "Persist and update funding agency impact goals and priority areas for use in report generation and alignment.",
+          "dependsOn": [],
+          "notes": [
+            "Supports manual upload and periodic automated updates.",
+            "Indexed by funder and priority keywords."
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Project Data Store",
+          "type": "data",
+          "responsibility": "Persist user project details, milestones, preliminary data, and generated reports.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage for sensitive unpublished data.",
+            "Supports multiple projects per user."
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User and Collaboration Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, authentication credentials, and collaboration permissions.",
+          "dependsOn": [],
+          "notes": [
+            "Secure storage of authentication data.",
+            "Supports roles and access controls."
+          ]
+        },
+        {
+          "id": "data-research-benchmarks",
+          "name": "Research Field Benchmark Data Store",
+          "type": "data",
+          "responsibility": "Store publication, citation, and impact metrics data for benchmarking and trend integration.",
+          "dependsOn": [],
+          "notes": [
+            "Regularly updated from external research databases.",
+            "Used to contextualize impact projections."
+          ]
+        },
+        {
+          "id": "job-update-funder-priorities",
+          "name": "Funder Priorities Update Job",
+          "type": "job",
+          "responsibility": "Periodically fetch and update funding agency priorities to keep data current.",
+          "dependsOn": [
+            "data-funder-priorities"
+          ],
+          "notes": [
+            "Handles failures with retries and alerts.",
+            "Ensures data freshness for accurate projections."
+          ]
+        },
+        {
+          "id": "job-update-research-benchmarks",
+          "name": "Research Benchmark Data Update Job",
+          "type": "job",
+          "responsibility": "Regularly update research field publication and citation data from external sources.",
+          "dependsOn": [
+            "data-research-benchmarks"
+          ],
+          "notes": [
+            "Manages API rate limits and data consistency.",
+            "Supports incremental updates."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user authentication, profile, and collaboration role data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Persist research project details, milestones, preliminary data, and generated reports.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "summary",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "objectives",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preliminaryData",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "fieldKeywords",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "fundingAgencyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timeline",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "milestones",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "impactReport",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "ownerId",
+            "fundingAgencyId"
+          ]
+        },
+        {
+          "name": "FunderPriority",
+          "purpose": "Store funding agency impact goals and priority areas.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "agencyName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "priorityAreas",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "agencyName"
+          ]
+        },
+        {
+          "name": "ResearchBenchmark",
+          "purpose": "Store research field publication and citation metrics for benchmarking.",
+          "fields": [
+            {
+              "name": "fieldKeyword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "publicationCount",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "citationCount",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "hIndexMedian",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "fieldKeyword"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Welcome and Project Input",
+          "purpose": "Landing page for inputting new project details and selecting funder priorities.",
+          "inputs": [
+            "Project summary",
+            "Objectives",
+            "Preliminary data (optional)",
+            "Field keywords",
+            "Funding agency selection",
+            "Timeline and milestones"
+          ],
+          "outputs": [
+            "Generated impact projection report preview"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/projects",
+          "title": "Project Dashboard",
+          "purpose": "Manage saved projects, view history, and initiate new simulations.",
+          "inputs": [
+            "User authentication"
+          ],
+          "outputs": [
+            "List of projects with status and last updated",
+            "Options to edit, compare, or share"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:id",
+          "title": "Project Detail and Collaboration",
+          "purpose": "View and edit detailed project info, milestones, impact reports, and collaborate with team members.",
+          "inputs": [
+            "Project ID",
+            "User authentication"
+          ],
+          "outputs": [
+            "Editable project data",
+            "Impact pathway visualizations",
+            "Collaboration tools"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/account",
+          "title": "User Account and Settings",
+          "purpose": "Manage user profile, authentication credentials, and notification preferences.",
+          "inputs": [
+            "User authentication"
+          ],
+          "outputs": [
+            "User profile data",
+            "Security settings"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/report/generate",
+          "method": "POST",
+          "purpose": "Generate structured impact projection report based on project inputs and funder priorities.",
+          "requestShape": "{ projectSummary: string, objectives: string, preliminaryData?: json, fieldKeywords: string[], fundingAgencyId: string, timeline: json, milestones?: json }",
+          "responseShape": "{ impactReport: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of user's projects.",
+          "requestShape": "none",
+          "responseShape": "{ projects: Project[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project.",
+          "requestShape": "{ title: string, summary: string, objectives: string, preliminaryData?: json, fieldKeywords: string[], fundingAgencyId: string, timeline: json, milestones?: json }",
+          "responseShape": "{ project: Project }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:id",
+          "method": "GET",
+          "purpose": "Retrieve detailed project data including impact reports and milestones.",
+          "requestShape": "{ id: string }",
+          "responseShape": "{ project: Project }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:id",
+          "method": "POST",
+          "purpose": "Update project details, milestones, or impact reports.",
+          "requestShape": "{ id: string, updates: json }",
+          "responseShape": "{ project: Project }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funders",
+          "method": "GET",
+          "purpose": "Retrieve list of funding agencies and their priority areas.",
+          "requestShape": "none",
+          "responseShape": "{ funders: FunderPriority[] }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Funder Priorities Update Job",
+          "trigger": "Scheduled (e.g., weekly)",
+          "purpose": "Fetch and update funding agency impact goals and priority areas to keep data current."
+        },
+        {
+          "name": "Research Benchmark Data Update Job",
+          "trigger": "Scheduled (e.g., monthly)",
+          "purpose": "Update research field publication and citation metrics from external databases for benchmarking."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or ambiguous project input data gracefully with user prompts.",
+        "Securely managing sensitive unpublished preliminary data to prevent unauthorized access.",
+        "Dealing with outdated or missing funder priority data by warning users and falling back to last known data.",
+        "Avoiding overpromising impact projections by enforcing ethical constraints and disclaimers.",
+        "Managing collaboration conflicts when multiple users edit the same project simultaneously.",
+        "Handling API rate limits or failures when updating external benchmark or funder data."
+      ],
+      "nonGoals": [
+        "Guaranteeing funding success or actual research impact outcomes.",
+        "Providing detailed budget or compliance management features.",
+        "Replacing expert grant writing coaching or peer review.",
+        "Supporting offline usage or mobile native apps at initial stages.",
+        "Automated generation of full grant proposal documents beyond impact sections."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User visits '/' landing page and inputs new project details including summary, objectives, optional preliminary data, field keywords, funding agency selection, timeline, and milestones.",
+        "Landing UI fetches funder priorities from '/api/funders' (public endpoint) to populate funding agency selection and priority area guidance.",
+        "Upon user submission, landing UI sends POST request to '/api/report/generate' with project inputs and authenticated user token.",
+        "Report Generation API validates inputs, fetches relevant funder priorities and research benchmarks, applies ethical constraints, and returns structured impactReport JSON.",
+        "Landing UI displays generated impact projection report preview with visualizations and narrative templates.",
+        "Authenticated users can navigate to '/projects' to view their saved projects by calling GET '/api/projects'.",
+        "Users can create new projects via POST '/api/projects' with project details; the API persists project data encrypted as needed.",
+        "Users can view or edit detailed project data at '/projects/:id' by calling GET '/api/projects/:id' and POST '/api/projects/:id' for updates.",
+        "Project Management API enforces access control based on user roles and collaboration permissions.",
+        "Background jobs periodically update funder priorities and research benchmarks data stores to keep data fresh for report generation.",
+        "Sensitive preliminary data is encrypted at rest and access is restricted to authorized users only.",
+        "Collaboration edits are managed with versioning and conflict detection to prevent data loss."
+      ],
+      "validationRules": [
+        "Project summary, objectives, fieldKeywords, fundingAgencyId, and timeline are required and must be non-empty strings or valid JSON structures.",
+        "Preliminary data and milestones are optional but if provided must be valid JSON objects.",
+        "Funding agency ID must correspond to an existing funder in the funder priorities data store.",
+        "Timeline must include valid date ranges and milestones must have valid dates and descriptions.",
+        "User authentication token must be valid and authorized to access or modify requested project data.",
+        "Impact report generation enforces ethical constraints: no overpromising metrics beyond benchmarks, disclaimers included.",
+        "API request payloads must be sanitized to prevent injection attacks.",
+        "For collaboration updates, concurrency control must validate version or timestamp to detect conflicts."
+      ],
+      "errorHandling": [
+        "API endpoints return standardized error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors).",
+        "Landing UI shows user-friendly messages for incomplete or ambiguous inputs with prompts for correction.",
+        "If funder priority data is missing or outdated, UI warns users and falls back to last known data with disclaimers.",
+        "Report generation API returns errors if inputs violate ethical constraints or data dependencies are missing.",
+        "Collaboration conflicts trigger conflict resolution UI prompts with options to merge or overwrite changes.",
+        "Background jobs implement retry logic with exponential backoff and alerting on repeated failures.",
+        "Sensitive data access attempts without authorization are logged and blocked with 403 responses.",
+        "API rate limit errors from external data sources are handled gracefully with caching and delayed retries."
+      ],
+      "securityNotes": [
+        "All user authentication uses secure hashed passwords and tokens with expiration.",
+        "Sensitive preliminary data stored in projects is encrypted at rest using strong encryption algorithms.",
+        "API routes enforce authentication and authorization checks before data access or modification.",
+        "Role-based access control governs collaboration permissions and project visibility.",
+        "Data inputs are sanitized to prevent injection and cross-site scripting attacks.",
+        "HTTPS enforced for all client-server communications.",
+        "Audit logging implemented for critical actions such as project edits and collaboration changes.",
+        "Background jobs securely store credentials for external data sources and limit access scope."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An unauthenticated user visits the landing page",
+          "when": "They input valid project details and select a funding agency",
+          "then": "They can generate an impact projection report preview without authentication"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user submits incomplete project input (missing objectives)",
+          "when": "They attempt to generate a report",
+          "then": "The system returns validation errors prompting to complete required fields"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user creates a new project with valid data",
+          "when": "They submit the project creation form",
+          "then": "The project is saved encrypted and appears in their project dashboard"
+        },
+        {
+          "id": "AT-004",
+          "given": "Multiple users collaborate on the same project",
+          "when": "They attempt simultaneous edits",
+          "then": "The system detects conflicts and prompts users to resolve them before saving"
+        },
+        {
+          "id": "AT-005",
+          "given": "Funder priority data is outdated or missing",
+          "when": "A user generates a report",
+          "then": "The system warns about data freshness and uses last known priorities with disclaimers"
+        },
+        {
+          "id": "AT-006",
+          "given": "Background job fails to update research benchmarks due to API rate limit",
+          "when": "The job retries with backoff",
+          "then": "The system logs the failure and alerts administrators if retries exceed threshold"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to access another user's project without permission",
+          "when": "They request project details via API",
+          "then": "The system returns a 403 Forbidden error"
+        },
+        {
+          "id": "AT-008",
+          "given": "User inputs preliminary data containing sensitive unpublished information",
+          "when": "The data is saved",
+          "then": "The data is encrypted and only accessible to authorized collaborators"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, Project, FunderPriority, ResearchBenchmark with encryption for sensitive fields",
+        "Implement user authentication and authorization system with secure password hashing and role-based access control",
+        "Create API routes for funders (GET /api/funders) and projects (GET/POST /api/projects, GET/POST /api/projects/:id) with validation and access control",
+        "Build landing page UI with project input forms, funder selection fetching from API, and report preview display",
+        "Develop report generation API (/api/report/generate) integrating funder priorities and research benchmarks with ethical constraints",
+        "Implement project management UI pages (/projects, /projects/:id) with collaboration tools and versioning support",
+        "Create background jobs for updating funder priorities and research benchmarks with retry and alerting mechanisms",
+        "Add encryption and secure storage for sensitive preliminary data in projects",
+        "Implement conflict detection and resolution UI for collaborative edits",
+        "Add comprehensive error handling and user-friendly validation feedback across UI and APIs",
+        "Conduct acceptance testing and security audits before deployment"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/projects",
+          "/projects/[id]",
+          "/account"
+        ],
+        "apiFilesToCreate": [
+          "/api/funders/index.ts",
+          "/api/projects/index.ts",
+          "/api/projects/[id].ts",
+          "/api/report/generate.ts",
+          "/api/auth/[...nextauth].ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "FunderPriority",
+          "ResearchBenchmark"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to identify missing constraints or details in the project input and impact projection requirements.",
+        "promptTemplate": "You are the Planner refining the Academic Research Grant Impact Projection Simulator requirements. Given the current blueprint and expansions: {{BLUEPRINT}} {{EXPANDED}}. Ask detailed questions to clarify missing constraints or user needs from the perspective of academic researchers and grant writers working on grant proposals. Focus on inputs, outputs, ethical constraints, and UI interactions. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages and data models needed for the impact projection tool based on refined requirements.",
+        "promptTemplate": "You are the Architect designing the Academic Research Grant Impact Projection Simulator. Using the idea, blueprint, and expansions: {{BLUEPRINT}} {{EXPANDED}}. Produce detailed page specifications and data models for storing projects, users, funder priorities, and research benchmarks. Ensure all required fields, validation rules, and relationships are captured. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code stubs for the UI pages and forms for the impact projection simulator.",
+        "promptTemplate": "You are the Builder creating page stubs for the Academic Research Grant Impact Projection Simulator. Based on the finalized pages and data models: {{BLUEPRINT}} {{EXPANDED}}. Generate React/Next.js page components for the landing input page, project dashboard, project detail with collaboration, and account settings. Include input forms for project summary, objectives, funding agency selection, timeline, and preliminary data upload. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate UI pages with backend API routes and database models for a working impact projection tool.",
+        "promptTemplate": "You are the Integrator connecting the Academic Research Grant Impact Projection Simulator components. Using the pages, API routes, and data models: {{BLUEPRINT}} {{EXPANDED}}. Write code to connect UI input forms to API endpoints for funder retrieval, project creation and updates, and impact report generation. Implement validation, authentication, and secure data handling. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

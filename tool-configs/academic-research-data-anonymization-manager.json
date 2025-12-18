@@ -1,0 +1,672 @@
+{
+  "slug": "academic-research-data-anonymization-manager",
+  "title": "Academic Research Data Anonymization Workflow Manager",
+  "description": "A lightweight web tool for academic research data managers to upload sensitive datasets and metadata, then generate a recommended anonymization step plan and compliance checklist with manual anonymization guidance. Supports CSV, Excel, and SPSS formats with validation and clear error handling.",
+  "inputLabel": "Upload your research dataset file (CSV, Excel, or SPSS) and metadata JSON describing variables and anonymization preferences.",
+  "outputLabel": "Generated preliminary anonymization plan and compliance checklist summary.",
+  "systemPrompt": "You are an expert assistant specialized in academic research data anonymization workflow planning. Given a dataset file and metadata describing variables, data sensitivity, and anonymization preferences, generate a detailed stepwise anonymization plan tailored to protect participant privacy and comply with institutional guidelines. Include a compliance checklist summary for IRB review. Validate input formats and refuse unsupported or unsafe requests. Provide clear, actionable guidance and disclaimers about ethical responsibilities. Output only a plain text anonymization plan and checklist summary. Reject requests missing required inputs or with disallowed content.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Balanced Privacy-Utility Plan",
+      "prompt": "Generate an anonymization workflow plan that balances privacy protection with data utility, minimizing information loss while ensuring compliance with institutional policies."
+    },
+    {
+      "label": "Maximize Privacy Protection",
+      "prompt": "Generate an anonymization workflow plan prioritizing maximum participant privacy protection, even if it reduces data utility, following strict institutional guidelines."
+    },
+    {
+      "label": "Compliance-Focused Checklist",
+      "prompt": "Provide a detailed compliance checklist for IRB and data sharing agreements aligned with uploaded institutional privacy policies and anonymization preferences."
+    }
+  ],
+  "clarifyPrompt": "Please upload a supported dataset file (CSV, Excel, or SPSS) along with metadata JSON describing variable definitions and anonymization preferences. If you need help, specify the dataset context or relevant privacy guidelines.",
+  "finalizePrompt": "Review the generated anonymization plan and compliance checklist. Confirm if you want to save, refine with more details, or request anonymization execution guidance.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Anonymization Workflow Manager",
+      "niche": {
+        "role": "Academic Research Data Manager",
+        "scenario": "Preparing sensitive research datasets for ethical sharing and publication while ensuring compliance with privacy standards and institutional policies"
+      },
+      "problem": "Academic research data managers struggle to systematically anonymize complex datasets to protect participant privacy while maintaining data utility. Existing tools either perform simplistic anonymization or require extensive manual effort without integrated tracking, documentation, and compliance verification within the research workflow.",
+      "inputs": [
+        "Raw research datasets in CSV, Excel, or SPSS formats",
+        "Metadata describing dataset variables and data sensitivity levels",
+        "Institutional privacy guidelines and anonymization policy documents",
+        "User-defined anonymization preferences and acceptable data utility thresholds"
+      ],
+      "outputs": [
+        "Stepwise anonymization workflow plan tailored to the uploaded dataset and guidelines",
+        "Anonymized dataset versions with detailed change logs and privacy risk annotations",
+        "Compliance checklist and documentation reports for institutional review boards (IRBs) or data sharing agreements",
+        "Data utility impact metrics and summaries to balance privacy and research value"
+      ],
+      "whyItWins": [
+        "Integrates anonymization planning, execution, documentation, and compliance verification into a single workflow tool tailored to academic research contexts",
+        "Supports iterative refinement with clear audit trails enhancing transparency and reproducibility",
+        "Reduces manual workload and error risk by automating data transformations and generating structured compliance reports",
+        "Fills a gap where existing tools focus either purely on anonymization algorithms or on compliance documentation but rarely combine both effectively"
+      ],
+      "upgradePath": {
+        "today": "Provide a lightweight web tool that accepts dataset and metadata uploads to generate a recommended anonymization step plan and compliance checklist with manual anonymization guidance.",
+        "in90Days": "Add automated anonymization functions (e.g., pseudonymization, k-anonymity transformations) with version control, change logging, and interactive privacy risk visualization.",
+        "in12Months": "Develop a full multi-page app with user management, collaborative anonymization workflows, integration with IRB submission platforms, audit log exports, customizable policy templates, and data utility analytics dashboards."
+      },
+      "riskNotes": [
+        "Must ensure compliance with data privacy laws and institutional policies, avoiding any direct re-identification risks in outputs.",
+        "Avoid processing or storing datasets with sensitive personal identifiers longer than necessary, implementing strong data security practices.",
+        "User must confirm ethical approvals for data handling and sharing; tool does not replace legal or ethical responsibility.",
+        "Careful design needed to prevent false sense of security from automated anonymization recommendations; includes disclaimers and guidance."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive workflow manager for academic research data managers to plan, execute, document, and verify anonymization of sensitive datasets, balancing privacy compliance with data utility.",
+      "primaryUser": "Academic Research Data Manager",
+      "successMetrics": [
+        "Reduction in manual effort and errors during anonymization processes",
+        "User adoption rate among academic research data management teams",
+        "Number of anonymization workflows completed with full compliance documentation",
+        "Positive feedback on usability and clarity of audit trails and compliance reports",
+        "Demonstrated balance between privacy protection and data utility in anonymized outputs"
+      ],
+      "components": [
+        {
+          "id": "ui-portal",
+          "name": "User Interface Portal",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for dataset upload, anonymization workflow planning, execution, visualization, and compliance documentation.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Pages include dataset upload, workflow editor, anonymization execution, risk visualization, compliance report generation, and user settings.",
+            "Supports authenticated user sessions and role-based access in future upgrades."
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API Layer",
+          "type": "api",
+          "responsibility": "Handle dataset ingestion, anonymization plan generation, anonymization execution, compliance verification, and report generation.",
+          "dependsOn": [
+            "data-storage",
+            "integration-policies"
+          ],
+          "notes": [
+            "Exposes REST endpoints for UI interaction and background job triggers.",
+            "Implements input validation, error handling, and security checks."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage and Versioning",
+          "type": "data",
+          "responsibility": "Persist uploaded datasets, metadata, anonymization workflows, anonymized dataset versions, audit logs, and compliance documentation.",
+          "dependsOn": [],
+          "notes": [
+            "Implements version control for datasets and anonymization steps to support iterative refinement and auditability.",
+            "Stores sensitive data encrypted at rest with strict access controls."
+          ]
+        },
+        {
+          "id": "job-anonymization",
+          "name": "Anonymization Background Jobs",
+          "type": "job",
+          "responsibility": "Perform automated anonymization transformations, risk assessments, and utility metric calculations asynchronously.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Supports extensible anonymization algorithms (e.g., pseudonymization, k-anonymity).",
+            "Generates detailed change logs and privacy risk annotations."
+          ]
+        },
+        {
+          "id": "integration-policies",
+          "name": "Policy and Compliance Integration",
+          "type": "integration",
+          "responsibility": "Manage institutional privacy guidelines, anonymization policies, and compliance checklists for validation and report generation.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Supports uploading and versioning of policy documents and templates.",
+            "Enables customizable compliance verification aligned with institutional requirements."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Dataset",
+          "purpose": "Stores raw and processed research datasets along with metadata and versioning information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "originalFileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileFormat",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "isAnonymized",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "anonymizationSteps",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "privacyRiskAnnotations",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "ownerUserId",
+            "uploadDate",
+            "isAnonymized"
+          ]
+        },
+        {
+          "name": "AnonymizationWorkflow",
+          "purpose": "Represents a stepwise anonymization plan tailored to a dataset and institutional policies.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "steps",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "datasetId",
+            "createdByUserId",
+            "status"
+          ]
+        },
+        {
+          "name": "ComplianceReport",
+          "purpose": "Stores generated compliance checklists and documentation reports for IRB and data sharing reviews.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "workflowId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "reportContent",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "complianceStatus",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "workflowId",
+            "generatedAt"
+          ]
+        },
+        {
+          "name": "AuditLog",
+          "purpose": "Records all changes, anonymization actions, and user activities for transparency and reproducibility.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "performedByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "entityType",
+            "entityId",
+            "performedByUserId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Dataset Upload",
+          "purpose": "Allow users to upload raw datasets and associated metadata for anonymization processing.",
+          "inputs": [
+            "dataset file (CSV, Excel, SPSS)",
+            "metadata JSON",
+            "anonymization preferences"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "preliminary anonymization plan summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/workflow",
+          "title": "Anonymization Workflow Editor",
+          "purpose": "Enable users to view, edit, and refine the stepwise anonymization plan tailored to their dataset and policies.",
+          "inputs": [
+            "existing workflow steps",
+            "policy documents",
+            "user adjustments"
+          ],
+          "outputs": [
+            "updated workflow plan",
+            "change logs"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/execute",
+          "title": "Anonymization Execution and Monitoring",
+          "purpose": "Run automated anonymization jobs, monitor progress, and visualize privacy risk and data utility metrics.",
+          "inputs": [
+            "selected anonymization workflow",
+            "dataset version"
+          ],
+          "outputs": [
+            "anonymized dataset versions",
+            "risk visualizations",
+            "utility metrics"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/compliance",
+          "title": "Compliance Documentation",
+          "purpose": "Generate and review compliance checklists and reports for IRB or data sharing approvals.",
+          "inputs": [
+            "anonymization workflow",
+            "policy templates"
+          ],
+          "outputs": [
+            "compliance reports",
+            "audit logs"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings and Policy Management",
+          "purpose": "Manage user preferences, upload institutional policies, and configure anonymization parameters.",
+          "inputs": [
+            "user profile data",
+            "policy documents"
+          ],
+          "outputs": [
+            "updated settings confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/datasets/upload",
+          "method": "POST",
+          "purpose": "Accept dataset and metadata uploads, initiate preliminary anonymization plan generation.",
+          "requestShape": "{ file: binary, metadata: json, preferences: json }",
+          "responseShape": "{ datasetId: string, preliminaryPlan: json, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/workflows/{id}",
+          "method": "GET",
+          "purpose": "Retrieve anonymization workflow details by ID.",
+          "requestShape": "{ id: string }",
+          "responseShape": "{ workflow: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/workflows/{id}",
+          "method": "POST",
+          "purpose": "Update anonymization workflow steps.",
+          "requestShape": "{ id: string, steps: json }",
+          "responseShape": "{ success: boolean, updatedWorkflow: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/anonymize/start",
+          "method": "POST",
+          "purpose": "Trigger anonymization background job for a dataset and workflow.",
+          "requestShape": "{ datasetId: string, workflowId: string }",
+          "responseShape": "{ jobId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/anonymize/status/{jobId}",
+          "method": "GET",
+          "purpose": "Check status and results of anonymization job.",
+          "requestShape": "{ jobId: string }",
+          "responseShape": "{ status: string, results: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance/report",
+          "method": "POST",
+          "purpose": "Generate compliance report for a given workflow.",
+          "requestShape": "{ workflowId: string }",
+          "responseShape": "{ reportId: string, reportContent: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/policies/upload",
+          "method": "POST",
+          "purpose": "Upload or update institutional privacy guidelines and anonymization policies.",
+          "requestShape": "{ policyDocument: json }",
+          "responseShape": "{ success: boolean, policyId: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "AutomatedAnonymizationJob",
+          "trigger": "Triggered via API when user starts anonymization execution",
+          "purpose": "Perform anonymization transformations on datasets according to workflow steps, generate change logs, and calculate privacy risk and utility metrics."
+        },
+        {
+          "name": "ComplianceReportGenerationJob",
+          "trigger": "Triggered via API when user requests compliance report generation",
+          "purpose": "Compile workflow details, policy adherence, and audit logs into structured compliance documentation for IRB or data sharing review."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded datasets contain unsupported or corrupted file formats requiring graceful error messages.",
+        "Anonymization workflows that result in excessive data utility loss requiring user warnings and rollback options.",
+        "Partial anonymization job failures with retry mechanisms and detailed failure diagnostics.",
+        "Conflicting or ambiguous institutional policy documents needing user clarification or overrides.",
+        "Simultaneous edits to the same anonymization workflow causing version conflicts.",
+        "Handling datasets with missing or incomplete metadata impacting anonymization planning accuracy."
+      ],
+      "nonGoals": [
+        "Replacing legal or ethical responsibility for data privacy compliance; tool provides guidance and documentation but not legal advice.",
+        "Providing exhaustive anonymization algorithms beyond common standards; focus is on workflow integration and documentation.",
+        "Storing datasets indefinitely; data retention policies and secure deletion are managed externally.",
+        "Direct integration with all possible IRB platforms initially; integration planned as a future upgrade.",
+        "Real-time collaborative editing in the initial release; planned for longer-term development."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI portal pages requiring authentication.",
+        "On /upload page, user uploads dataset file and metadata JSON with anonymization preferences.",
+        "UI sends POST to /api/datasets/upload with file binary, metadata JSON, and preferences JSON.",
+        "API validates inputs, stores dataset encrypted with versioning in data-storage, generates preliminary anonymization plan, returns datasetId and plan summary.",
+        "User navigates to /workflow page, UI fetches anonymization workflow via GET /api/workflows/{id}.",
+        "User edits workflow steps; UI sends POST /api/workflows/{id} with updated steps.",
+        "API validates and updates workflow, logs changes in AuditLog, returns updated workflow.",
+        "User triggers anonymization execution on /execute page; UI calls POST /api/anonymize/start with datasetId and workflowId.",
+        "API triggers AutomatedAnonymizationJob asynchronously, returns jobId and status.",
+        "User polls GET /api/anonymize/status/{jobId} to monitor job progress and results including anonymized dataset versions, risk visualizations, and utility metrics.",
+        "User accesses /compliance page, triggers POST /api/compliance/report with workflowId to generate compliance report.",
+        "API triggers ComplianceReportGenerationJob, returns reportId and content.",
+        "User views compliance reports and audit logs on /compliance page.",
+        "User manages user settings and uploads policy documents on /settings page, posting to /api/policies/upload.",
+        "API validates and stores policy documents with versioning in data-storage."
+      ],
+      "validationRules": [
+        "Dataset upload: file must be CSV, Excel, or SPSS format; reject unsupported or corrupted files with clear error.",
+        "Metadata JSON must conform to defined schema (e.g., required fields like dataset description, variable definitions).",
+        "Anonymization preferences must include valid options (e.g., selected algorithms, parameters).",
+        "Workflow steps JSON must be well-formed, contain valid anonymization operations, and reference existing dataset.",
+        "Workflow updates must check for version conflicts to prevent simultaneous edit overwrites.",
+        "Anonymization job requests must reference existing datasetId and workflowId owned by user.",
+        "Policy documents must be valid JSON, include required fields for institutional guidelines.",
+        "Compliance report generation requests must reference existing workflowId.",
+        "User inputs must be sanitized to prevent injection attacks.",
+        "All API requests require authenticated user context."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with descriptive messages for validation failures (e.g., invalid file format, malformed JSON).",
+        "Return 401 Unauthorized if user authentication is missing or invalid.",
+        "Return 403 Forbidden if user attempts to access or modify resources they do not own.",
+        "Return 404 Not Found for non-existent dataset, workflow, job, or policy IDs.",
+        "Handle anonymization job failures by returning job status 'failed' with detailed diagnostics in results field.",
+        "Implement retry mechanisms for transient background job failures with exponential backoff.",
+        "Detect and report workflow version conflicts with 409 Conflict status and instructions to reload latest version.",
+        "Gracefully handle corrupted or incomplete metadata with warnings and prompt for user correction.",
+        "Log all errors with context in AuditLog for traceability.",
+        "Provide user-friendly error messages on UI with actionable guidance."
+      ],
+      "securityNotes": [
+        "Enforce authentication on all API routes requiring user context.",
+        "Implement role-based access control in future iterations; currently ensure users can only access their own datasets and workflows.",
+        "Encrypt all sensitive data at rest in data-storage, including datasets and policy documents.",
+        "Sanitize all user inputs to prevent injection and cross-site scripting attacks.",
+        "Use secure transport (HTTPS) for all client-server communications.",
+        "Audit all user actions and data changes in AuditLog for accountability.",
+        "Limit file upload size and scan for malware or malicious content.",
+        "Ensure background jobs run with least privilege principle accessing only necessary data.",
+        "Implement CSRF protection on state-changing API routes.",
+        "Plan for future integration with institutional identity providers for stronger authentication."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with a valid CSV dataset and metadata JSON",
+          "when": "The user submits the upload form",
+          "then": "The system stores the dataset with version 1, generates a preliminary anonymization plan, returns datasetId and plan summary, and displays upload confirmation"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user viewing an existing anonymization workflow",
+          "when": "The user updates workflow steps and submits changes",
+          "then": "The system validates the steps, updates the workflow, logs the change, and returns the updated workflow"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user triggers anonymization execution for a dataset and workflow",
+          "when": "The user starts the anonymization job",
+          "then": "The system enqueues the job, returns jobId and status 'started', and the user can poll job status until completion with results including anonymized dataset and risk metrics"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user requests a compliance report for a completed workflow",
+          "when": "The user submits the report generation request",
+          "then": "The system generates the compliance report asynchronously, returns reportId and content, and the user can view the report"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user uploads an unsupported file format",
+          "when": "The user submits the upload form",
+          "then": "The system rejects the upload with a 400 error and displays a clear error message about unsupported file format"
+        },
+        {
+          "id": "AT-006",
+          "given": "Two users attempt to edit the same anonymization workflow simultaneously",
+          "when": "The second user submits changes after the first user has updated the workflow",
+          "then": "The system detects version conflict, returns 409 Conflict with instructions to reload the latest workflow"
+        },
+        {
+          "id": "AT-007",
+          "given": "An anonymization job fails partially due to data issues",
+          "when": "The user polls job status",
+          "then": "The system returns status 'failed' with detailed failure diagnostics and suggestions for remediation"
+        },
+        {
+          "id": "AT-008",
+          "given": "An authenticated user uploads a new institutional policy document",
+          "when": "The user submits the policy upload",
+          "then": "The system validates, stores the policy with versioning, returns success and policyId"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database (Dataset, AnonymizationWorkflow, ComplianceReport, AuditLog, PolicyDocument).",
+        "Implement authentication middleware and user session management.",
+        "Develop API routes for dataset upload (/api/datasets/upload) with file handling and validation.",
+        "Implement data storage layer with encryption and versioning support.",
+        "Develop API routes for workflow retrieval and update (/api/workflows/{id}) with concurrency control.",
+        "Implement background job infrastructure for anonymization and compliance report generation.",
+        "Develop API routes to trigger and monitor anonymization jobs (/api/anonymize/start, /api/anonymize/status/{jobId}).",
+        "Develop API route for compliance report generation (/api/compliance/report).",
+        "Develop API route for policy document upload (/api/policies/upload).",
+        "Build UI pages: /upload, /workflow, /execute, /compliance, /settings with API integration and input validation.",
+        "Implement audit logging for all user actions and data changes.",
+        "Add error handling and user-friendly error displays on UI.",
+        "Test all components with acceptance tests and edge case scenarios.",
+        "Prepare for future enhancements: role-based access, real-time collaboration, IRB platform integration."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/workflow",
+          "/execute",
+          "/compliance",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "api/datasets/upload.ts",
+          "api/workflows/[id].ts",
+          "api/anonymize/start.ts",
+          "api/anonymize/status/[jobId].ts",
+          "api/compliance/report.ts",
+          "api/policies/upload.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Dataset",
+          "AnonymizationWorkflow",
+          "ComplianceReport",
+          "AuditLog",
+          "PolicyDocument"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask about missing constraints, clarify user needs and edge cases for the anonymization workflow manager.",
+        "promptTemplate": "Given the current blueprint:\n{{BLUEPRINT}}\n\nAnd the idea:\n{{IDEA}}\n\nPlease provide any missing constraints, edge cases, or user needs to refine the requirements for the Academic Research Data Anonymization Workflow Manager.\nUser input:\n{{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the set of UI pages, API routes, and data models needed to implement the workflow manager.",
+        "promptTemplate": "Using the refined requirements and blueprint:\n{{BLUEPRINT}}\n\nAnd the detailed idea:\n{{IDEA}}\n\nPlease finalize the list of UI pages, API endpoints, and database data models for the Academic Research Data Anonymization Workflow Manager.\nUser input:\n{{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create starter code or structured outlines for the main UI pages and API routes to scaffold development.",
+        "promptTemplate": "Given the finalized architecture and data models:\n{{BLUEPRINT}}\n\nAnd the user requirements:\n{{IDEA}}\n\nGenerate starter code, structured outlines, or page stubs for the main UI pages and API endpoints for the Academic Research Data Anonymization Workflow Manager.\nUser input:\n{{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to API endpoints and database models, ensuring data flow and security compliance.",
+        "promptTemplate": "Using the builder's generated stubs and final architecture:\n{{BLUEPRINT}}\n\nAnd the idea context:\n{{IDEA}}\n\nProvide detailed instructions and code snippets to wire UI pages to API routes and database models, including authentication, validation, and error handling, for the Academic Research Data Anonymization Workflow Manager.\nUser input:\n{{USER_INPUT}}"
+      }
+    ]
+  }
+}

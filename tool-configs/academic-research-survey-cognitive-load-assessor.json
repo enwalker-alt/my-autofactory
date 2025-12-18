@@ -1,0 +1,696 @@
+{
+  "slug": "academic-research-survey-cognitive-load-assessor",
+  "title": "Academic Research Instrument Cognitive Load Assessor",
+  "description": "Analyze your multi-section survey draft and participant demographics to assess cognitive load per section. Receive detailed cognitive load scores and basic recommendations to optimize question complexity and survey structure, improving respondent completion and data quality.",
+  "inputLabel": "Paste your survey instrument draft text here or upload a survey draft file (JSON or text). Optionally, enter participant demographic details and upload pilot feedback data to enhance assessment.",
+  "outputLabel": "Cognitive Load Assessment Results and Recommendations",
+  "systemPrompt": "You are an expert assistant specialized in academic survey design, focused on analyzing survey drafts and participant demographic data to compute cognitive load scores per survey section. You provide detailed, section-by-section cognitive load breakdowns and clear recommendations for reducing question complexity or ambiguity and improving survey structure to minimize respondent fatigue. Refuse to provide medical or psychological diagnoses. Reject inputs that are malicious, incomplete, or violate privacy. Ensure recommendations are explainable, transparent, and respect user privacy. If inputs are malformed or incomplete, return partial scores with warnings. Output results as plain text with optional structured JSON if requested. Enforce strict validation on input survey structure and demographics. Do not rewrite questions without explicit user approval. Always maintain confidentiality and avoid bias by considering demographic tailoring.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Balanced Assessment",
+      "prompt": "Analyze the uploaded survey draft and provided demographic profile to compute cognitive load scores per section. Provide a detailed breakdown and actionable recommendations for question simplification and survey structure optimization. Include warnings for any detected issues in survey completeness or demographic conflicts.",
+      "hint": "Use for a comprehensive but balanced cognitive load analysis with clear recommendations."
+    },
+    {
+      "label": "Quick Scan",
+      "prompt": "Perform a quick cognitive load assessment of the provided survey draft and demographics. Focus on identifying sections with highest cognitive burden and suggest basic improvements. Provide concise output suitable for rapid iteration.",
+      "hint": "Good for fast feedback on draft surveys with minimal input."
+    },
+    {
+      "label": "Demographic Impact Focus",
+      "prompt": "Assess cognitive load emphasizing the impact of participant demographics (age, education, language proficiency). Highlight how these factors influence complexity and suggest tailored revisions to reduce cognitive burden for the target population.",
+      "hint": "Use when demographic tailoring is critical."
+    },
+    {
+      "label": "Pilot Data Integration",
+      "prompt": "Integrate provided pilot survey response data and feedback in the cognitive load assessment. Adjust scores and recommendations based on observed participant difficulties and dropout risks indicated by the pilot data. Warn if pilot data is incompatible or incomplete.",
+      "hint": "Use when pilot data is available to inform assessment."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output cognitive load assessment includes overallScore (number), sectionScores (object mapping section names to scores and explanations), and recommendations (array of actionable suggestions). Include warnings array if applicable.",
+  "clarifyPrompt": "Please provide your survey draft text or upload a file, along with participant demographic details (age range, education level, language proficiency). Optionally, upload pilot feedback data to enhance assessment. Ensure the survey draft includes sections and questions with clear structure.",
+  "finalizePrompt": "Based on the uploaded survey draft and demographics, generate a detailed cognitive load assessment with section-by-section scores and actionable recommendations. If pilot data is provided, integrate it to refine scores. Highlight any warnings or data issues explicitly.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Instrument Cognitive Load Balancer",
+      "niche": {
+        "role": "Academic Researcher (Survey/Questionnaire Designer)",
+        "scenario": "Designing multi-section survey instruments or questionnaires that optimize participant cognitive load to improve data quality and respondent completion rates."
+      },
+      "problem": "Academic researchers designing complex multi-section survey instruments struggle to balance question complexity, length, and respondent cognitive load, often leading to participant fatigue, dropouts, and lower data quality. Existing tools focus on content or formatting but do not quantitatively assess or optimize cognitive burden across instrument sections.",
+      "inputs": [
+        "Survey instrument draft text (sections and questions)",
+        "Target participant demographic info (age range, education level, language proficiency)",
+        "Maximum acceptable survey length or completion time",
+        "Optional prior survey response data or pilot feedback"
+      ],
+      "outputs": [
+        "Section-by-section cognitive load assessment scores with detailed breakdowns",
+        "Recommendations for question revisions to reduce complexity or ambiguity",
+        "Optimized survey structure balancing question difficulty, length, and order to minimize fatigue",
+        "Visual dashboard tracking cognitive load distribution and predicted completion rates"
+      ],
+      "whyItWins": [
+        "Addresses a critical but under-served aspect of survey design: cognitive load management tailored to participant demographics",
+        "Supports iterative refinement with quantitative metrics rather than subjective judgments, improving data validity",
+        "Combines linguistic complexity analysis, question type impact, and pilot feedback integration for holistic optimization",
+        "Clear upgrade path from simple single-page assessment to multi-page instrument builder with AI-assisted rewrite suggestions and longitudinal tracking"
+      ],
+      "upgradePath": {
+        "today": "Single-page tool analyzing uploaded survey drafts to produce cognitive load scores and basic recommendations per section.",
+        "in90Days": "Interactive multi-section survey builder integrating live cognitive load feedback, question rewriting suggestions, and demographic impact simulations.",
+        "in12Months": "Full-featured survey instrument design platform with team collaboration, pilot data import, automated adaptive survey structuring, and integration with data collection platforms for real-time cognitive load and dropout monitoring."
+      },
+      "riskNotes": [
+        "Must avoid over-reliance on automated linguistic complexity metrics without human validation.",
+        "Ensure privacy and confidentiality for uploaded survey drafts and pilot data.",
+        "Do not provide medical or psychological diagnoses; strictly cognitive load estimation for survey design.",
+        "Avoid bias by allowing customization for diverse participant populations."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A platform for academic researchers to design and optimize multi-section survey instruments by quantitatively assessing and balancing participant cognitive load, tailored to demographic factors, to improve data quality and completion rates.",
+      "primaryUser": "Academic Researcher (Survey/Questionnaire Designer)",
+      "successMetrics": [
+        "Increased survey completion rates in pilot studies",
+        "Reduction in participant dropout attributed to cognitive load",
+        "User adoption and frequency of iterative survey refinements",
+        "Positive user feedback on recommendation relevance and usability",
+        "Integration and usage of demographic tailoring features"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Cognitive Load Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display section-by-section cognitive load scores, visualizations, and recommendations; provide interactive survey builder interface with live feedback.",
+          "dependsOn": [
+            "api-cognitive-load",
+            "api-recommendations",
+            "data-survey",
+            "data-demographics"
+          ],
+          "notes": [
+            "Must support multi-section survey visualization and editing.",
+            "Include accessibility features for diverse users.",
+            "Allow export of reports and visualizations."
+          ]
+        },
+        {
+          "id": "api-cognitive-load",
+          "name": "Cognitive Load Assessment API",
+          "type": "api",
+          "responsibility": "Analyze survey text and demographic inputs to compute cognitive load scores per section, integrating linguistic complexity metrics, question type impact, and pilot feedback data.",
+          "dependsOn": [
+            "data-survey",
+            "data-demographics",
+            "data-pilot-feedback"
+          ],
+          "notes": [
+            "Must allow customization for demographic adjustments to avoid bias.",
+            "Provide detailed breakdowns to support recommendations.",
+            "Handle incomplete or malformed survey drafts gracefully."
+          ]
+        },
+        {
+          "id": "api-recommendations",
+          "name": "Question Revision and Optimization API",
+          "type": "api",
+          "responsibility": "Generate actionable recommendations to reduce question complexity or ambiguity and suggest optimized survey structures balancing difficulty, length, and order.",
+          "dependsOn": [
+            "api-cognitive-load",
+            "data-survey"
+          ],
+          "notes": [
+            "Recommendations should be explainable and transparent.",
+            "Avoid over-reliance on automated suggestions; flag uncertain cases.",
+            "Support iterative refinement workflows."
+          ]
+        },
+        {
+          "id": "data-survey",
+          "name": "Survey Instrument Data Store",
+          "type": "data",
+          "responsibility": "Persist survey drafts, section and question metadata, and optimized survey versions.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure data privacy and encryption at rest.",
+            "Support versioning for iterative survey design.",
+            "Store question types and complexity annotations."
+          ]
+        },
+        {
+          "id": "data-demographics",
+          "name": "Participant Demographics Data Store",
+          "type": "data",
+          "responsibility": "Store target participant demographic profiles used for cognitive load tailoring and simulation.",
+          "dependsOn": [],
+          "notes": [
+            "Allow flexible demographic attributes (age range, education, language proficiency).",
+            "Support multiple demographic profiles per survey."
+          ]
+        },
+        {
+          "id": "data-pilot-feedback",
+          "name": "Pilot Survey Response and Feedback Store",
+          "type": "data",
+          "responsibility": "Persist optional prior survey response data and pilot feedback to inform cognitive load adjustments and validation.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure confidentiality and anonymization of pilot data.",
+            "Support import from common survey platforms.",
+            "Enable linkage to specific survey versions."
+          ]
+        },
+        {
+          "id": "job-cognitive-load-update",
+          "name": "Background Cognitive Load Recalculation Job",
+          "type": "job",
+          "responsibility": "Periodically recalculate cognitive load scores and recommendations when surveys or demographics are updated or new pilot data is imported.",
+          "dependsOn": [
+            "data-survey",
+            "data-demographics",
+            "data-pilot-feedback",
+            "api-cognitive-load",
+            "api-recommendations"
+          ],
+          "notes": [
+            "Handle large surveys efficiently with batching.",
+            "Notify users of updated results.",
+            "Retry on transient failures."
+          ]
+        },
+        {
+          "id": "integration-survey-platforms",
+          "name": "Survey Platform Integration",
+          "type": "integration",
+          "responsibility": "Import pilot response data from external survey platforms and export optimized survey instruments for deployment.",
+          "dependsOn": [
+            "data-pilot-feedback",
+            "data-survey"
+          ],
+          "notes": [
+            "Support common platforms like Qualtrics, SurveyMonkey.",
+            "Ensure secure API authentication and data transfer.",
+            "Handle data format inconsistencies."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "SurveyInstrument",
+          "purpose": "Represents a survey instrument including sections and questions with metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sections",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "ownerUserId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "ownerUserId"
+          ]
+        },
+        {
+          "name": "DemographicProfile",
+          "purpose": "Stores participant demographic attributes for cognitive load tailoring.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "surveyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ageRange",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "educationLevel",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "languageProficiency",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "additionalAttributes",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "surveyId"
+          ]
+        },
+        {
+          "name": "PilotFeedback",
+          "purpose": "Stores pilot survey response data and feedback linked to a survey version.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "surveyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "surveyVersion",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "responseData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "feedbackNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "importedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "surveyId",
+            "surveyVersion"
+          ]
+        },
+        {
+          "name": "CognitiveLoadAssessment",
+          "purpose": "Stores computed cognitive load scores and breakdowns per survey section.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "surveyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "surveyVersion",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "sectionScores",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "overallScore",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "computedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "surveyId",
+            "surveyVersion"
+          ]
+        },
+        {
+          "name": "Recommendation",
+          "purpose": "Stores revision and optimization recommendations for survey questions and structure.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "surveyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "surveyVersion",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "recommendations",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "surveyId",
+            "surveyVersion"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Survey Upload & Initial Assessment",
+          "purpose": "Single-page interface for uploading survey drafts and demographic profiles to receive initial cognitive load scores and basic recommendations.",
+          "inputs": [
+            "Survey draft file or text",
+            "Demographic profile inputs",
+            "Optional pilot data upload"
+          ],
+          "outputs": [
+            "Cognitive load scores",
+            "Basic revision recommendations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/builder",
+          "title": "Interactive Survey Builder",
+          "purpose": "Multi-section survey design and editing page with live cognitive load feedback and revision suggestions.",
+          "inputs": [
+            "Survey sections and questions",
+            "Demographic profile selection",
+            "User edits"
+          ],
+          "outputs": [
+            "Updated cognitive load scores",
+            "Real-time recommendations",
+            "Visual dashboard"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/pilot-data",
+          "title": "Pilot Data Import & Management",
+          "purpose": "Page to import, view, and manage pilot survey response data and feedback to refine cognitive load assessments.",
+          "inputs": [
+            "Pilot response data files or API connections"
+          ],
+          "outputs": [
+            "Pilot data summaries",
+            "Impact on cognitive load scores"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Cognitive Load Reports & Export",
+          "purpose": "View detailed cognitive load assessments, recommendations, and export reports or optimized survey versions.",
+          "inputs": [
+            "Survey selection",
+            "Version selection"
+          ],
+          "outputs": [
+            "Detailed reports",
+            "Export files (PDF, JSON)"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/cognitive-load/assess",
+          "method": "POST",
+          "purpose": "Compute cognitive load scores for a given survey draft and demographic profile.",
+          "requestShape": "{ surveyId: string, surveyVersion: number, demographicProfileId: string }",
+          "responseShape": "{ overallScore: number, sectionScores: object, details: object }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/recommendations/generate",
+          "method": "POST",
+          "purpose": "Generate question revision and survey optimization recommendations based on cognitive load assessment.",
+          "requestShape": "{ surveyId: string, surveyVersion: number }",
+          "responseShape": "{ recommendations: object }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/survey/upload",
+          "method": "POST",
+          "purpose": "Upload a new survey draft for analysis and storage.",
+          "requestShape": "{ title: string, sections: object, ownerUserId: string }",
+          "responseShape": "{ surveyId: string, version: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/pilot-feedback/import",
+          "method": "POST",
+          "purpose": "Import pilot survey response data linked to a survey version.",
+          "requestShape": "{ surveyId: string, surveyVersion: number, responseData: object, feedbackNotes?: string }",
+          "responseShape": "{ pilotFeedbackId: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Recalculate Cognitive Load Scores",
+          "trigger": "On survey draft update, demographic profile change, or pilot data import",
+          "purpose": "Automatically update cognitive load assessments and recommendations to reflect latest data."
+        }
+      ],
+      "edgeCases": [
+        "Malformed or incomplete survey drafts missing sections or questions.",
+        "Demographic profiles with missing or conflicting attributes.",
+        "Pilot data incompatible with current survey version or format.",
+        "Surveys with extremely long or complex questions causing processing delays.",
+        "User uploads containing sensitive or confidential information requiring strict privacy controls.",
+        "Automated recommendations that conflict or suggest contradictory changes.",
+        "Network or service failures during background job execution or external platform integrations."
+      ],
+      "nonGoals": [
+        "Providing medical or psychological diagnoses or assessments.",
+        "Replacing human judgment in survey content validity or ethical considerations.",
+        "Real-time participant monitoring during survey administration.",
+        "Full-scale survey deployment or data collection platform functionality.",
+        "Automated rewriting of questions without user review and approval."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses the platform pages requiring authentication.",
+        "On '/' (Survey Upload & Initial Assessment), user uploads survey draft and demographic profiles and optionally pilot data.",
+        "The frontend sends survey data to /api/survey/upload to store the survey draft and metadata.",
+        "Demographic profiles and pilot data are stored via respective API endpoints (/api/pilot-feedback/import).",
+        "After upload, frontend calls /api/cognitive-load/assess with surveyId, surveyVersion, and demographicProfileId to compute cognitive load scores.",
+        "Cognitive Load Assessment API fetches survey data, demographics, and pilot feedback from data stores, computes scores, and returns detailed breakdowns.",
+        "Frontend displays cognitive load scores and basic recommendations on the upload page.",
+        "On '/builder', user edits survey sections and questions and selects demographic profiles.",
+        "Frontend sends updated survey data to backend (via /api/survey/upload or dedicated update endpoint) and requests live cognitive load assessment and recommendations via /api/cognitive-load/assess and /api/recommendations/generate.",
+        "Recommendations API uses cognitive load data and survey structure to generate actionable, explainable suggestions.",
+        "Dashboard UI visualizes section-by-section cognitive load, recommendations, and allows export of reports.",
+        "On '/pilot-data', user imports pilot response data via /api/pilot-feedback/import, which stores anonymized feedback linked to survey versions.",
+        "Background job triggers on survey, demographic, or pilot data changes to recalculate cognitive load scores and recommendations asynchronously, notifying users upon completion.",
+        "On '/reports', users select survey and version to view detailed cognitive load reports and export them in PDF or JSON formats."
+      ],
+      "validationRules": [
+        "SurveyInstrument must have non-empty title, at least one section, and each section must have at least one question.",
+        "Survey sections and questions JSON must conform to defined schema including question types and complexity annotations.",
+        "DemographicProfile attributes must be consistent; ageRange should be a valid range string, educationLevel and languageProficiency from predefined sets if provided.",
+        "PilotFeedback responseData must match the survey structure and version; reject incompatible or malformed data.",
+        "API request bodies must include required fields and valid types; reject requests missing surveyId, surveyVersion, or user authentication.",
+        "Uploaded files for surveys and pilot data must be scanned for malicious content and size limits enforced.",
+        "Cognitive Load API must handle incomplete or partial survey drafts gracefully, returning partial scores with warnings.",
+        "Recommendations API must validate input cognitive load data and flag uncertain or conflicting suggestions.",
+        "Background job inputs must be validated to avoid processing invalid or outdated survey versions."
+      ],
+      "errorHandling": [
+        "API routes return standardized error responses with HTTP status codes and error messages (e.g., 400 for validation errors, 401 for auth failures, 500 for server errors).",
+        "Malformed or incomplete survey drafts result in partial processing with warnings returned in response details.",
+        "Demographic profile conflicts or missing attributes return warnings but allow processing with default assumptions.",
+        "Pilot data incompatible with current survey version triggers error response with instructions to reconcile versions.",
+        "Background jobs implement retry logic on transient failures with exponential backoff and log errors for manual review.",
+        "Network or service failures during external integrations return informative error messages and queue retry attempts.",
+        "Frontend displays user-friendly error messages and guidance for corrective actions on API failures.",
+        "Sensitive data errors trigger audit logging and alerting for security review."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication and authorization to access or modify survey data.",
+        "Data privacy enforced by encrypting sensitive data at rest in the database.",
+        "Pilot feedback data is anonymized before storage to protect participant confidentiality.",
+        "File uploads are scanned for malware and validated for allowed types and sizes.",
+        "API authentication tokens and session cookies use secure, HttpOnly, and SameSite flags.",
+        "Access control restricts survey data visibility to ownerUserId and authorized collaborators.",
+        "External survey platform integrations use secure API authentication and encrypted data transfer.",
+        "Audit logging implemented for critical operations including data uploads, updates, and background job executions.",
+        "Recommendations avoid automated rewriting without explicit user approval to maintain ethical standards."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user uploads a valid survey draft and demographic profile on the '/' page",
+          "when": "The user submits the upload form",
+          "then": "The survey is stored, cognitive load scores are computed and displayed, and basic recommendations are shown without errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user edits survey sections and questions on the '/builder' page",
+          "when": "The user saves changes",
+          "then": "Updated cognitive load scores and real-time recommendations are returned and displayed accurately reflecting the edits"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user imports pilot feedback data via the '/pilot-data' page",
+          "when": "The import completes successfully",
+          "then": "Pilot data is stored linked to the correct survey version, cognitive load assessments are updated, and impact summaries are shown"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user views the '/reports' page and selects a survey and version",
+          "when": "The user requests report export",
+          "then": "Detailed cognitive load reports and recommendations are displayed and export files (PDF, JSON) are generated without errors"
+        },
+        {
+          "id": "AT-005",
+          "given": "A malformed survey draft missing sections is uploaded",
+          "when": "The user submits the upload",
+          "then": "The API returns a validation error with descriptive messages, and the frontend displays user-friendly guidance"
+        },
+        {
+          "id": "AT-006",
+          "given": "Demographic profile with conflicting attributes is submitted",
+          "when": "The cognitive load assessment is requested",
+          "then": "The system processes with warnings about conflicts and applies default assumptions, returning partial results"
+        },
+        {
+          "id": "AT-007",
+          "given": "Background job triggers after survey update",
+          "when": "Job runs",
+          "then": "Cognitive load scores and recommendations are recalculated correctly, users are notified, and failures are retried or logged"
+        },
+        {
+          "id": "AT-008",
+          "given": "User attempts to access API routes without authentication",
+          "when": "The request is made",
+          "then": "The API returns 401 Unauthorized errors and no data is exposed"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma models for SurveyInstrument, DemographicProfile, PilotFeedback, CognitiveLoadAssessment, Recommendation",
+        "Implement authentication and authorization middleware for API routes and pages",
+        "Create API routes for survey upload (/api/survey/upload) and pilot feedback import (/api/pilot-feedback/import) with validation",
+        "Develop Cognitive Load Assessment API (/api/cognitive-load/assess) integrating survey, demographics, and pilot data",
+        "Develop Recommendations API (/api/recommendations/generate) consuming cognitive load data",
+        "Build frontend pages: '/' for upload and initial assessment with forms and results display",
+        "Build '/builder' page with interactive survey editing, live feedback, and dashboard visualization",
+        "Build '/pilot-data' page for pilot data import and management",
+        "Build '/reports' page for detailed report viewing and export functionality",
+        "Implement background job system for recalculating cognitive load and recommendations with triggers and notifications",
+        "Integrate external survey platform import/export with secure API authentication",
+        "Add accessibility features and export options (PDF, JSON) in dashboard UI",
+        "Implement error handling, logging, and retry mechanisms across APIs and background jobs",
+        "Conduct acceptance testing and iterate based on feedback"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/builder",
+          "/pilot-data",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "api/survey/upload.ts",
+          "api/pilot-feedback/import.ts",
+          "api/cognitive-load/assess.ts",
+          "api/recommendations/generate.ts"
+        ],
+        "prismaModelsToAdd": [
+          "SurveyInstrument",
+          "DemographicProfile",
+          "PilotFeedback",
+          "CognitiveLoadAssessment",
+          "Recommendation"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing or unclear constraints, inputs, or edge cases to ensure complete requirements before design.",
+        "promptTemplate": "You are the Planner. Given the current blueprint and idea:\n\n{{BLUEPRINT}}\n\nUser Input:\n{{USER_INPUT}}\n\nPlease list any missing constraints, inputs, outputs, or edge cases that should be considered to refine the tool requirements."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed pages, data models, API endpoints, and workflows to fulfill the refined requirements.",
+        "promptTemplate": "You are the Architect. Using the refined requirements and existing blueprint:\n\n{{BLUEPRINT}}\n\nExpanded details:\n{{EXPANDED}}\n\nUser Input:\n{{USER_INPUT}}\n\nPlease finalize the page designs, data models, API routes, and integration points needed for the tool."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial frontend page code stubs and basic UI skeletons for the defined pages.",
+        "promptTemplate": "You are the Builder. Based on the finalized design:\n\nPages:\n{{BLUEPRINT.pages}}\n\nUser Input:\n{{USER_INPUT}}\n\nPlease generate code stubs or detailed outlines for each page to support rapid frontend development."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring between frontend pages, API endpoints, and database models for full functionality.",
+        "promptTemplate": "You are the Integrator. Using the pages, APIs, and data models:\n\nPages:\n{{BLUEPRINT.pages}}\n\nAPI Routes:\n{{BLUEPRINT.apiRoutes}}\n\nData Models:\n{{BLUEPRINT.dataModels}}\n\nUser Input:\n{{USER_INPUT}}\n\nPlease describe or generate code to wire frontend pages to API endpoints and database persistence layers."
+      }
+    ]
+  }
+}

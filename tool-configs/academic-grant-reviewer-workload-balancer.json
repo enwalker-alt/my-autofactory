@@ -1,0 +1,679 @@
+{
+  "slug": "academic-grant-reviewer-workload-balancer",
+  "title": "Academic Research Grant Reviewer Workload Balancer",
+  "description": "A single-page tool for academic research grant panel chairs to upload proposals and reviewer data, detect conflicts of interest, and generate optimized reviewer assignment plans balancing workload, expertise, and timeline adherence.",
+  "inputLabel": "Upload proposals and reviewer data (JSON or CSV). Include panel timeline details.",
+  "outputLabel": "Optimized reviewer assignments, workload distribution summary, conflict of interest flags, and timeline adherence alerts.",
+  "systemPrompt": "You are a secure and privacy-conscious assistant helping academic research grant panel chairs balance reviewer workloads. Accept input data including proposal lists, reviewer profiles, and panel timelines in JSON or CSV format. Validate all inputs rigorously for required fields, types, and logical consistency. Detect potential conflicts of interest but do not make final decisions; only flag them clearly. Generate an optimized assignment plan mapping proposals to reviewers balancing workload fairness, expertise alignment, conflicts, and availability windows. Provide a clear summary of workload distribution and timeline adherence with warnings for bottlenecks or deadline risks. Refuse any requests that attempt to automate final assignment decisions without human oversight, handle confidential data securely, and provide detailed error messages for malformed inputs. Output only plain text summaries or valid JSON when requested. Always require authentication for protected data processing. Do not output any personally identifiable information beyond reviewer names and IDs. Always emphasize that final assignment approval is up to the panel chair.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Detect Conflicts of Interest",
+      "prompt": "Given the uploaded proposals and reviewer profiles, identify and flag all potential conflicts of interest. List conflict flags with proposalId, reviewerId, and flagReason. Do not block assignments; only provide warnings.",
+      "hint": "Use this preset to generate conflict flags before assignment optimization."
+    },
+    {
+      "label": "Optimize Reviewer Assignments",
+      "prompt": "Using the proposals, reviewers, conflicts, and panel timeline data, generate an optimized assignment plan that balances workload fairly, aligns expertise, respects reviewer availability, and flags timeline risks. Output assignments with proposalId, reviewerId, and status, plus a workload summary and timeline alerts.",
+      "hint": "Run this after conflicts have been flagged to get assignment suggestions."
+    },
+    {
+      "label": "Summarize Workload Distribution",
+      "prompt": "Analyze the current assignments and historical workload data to produce a summary report highlighting workload balance among reviewers, identifying bottlenecks or overloads, and providing timeline adherence forecasts.",
+      "hint": "Use this to understand workload fairness and deadline risks."
+    },
+    {
+      "label": "Validate Uploaded Data",
+      "prompt": "Validate the uploaded proposals, reviewers, and timeline data for required fields, correct data types, valid JSON structures, and logical date consistency. Provide detailed error messages for any validation failures.",
+      "hint": "Run this preset immediately after data upload to catch issues."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Outputs conform to structured JSON with fields for assignments, workloadSummary, conflictFlags, and validationErrors as applicable.",
+  "clarifyPrompt": "Please provide the proposals, reviewers, and panel timeline data in JSON or CSV format. Include any historical workload data if available. Specify if you want conflict detection, assignment optimization, or workload summary.",
+  "finalizePrompt": "Review the generated assignments and conflict flags carefully. Confirm manual overrides or adjustments before finalizing assignment decisions. Use this tool only to assist your workload balancing and not to replace ethical judgment.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Reviewer Workload Balancer",
+      "niche": {
+        "role": "Academic Research Grant Reviewer Panel Chair",
+        "scenario": "Assigning and balancing grant proposal review workload among panel reviewers to ensure fair distribution, expertise alignment, and timely completion"
+      },
+      "problem": "Grant panel chairs struggle to assign incoming proposals to reviewers in a way that balances workload fairly, matches expertise accurately, and respects reviewer availability and conflicts of interest, often resulting in uneven review burdens, delays, or compromised review quality.",
+      "inputs": [
+        "List of grant proposals including topic areas and required expertise",
+        "Reviewer profiles with expertise tags, declared conflicts of interest, and availability windows",
+        "Panel review timeline and deadlines",
+        "Historical reviewer workload data (optional)"
+      ],
+      "outputs": [
+        "Optimized reviewer assignment plan mapping proposals to reviewers",
+        "Workload distribution summary report highlighting balance and potential bottlenecks",
+        "Conflict of interest flags and warnings",
+        "Timeline adherence forecast and alerts for review deadlines",
+        "Interactive dashboard for manual adjustment and reassignment"
+      ],
+      "whyItWins": [
+        "Automates complex, multi-constraint assignment tasks that are currently manual or use basic spreadsheets",
+        "Improves fairness and transparency of workload distribution, reducing reviewer fatigue and increasing panel morale",
+        "Ensures expertise-aligned reviews and flags conflicts early to maintain review integrity",
+        "Supports dynamic adjustments as proposals or reviewer availability change",
+        "Scales easily from small panels to large, multi-institutional funding bodies"
+      ],
+      "upgradePath": {
+        "today": "Single-page app that accepts proposal and reviewer lists to generate optimized assignments and summary reports for panel chairs",
+        "in90Days": "Add interactive dashboard for manual tweaking, conflict management, and real-time timeline tracking with email reminders to reviewers",
+        "in12Months": "Develop full multi-panel management system including reviewer recruitment, historical workload analytics, integration with funder submission portals, and comprehensive reporting for stakeholders"
+      },
+      "riskNotes": [
+        "Must carefully handle confidential proposal and reviewer information with secure data management",
+        "Avoid automating final assignment decisions without human oversight to prevent unfair outcomes",
+        "Should not replace ethical judgment regarding conflicts of interest; only flag them for review",
+        "Needs clear user training to interpret optimization suggestions appropriately"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A workload balancing system for academic research grant review panels that automates and optimizes assignment of proposals to reviewers, ensuring fairness, expertise alignment, conflict management, and timeline adherence, with interactive tools for manual adjustments and reporting.",
+      "primaryUser": "Academic Research Grant Reviewer Panel Chair",
+      "successMetrics": [
+        "Percentage reduction in workload imbalance among reviewers",
+        "Number of conflicts of interest flagged and resolved before assignments",
+        "Timeliness of review completion relative to deadlines",
+        "User satisfaction with assignment suggestions and manual adjustment tools",
+        "Adoption rate by panels and scalability to multi-panel management"
+      ],
+      "components": [
+        {
+          "id": "ui_dashboard",
+          "name": "Interactive Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide panel chairs with an interface to upload data, view optimized assignments, adjust workloads manually, monitor timeline adherence, and generate reports.",
+          "dependsOn": [
+            "api_assignment",
+            "api_conflict",
+            "data_models"
+          ],
+          "notes": [
+            "Supports drag-and-drop reassignment and conflict flag visualization",
+            "Displays workload summaries and timeline alerts in real-time"
+          ]
+        },
+        {
+          "id": "api_assignment",
+          "name": "Assignment Optimization API",
+          "type": "api",
+          "responsibility": "Process input data to generate optimized proposal-to-reviewer assignments balancing workload, expertise, conflicts, and availability constraints.",
+          "dependsOn": [
+            "data_models",
+            "integration_historicalData"
+          ],
+          "notes": [
+            "Implements constraint-based optimization algorithms",
+            "Provides suggestions but does not finalize assignments without user confirmation"
+          ]
+        },
+        {
+          "id": "api_conflict",
+          "name": "Conflict of Interest Detection API",
+          "type": "api",
+          "responsibility": "Analyze reviewer and proposal data to identify and flag potential conflicts of interest and notify the UI.",
+          "dependsOn": [
+            "data_models"
+          ],
+          "notes": [
+            "Flags conflicts for human review, does not auto-block assignments",
+            "Supports updates as reviewer declarations or proposals change"
+          ]
+        },
+        {
+          "id": "data_models",
+          "name": "Core Data Models & Storage",
+          "type": "data",
+          "responsibility": "Persist panel data including proposals, reviewers, assignments, conflicts, workload histories, and timeline configurations securely.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive data to ensure confidentiality",
+            "Support versioning for audit trails and rollback"
+          ]
+        },
+        {
+          "id": "job_reminders",
+          "name": "Background Reminder & Alert Job",
+          "type": "job",
+          "responsibility": "Send timeline adherence alerts and email reminders to reviewers and panel chairs based on deadlines and workload status.",
+          "dependsOn": [
+            "data_models",
+            "api_assignment"
+          ],
+          "notes": [
+            "Configurable reminder schedules",
+            "Handles failures in email delivery with retry logic"
+          ]
+        },
+        {
+          "id": "integration_historicalData",
+          "name": "Historical Workload Data Integration",
+          "type": "integration",
+          "responsibility": "Import and update historical reviewer workload data to inform assignment optimization and workload balancing.",
+          "dependsOn": [
+            "data_models"
+          ],
+          "notes": [
+            "Supports CSV upload or API integration with funder systems",
+            "Handles incomplete or inconsistent historical data gracefully"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Proposal",
+          "purpose": "Represent grant proposals with metadata for assignment.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "topicAreas",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "requiredExpertiseTags",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "submissionDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "panelId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "panelId"
+          ]
+        },
+        {
+          "name": "Reviewer",
+          "purpose": "Store reviewer profiles including expertise, conflicts, and availability.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "expertiseTags",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "conflictsOfInterest",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "availabilityWindows",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "historicalWorkload",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "panelId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "panelId"
+          ]
+        },
+        {
+          "name": "Assignment",
+          "purpose": "Map proposals to assigned reviewers with status and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reviewerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "manualOverride",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "reviewerId"
+          ]
+        },
+        {
+          "name": "ConflictFlag",
+          "purpose": "Record flagged conflicts of interest for assignments.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reviewerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "flagReason",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "reviewerId"
+          ]
+        },
+        {
+          "name": "PanelTimeline",
+          "purpose": "Store timeline and deadline configurations for review panels.",
+          "fields": [
+            {
+              "name": "panelId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "reviewDeadline",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "reminderSchedule",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "panelId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Data Upload",
+          "purpose": "Allow panel chairs to upload proposals, reviewer profiles, and timeline data.",
+          "inputs": [
+            "Proposal list CSV/JSON",
+            "Reviewer list CSV/JSON",
+            "Panel timeline details"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/assignments",
+          "title": "Assignment Overview",
+          "purpose": "Display optimized assignments with workload summaries and conflict flags.",
+          "inputs": [
+            "Panel selection",
+            "Filter options"
+          ],
+          "outputs": [
+            "Assignment list",
+            "Workload distribution charts",
+            "Conflict warnings"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Interactive Dashboard",
+          "purpose": "Enable manual adjustment of assignments, conflict resolution, and timeline tracking.",
+          "inputs": [
+            "Current assignments",
+            "Conflict flags",
+            "Reviewer availability updates"
+          ],
+          "outputs": [
+            "Updated assignments",
+            "Alerts",
+            "Audit trail"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reports & Analytics",
+          "purpose": "Generate workload balance reports, timeline adherence forecasts, and historical analytics.",
+          "inputs": [
+            "Panel and date range selection"
+          ],
+          "outputs": [
+            "PDF/CSV reports",
+            "Visual analytics"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate panel chairs to access the system.",
+          "inputs": [
+            "Username",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token",
+            "Error messages"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/assignments/optimize",
+          "method": "POST",
+          "purpose": "Generate optimized assignments based on input data and constraints.",
+          "requestShape": "{ proposals: [...], reviewers: [...], panelTimeline: {...} }",
+          "responseShape": "{ assignments: [...], workloadSummary: {...}, conflictFlags: [...] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/conflicts/check",
+          "method": "POST",
+          "purpose": "Analyze data to detect conflicts of interest.",
+          "requestShape": "{ proposals: [...], reviewers: [...] }",
+          "responseShape": "{ conflictFlags: [...] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/assignments/update",
+          "method": "POST",
+          "purpose": "Update assignments including manual overrides and reassignment.",
+          "requestShape": "{ assignmentUpdates: [...] }",
+          "responseShape": "{ success: boolean, updatedAssignments: [...] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Generate reports for workload balance and timeline adherence.",
+          "requestShape": "{ panelId: string, dateRange: { start: date, end: date } }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate users and issue tokens.",
+          "requestShape": "{ username: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "DeadlineReminderJob",
+          "trigger": "Scheduled daily",
+          "purpose": "Send email reminders and alerts to reviewers and chairs about upcoming deadlines and workload bottlenecks."
+        },
+        {
+          "name": "ConflictRecheckJob",
+          "trigger": "On data update or daily batch",
+          "purpose": "Re-evaluate conflicts of interest when proposals or reviewer data change."
+        }
+      ],
+      "edgeCases": [
+        "Reviewer availability changes after assignments are made requiring reassignment.",
+        "Conflicts of interest discovered late in the process requiring urgent reassignment.",
+        "Incomplete or inconsistent expertise tags leading to suboptimal assignments.",
+        "Simultaneous manual adjustments causing assignment conflicts or race conditions.",
+        "Data upload errors or malformed input files requiring robust validation and user feedback.",
+        "Handling panels with very small numbers of reviewers or proposals limiting optimization options.",
+        "Email delivery failures or delays for reminders and alerts."
+      ],
+      "nonGoals": [
+        "Automating final assignment decisions without human oversight.",
+        "Replacing ethical judgment regarding conflicts of interest.",
+        "Managing reviewer recruitment or external funder submission portals in the initial version.",
+        "Providing deep AI-based expertise matching beyond tag-based heuristics.",
+        "Handling payment or compensation for reviewers."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User logs in via /login page, authenticates via /api/auth/login, receives token.",
+        "Panel chair uploads proposals, reviewers, and timeline data on /upload page; data sent to backend for validation and storage in data models.",
+        "Conflict detection API (/api/conflicts/check) runs on uploaded data or on-demand to flag potential conflicts; results stored and sent to UI.",
+        "Assignment optimization API (/api/assignments/optimize) generates assignment suggestions based on proposals, reviewers, conflicts, and timeline; results returned to UI for review.",
+        "Dashboard UI (/dashboard) displays current assignments, conflicts, workload summaries, and timeline alerts; allows manual adjustments.",
+        "Manual assignment updates sent to /api/assignments/update, validated, saved, and audit trail updated.",
+        "Reports generated on-demand via /api/reports/generate based on panel and date range; report URLs returned for download or viewing.",
+        "Background jobs (DeadlineReminderJob and ConflictRecheckJob) run scheduled tasks to send reminders and recheck conflicts, updating data models and notifying users as needed."
+      ],
+      "validationRules": [
+        "Authentication required for all pages except /login and corresponding APIs.",
+        "Uploaded proposal and reviewer data must conform to schema: required fields present, correct data types, and valid JSON structures for tags and availability.",
+        "Panel timeline dates must be valid and logical (startDate < reviewDeadline).",
+        "Assignment updates must reference existing proposals and reviewers, and manualOverride flag must be boolean.",
+        "Conflict flags must have valid proposalId, reviewerId, non-empty flagReason, and resolved boolean.",
+        "API input payloads must be validated for required fields and types before processing.",
+        "CSV/JSON uploads must be checked for malformed data, duplicates, and missing required fields with detailed error messages.",
+        "Date fields must be ISO 8601 compliant and validated for logical consistency.",
+        "Workload summaries must be consistent with assignments and historical workload data."
+      ],
+      "errorHandling": [
+        "Return HTTP 401 Unauthorized for unauthenticated access to protected routes and APIs.",
+        "Return HTTP 400 Bad Request with detailed validation error messages for malformed or invalid input data.",
+        "Gracefully handle missing or inconsistent historical data by logging warnings and proceeding with best-effort assignments.",
+        "On assignment optimization failure, return HTTP 500 with error details and fallback to last known good assignments if available.",
+        "Conflict detection errors should not block user actions; log errors and notify admins if persistent.",
+        "Background job failures (e.g., email delivery) should trigger retry logic with exponential backoff and alert system administrators on repeated failures.",
+        "Race conditions in manual assignment updates handled via optimistic concurrency control or transaction retries.",
+        "Upload errors must provide user-friendly feedback with line-level or field-level error details.",
+        "API responses must include success flags and error messages where applicable to guide UI behavior."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/login require authentication tokens validated on each request.",
+        "Sensitive data fields (e.g., conflictsOfInterest) must be encrypted at rest in the database.",
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Implement role-based access control to restrict data upload, assignment modification, and report generation to panel chairs.",
+        "Sanitize and validate all inputs to prevent injection attacks and ensure data integrity.",
+        "Audit trails must record user actions on assignments and conflict resolutions for accountability.",
+        "Tokens must have expiration and support secure storage on client side (e.g., HttpOnly cookies or secure storage).",
+        "Background jobs accessing sensitive data must run in secure environments with limited access.",
+        "Log authentication attempts and suspicious activities for monitoring and alerting."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A panel chair is logged in and navigates to /upload",
+          "when": "They upload valid proposal, reviewer, and timeline data files",
+          "then": "The system validates, stores data, and returns a confirmation with no errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "Valid proposals and reviewers exist with potential conflicts",
+          "when": "The conflict detection API is triggered",
+          "then": "All conflicts are flagged and visible on the dashboard UI"
+        },
+        {
+          "id": "AT-003",
+          "given": "Proposals, reviewers, and timeline data are present",
+          "when": "The assignment optimization API is called",
+          "then": "Optimized assignments are returned balancing workload, expertise, and conflicts"
+        },
+        {
+          "id": "AT-004",
+          "given": "Assignments are displayed on the dashboard",
+          "when": "The panel chair manually adjusts an assignment via drag-and-drop",
+          "then": "The update API accepts the change, saves it, and audit trail records the override"
+        },
+        {
+          "id": "AT-005",
+          "given": "A panel chair requests a report for a specific panel and date range",
+          "when": "The report generation API is called",
+          "then": "A valid report URL is returned and the report contains accurate workload and timeline data"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthenticated user attempts to access /assignments page",
+          "when": "They navigate to the page",
+          "then": "They are redirected to the login page"
+        },
+        {
+          "id": "AT-007",
+          "given": "Reviewer availability changes after assignments are made",
+          "when": "The system detects the change",
+          "then": "Conflicts are rechecked and the panel chair is alerted to reassign affected proposals"
+        },
+        {
+          "id": "AT-008",
+          "given": "Malformed CSV upload with missing required fields",
+          "when": "The user uploads the file",
+          "then": "The system rejects the upload and displays detailed validation errors"
+        },
+        {
+          "id": "AT-009",
+          "given": "Background reminder job runs",
+          "when": "Deadlines approach or workload bottlenecks occur",
+          "then": "Email reminders are sent and failures trigger retries and alerts"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models with encryption and indexing",
+        "Implement authentication API and login page with token management",
+        "Build data upload page and API endpoints with validation and error handling",
+        "Develop conflict detection API and integrate with data models",
+        "Create assignment optimization API with constraint-based algorithm and integration with historical data",
+        "Build assignment overview page displaying assignments, workload charts, and conflict flags",
+        "Develop interactive dashboard for manual assignment adjustments and conflict resolution",
+        "Implement assignment update API with audit trail support",
+        "Create reports generation API and reports page with export functionality",
+        "Implement background jobs for reminders and conflict rechecks with retry and alerting",
+        "Add comprehensive validation, error handling, and security layers across all components",
+        "Write acceptance tests and perform end-to-end testing",
+        "Deploy and monitor system with logging and alerting"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/upload",
+          "/assignments",
+          "/dashboard",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/assignments/optimize.ts",
+          "/api/assignments/update.ts",
+          "/api/conflicts/check.ts",
+          "/api/reports/generate.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Proposal",
+          "Reviewer",
+          "Assignment",
+          "ConflictFlag",
+          "PanelTimeline"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify missing constraints, edge cases, and priorities for the workload balancing system.",
+        "promptTemplate": "You are a planner refining the requirements for the Academic Research Grant Reviewer Workload Balancer. Given the current blueprint and idea: {{BLUEPRINT}} and {{IDEA}}, please list any missing constraints, clarify ambiguous rules, and ask for further details needed to ensure a safe, fair, and effective assignment process. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the final page routes, UI components, API endpoints, and data models based on refined requirements.",
+        "promptTemplate": "You are an architect finalizing the design for the workload balancer. Using the refined requirements and blueprint: {{BLUEPRINT}}, define the complete list of pages, their inputs/outputs, API routes with request/response shapes, and Prisma data models with fields and indexes. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code stubs for pages and APIs according to the finalized architecture.",
+        "promptTemplate": "You are a builder generating code stubs for the workload balancer app. Given the finalized pages and API routes: {{BLUEPRINT}}, produce starter code files with route handlers, input forms, validation placeholders, and sample responses. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-up",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the integration between UI pages, API endpoints, and Prisma data models with validation, authentication, and error handling.",
+        "promptTemplate": "You are an integrator wiring the workload balancer app. Using the built stubs and data models: {{BLUEPRINT}}, implement data flow from UI inputs through API calls to the database, including authentication enforcement, input validation, conflict detection logic, assignment optimization calls, and error handling. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

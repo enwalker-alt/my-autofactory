@@ -1,0 +1,819 @@
+{
+  "slug": "academic-research-data-sharing-agreement-generator",
+  "title": "Academic Research Data Sharing Agreement Generator",
+  "description": "Generate tailored, legally-informed academic research data sharing agreement drafts based on project details, institutional policies, funder mandates, and key constraints. Outputs a structured agreement draft summary and compliance risk flags. Designed for academic research data managers to accelerate compliant agreement preparation.",
+  "inputLabel": "Enter project and data sharing details (including objectives, institutional policies, funder mandates, confidentiality, IP, access, duration, termination). Optionally upload policy documents as JSON.",
+  "outputLabel": "Customized data sharing agreement draft with clause summary and compliance notes",
+  "systemPrompt": "You are an expert assistant generating a customized academic research data sharing agreement draft. Use the provided project description, participating institutions' data policies, funder mandates, confidentiality constraints, intellectual property details, intended data recipients and access levels, and duration/termination conditions. Produce a formal, clear, and non-binding agreement draft text that aligns with these inputs. Also output a structured summary of key clauses and any compliance or risk flags with recommendations. Refuse to generate any jurisdiction-specific legal language unless explicitly specified. Do not provide legal advice or binding language. Enforce input validation: all required inputs must be present and well-formed. If inputs are missing or disallowed, respond with a clear refusal message. Output only plain text or valid JSON if structured-output feature is enabled. Maintain confidentiality and do not retain any sensitive data. Ensure safety by refusing requests containing disallowed content or attempts to generate binding legal documents.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Draft Agreement",
+      "prompt": "Generate a full customized data sharing agreement draft based on the input details, including project objectives, institutional policies, funder mandates, confidentiality, IP ownership, data access levels, duration, and termination conditions. Output the agreement text and a structured summary of key clauses.",
+      "hint": "Use this to create a comprehensive agreement draft."
+    },
+    {
+      "label": "Clause Summary Only",
+      "prompt": "Provide a structured summary of the key clauses and obligations of the data sharing agreement based on the input details, without full draft text.",
+      "hint": "Use this for a concise clause overview."
+    },
+    {
+      "label": "Compliance Flags and Recommendations",
+      "prompt": "Analyze the input data sharing agreement details and identify any compliance or risk flags with recommended mitigation steps. Output as structured JSON.",
+      "hint": "Use this to get compliance risks and suggestions."
+    },
+    {
+      "label": "Refine Input Details",
+      "prompt": "Ask clarifying questions to gather missing or ambiguous details about the project description, institutional policies, funder mandates, confidentiality, IP rights, data access, duration, and termination conditions before generating the agreement.",
+      "hint": "Use this to ensure all necessary inputs are complete."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with fields: { agreementDraft: string, summaryClauses: object, complianceFlags: array of {flagType:string, description:string, recommendation:string} }",
+  "clarifyPrompt": "Please provide all required details including project objectives, institutional data policies, funder mandates, confidentiality constraints, intellectual property ownership, intended data recipients and access levels, and agreement duration and termination conditions. If any information is missing or unclear, specify the missing parts.",
+  "finalizePrompt": "Generate a clear, non-binding, and compliant academic research data sharing agreement draft with a structured summary of key clauses and any compliance flags with mitigation recommendations, strictly based on the provided complete and validated inputs. Do not include jurisdiction-specific legal language unless explicitly specified.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Sharing Agreement Generator",
+      "niche": {
+        "role": "academic research data manager",
+        "scenario": "facilitating compliant and customized data sharing agreements between collaborating academic institutions"
+      },
+      "problem": "Academic research data managers face challenges drafting tailored data sharing agreements that align with diverse institutional policies, legal requirements, ethical standards, and funder mandates. Existing tools focus on ethical plans or compliance checklists but do not generate formal, customized agreement documents that specify data use terms, access restrictions, intellectual property rights, and liability clauses in a structured, reproducible way.",
+      "inputs": [
+        "Project description and objectives",
+        "Participating institutions' data policies and requirements",
+        "Funder data sharing mandates and licenses",
+        "Confidentiality and privacy constraints",
+        "Intellectual property ownership details",
+        "Intended data recipients and access levels",
+        "Duration and termination conditions"
+      ],
+      "outputs": [
+        "Customized, legally informed data sharing agreement draft document",
+        "Structured summary of key agreement clauses and obligations",
+        "Compliance and risk flags with recommended mitigation",
+        "Version history and collaborator comment threads"
+      ],
+      "whyItWins": [
+        "Directly produces formal agreement drafts, not just advisory plans or checklists",
+        "Integrates diverse institutional, ethical, and funder requirements into a single coherent document",
+        "Supports iterative collaboration across institutions with version control and comments",
+        "Fills a critical gap between planning data sharing and executing formal agreements",
+        "Enables academic teams to accelerate data sharing setup while reducing legal and compliance risks"
+      ],
+      "upgradePath": {
+        "today": "Single-page tool generating basic customized data sharing agreement drafts from inputted project details and policies",
+        "in90Days": "Add multi-user collaboration with comment resolution, version history, and automated compliance checks for common funder and institutional templates",
+        "in12Months": "Develop full multi-page web app integrating policy databases, institution-specific templates, legal clause libraries, digital signing workflow, and automated notifications for agreement renewal and compliance tracking"
+      },
+      "riskNotes": [
+        "Tool should not provide legal advice; disclaimers required",
+        "Careful data security and confidentiality controls needed due to sensitive project and institutional policy data",
+        "Must avoid generating binding documents without user legal review",
+        "Avoid jurisdiction-specific legal language unless region is specified and supported"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page web application that enables academic research data managers to generate, collaborate on, and manage customized, legally informed data sharing agreements that integrate institutional policies, funder mandates, and ethical standards, with version control, compliance checks, and collaboration features.",
+      "primaryUser": "Academic research data managers coordinating data sharing agreements between institutions",
+      "successMetrics": [
+        "Number of agreements generated and collaboratively edited",
+        "User engagement with version history and comment threads",
+        "Reduction in time to produce compliant data sharing agreements",
+        "User-reported confidence in compliance and risk mitigation",
+        "Adoption rate of automated compliance checks and policy template usage"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend User Interface",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for inputting project details, managing agreements, collaboration (comments, version history), and viewing compliance flags and summaries.",
+          "dependsOn": [
+            "api-backend"
+          ],
+          "notes": [
+            "Supports authentication and role-based access",
+            "Pages include agreement editor, version history viewer, compliance dashboard, and user settings"
+          ]
+        },
+        {
+          "id": "api-backend",
+          "name": "Backend API",
+          "type": "api",
+          "responsibility": "Expose RESTful endpoints for managing agreements, users, comments, versions, compliance checks, and document generation.",
+          "dependsOn": [
+            "data-db",
+            "integration-policy",
+            "integration-legal"
+          ],
+          "notes": [
+            "Handles business logic for agreement customization and validation",
+            "Enforces security and access controls"
+          ]
+        },
+        {
+          "id": "data-db",
+          "name": "Database",
+          "type": "data",
+          "responsibility": "Persist user accounts, project data, institutional policies, funder mandates, agreement drafts, version history, comments, and compliance flags.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive data encrypted at rest",
+            "Indexes on user IDs, project IDs, and agreement versions for efficient retrieval"
+          ]
+        },
+        {
+          "id": "integration-policy",
+          "name": "Policy & Template Integration Service",
+          "type": "integration",
+          "responsibility": "Provide access to institutional data policies, funder mandates, and legal clause libraries to inform agreement generation and compliance checks.",
+          "dependsOn": [],
+          "notes": [
+            "Supports updates and additions of new policies and templates",
+            "Abstracts diverse policy formats into structured data"
+          ]
+        },
+        {
+          "id": "job-compliance-checker",
+          "name": "Automated Compliance Checker Job",
+          "type": "job",
+          "responsibility": "Background job that analyzes agreement drafts for compliance with funder and institutional requirements, flags risks, and suggests mitigation.",
+          "dependsOn": [
+            "data-db",
+            "integration-policy"
+          ],
+          "notes": [
+            "Triggers on agreement draft save or update",
+            "Generates structured compliance reports stored in DB"
+          ]
+        },
+        {
+          "id": "job-notification-sender",
+          "name": "Notification & Reminder Job",
+          "type": "job",
+          "responsibility": "Send automated notifications for agreement renewals, comment replies, and compliance alerts to collaborators.",
+          "dependsOn": [
+            "data-db"
+          ],
+          "notes": [
+            "Runs periodically based on agreement timelines and user activity",
+            "Supports email and in-app notifications"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user account information and roles",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Store project description, objectives, and metadata",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "createdBy"
+          ]
+        },
+        {
+          "name": "InstitutionPolicy",
+          "purpose": "Store institutional data policies and requirements",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "policyDocument",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "institutionName"
+          ]
+        },
+        {
+          "name": "FunderMandate",
+          "purpose": "Store funder data sharing mandates and licenses",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "mandateDocument",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName"
+          ]
+        },
+        {
+          "name": "AgreementDraft",
+          "purpose": "Store customized data sharing agreement drafts with metadata",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "summaryClauses",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "confidentialityConstraints",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "intellectualPropertyDetails",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "accessLevels",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "duration",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "terminationConditions",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "version"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Store collaborator comments on agreement drafts",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "agreementDraftId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "agreementDraftId",
+            "authorId"
+          ]
+        },
+        {
+          "name": "ComplianceFlag",
+          "purpose": "Store compliance and risk flags with recommended mitigations",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "agreementDraftId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "flagType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "recommendation",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "agreementDraftId",
+            "flagType"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/projects",
+          "title": "Project Dashboard",
+          "purpose": "List and manage projects and associated agreements",
+          "inputs": [],
+          "outputs": [
+            "project list",
+            "project creation form"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/agreements/:agreementId/edit",
+          "title": "Agreement Editor",
+          "purpose": "Create and edit customized data sharing agreement drafts with collaboration features",
+          "inputs": [
+            "project details",
+            "institutional policies",
+            "funder mandates",
+            "confidentiality constraints",
+            "intellectual property details",
+            "access levels",
+            "duration and termination conditions"
+          ],
+          "outputs": [
+            "agreement draft document",
+            "structured clause summary",
+            "collaborator comments",
+            "compliance flags"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/agreements/:agreementId/versions",
+          "title": "Version History",
+          "purpose": "View and compare previous versions of agreement drafts with comments and compliance reports",
+          "inputs": [
+            "agreementId"
+          ],
+          "outputs": [
+            "version list",
+            "diff views",
+            "comment threads"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/compliance-dashboard",
+          "title": "Compliance Dashboard",
+          "purpose": "Overview of compliance status and risk flags across agreements",
+          "inputs": [],
+          "outputs": [
+            "compliance summary",
+            "risk flag details",
+            "mitigation recommendations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/user/settings",
+          "title": "User Settings",
+          "purpose": "Manage user profile, notification preferences, and security settings",
+          "inputs": [
+            "profile data",
+            "notification preferences"
+          ],
+          "outputs": [
+            "confirmation messages"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return access token",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: { id: string, name: string, role: string } }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of projects for authenticated user",
+          "requestShape": "none",
+          "responseShape": "{ projects: Project[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project",
+          "requestShape": "{ title: string, description: string }",
+          "responseShape": "{ project: Project }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/agreements/:agreementId",
+          "method": "GET",
+          "purpose": "Retrieve a specific agreement draft with metadata, comments, and compliance flags",
+          "requestShape": "none",
+          "responseShape": "{ agreementDraft: AgreementDraft, comments: Comment[], complianceFlags: ComplianceFlag[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/agreements/:agreementId",
+          "method": "POST",
+          "purpose": "Update an agreement draft content and trigger compliance check",
+          "requestShape": "{ content: string, confidentialityConstraints?: json, intellectualPropertyDetails?: json, accessLevels?: json, duration?: string, terminationConditions?: string }",
+          "responseShape": "{ agreementDraft: AgreementDraft, complianceFlags: ComplianceFlag[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/agreements/:agreementId/comments",
+          "method": "POST",
+          "purpose": "Add a comment to an agreement draft",
+          "requestShape": "{ content: string }",
+          "responseShape": "{ comment: Comment }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/agreements/:agreementId/versions",
+          "method": "GET",
+          "purpose": "List versions of an agreement draft",
+          "requestShape": "none",
+          "responseShape": "{ versions: AgreementDraft[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance-dashboard",
+          "method": "GET",
+          "purpose": "Retrieve compliance summary and risk flags for user's agreements",
+          "requestShape": "none",
+          "responseShape": "{ complianceSummary: json, riskFlags: ComplianceFlag[] }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ComplianceChecker",
+          "trigger": "On agreement draft save or update",
+          "purpose": "Analyze agreement drafts for compliance with funder and institutional policies, generate flags and recommendations"
+        },
+        {
+          "name": "NotificationSender",
+          "trigger": "Scheduled periodic job (e.g. daily)",
+          "purpose": "Send notifications for agreement renewals, comment replies, and compliance alerts"
+        }
+      ],
+      "edgeCases": [
+        "Handling conflicting institutional policies or funder mandates in the same agreement",
+        "Partial or missing input data from users leading to incomplete agreement drafts",
+        "Simultaneous edits causing version conflicts and merge requirements",
+        "Sensitive data leakage through comments or version history",
+        "Jurisdictional differences in legal language when region is unspecified",
+        "Users attempting to generate binding documents without legal review",
+        "System downtime during critical collaboration or document generation"
+      ],
+      "nonGoals": [
+        "Providing legal advice or binding legal documents",
+        "Supporting jurisdiction-specific legal language without explicit region support",
+        "Replacing institutional legal counsel or compliance officers",
+        "Handling non-academic or commercial data sharing agreements",
+        "Automated digital signing without integration with trusted third-party signature providers"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses frontend pages and authenticates via /api/login, receiving JWT token for session.",
+        "Authenticated user requests project list via GET /api/projects; backend queries DB for projects created by user.",
+        "User creates a new project via POST /api/projects; backend validates input, creates project record linked to user.",
+        "User navigates to agreement editor page; frontend fetches agreement draft, comments, and compliance flags via GET /api/agreements/:agreementId.",
+        "User edits agreement draft and submits updates via POST /api/agreements/:agreementId; backend updates draft, triggers ComplianceChecker job.",
+        "ComplianceChecker job runs asynchronously, fetching updated draft and relevant policies/mandates from DB and integration-policy service, analyzes compliance, stores ComplianceFlag records.",
+        "User adds comments via POST /api/agreements/:agreementId/comments; backend stores comment linked to draft and author.",
+        "User views version history via GET /api/agreements/:agreementId/versions; backend returns list of AgreementDraft versions for comparison.",
+        "User accesses compliance dashboard via GET /api/compliance-dashboard; backend aggregates compliance flags and summaries for user's agreements.",
+        "NotificationSender job runs periodically, querying DB for upcoming renewals, comment replies, and compliance alerts, sending notifications via email and in-app channels."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "Project creation: title and description required, non-empty strings.",
+        "Agreement draft update: content required, non-empty string; optional JSON fields (confidentialityConstraints, intellectualPropertyDetails, accessLevels) must be valid JSON objects if present; duration and terminationConditions optional strings.",
+        "Comment creation: content required, non-empty string.",
+        "API routes requiring authentication must verify JWT token and user role before processing.",
+        "Version number increments sequentially on agreement draft updates; no duplicate versions.",
+        "User input sanitized to prevent injection attacks in all text fields.",
+        "Limits on comment length and agreement content size to prevent abuse.",
+        "Ensure project and agreement IDs exist and belong to authenticated user before allowing access or modification."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error message.",
+        "Authorization failures return 403 Forbidden when user lacks permission.",
+        "Validation errors return 400 Bad Request with field-specific error details.",
+        "Resource not found returns 404 Not Found with descriptive message.",
+        "Server errors return 500 Internal Server Error with generic message; detailed logs recorded internally.",
+        "Concurrency conflicts (e.g., version conflicts) return 409 Conflict with instructions to refresh data.",
+        "Background job failures logged with retry mechanisms; do not block user operations.",
+        "API responses include consistent error response shape: { error: string, details?: object }.",
+        "Frontend displays user-friendly error messages and guides for resolution."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all frontend-backend communication.",
+        "Store passwords hashed with strong algorithm (e.g., bcrypt) and never in plaintext.",
+        "JWT tokens signed and verified securely; short expiration times with refresh mechanism.",
+        "Role-based access control enforced on all API endpoints.",
+        "Sensitive data fields encrypted at rest in database.",
+        "Input validation and sanitization to prevent XSS, SQL injection, and other injection attacks.",
+        "Comments and version histories access restricted to authorized collaborators only.",
+        "Audit logging of critical actions (login, project/agreement creation, edits).",
+        "Rate limiting on login and API endpoints to mitigate brute force and abuse.",
+        "Background jobs run with least privilege and secure access to data."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-01",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and user info, and can access protected pages"
+        },
+        {
+          "id": "AT-02",
+          "given": "An authenticated user on /projects page",
+          "when": "They request project list",
+          "then": "They see only projects they created, with correct metadata"
+        },
+        {
+          "id": "AT-03",
+          "given": "An authenticated user creating a new project with valid title and description",
+          "when": "They submit the creation form",
+          "then": "A new project is created, visible in their project list"
+        },
+        {
+          "id": "AT-04",
+          "given": "An authenticated user editing an agreement draft",
+          "when": "They update content and submit changes",
+          "then": "The agreement draft is saved, version incremented, and compliance check job triggered"
+        },
+        {
+          "id": "AT-05",
+          "given": "An agreement draft with multiple versions",
+          "when": "User views version history page",
+          "then": "They see a list of versions with timestamps and can view diffs and comments"
+        },
+        {
+          "id": "AT-06",
+          "given": "An agreement draft with compliance flags",
+          "when": "User views the agreement editor or compliance dashboard",
+          "then": "Compliance flags and mitigation recommendations are displayed accurately"
+        },
+        {
+          "id": "AT-07",
+          "given": "A user adds a comment to an agreement draft",
+          "when": "They submit a non-empty comment",
+          "then": "The comment is saved and visible to collaborators"
+        },
+        {
+          "id": "AT-08",
+          "given": "User attempts to access an agreement draft they do not have permission for",
+          "when": "They request the agreement via API",
+          "then": "They receive a 403 Forbidden error"
+        },
+        {
+          "id": "AT-09",
+          "given": "User submits invalid data (e.g., empty project title)",
+          "when": "They attempt to create or update resource",
+          "then": "They receive a 400 Bad Request with validation error details"
+        },
+        {
+          "id": "AT-10",
+          "given": "System triggers ComplianceChecker job after agreement update",
+          "when": "Job runs",
+          "then": "Compliance flags are generated and stored, visible on next user fetch"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models and database schema for all data models",
+        "Implement authentication system with JWT and user model",
+        "Develop API routes for user login and project management",
+        "Build frontend pages for login and project dashboard",
+        "Implement API routes for agreement drafts, comments, versions, and compliance dashboard",
+        "Develop frontend pages for agreement editor, version history, compliance dashboard, and user settings",
+        "Integrate policy and mandate data via integration-policy service",
+        "Implement background ComplianceChecker job triggered on agreement update",
+        "Implement NotificationSender job for periodic notifications",
+        "Add role-based access control and security validations",
+        "Implement error handling and validation on all API endpoints",
+        "Add acceptance tests and perform end-to-end testing",
+        "Deploy and monitor system with logging and audit trails"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/projects",
+          "/projects/[projectId]/agreements/[agreementId]/edit",
+          "/projects/[projectId]/agreements/[agreementId]/versions",
+          "/compliance-dashboard",
+          "/user/settings"
+        ],
+        "apiFilesToCreate": [
+          "api/login.ts",
+          "api/projects/index.ts",
+          "api/agreements/[agreementId]/index.ts",
+          "api/agreements/[agreementId]/comments.ts",
+          "api/agreements/[agreementId]/versions.ts",
+          "api/compliance-dashboard.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "InstitutionPolicy",
+          "FunderMandate",
+          "AgreementDraft",
+          "Comment",
+          "ComplianceFlag"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather any missing constraints or details for the data sharing agreement generator to ensure complete and correct input specification.",
+        "promptTemplate": "You are a planning assistant. Please ask the user to provide any missing or unclear constraints, requirements, or inputs needed for the Academic Research Data Sharing Agreement Generator. Use the current blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}} to guide your questions. User input so far: {{USER_INPUT}}."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and confirm the final set of pages, API routes, and data models needed for the multi-page application to support the data sharing agreement workflow.",
+        "promptTemplate": "You are an architect assistant. Using the idea spec: {{IDEA}}, blueprint: {{BLUEPRINT}}, and expanded specs: {{EXPANDED}}, finalize the pages, data models, and API routes needed for the Academic Research Data Sharing Agreement Generator app. Highlight any open questions or design decisions to confirm with stakeholders. User input: {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial code stubs for frontend pages and components based on the finalized page designs and data models.",
+        "promptTemplate": "You are a builder assistant. Using the finalized blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, generate starter code stubs for the frontend pages and UI components for the Academic Research Data Sharing Agreement Generator. Focus on structure and inputs/outputs without full implementation. User input: {{USER_INPUT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages to backend API endpoints and database models, ensuring data flow and security are correctly implemented.",
+        "promptTemplate": "You are an integrator assistant. Using the blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, provide detailed instructions and code examples to wire the frontend pages to backend API routes and database models for the Academic Research Data Sharing Agreement Generator. Include security considerations and validation rules. User input: {{USER_INPUT}}."
+      }
+    ]
+  }
+}

@@ -1,0 +1,998 @@
+{
+  "slug": "academic-fieldwork-logistics-coordinator",
+  "title": "Academic Fieldwork Logistics & Compliance Coordinator",
+  "description": "Upload your academic field research project scope, permit documents, team travel plans, equipment lists, collaborator contacts, and compliance protocols to generate an integrated fieldwork logistics timeline, permit tracking, travel coordination, equipment status, compliance checklist, and communication summary. Supports manual updates and tracking for multi-site academic projects.",
+  "inputLabel": "Paste or upload your project scope, permits, travel, equipment, collaborator, and compliance data (text or JSON files).",
+  "outputLabel": "Consolidated fieldwork logistics timeline, permit and compliance status, travel and equipment reports, and communication action summaries.",
+  "systemPrompt": "You are an Academic Fieldwork Logistics & Compliance Coordinator assistant. Given the user-uploaded project scope, permit documents, team travel plans, equipment lists, collaborator contact info, and compliance protocols, generate a consolidated, clear, and actionable text report that includes: an integrated fieldwork logistics timeline with key milestones; permit application and renewal statuses with deadlines; travel and accommodation schedules highlighting conflicts; equipment shipment and maintenance status; compliance checklist with alerts for upcoming deadlines or missing approvals; and summarized communication logs with action reminders. Refuse any request containing disallowed content or sensitive personal data without explicit consent. Validate all dates and statuses, and highlight any data inconsistencies or missing critical information. Output must be plain text unless structured-output mode is enabled, in which case output valid JSON matching the described data structure. Enforce data privacy and security at all times. Do not provide legal advice or interpret regulations, only summarize administrative tracking info based on uploaded data. Use clear, professional language tailored for academic research coordinators managing multi-site fieldwork projects.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Overview Summary",
+      "prompt": "Generate a concise summary overview of the uploaded academic fieldwork project logistics, highlighting key milestones, permit statuses, travel plans, equipment readiness, compliance checklist, and communication actions."
+    },
+    {
+      "label": "Permit and Compliance Focus",
+      "prompt": "Provide a detailed report focused on permit application statuses, renewal deadlines, and compliance checklist items with alerts for missing approvals or upcoming due dates."
+    },
+    {
+      "label": "Travel and Equipment Coordination",
+      "prompt": "Summarize team travel plans and availability, accommodation schedules, and equipment shipment statuses, noting any conflicts or delays."
+    },
+    {
+      "label": "Communication and Action Items",
+      "prompt": "Extract and summarize communication log entries, highlighting action reminders for team members and collaborators."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output a JSON object with fields: timeline (array of milestones), permits (list with status and deadlines), travel (plans and conflicts), equipment (status reports), complianceChecklist (items with alerts), communicationLog (summaries with action flags).",
+  "clarifyPrompt": "Please provide the relevant project scope, permit documents, travel plans, equipment lists, collaborator contacts, and compliance guidelines. If any information is missing or unclear, specify what additional details you can provide.",
+  "finalizePrompt": "Based on the provided data, generate a comprehensive, organized fieldwork logistics and compliance report suitable for academic research coordination.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Fieldwork Logistics & Compliance Coordinator",
+      "niche": {
+        "role": "Academic Field Research Coordinator",
+        "scenario": "Planning and managing complex, multi-site academic fieldwork projects involving data collection, permits, equipment, team travel, and regulatory compliance."
+      },
+      "problem": "Academic field research coordinators struggle to efficiently organize and track the many interdependent logistical elements—such as permits, equipment shipments, team travel plans, local collaborator communications, safety protocols, and ethical compliance requirements—across multiple sites and jurisdictions, leading to delays, compliance risks, and coordination inefficiencies.",
+      "inputs": [
+        "Project fieldwork scope and site lists",
+        "Permitting requirements and status documents",
+        "Team member travel plans and availability",
+        "Equipment lists and shipment schedules",
+        "Local collaborator contact information and agreements",
+        "Safety and ethical compliance guidelines and protocols"
+      ],
+      "outputs": [
+        "Integrated fieldwork logistics timeline with key milestones",
+        "Permit application and renewal tracking dashboard",
+        "Travel and accommodation coordination schedules",
+        "Equipment shipping and maintenance status reports",
+        "Compliance checklist with alerts for upcoming deadlines or missing approvals",
+        "Communication log summaries and action reminders for collaborators and team members"
+      ],
+      "whyItWins": [
+        "Unlike existing isolated document or schedule tools, it integrates diverse fieldwork logistics into a single coordinated system tailored for academic research contexts.",
+        "Supports repeated use and updates over the lifespan of complex, multi-site projects with evolving regulatory environments and team changes.",
+        "Reduces risk of overlooked permits, compliance failures, or logistic bottlenecks by automating tracking and alerting.",
+        "Enhances team communication and accountability with consolidated action items and contact management.",
+        "Provides a scalable foundation moving from a lightweight dashboard to a full multi-page app with user roles, collaborative editing, and integration with external permit systems or travel booking APIs."
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app where coordinators upload project scope, permit docs, and travel/equipment info to generate a consolidated logistics timeline and compliance checklist with manual updates.",
+        "in90Days": "Add interactive dashboards with real-time status updates, automated deadline alerts, shared team calendars, and action item assignments to improve coordination and communication.",
+        "in12Months": "Develop a multi-page collaborative platform with user role management, integration with permit offices and travel booking APIs, mobile field access, offline support, and analytics on project logistics performance and compliance risk metrics."
+      },
+      "riskNotes": [
+        "Must strictly avoid storing or processing sensitive personal data without consent; implement strong data privacy and security controls.",
+        "Compliance guidance should not substitute for legal advice but provide administrative tracking support based on uploaded official documents.",
+        "Fieldwork scenarios vary widely; system should be configurable to different disciplines and regulatory environments to avoid misapplication.",
+        "Scalability and usability are critical to adoption; avoid over-complexity in initial MVP to encourage user engagement."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive platform to coordinate and track academic field research logistics and compliance across multiple sites, integrating permits, travel, equipment, collaborators, and safety protocols into a unified, evolving system.",
+      "primaryUser": "Academic Field Research Coordinator",
+      "successMetrics": [
+        "Reduction in missed permit deadlines and compliance lapses",
+        "Improved on-time completion of fieldwork logistics milestones",
+        "User adoption rate among academic research teams",
+        "Decrease in coordination-related delays and communication errors",
+        "Frequency of active collaboration and updates within projects"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide an overview of project logistics status, key milestones, alerts, and compliance checklists with interactive summaries.",
+          "dependsOn": [
+            "api-projects",
+            "api-permits",
+            "api-travel",
+            "api-equipment",
+            "api-compliance",
+            "data-projects"
+          ],
+          "notes": [
+            "Initial MVP focused on consolidated timeline and checklist views.",
+            "Expandable to interactive dashboards with real-time updates and action assignments."
+          ]
+        },
+        {
+          "id": "ui-projectManagement",
+          "name": "Project Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to create, configure, and update multi-site fieldwork projects including sites, team members, permits, equipment, and collaborators.",
+          "dependsOn": [
+            "api-projects",
+            "api-users",
+            "data-projects",
+            "data-users"
+          ],
+          "notes": [
+            "Supports multi-user collaboration and role-based access in future phases.",
+            "Includes forms for uploading documents and inputting logistics details."
+          ]
+        },
+        {
+          "id": "api-projects",
+          "name": "Project Management API",
+          "type": "api",
+          "responsibility": "Manage CRUD operations for projects, sites, team members, and associated logistics data.",
+          "dependsOn": [
+            "data-projects",
+            "data-users"
+          ],
+          "notes": [
+            "Handles validation of interdependent logistics elements.",
+            "Supports project configuration for various disciplines and regulatory environments."
+          ]
+        },
+        {
+          "id": "api-permits",
+          "name": "Permit Tracking API",
+          "type": "api",
+          "responsibility": "Track permit requirements, application statuses, renewal deadlines, and related documents with alerting capabilities.",
+          "dependsOn": [
+            "data-permits",
+            "integration-permitOffices"
+          ],
+          "notes": [
+            "Integrates with external permit office APIs in advanced phases.",
+            "Supports manual upload and status updates initially."
+          ]
+        },
+        {
+          "id": "api-travel",
+          "name": "Travel Coordination API",
+          "type": "api",
+          "responsibility": "Manage team travel plans, availability, accommodation schedules, and travel-related alerts.",
+          "dependsOn": [
+            "data-travel",
+            "integration-travelBooking"
+          ],
+          "notes": [
+            "Initial manual input with future integration to travel booking APIs.",
+            "Supports conflict detection and scheduling optimization."
+          ]
+        },
+        {
+          "id": "api-equipment",
+          "name": "Equipment Logistics API",
+          "type": "api",
+          "responsibility": "Track equipment lists, shipment schedules, maintenance status, and location updates.",
+          "dependsOn": [
+            "data-equipment"
+          ],
+          "notes": [
+            "Supports status updates and alerts for delays or issues."
+          ]
+        },
+        {
+          "id": "api-compliance",
+          "name": "Compliance Management API",
+          "type": "api",
+          "responsibility": "Maintain safety and ethical compliance guidelines, checklists, and alert users about upcoming deadlines or missing approvals.",
+          "dependsOn": [
+            "data-compliance"
+          ],
+          "notes": [
+            "Does not provide legal advice, only administrative tracking.",
+            "Configurable to different regulatory environments."
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Project Data Store",
+          "type": "data",
+          "responsibility": "Persist project configurations, sites, team members, and related metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Stores relationships between sites, permits, equipment, and collaborators."
+          ]
+        },
+        {
+          "id": "data-permits",
+          "name": "Permit Data Store",
+          "type": "data",
+          "responsibility": "Persist permit documents, statuses, deadlines, and history.",
+          "dependsOn": [],
+          "notes": [
+            "Includes audit trail for permit status changes."
+          ]
+        },
+        {
+          "id": "data-travel",
+          "name": "Travel Data Store",
+          "type": "data",
+          "responsibility": "Persist travel plans, accommodations, availability, and related communications.",
+          "dependsOn": [],
+          "notes": []
+        },
+        {
+          "id": "data-equipment",
+          "name": "Equipment Data Store",
+          "type": "data",
+          "responsibility": "Persist equipment inventories, shipment logs, and maintenance records.",
+          "dependsOn": [],
+          "notes": []
+        },
+        {
+          "id": "data-compliance",
+          "name": "Compliance Data Store",
+          "type": "data",
+          "responsibility": "Persist compliance guidelines, checklists, status flags, and alert history.",
+          "dependsOn": [],
+          "notes": []
+        },
+        {
+          "id": "integration-permitOffices",
+          "name": "Permit Office Integration",
+          "type": "integration",
+          "responsibility": "Interface with external permit office APIs to fetch status updates and submit applications.",
+          "dependsOn": [
+            "api-permits"
+          ],
+          "notes": [
+            "Planned for advanced phases; requires secure authentication and data privacy compliance."
+          ]
+        },
+        {
+          "id": "integration-travelBooking",
+          "name": "Travel Booking Integration",
+          "type": "integration",
+          "responsibility": "Connect with travel booking platforms to automate travel plan creation and updates.",
+          "dependsOn": [
+            "api-travel"
+          ],
+          "notes": [
+            "Planned for advanced phases; must handle API rate limits and error states gracefully."
+          ]
+        },
+        {
+          "id": "job-alerts",
+          "name": "Deadline and Alert Notification Job",
+          "type": "job",
+          "responsibility": "Periodically scan permits, compliance deadlines, and travel schedules to generate alerts and reminders.",
+          "dependsOn": [
+            "data-permits",
+            "data-compliance",
+            "data-travel"
+          ],
+          "notes": [
+            "Supports email and in-app notifications.",
+            "Must handle timezone differences and user preferences."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Project",
+          "purpose": "Represents an academic fieldwork project with multiple sites, team members, and logistics elements.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "discipline",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "configuration",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "createdByUserId"
+          ]
+        },
+        {
+          "name": "Site",
+          "purpose": "A geographic or jurisdictional location within a project where fieldwork occurs.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "locationDescription",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "jurisdiction",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId"
+          ]
+        },
+        {
+          "name": "Permit",
+          "purpose": "Tracks permit applications, statuses, deadlines, and related documents for a site or project.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "applicationDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "expiryDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "documents",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId",
+            "siteId",
+            "status"
+          ]
+        },
+        {
+          "name": "TeamMember",
+          "purpose": "Represents a person involved in the project with roles and travel availability.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "contactInfo",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "travelAvailability",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId"
+          ]
+        },
+        {
+          "name": "EquipmentItem",
+          "purpose": "Details equipment used in fieldwork including shipment and maintenance status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "shipmentStatus",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastMaintenanceDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId"
+          ]
+        },
+        {
+          "name": "ComplianceChecklistItem",
+          "purpose": "Represents a compliance requirement or safety protocol with status and alerts.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "alertSent",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId",
+            "status"
+          ]
+        },
+        {
+          "name": "CommunicationLogEntry",
+          "purpose": "Logs communications and action reminders with collaborators and team members.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "actionRequired",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "relatedEntity",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId",
+            "authorId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "System user with authentication and role information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Dashboard",
+          "purpose": "Provide a consolidated overview of all active projects, key logistics milestones, alerts, and compliance status.",
+          "inputs": [],
+          "outputs": [
+            "project summaries",
+            "alerts",
+            "milestone timelines",
+            "compliance checklist overview"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects",
+          "title": "Project List & Management",
+          "purpose": "List all projects accessible to the user and allow creation or selection of projects for detailed management.",
+          "inputs": [
+            "project filters",
+            "search queries"
+          ],
+          "outputs": [
+            "project list",
+            "project creation forms"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId",
+          "title": "Project Detail & Configuration",
+          "purpose": "Manage detailed project data including sites, permits, team members, equipment, and compliance checklists.",
+          "inputs": [
+            "project data inputs",
+            "document uploads",
+            "status updates"
+          ],
+          "outputs": [
+            "updated project data",
+            "log summaries",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/communications",
+          "title": "Communication Logs",
+          "purpose": "View and add communication entries, action reminders, and collaborator messages related to the project.",
+          "inputs": [
+            "message text",
+            "action flags"
+          ],
+          "outputs": [
+            "communication history",
+            "pending action items"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of projects accessible to the authenticated user.",
+          "requestShape": "none",
+          "responseShape": "array of Project summaries",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project with initial configuration.",
+          "requestShape": "Project creation data",
+          "responseShape": "Created Project object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId",
+          "method": "GET",
+          "purpose": "Retrieve detailed project information including sites, permits, team members, equipment, and compliance items.",
+          "requestShape": "none",
+          "responseShape": "Full Project detail object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/permits/:projectId",
+          "method": "GET",
+          "purpose": "Get permit statuses and deadlines for a project.",
+          "requestShape": "none",
+          "responseShape": "List of Permits with statuses",
+          "auth": "user"
+        },
+        {
+          "route": "/api/permits/:projectId",
+          "method": "POST",
+          "purpose": "Update permit status or upload permit documents.",
+          "requestShape": "Permit update data",
+          "responseShape": "Updated Permit object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/travel/:projectId",
+          "method": "GET",
+          "purpose": "Retrieve travel plans and availability for project team members.",
+          "requestShape": "none",
+          "responseShape": "Travel plan summaries",
+          "auth": "user"
+        },
+        {
+          "route": "/api/equipment/:projectId",
+          "method": "GET",
+          "purpose": "Get equipment shipment and maintenance status for the project.",
+          "requestShape": "none",
+          "responseShape": "List of Equipment items",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance/:projectId",
+          "method": "GET",
+          "purpose": "Retrieve compliance checklist items and alert statuses.",
+          "requestShape": "none",
+          "responseShape": "Compliance checklist and alerts",
+          "auth": "user"
+        },
+        {
+          "route": "/api/communications/:projectId",
+          "method": "GET",
+          "purpose": "Fetch communication log entries for the project.",
+          "requestShape": "none",
+          "responseShape": "List of CommunicationLogEntry objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/communications/:projectId",
+          "method": "POST",
+          "purpose": "Add a new communication log entry or action reminder.",
+          "requestShape": "CommunicationLogEntry data",
+          "responseShape": "Created CommunicationLogEntry object",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Deadline and Alert Notification Job",
+          "trigger": "Scheduled (e.g., hourly or daily)",
+          "purpose": "Scan permits, compliance items, and travel schedules to generate alerts and send notifications to users."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or inconsistent project data inputs from users.",
+        "Conflicting travel availability among team members requiring resolution.",
+        "Permit application delays or rejections affecting project timelines.",
+        "Multiple overlapping compliance requirements with different jurisdictions.",
+        "Network failures or API errors when integrating with external permit or travel systems.",
+        "User role conflicts or unauthorized access attempts.",
+        "Data privacy concerns when storing personal travel or contact information.",
+        "Timezone differences impacting deadline alerts and scheduling."
+      ],
+      "nonGoals": [
+        "Providing legal advice or interpreting compliance regulations.",
+        "Automated permit application submission without user review.",
+        "Full travel booking and payment processing within the platform.",
+        "Handling sensitive personal data without explicit user consent.",
+        "Replacing specialized discipline-specific fieldwork software.",
+        "Offline-first full functionality in initial MVP."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receives auth token for API access.",
+        "Dashboard page fetches consolidated data from /api/projects (summaries), /api/permits/:projectId, /api/travel/:projectId, /api/equipment/:projectId, /api/compliance/:projectId to display project status, milestones, alerts, and compliance overview.",
+        "Project List page fetches project summaries from /api/projects GET, supports filtering and searching; allows project creation via /api/projects POST.",
+        "Project Detail page fetches full project data from /api/projects/:projectId GET, including sites, permits, team members, equipment, compliance checklist; allows updates via respective API endpoints.",
+        "Communication Logs page fetches communication entries from /api/communications/:projectId GET and allows adding new entries via POST.",
+        "APIs validate user authentication and authorization before data access or mutation.",
+        "Background job periodically scans permits, compliance items, and travel schedules from data stores to generate alerts and send notifications via email and in-app.",
+        "Data stores persist all entities with relationships: projects link to sites, permits, team members, equipment, compliance items, and communications.",
+        "Future integrations with external permit offices and travel booking platforms will update permit and travel data via respective APIs."
+      ],
+      "validationRules": [
+        "Project creation requires non-empty title, valid createdByUserId, and timestamps for createdAt and updatedAt.",
+        "Site creation requires valid projectId and non-empty name.",
+        "Permit updates require valid projectId, permit type, and status; dates must be valid ISO dates; documents must be JSON arrays with metadata.",
+        "TeamMember requires projectId and non-empty name; contactInfo and travelAvailability must be valid JSON objects if provided.",
+        "EquipmentItem requires projectId and non-empty name; shipmentStatus if provided must be one of predefined statuses (e.g., pending, shipped, received).",
+        "ComplianceChecklistItem requires projectId, description, status (e.g., pending, completed), and alertSent boolean.",
+        "CommunicationLogEntry requires projectId, authorId, timestamp, non-empty message, and actionRequired boolean.",
+        "User login requires valid email format and non-empty password.",
+        "All date fields must be valid ISO 8601 strings and not in the future where applicable.",
+        "API endpoints must verify ownership or access rights to projects and related entities before allowing data retrieval or modification.",
+        "File uploads (documents) must be validated for allowed types and size limits."
+      ],
+      "errorHandling": [
+        "API routes return 401 Unauthorized if user is not authenticated.",
+        "API routes return 403 Forbidden if user lacks access rights to requested project or resource.",
+        "Validation errors return 400 Bad Request with detailed messages indicating invalid fields.",
+        "Not found resources return 404 Not Found with clear message.",
+        "Server errors return 500 Internal Server Error with generic message; detailed logs stored server-side.",
+        "External integration failures (permit offices, travel booking) return 503 Service Unavailable with retry mechanisms and user notifications.",
+        "File upload errors return 400 with explanation (e.g., unsupported file type, size too large).",
+        "Background job failures are logged and retried; alerts not sent if errors persist.",
+        "Client-side forms display validation errors inline with fields and summary messages.",
+        "API rate limits and concurrency conflicts return 429 Too Many Requests or 409 Conflict respectively."
+      ],
+      "securityNotes": [
+        "All API routes require authentication via secure tokens (e.g., JWT or session cookies).",
+        "Authorization checks ensure users can only access projects and data they own or are permitted to view.",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt).",
+        "Sensitive personal data (contact info, travel availability) stored encrypted or access restricted.",
+        "File uploads scanned for malware and restricted to safe types.",
+        "External integrations use secure authentication and encrypted connections.",
+        "Cross-site scripting (XSS) prevented by sanitizing user inputs and outputs.",
+        "Cross-site request forgery (CSRF) protection implemented on state-changing endpoints.",
+        "Audit trails maintained for permit status changes and communication logs.",
+        "User roles and permissions designed for future role-based access control implementation."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user with access to multiple projects",
+          "when": "They visit the dashboard page",
+          "then": "They see a consolidated overview of all active projects with key milestones, alerts, and compliance checklist summaries"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the project list page",
+          "when": "They apply filters and search queries",
+          "then": "The project list updates to show only matching projects"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on the project list page",
+          "when": "They submit a valid new project creation form",
+          "then": "A new project is created and appears in the project list"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user viewing a project detail page",
+          "when": "They update site, permit, team member, equipment, or compliance data with valid inputs",
+          "then": "The updates are saved and reflected in the project detail view"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user viewing communication logs for a project",
+          "when": "They add a new communication entry with message and action flag",
+          "then": "The entry is saved and appears in the communication history"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthenticated user attempts to access any protected page or API",
+          "when": "They make the request",
+          "then": "They receive a 401 Unauthorized response or are redirected to login"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to update a permit with invalid status or missing required fields",
+          "when": "They submit the update",
+          "then": "The API returns a 400 Bad Request with validation error details"
+        },
+        {
+          "id": "AT-008",
+          "given": "The background job runs periodically",
+          "when": "There are permits or compliance items nearing deadlines",
+          "then": "Alerts and notifications are generated and sent to relevant users"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user attempts to access a project they do not have rights to",
+          "when": "They request project data",
+          "then": "The API returns 403 Forbidden"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user uploads a document exceeding size limits or unsupported type",
+          "when": "They submit the upload",
+          "then": "The API rejects the upload with a 400 error and descriptive message"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma data models and migrations for all entities (Project, Site, Permit, TeamMember, EquipmentItem, ComplianceChecklistItem, CommunicationLogEntry, User).",
+        "Implement authentication system with login API and user model.",
+        "Develop API routes for projects (list, create, detail) with validation and authorization.",
+        "Develop API routes for permits, travel, equipment, compliance, and communications with CRUD operations and validation.",
+        "Create Next.js pages for login, dashboard, project list, project detail, and communication logs with API integration.",
+        "Implement client-side validation and error handling on forms.",
+        "Implement background job for deadline and alert notifications.",
+        "Add file upload support with validation for permit documents and other uploads.",
+        "Implement security measures: authentication, authorization, input sanitization, CSRF protection.",
+        "Write acceptance tests and perform end-to-end testing.",
+        "Plan and prepare for future integration with external permit office and travel booking APIs."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/pages/index.tsx (Dashboard)",
+          "/pages/projects/index.tsx (Project List & Management)",
+          "/pages/projects/[projectId]/index.tsx (Project Detail & Configuration)",
+          "/pages/projects/[projectId]/communications.tsx (Communication Logs)",
+          "/pages/login.tsx (User Login)"
+        ],
+        "apiFilesToCreate": [
+          "/pages/api/projects/index.ts (GET, POST)",
+          "/pages/api/projects/[projectId].ts (GET)",
+          "/pages/api/permits/[projectId].ts (GET, POST)",
+          "/pages/api/travel/[projectId].ts (GET)",
+          "/pages/api/equipment/[projectId].ts (GET)",
+          "/pages/api/compliance/[projectId].ts (GET)",
+          "/pages/api/communications/[projectId].ts (GET, POST)",
+          "/pages/api/auth/login.ts (POST)"
+        ],
+        "prismaModelsToAdd": [
+          "model Project { id String @id @default(uuid()) title String description String? discipline String? createdByUserId String createdAt DateTime updatedAt DateTime configuration Json? sites Site[] permits Permit[] teamMembers TeamMember[] equipmentItems EquipmentItem[] complianceChecklist ComplianceChecklistItem[] communicationLog CommunicationLogEntry[] }",
+          "model Site { id String @id @default(uuid()) projectId String name String locationDescription String? jurisdiction String? project Project @relation(fields: [projectId], references: [id]) }",
+          "model Permit { id String @id @default(uuid()) projectId String siteId String? type String status String applicationDate DateTime? expiryDate DateTime? documents Json? lastUpdated DateTime project Project @relation(fields: [projectId], references: [id]) site Site? @relation(fields: [siteId], references: [id]) }",
+          "model TeamMember { id String @id @default(uuid()) projectId String name String role String? contactInfo Json? travelAvailability Json? project Project @relation(fields: [projectId], references: [id]) }",
+          "model EquipmentItem { id String @id @default(uuid()) projectId String name String description String? shipmentStatus String? lastMaintenanceDate DateTime? location String? project Project @relation(fields: [projectId], references: [id]) }",
+          "model ComplianceChecklistItem { id String @id @default(uuid()) projectId String description String status String dueDate DateTime? alertSent Boolean project Project @relation(fields: [projectId], references: [id]) }",
+          "model CommunicationLogEntry { id String @id @default(uuid()) projectId String authorId String timestamp DateTime message String actionRequired Boolean relatedEntity Json? project Project @relation(fields: [projectId], references: [id]) author User @relation(fields: [authorId], references: [id]) }",
+          "model User { id String @id @default(uuid()) email String @unique hashedPassword String roles Json createdAt DateTime lastLogin DateTime? communicationLog CommunicationLogEntry[] }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for missing constraints, clarify scope, and gather additional requirements for the academic fieldwork logistics coordinator tool.",
+        "promptTemplate": "You are the Planner. Given the current blueprint and idea: {{BLUEPRINT}} and {{IDEA}}, ask the user what additional constraints, user needs, or details are missing or unclear in the academic fieldwork logistics coordination context. Query specifically about data inputs, compliance rules, user roles, or reporting needs. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define detailed UI pages, API endpoints, and database models based on refined requirements to support academic fieldwork logistics coordination.",
+        "promptTemplate": "You are the Architect. Using the refined requirements and blueprint: {{BLUEPRINT}}, define the final set of pages, API routes, and data models needed. Specify fields, relationships, and validation rules to ensure compliance and usability. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial Next.js page and API route stubs implementing the defined pages and endpoints for the academic fieldwork logistics platform MVP.",
+        "promptTemplate": "You are the Builder. Based on finalized architecture: {{BLUEPRINT}}, generate code stubs for Next.js pages and API routes including file names, basic structure, and placeholders for functionality. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to backend API endpoints and database models, implementing data fetching, update flows, authentication, and validation for the academic fieldwork tool.",
+        "promptTemplate": "You are the Integrator. Using the existing page stubs and API definitions: {{BLUEPRINT}}, implement wiring between frontend pages, backend API routes, and database models. Ensure secure authentication, proper validation, and error handling. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

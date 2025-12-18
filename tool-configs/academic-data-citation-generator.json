@@ -1,0 +1,737 @@
+{
+  "slug": "academic-data-citation-generator",
+  "title": "Academic Research Data Citation Generator",
+  "description": "Generate standardized, funder- and journal-compliant data citation strings and metadata exports from your dataset information and publication drafts to ensure accurate attribution and citation consistency.",
+  "inputLabel": "Paste dataset metadata or manuscript text here, or upload dataset metadata files (CSV, JSON, Excel) or manuscript drafts",
+  "outputLabel": "Generated citation strings and metadata export",
+  "systemPrompt": "You are an expert academic research data citation assistant. Your task is to generate standardized, funder- and journal-compliant data citation strings and structured metadata based on the provided dataset metadata, dataset version and DOI information, and optionally manuscript excerpts or citation guideline details. Only output citation metadata and formatted citation strings; do not output or share any sensitive or unpublished dataset content. Validate inputs and refuse disallowed or unsafe requests. Output plain text citation strings and, if structured-output enabled, JSON with citation metadata export. Enforce compliance with citation standards and guidelines. Reject requests missing required dataset metadata or with malformed inputs. Always respond with clear, error-free citation output or descriptive error messages. Do not provide legal advice or manuscript editing. Keep output concise and focused on citation generation.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Rewrite/produce the output with maximum clarity. Reduce ambiguity, define terms briefly, and avoid jargon unless necessary.",
+      "hint": "Improve clarity"
+    },
+    {
+      "label": "More structured",
+      "prompt": "Use a clean structure with headings and bullet points. Make the output scannable and logically ordered.",
+      "hint": "Add structure"
+    },
+    {
+      "label": "More critical",
+      "prompt": "Be more rigorous. Identify weak spots, missing assumptions, contradictions, and any risks or limitations.",
+      "hint": "Pressure-test"
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Add concrete next steps, checklists, or recommendations. Prioritize what to do first and why.",
+      "hint": "Make it usable"
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with keys: citationString (string), metadataExport (object with citation metadata fields).",
+  "clarifyPrompt": "Please provide the dataset metadata (or upload files), specify dataset version and DOI if available, and optionally include manuscript text or citation guideline details for citation generation or consistency checking.",
+  "finalizePrompt": "Generate a standardized citation string and structured metadata export based on the provided inputs, ensuring compliance with academic citation guidelines.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Citation Generator & Tracker",
+      "niche": {
+        "role": "Academic research data manager",
+        "scenario": "Preparing and managing structured, compliant data citation metadata and attribution for datasets used across multiple publications and projects"
+      },
+      "problem": "Academic research data managers struggle to create consistent, funder- and journal-compliant data citation metadata for datasets reused in multiple academic publications, leading to attribution errors, lack of citation standardization, and difficulties tracking dataset impact and reuse.",
+      "inputs": [
+        "Dataset metadata files (CSV, JSON, Excel)",
+        "Publication manuscript drafts or citation lists",
+        "Funder and journal data citation guidelines",
+        "Dataset version information and DOIs"
+      ],
+      "outputs": [
+        "Standardized, formatted data citation strings tailored for each target publication or funder",
+        "Structured metadata files for data repositories and citation export",
+        "A comprehensive tracking dashboard of dataset citations across projects and publications",
+        "Alerts for inconsistent or missing dataset citations in manuscripts"
+      ],
+      "whyItWins": [
+        "Fills a niche gap by focusing specifically on data citation creation and management distinct from general data sharing or compliance tools",
+        "Supports repeated, ongoing workflows for datasets reused in many papers over time",
+        "Reduces manual errors and workload for research data managers preparing complex citation metadata",
+        "Lays groundwork for integrated dataset impact tracking, enhancing research visibility and compliance"
+      ],
+      "upgradePath": {
+        "today": "A single-page app that helps generate compliant data citation strings and metadata exports from uploaded dataset info and publication drafts",
+        "in90Days": "Add citation consistency checks within manuscript citations and simple impact tracking dashboards for datasets across multiple projects",
+        "in12Months": "Develop a multi-page data citation management system integrating dataset version control, citation export for multiple journal styles, collaboration features, and detailed dataset reuse impact analytics"
+      },
+      "riskNotes": [
+        "Ensure no sharing of sensitive or unpublished dataset content beyond metadata for citation purposes",
+        "Avoid legal or ethical risks by restricting outputs to citation metadata and compliance guidance, not data content itself",
+        "Maintain up-to-date support for evolving citation standards and funder requirements"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An academic research data citation generator and tracker that enables research data managers to create standardized, funder- and journal-compliant citation metadata, track dataset reuse across publications, and ensure citation consistency and attribution accuracy over time.",
+      "primaryUser": "Academic research data managers",
+      "successMetrics": [
+        "Reduction in citation errors and inconsistencies in manuscripts",
+        "Number of datasets with tracked citations across projects",
+        "User adoption and frequency of citation metadata exports",
+        "User satisfaction with citation compliance and tracking dashboards"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend UI",
+          "type": "ui",
+          "responsibility": "Provides multi-page user interface for uploading dataset metadata, manuscript drafts, managing citation guidelines, generating citation strings, and viewing citation tracking dashboards.",
+          "dependsOn": [
+            "api-core"
+          ],
+          "notes": [
+            "Pages include dataset management, citation generation, manuscript upload and analysis, citation tracking dashboard, and user settings.",
+            "Supports file uploads (CSV, JSON, Excel) and text inputs.",
+            "Handles user authentication and session management."
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API",
+          "type": "api",
+          "responsibility": "Handles business logic for parsing dataset metadata, manuscript citation extraction, citation formatting per guidelines, consistency checks, and dataset citation tracking.",
+          "dependsOn": [
+            "data-storage",
+            "integration-guidelines"
+          ],
+          "notes": [
+            "Exposes REST endpoints for frontend interaction.",
+            "Implements citation generation algorithms and validation rules.",
+            "Manages dataset versioning metadata and citation linkage."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage",
+          "type": "data",
+          "responsibility": "Persists datasets, dataset versions, citation metadata, manuscript citation analyses, user profiles, citation guidelines, and citation tracking records.",
+          "dependsOn": [],
+          "notes": [
+            "Includes indexes on dataset identifiers, DOIs, and publication identifiers for efficient tracking.",
+            "Stores citation guideline versions to support evolving standards."
+          ]
+        },
+        {
+          "id": "integration-guidelines",
+          "name": "Citation Guidelines Integration",
+          "type": "integration",
+          "responsibility": "Maintains up-to-date funder and journal citation guideline templates and rulesets used for citation formatting and compliance validation.",
+          "dependsOn": [],
+          "notes": [
+            "Supports periodic updates to citation standards.",
+            "Provides guideline metadata accessible by API for formatting and validation."
+          ]
+        },
+        {
+          "id": "job-citationConsistencyCheck",
+          "name": "Citation Consistency Check Job",
+          "type": "job",
+          "responsibility": "Background job that analyzes uploaded manuscript drafts to detect missing or inconsistent dataset citations and generates alerts for users.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Runs on manuscript upload or on schedule for existing manuscripts.",
+            "Handles edge cases like ambiguous citations or partial matches."
+          ]
+        },
+        {
+          "id": "job-impactTrackingAggregator",
+          "name": "Dataset Impact Tracking Aggregator",
+          "type": "job",
+          "responsibility": "Aggregates citation data across projects and publications to update impact metrics and usage statistics for datasets.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Runs periodically to refresh dashboard data.",
+            "Supports notifications for significant citation milestones."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Dataset",
+          "purpose": "Represents a research dataset with metadata, versions, and associated DOIs.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "versions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "doi",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "metadataFiles",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "doi"
+          ]
+        },
+        {
+          "name": "Manuscript",
+          "purpose": "Stores manuscript drafts or citation lists uploaded for citation analysis.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "userId"
+          ]
+        },
+        {
+          "name": "CitationGuideline",
+          "purpose": "Defines citation formatting rules and templates for funders and journals.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "Citation",
+          "purpose": "Represents a generated citation string linked to a dataset, manuscript, and guideline.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "guidelineId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "citationString",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "datasetId",
+            "manuscriptId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Stores user profile and authentication information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        },
+        {
+          "name": "CitationAlert",
+          "purpose": "Stores alerts for missing or inconsistent dataset citations in manuscripts.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "manuscriptId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access citation management features.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/datasets",
+          "title": "Dataset Management",
+          "purpose": "Upload, view, and manage datasets and their versions.",
+          "inputs": [
+            "dataset metadata files",
+            "dataset details"
+          ],
+          "outputs": [
+            "list of datasets",
+            "dataset details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/citation-generator",
+          "title": "Citation Generator",
+          "purpose": "Generate standardized citation strings based on dataset info and selected guidelines.",
+          "inputs": [
+            "selected dataset",
+            "citation guideline",
+            "dataset version"
+          ],
+          "outputs": [
+            "formatted citation strings",
+            "metadata export files"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/manuscripts",
+          "title": "Manuscript Upload & Analysis",
+          "purpose": "Upload manuscript drafts or citation lists for citation consistency checks.",
+          "inputs": [
+            "manuscript files or text"
+          ],
+          "outputs": [
+            "citation alerts",
+            "analysis reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Citation Tracking Dashboard",
+          "purpose": "View aggregated dataset citation impact and reuse statistics across projects.",
+          "inputs": [
+            "filters for datasets, date ranges"
+          ],
+          "outputs": [
+            "citation counts",
+            "reuse metrics",
+            "alerts summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings",
+          "purpose": "Manage user profile, notification preferences, and citation guideline subscriptions.",
+          "inputs": [
+            "profile info",
+            "notification settings"
+          ],
+          "outputs": [
+            "confirmation",
+            "error messages"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string } | { error: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/datasets",
+          "method": "POST",
+          "purpose": "Upload new dataset metadata and versions.",
+          "requestShape": "{ metadataFiles: json, title: string, description?: string, doi?: string }",
+          "responseShape": "{ datasetId: string } | { error: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/citations/generate",
+          "method": "POST",
+          "purpose": "Generate citation strings for a dataset per selected guideline and version.",
+          "requestShape": "{ datasetId: string, guidelineId: string, versionId?: string }",
+          "responseShape": "{ citationString: string, metadataExport: json } | { error: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/manuscripts/upload",
+          "method": "POST",
+          "purpose": "Upload manuscript draft or citation list for analysis.",
+          "requestShape": "{ manuscriptContent: string, title?: string }",
+          "responseShape": "{ manuscriptId: string } | { error: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/manuscripts/:id/alerts",
+          "method": "GET",
+          "purpose": "Retrieve citation consistency alerts for a manuscript.",
+          "requestShape": "N/A",
+          "responseShape": "{ alerts: [{ message: string, resolved: boolean }] } | { error: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/dashboard/metrics",
+          "method": "GET",
+          "purpose": "Fetch aggregated citation tracking metrics for datasets.",
+          "requestShape": "N/A",
+          "responseShape": "{ metrics: json } | { error: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Citation Consistency Check Job",
+          "trigger": "On manuscript upload or scheduled periodic runs",
+          "purpose": "Analyze manuscripts to detect missing or inconsistent dataset citations and generate alerts."
+        },
+        {
+          "name": "Dataset Impact Tracking Aggregator",
+          "trigger": "Scheduled periodic runs (e.g., daily)",
+          "purpose": "Aggregate citation data to update dataset reuse and impact metrics for dashboard display."
+        }
+      ],
+      "edgeCases": [
+        "Manuscript drafts containing ambiguous or incomplete dataset references leading to false positive/negative alerts.",
+        "Citation guideline updates that invalidate previously generated citations requiring re-generation or user notification.",
+        "Handling datasets without DOIs or incomplete metadata gracefully.",
+        "User uploads of large or malformed metadata files causing parsing failures.",
+        "Concurrent edits or uploads by multiple users on the same dataset or manuscript.",
+        "Ensuring no sensitive dataset content beyond metadata is stored or shared.",
+        "Partial matches of citations in manuscripts that do not correspond to tracked datasets."
+      ],
+      "nonGoals": [
+        "Storing or sharing actual dataset content beyond metadata necessary for citation.",
+        "Providing general manuscript editing or publication management tools.",
+        "Handling full bibliographic management beyond dataset citation metadata.",
+        "Legal advice or enforcement of citation compliance beyond guidance and alerts.",
+        "Direct integration with external publication submission systems at initial stages."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses frontend pages and authenticates via /api/auth/login, receiving a token for session management.",
+        "Authenticated users upload dataset metadata files and details via /api/datasets POST; API validates and stores dataset and versions in Data Storage.",
+        "Users select datasets, citation guidelines, and versions on the citation generator page; frontend calls /api/citations/generate to receive formatted citation strings and metadata exports.",
+        "Users upload manuscript drafts or citation lists via /api/manuscripts/upload; API stores manuscripts and triggers Citation Consistency Check Job asynchronously.",
+        "Citation Consistency Check Job analyzes manuscripts, detects citation inconsistencies or missing citations, and stores alerts in Data Storage.",
+        "Users retrieve citation alerts for manuscripts via /api/manuscripts/:id/alerts GET to display on manuscript analysis page.",
+        "Dataset Impact Tracking Aggregator job runs periodically, aggregates citation data across datasets and manuscripts, updates impact metrics in Data Storage.",
+        "Dashboard page fetches aggregated metrics via /api/dashboard/metrics GET to display citation counts, reuse metrics, and alerts summary.",
+        "User settings page allows profile and notification preference updates, interacting with API endpoints (to be defined) for user profile management.",
+        "Citation Guidelines Integration component periodically updates citation guideline templates and rules, which are accessed by API Core for citation generation and validation."
+      ],
+      "validationRules": [
+        "Login: Validate email format and password presence; reject invalid credentials with error.",
+        "Dataset upload: Validate metadata file formats (CSV, JSON, Excel), required fields (title, versions), optional DOI format (must conform to DOI regex), and prevent duplicate dataset IDs or DOIs.",
+        "Citation generation: Validate existence of datasetId, guidelineId, and optional versionId; ensure dataset and guideline are active and accessible to user.",
+        "Manuscript upload: Validate manuscriptContent is non-empty string; limit size to prevent excessively large uploads; optional title max length.",
+        "API routes requiring authentication must verify valid token and user session.",
+        "Citation alerts retrieval: Validate manuscriptId belongs to requesting user.",
+        "Dashboard metrics: Validate filter parameters if provided (e.g., date ranges, dataset IDs).",
+        "User settings updates: Validate email format if changed, enforce password strength if password change is supported.",
+        "Background jobs: Validate manuscript content parsing robustness; handle ambiguous citations with configurable thresholds.",
+        "Citation guideline updates: Validate rules JSON schema correctness before applying."
+      ],
+      "errorHandling": [
+        "API endpoints return structured error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 404 for not found, 500 for server errors).",
+        "Frontend displays user-friendly error messages based on API error responses.",
+        "File upload errors (format, size) return clear messages prompting user correction.",
+        "Background jobs log errors and retry transient failures; alert system admins on persistent failures.",
+        "Concurrent edits trigger optimistic concurrency control errors; API returns conflict status with instructions to refresh data.",
+        "Malformed or incomplete metadata files cause upload rejection with detailed error messages.",
+        "Citation generation failures due to missing data or guideline incompatibility return descriptive errors.",
+        "Authentication failures return generic messages to avoid information leakage.",
+        "Unhandled exceptions return generic error message and log details internally."
+      ],
+      "securityNotes": [
+        "All API routes except login require JWT or session token authentication.",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt).",
+        "Input validation to prevent injection attacks (SQL injection, XSS).",
+        "File uploads scanned for malware and size-limited to prevent DoS.",
+        "Access control enforced: users can only access/manipulate their own datasets, manuscripts, and alerts.",
+        "Sensitive dataset content beyond metadata is never stored or transmitted.",
+        "API rate limiting to prevent brute force and abuse.",
+        "Use HTTPS for all client-server communications.",
+        "Background jobs run with least privilege principle accessing only required data.",
+        "Audit logging for critical actions (login, dataset upload, citation generation)."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and can access protected pages"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /datasets page",
+          "when": "They upload valid dataset metadata files with required fields",
+          "then": "The dataset is stored and appears in their dataset list"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user with datasets and citation guidelines",
+          "when": "They request citation generation with valid datasetId and guidelineId",
+          "then": "They receive a correctly formatted citation string and metadata export"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user uploading a manuscript draft",
+          "when": "They submit manuscript content via /api/manuscripts/upload",
+          "then": "The manuscript is stored and citation consistency check job is triggered"
+        },
+        {
+          "id": "AT-005",
+          "given": "A manuscript with citation inconsistencies",
+          "when": "User requests alerts via /api/manuscripts/:id/alerts",
+          "then": "They receive a list of alerts indicating missing or inconsistent citations"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user on /dashboard page",
+          "when": "They request citation metrics with filters",
+          "then": "They receive aggregated citation counts, reuse metrics, and alerts summary"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user uploads malformed dataset metadata file",
+          "when": "They submit the file via /api/datasets",
+          "then": "They receive a validation error with descriptive message and dataset is not stored"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user tries to access another user's manuscript alerts",
+          "when": "They call /api/manuscripts/:id/alerts with unauthorized manuscriptId",
+          "then": "They receive a 403 Forbidden error"
+        },
+        {
+          "id": "AT-009",
+          "given": "A citation guideline is updated",
+          "when": "User generates citation for dataset using updated guideline",
+          "then": "Citation reflects new formatting rules"
+        },
+        {
+          "id": "AT-010",
+          "given": "Concurrent dataset edits by multiple users",
+          "when": "Second user attempts to save outdated dataset version",
+          "then": "They receive a conflict error prompting refresh"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models and database schema for all data models",
+        "Implement authentication API (/api/auth/login) and session management",
+        "Develop dataset upload API (/api/datasets) with validation and storage",
+        "Build frontend dataset management page (/datasets) with file upload and dataset list",
+        "Implement citation guideline storage and integration component",
+        "Develop citation generation API (/api/citations/generate) using guidelines and dataset data",
+        "Build citation generator frontend page (/citation-generator)",
+        "Implement manuscript upload API (/api/manuscripts/upload) and storage",
+        "Create background job for Citation Consistency Check triggered on manuscript upload",
+        "Implement alerts storage and retrieval API (/api/manuscripts/:id/alerts)",
+        "Build manuscript upload & analysis frontend page (/manuscripts)",
+        "Develop Dataset Impact Tracking Aggregator background job",
+        "Implement dashboard metrics API (/api/dashboard/metrics)",
+        "Build citation tracking dashboard frontend page (/dashboard)",
+        "Implement user settings API and frontend page (/settings)",
+        "Add comprehensive validation, error handling, and security measures",
+        "Implement concurrency controls and edge case handling",
+        "Write and run acceptance tests"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/datasets",
+          "/citation-generator",
+          "/manuscripts",
+          "/dashboard",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/datasets/index.ts",
+          "api/citations/generate.ts",
+          "api/manuscripts/upload.ts",
+          "api/manuscripts/[id]/alerts.ts",
+          "api/dashboard/metrics.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Dataset",
+          "Manuscript",
+          "CitationGuideline",
+          "Citation",
+          "User",
+          "CitationAlert"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints, details, and user needs to improve the citation generator tool specification.",
+        "promptTemplate": "You are a product planner. Given the current blueprint and expansion:\n\nBlueprint:\n{{BLUEPRINT}}\n\nExpansion:\n{{EXPANDED}}\n\nUser input:\n{{USER_INPUT}}\n\nAsk the user targeted questions to clarify and refine the requirements, constraints, and usage scenarios for the Academic Research Data Citation Generator tool."
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed page flows and data models for the citation generator and tracking system.",
+        "promptTemplate": "You are a software architect. Using the provided idea, blueprint, and expansion:\n\nIdea:\n{{IDEA}}\n\nBlueprint:\n{{BLUEPRINT}}\n\nExpansion:\n{{EXPANDED}}\n\nUser input:\n{{USER_INPUT}}\n\nDefine and finalize the detailed pages, their inputs/outputs, and the data models needed to implement the Academic Research Data Citation Generator & Tracker."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create starter code and UI stubs for the main pages of the citation generator single-page app.",
+        "promptTemplate": "You are a frontend developer. Based on the blueprint and expanded specs:\n\nBlueprint:\n{{BLUEPRINT}}\n\nExpansion:\n{{EXPANDED}}\n\nUser input:\n{{USER_INPUT}}\n\nGenerate starter code and UI component stubs for the key pages (dataset upload, citation generation, manuscript upload) to support the Academic Research Data Citation Generator."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Define API routes and data flow integration between frontend pages and backend database for citation generation workflow.",
+        "promptTemplate": "You are a full-stack integrator. Given the idea, blueprint, and expanded specs:\n\nIdea:\n{{IDEA}}\n\nBlueprint:\n{{BLUEPRINT}}\n\nExpansion:\n{{EXPANDED}}\n\nUser input:\n{{USER_INPUT}}\n\nDefine the API routes, their request/response shapes, authentication, and how they connect frontend pages to the database and background jobs for citation generation and management."
+      }
+    ]
+  }
+}

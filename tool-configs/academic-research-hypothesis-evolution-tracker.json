@@ -1,0 +1,820 @@
+{
+  "slug": "academic-research-hypothesis-evolution-tracker",
+  "title": "Academic Research Hypothesis Evolution Tracker",
+  "description": "A single-page app enabling academic researchers to track, document, and manage the iterative development and rationale of research hypotheses with version history and exportable summaries.",
+  "inputLabel": "Enter hypothesis statement and optional change rationale. You may also upload a text file with hypothesis data.",
+  "outputLabel": "Hypothesis evolution summary and version timeline with rationale.",
+  "systemPrompt": "You are an assistant helping academic researchers track and document the evolution of research hypotheses. Accept input hypothesis statements and optional rationale for changes. Enforce that all inputs relate solely to academic research hypotheses without medical, clinical, legal, or regulatory advice. Refuse requests that involve diagnostic claims or unauthorized project access. Output a clear structured timeline summary of hypothesis versions and change rationales. If input is invalid or disallowed, respond with an explanation and do not produce hypothesis content. Only accept text input or text file uploads. Output is plain text showing versions with timestamps and rationale summaries. Maintain data privacy and security best practices.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Add New Hypothesis",
+      "prompt": "Create a new research hypothesis statement with optional rationale for its initial formulation. Provide the hypothesis text and, if applicable, the rationale explaining the scientific basis or motivation.",
+      "hint": "E.g., 'Initial hypothesis: Increasing X will improve Y because...'"
+    },
+    {
+      "label": "Add Hypothesis Revision",
+      "prompt": "Submit a revised hypothesis statement building on a previous version. Include rationale describing the reason for the change or new insights prompting revision.",
+      "hint": "E.g., 'Revised hypothesis: Due to new data, we now expect X to have a lesser effect on Y because...'"
+    },
+    {
+      "label": "Summarize Hypothesis Evolution",
+      "prompt": "Summarize the evolution timeline of a hypothesis including all versions, change rationales, and key scientific shifts.",
+      "hint": "Provide a clear summary highlighting the progression and reasons for changes."
+    },
+    {
+      "label": "Export Hypothesis Report",
+      "prompt": "Generate an exportable text report documenting hypothesis versions, rationale, and linked experimental data summaries for grant or publication use.",
+      "hint": "Include date ranges and collaborator comments if available."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, produce JSON with fields: versions (array of {versionId, statement, rationale, timestamp}), summary (string), and linkedData (optional array of summaries).",
+  "clarifyPrompt": "Please provide the hypothesis statement text and optionally a change rationale. If submitting a revision, specify it is a revision and include any relevant timestamps or previous version references.",
+  "finalizePrompt": "Review the hypothesis versions and rationale summary. Confirm completeness and accuracy or provide corrections.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Hypothesis Evolution Tracker",
+      "niche": {
+        "role": "Academic Researcher (especially in experimental or exploratory fields)",
+        "scenario": "Managing and tracking the iterative development, refinement, and testing of multiple related hypotheses across a research project lifecycle"
+      },
+      "problem": "Academic researchers often generate multiple hypotheses that evolve as new data, insights, or collaborator input emerge. Current tools do not specifically support structured tracking, comparison, and documentation of hypothesis evolution, making it difficult to maintain clarity on the rationale for changes, test status, and lineage of ideas over time, which is critical for reproducibility, reporting, and grant justification.",
+      "inputs": [
+        "Initial hypothesis statements (text)",
+        "Subsequent hypothesis revisions or new hypotheses with change rationale (text, timestamps)",
+        "Experimental or observational data summaries linked to hypotheses",
+        "Collaborator comments or review notes",
+        "Project timeline or milestone markers"
+      ],
+      "outputs": [
+        "Structured hypothesis evolution timeline showing versions, modifications, and rationale",
+        "Mapping of hypotheses to experimental results or data summaries",
+        "Change rationale summaries highlighting key shifts and their scientific basis",
+        "Collaborator feedback integration and resolution status",
+        "Exportable reports for grant proposals, publications, or lab meetings documenting hypothesis development"
+      ],
+      "whyItWins": [
+        "Fills a unique gap by focusing specifically on hypothesis management rather than general project or data management",
+        "Supports repeated use throughout research projects, encouraging rigorous documentation and transparency",
+        "Enables clear communication of hypothesis evolution to collaborators, reviewers, and funders",
+        "Lightweight entry with text inputs and basic visualization but scalable to rich integrations with data sources and team communication tools",
+        "Improves reproducibility and scientific rigor by preserving the logic trail behind hypothesis changes"
+      ],
+      "upgradePath": {
+        "today": "A single-page app allowing users to input, edit, and timestamp hypotheses and rationale with a basic version history timeline and exportable summary reports.",
+        "in90Days": "Introduce data linkage features to attach experiment summaries or dataset snapshots to specific hypotheses, plus collaborator comment threads with basic task assignment for hypothesis review and refinement.",
+        "in12Months": "Develop a multi-page system integrating with lab notebook tools, data repositories, and communication platforms, featuring interactive hypothesis maps, automated change impact analysis, grant and publication report generators, and team collaboration dashboards."
+      },
+      "riskNotes": [
+        "Avoid medical or clinical diagnostic claims; focus on academic research hypotheses only",
+        "Ensure data privacy and security when linking experimental data or collaborator inputs",
+        "Require user validation to prevent misrepresentation of hypothesis evolution during reporting",
+        "Avoid legal or regulatory advice related to hypothesis content or project management"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An Academic Research Hypothesis Evolution Tracker designed to help researchers document, track, and communicate the iterative development of hypotheses throughout their research projects. It supports versioning, rationale documentation, linkage to experimental data, collaborator feedback, and exportable reports to improve reproducibility and transparency.",
+      "primaryUser": "Academic Researcher (especially in experimental or exploratory fields)",
+      "successMetrics": [
+        "Number of hypotheses tracked with version histories per project",
+        "Frequency of collaborator interactions and feedback on hypotheses",
+        "Number of exportable reports generated for grants, publications, or meetings",
+        "User retention and repeated use across multiple research projects",
+        "User satisfaction with clarity and usability of hypothesis evolution timelines"
+      ],
+      "components": [
+        {
+          "id": "ui-hypothesisManagement",
+          "name": "Hypothesis Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to create, edit, and view hypotheses, their versions, and rationale; visualize hypothesis evolution timelines and version histories.",
+          "dependsOn": [
+            "api-hypothesis",
+            "data-hypothesis"
+          ],
+          "notes": [
+            "Supports input of text hypotheses and rationale with timestamps",
+            "Displays version history with clear lineage and change rationale",
+            "Handles edge cases like conflicting edits or missing rationale"
+          ]
+        },
+        {
+          "id": "ui-collaboration",
+          "name": "Collaboration and Comment UI",
+          "type": "ui",
+          "responsibility": "Enable collaborators to comment on hypotheses, provide feedback, and track resolution status of comments or review tasks.",
+          "dependsOn": [
+            "api-comments",
+            "data-comments",
+            "api-users"
+          ],
+          "notes": [
+            "Supports threaded comments linked to specific hypothesis versions",
+            "Includes basic task assignment and status tracking",
+            "Handles notifications and collaborator permissions"
+          ]
+        },
+        {
+          "id": "ui-reports",
+          "name": "Report Generation UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for generating and exporting structured reports documenting hypothesis evolution, rationale summaries, and linked experimental data for grants, publications, and meetings.",
+          "dependsOn": [
+            "api-reports",
+            "data-hypothesis",
+            "data-experimentalData"
+          ],
+          "notes": [
+            "Supports export formats like PDF and DOCX",
+            "Allows customization of included content and date ranges"
+          ]
+        },
+        {
+          "id": "api-hypothesis",
+          "name": "Hypothesis Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for hypotheses and their versions, including storing change rationale and timestamps.",
+          "dependsOn": [
+            "data-hypothesis"
+          ],
+          "notes": [
+            "Enforces data validation and version lineage integrity",
+            "Supports querying hypothesis evolution timelines"
+          ]
+        },
+        {
+          "id": "api-comments",
+          "name": "Collaboration Comments API",
+          "type": "api",
+          "responsibility": "Manage creation, retrieval, updating, and resolution of collaborator comments and review tasks linked to hypotheses.",
+          "dependsOn": [
+            "data-comments",
+            "api-users"
+          ],
+          "notes": [
+            "Supports permissions and access control",
+            "Includes comment threading and status updates"
+          ]
+        },
+        {
+          "id": "api-reports",
+          "name": "Report Generation API",
+          "type": "api",
+          "responsibility": "Generate structured reports based on hypothesis data, evolution timelines, linked experimental data, and collaborator feedback.",
+          "dependsOn": [
+            "data-hypothesis",
+            "data-experimentalData",
+            "data-comments"
+          ],
+          "notes": [
+            "Handles export formatting and user customization options",
+            "Ensures data privacy and user validation before report generation"
+          ]
+        },
+        {
+          "id": "data-hypothesis",
+          "name": "Hypothesis Data Store",
+          "type": "data",
+          "responsibility": "Persist hypotheses, their versions, change rationales, timestamps, and linkage to experimental data and collaborator inputs.",
+          "dependsOn": [],
+          "notes": [
+            "Supports indexing for efficient timeline and version queries",
+            "Ensures data integrity and audit trails for reproducibility"
+          ]
+        },
+        {
+          "id": "data-comments",
+          "name": "Collaboration Comments Data Store",
+          "type": "data",
+          "responsibility": "Persist collaborator comments, threads, review tasks, and resolution statuses linked to hypotheses.",
+          "dependsOn": [],
+          "notes": [
+            "Supports indexing by hypothesis version and user",
+            "Maintains history of comment edits and resolutions"
+          ]
+        },
+        {
+          "id": "data-experimentalData",
+          "name": "Experimental Data Summaries Store",
+          "type": "data",
+          "responsibility": "Store summaries or snapshots of experimental/observational data linked to specific hypotheses or versions.",
+          "dependsOn": [],
+          "notes": [
+            "Supports metadata about data source, date, and linkage",
+            "Ensures privacy and security controls for sensitive data"
+          ]
+        },
+        {
+          "id": "api-users",
+          "name": "User Authentication and Authorization API",
+          "type": "api",
+          "responsibility": "Manage user accounts, authentication, authorization, and collaborator permissions.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Supports secure login and role-based access control",
+            "Enables collaborator invitations and project membership management"
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, authentication credentials, roles, and permissions.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive data",
+            "Support indexing by email and user ID"
+          ]
+        },
+        {
+          "id": "job-notification",
+          "name": "Notification Background Job",
+          "type": "job",
+          "responsibility": "Send notifications to users about new comments, assigned tasks, or hypothesis updates.",
+          "dependsOn": [
+            "data-comments",
+            "data-users"
+          ],
+          "notes": [
+            "Handles retry on failure",
+            "Supports batching and throttling to avoid spam"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Hypothesis",
+          "purpose": "Represent a research hypothesis with versioning, rationale, and linkage to data and collaborators.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "currentVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "createdBy"
+          ]
+        },
+        {
+          "name": "HypothesisVersion",
+          "purpose": "Store each version of a hypothesis including statement, rationale, and timestamp.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hypothesisId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "statement",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "changeRationale",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "parentVersionId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "hypothesisId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "ExperimentalDataSummary",
+          "purpose": "Store summaries or snapshots of experimental data linked to hypothesis versions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hypothesisVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "summaryText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dataSource",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "hypothesisVersionId"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Persist collaborator comments and review tasks linked to hypothesis versions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hypothesisVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parentCommentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "hypothesisVersionId",
+            "authorId",
+            "parentCommentId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user authentication and profile information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Dashboard",
+          "purpose": "Overview of projects and recent hypothesis activity.",
+          "inputs": [],
+          "outputs": [
+            "List of projects",
+            "Recent hypothesis updates",
+            "Pending comments/tasks"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:projectId/hypotheses",
+          "title": "Hypothesis List",
+          "purpose": "List all hypotheses in a project with summary and status.",
+          "inputs": [
+            "projectId"
+          ],
+          "outputs": [
+            "Hypothesis summaries",
+            "Version counts",
+            "Linked data indicators"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:projectId/hypothesis/:hypothesisId",
+          "title": "Hypothesis Detail and Evolution",
+          "purpose": "View and edit hypothesis versions, rationale, timeline, and linked data.",
+          "inputs": [
+            "projectId",
+            "hypothesisId"
+          ],
+          "outputs": [
+            "Version timeline",
+            "Current statement and rationale",
+            "Linked experimental data",
+            "Collaborator comments"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:projectId/hypothesis/:hypothesisId/comments",
+          "title": "Collaboration and Comments",
+          "purpose": "View and manage collaborator comments and review tasks on a hypothesis.",
+          "inputs": [
+            "projectId",
+            "hypothesisId"
+          ],
+          "outputs": [
+            "Comment threads",
+            "Task statuses",
+            "Assignment controls"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:projectId/reports",
+          "title": "Report Generation",
+          "purpose": "Configure and generate exportable reports documenting hypothesis evolution and linked data.",
+          "inputs": [
+            "projectId",
+            "date range",
+            "content selection"
+          ],
+          "outputs": [
+            "Downloadable report files"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "Authentication token",
+            "Login success/failure"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/register",
+          "title": "User Registration",
+          "purpose": "Allow new users to create accounts.",
+          "inputs": [
+            "email",
+            "password",
+            "name"
+          ],
+          "outputs": [
+            "Registration success/failure"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/hypotheses",
+          "method": "POST",
+          "purpose": "Create a new hypothesis in a project.",
+          "requestShape": "{ projectId: string, statement: string, rationale?: string }",
+          "responseShape": "{ hypothesisId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/hypotheses/:hypothesisId/versions",
+          "method": "POST",
+          "purpose": "Add a new version to an existing hypothesis.",
+          "requestShape": "{ statement: string, changeRationale?: string }",
+          "responseShape": "{ versionId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/hypotheses/:hypothesisId",
+          "method": "GET",
+          "purpose": "Retrieve hypothesis details including versions and linked data.",
+          "requestShape": "None",
+          "responseShape": "{ hypothesis: Hypothesis, versions: HypothesisVersion[], linkedData: ExperimentalDataSummary[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "POST",
+          "purpose": "Add a comment or review task to a hypothesis version.",
+          "requestShape": "{ hypothesisVersionId: string, content: string, parentCommentId?: string }",
+          "responseShape": "{ commentId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments/:commentId/resolve",
+          "method": "POST",
+          "purpose": "Mark a comment or review task as resolved.",
+          "requestShape": "None",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Generate an exportable report for a project.",
+          "requestShape": "{ projectId: string, dateRange?: { start: date, end: date }, contentSelection?: string[] }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/register",
+          "method": "POST",
+          "purpose": "Register a new user account.",
+          "requestShape": "{ email: string, password: string, name?: string }",
+          "responseShape": "{ userId: string }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Notification Dispatcher",
+          "trigger": "On new comment, task assignment, or hypothesis update",
+          "purpose": "Send notifications to relevant users about updates requiring attention."
+        }
+      ],
+      "edgeCases": [
+        "Conflicting edits to the same hypothesis version requiring merge or conflict resolution",
+        "Hypothesis versions created without rationale or with incomplete rationale",
+        "Orphaned comments if linked hypothesis versions are deleted",
+        "Data linkage to experimental summaries that become outdated or invalid",
+        "Unauthorized access attempts to project or hypothesis data",
+        "Report generation failures due to large data volume or invalid input parameters"
+      ],
+      "nonGoals": [
+        "Providing medical or clinical diagnostic advice or claims",
+        "Serving as a general lab notebook or data management system beyond hypothesis tracking",
+        "Offering legal or regulatory advice related to research projects",
+        "Automated hypothesis generation or scientific analysis beyond documentation and tracking"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /api/auth/login or registers via /api/auth/register, receiving a token for authenticated requests.",
+        "Dashboard page fetches projects, recent hypothesis updates, and pending comments/tasks from respective APIs using authenticated requests.",
+        "On Hypothesis List page, client requests /api/hypotheses filtered by projectId to retrieve hypothesis summaries, version counts, and linked data indicators.",
+        "Hypothesis Detail page fetches hypothesis details, including versions and linked experimental data, from /api/hypotheses/:hypothesisId.",
+        "Users create new hypotheses by POSTing to /api/hypotheses with projectId, statement, and optional rationale; server creates Hypothesis and initial HypothesisVersion.",
+        "Users add new versions to hypotheses via POST /api/hypotheses/:hypothesisId/versions with statement and optional change rationale; server validates lineage and timestamps.",
+        "Collaboration UI fetches and posts comments via /api/comments endpoints, supporting threading and resolution status updates.",
+        "Report Generation UI sends report generation requests to /api/reports/generate with projectId, date range, and content selection; server returns downloadable report URL.",
+        "Notification Background Job listens for new comments, task assignments, or hypothesis updates, sending notifications to relevant users with retry and batching logic.",
+        "All data persistence occurs in Prisma-managed data stores: Hypothesis, HypothesisVersion, Comment, ExperimentalDataSummary, and User models.",
+        "APIs enforce authentication and authorization via token validation and role-based access control before processing requests."
+      ],
+      "validationRules": [
+        "User registration requires unique email, valid email format, and password meeting complexity requirements.",
+        "Login requires existing email and correct password; returns authentication token on success.",
+        "Creating a hypothesis requires non-empty projectId and statement; rationale is optional but encouraged.",
+        "Adding a hypothesis version requires existing hypothesisId, non-empty statement; change rationale is optional but recommended.",
+        "HypothesisVersion parentVersionId, if provided, must reference an existing version of the same hypothesis to maintain lineage integrity.",
+        "Comments require valid hypothesisVersionId, non-empty content; parentCommentId, if provided, must reference an existing comment in the same thread.",
+        "Resolving comments requires authenticated user with permission to modify the comment; comment must exist and not already be resolved.",
+        "Report generation requests must include valid projectId; optional dateRange start and end must be valid dates with start <= end; contentSelection must be from allowed fields.",
+        "All API requests requiring authentication must include valid tokens; unauthorized or expired tokens result in 401 errors.",
+        "Input fields must be sanitized to prevent injection attacks and ensure data integrity.",
+        "Edge cases such as conflicting edits require server-side detection and return conflict status with descriptive messages."
+      ],
+      "errorHandling": [
+        "API endpoints return 400 Bad Request for invalid input data with detailed error messages specifying validation failures.",
+        "401 Unauthorized returned when authentication token is missing, invalid, or expired.",
+        "403 Forbidden returned when user lacks permission to access or modify requested resource.",
+        "404 Not Found returned when requested hypothesis, version, comment, or project does not exist.",
+        "409 Conflict returned when conflicting edits or version lineage violations are detected.",
+        "500 Internal Server Error returned for unexpected failures; errors are logged for diagnostics.",
+        "Report generation failures return 422 Unprocessable Entity with error details; client can retry with corrected parameters.",
+        "Background job failures trigger retry logic with exponential backoff; persistent failures are logged and alert generated.",
+        "Client-side UI displays user-friendly error messages based on API error responses and guides corrective actions.",
+        "Orphaned comment scenarios handled by soft-deleting comments or marking as orphaned with UI indication."
+      ],
+      "securityNotes": [
+        "All API routes requiring authentication validate JWT or session tokens securely.",
+        "Passwords are stored hashed with a strong algorithm (e.g., bcrypt) and never logged or exposed.",
+        "Role-based access control restricts actions such as editing hypotheses, commenting, resolving tasks, and report generation to authorized users.",
+        "Input sanitization prevents injection attacks (SQL, XSS) on all user inputs.",
+        "Data linkage to experimental summaries enforces access permissions and privacy controls.",
+        "Report generation validates user project membership before processing and exporting data.",
+        "Notification job accesses user and comment data with least privilege principle.",
+        "Rate limiting and throttling applied to sensitive endpoints to prevent abuse.",
+        "Sensitive data such as authentication credentials and tokens are transmitted only over HTTPS.",
+        "Audit trails maintained for hypothesis changes, comments, and user actions to support reproducibility and accountability."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the Hypothesis List page for a project",
+          "when": "The user views the list",
+          "then": "They see all hypotheses with correct summaries, version counts, and linked data indicators"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the Hypothesis Detail page",
+          "when": "They add a new version with statement and rationale",
+          "then": "The new version is saved, linked correctly, and visible in the version timeline"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user posts a comment on a hypothesis version",
+          "when": "They submit the comment content",
+          "then": "The comment appears in the threaded view and notifications are sent to collaborators"
+        },
+        {
+          "id": "AT-004",
+          "given": "An unauthenticated user attempts to access /project/:projectId/hypotheses",
+          "when": "They navigate to the page",
+          "then": "They are redirected to the login page"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user submits invalid data when creating a hypothesis",
+          "when": "The API receives the request",
+          "then": "The API returns 400 with descriptive validation errors"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user requests report generation with valid parameters",
+          "when": "The report is generated",
+          "then": "A downloadable report URL is returned and the report contains correct data"
+        },
+        {
+          "id": "AT-007",
+          "given": "Two users attempt conflicting edits on the same hypothesis version simultaneously",
+          "when": "Both submit changes",
+          "then": "The second request receives a 409 Conflict with instructions for resolution"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user resolves a comment they have permission for",
+          "when": "They mark the comment as resolved",
+          "then": "The comment status updates and collaborators are notified"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user tries to access a hypothesis in a project they are not a member of",
+          "when": "They request hypothesis details",
+          "then": "The API returns 403 Forbidden"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user registers with an already used email",
+          "when": "They submit the registration form",
+          "then": "The API returns 400 with an error indicating email is already taken"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for User, Hypothesis, HypothesisVersion, Comment, ExperimentalDataSummary.",
+        "Implement User Authentication and Authorization API with registration and login endpoints.",
+        "Develop data access layers and validation logic for Hypothesis and HypothesisVersion.",
+        "Implement Hypothesis Management API endpoints for CRUD operations and versioning.",
+        "Build Hypothesis Management UI pages: Dashboard, Hypothesis List, Hypothesis Detail.",
+        "Implement Collaboration Comments API and data persistence with threading and resolution.",
+        "Develop Collaboration and Comment UI pages for viewing and managing comments.",
+        "Implement Report Generation API with export functionality and user validation.",
+        "Build Report Generation UI page with content selection and export options.",
+        "Implement Notification Background Job for comment and task notifications.",
+        "Add comprehensive error handling and security features across APIs and UI.",
+        "Write and execute acceptance tests and edge case scenarios.",
+        "Deploy and monitor system, iterate based on user feedback."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/project/[projectId]/hypotheses",
+          "/project/[projectId]/hypothesis/[hypothesisId]",
+          "/project/[projectId]/hypothesis/[hypothesisId]/comments",
+          "/project/[projectId]/reports",
+          "/login",
+          "/register"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/auth/register.ts",
+          "/api/hypotheses/index.ts",
+          "/api/hypotheses/[hypothesisId]/index.ts",
+          "/api/hypotheses/[hypothesisId]/versions.ts",
+          "/api/comments/index.ts",
+          "/api/comments/[commentId]/resolve.ts",
+          "/api/reports/generate.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { id String @id @default(uuid()) email String @unique hashedPassword String name String? roles Json? }",
+          "model Hypothesis { id String @id @default(uuid()) projectId String currentVersionId String createdBy String createdAt DateTime versions HypothesisVersion[] }",
+          "model HypothesisVersion { id String @id @default(uuid()) hypothesisId String statement String changeRationale String? timestamp DateTime parentVersionId String? }",
+          "model ExperimentalDataSummary { id String @id @default(uuid()) hypothesisVersionId String summaryText String dataSource String? createdAt DateTime }",
+          "model Comment { id String @id @default(uuid()) hypothesisVersionId String authorId String content String parentCommentId String? createdAt DateTime resolved Boolean }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify missing constraints, edge cases, and user needs for the hypothesis evolution tracker.",
+        "promptTemplate": "Given the current blueprint and idea, please provide any missing constraints or clarifications needed to ensure the system supports academic researchers managing hypothesis evolution effectively. User input: {{USER_INPUT}} Blueprint: {{BLUEPRINT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the detailed page routes, UI components, and data models needed to implement the system.",
+        "promptTemplate": "Based on the refined requirements and blueprint, finalize the pages and data models for the hypothesis tracker. Include routes, inputs, outputs, and data schema details. User input: {{USER_INPUT}} Blueprint: {{BLUEPRINT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code and page stubs for the frontend UI pages according to the finalized architecture.",
+        "promptTemplate": "Generate code stubs and scaffold for the frontend pages of the hypothesis evolution tracker, following the finalized page definitions. User input: {{USER_INPUT}} Blueprint: {{BLUEPRINT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring connecting frontend pages to APIs and database models for full functionality.",
+        "promptTemplate": "Implement the integration layer wiring frontend pages to the backend APIs and database models. Include authentication, data fetching, posting, and error handling. User input: {{USER_INPUT}} Blueprint: {{BLUEPRINT}}"
+      }
+    ]
+  }
+}

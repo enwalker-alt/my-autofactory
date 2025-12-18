@@ -1,0 +1,850 @@
+{
+  "slug": "academic-grant-budget-consolidator",
+  "title": "Academic Research Grant Budget Consolidator",
+  "description": "Upload multiple collaborator budget drafts and institutional/funder constraints to produce a consolidated multi-institutional budget table with highlighted conflicts and a basic comment thread interface for collaborative negotiation and manual conflict resolution.",
+  "inputLabel": "Upload collaborator budget draft files (XLSX or CSV) and enter institutional and funder constraints as JSON",
+  "outputLabel": "Consolidated budget summary with conflict highlights and comment thread overview",
+  "systemPrompt": "You are a secure, single-page web assistant for academic research grant teams to consolidate multiple collaborator budget drafts and constraints. Reject unsupported file formats or invalid JSON inputs with clear error messages. Only accept XLSX or CSV for budgets and well-formed JSON for constraints. Output a plain text consolidated budget summary table including line items and highlight any conflicts or guideline violations. Also provide a summary of existing comments per line item to facilitate manual negotiation. Do not automate financial decisions; only suggest conflicts and facts. Enforce safe, privacy-preserving handling. Refuse any request that attempts unauthorized access or disallowed actions.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Conflict Focus",
+      "prompt": "Focus the consolidation output on identifying and highlighting budget conflicts, category overages, and guideline violations. Provide detailed conflict explanations."
+    },
+    {
+      "label": "Summary View",
+      "prompt": "Provide a clear, concise consolidated budget summary table with total amounts per category and institution, without detailed conflict notes."
+    },
+    {
+      "label": "Comment Thread Overview",
+      "prompt": "Include a summary of existing comment threads per budget line item to aid negotiation context."
+    },
+    {
+      "label": "Automated Suggestion Summary",
+      "prompt": "List automated reallocation suggestions with rationales based on constraints and conflicts, advisory only."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, provide JSON with keys: consolidatedBudget (array of line items with amounts and institutions), conflicts (array of conflict descriptions), commentsSummary (array of line item comment counts), suggestions (optional array of reallocation suggestions).",
+  "clarifyPrompt": "Please upload valid XLSX or CSV budget draft files and enter institutional and funder constraints as JSON. If any input is missing or invalid, please correct it before submission.",
+  "finalizePrompt": "Review the consolidated budget summary and conflict highlights. Use the comment thread overview to discuss and negotiate budget items with collaborators externally.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Budget Negotiator",
+      "niche": {
+        "role": "Academic Research Grant Writing Team Lead",
+        "scenario": "Collaboratively developing and negotiating multi-institutional grant budgets with diverse collaborators who submit separate budget drafts and constraints"
+      },
+      "problem": "In multi-institutional academic research grant proposals, budget negotiation is complex and repetitive, involving consolidating multiple collaborators’ draft budgets, reconciling conflicting category allocations, institutional limits, and funder requirements. Current tools handle simple budget formatting or category allocation but do not support interactive, collaborative negotiation workflows that highlight conflicts and enable iterative resolution among teams.",
+      "inputs": [
+        "Individual collaborator budget drafts (tables or spreadsheets) with expense line items and narratives",
+        "Institutional budget constraints and caps",
+        "Funding agency budget guidelines and category limits",
+        "Collaborator roles and contribution descriptions"
+      ],
+      "outputs": [
+        "Consolidated multi-institutional budget summary with reconciled expense line items",
+        "Conflict and discrepancy reports highlighting category overages, duplicated items, or mismatched allocations",
+        "Interactive negotiation dashboard with comment threads per budget item",
+        "Automated suggestions for budget reallocation to meet constraints",
+        "Exportable, funder-compliant budget tables and justifications"
+      ],
+      "whyItWins": [
+        "Addresses the complex, multi-party negotiation workflow not covered by existing single-user budget tools",
+        "Reduces manual back-and-forth by providing structured conflict identification and resolution support",
+        "Supports iterative collaboration with versioning and comment tracking to improve team communication",
+        "Improves compliance with funder and institutional rules via automated guideline enforcement",
+        "Scalable from a lightweight budget merge tool to a full negotiation platform as teams grow or budgets become more complex"
+      ],
+      "upgradePath": {
+        "today": "A simple web tool that uploads multiple collaborator budget drafts and produces a consolidated budget table with highlighted conflicts and a basic comment interface for manual negotiation.",
+        "in90Days": "Add interactive negotiation dashboard with real-time collaboration features, automated budget reallocation suggestions, and integrated funder compliance checks.",
+        "in12Months": "Develop a full multi-page app supporting role-based access controls, detailed version history, integrated document and communication management, and export to multiple funding agency budget formats with audit trails."
+      },
+      "riskNotes": [
+        "Ensure privacy and secure data handling since budgets may contain sensitive financial information.",
+        "Must avoid automating financial decisions beyond suggestion level to respect team autonomy and institutional policies.",
+        "Avoid legal or regulatory advice—focus on guideline compliance checking only.",
+        "Requires clear user onboarding to manage complex multi-user workflows and prevent confusion."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research grant teams to upload, consolidate, and negotiate multi-institutional budgets interactively, highlighting conflicts, enforcing funder and institutional guidelines, and supporting iterative resolution with comments and versioning.",
+      "primaryUser": "Academic Research Grant Writing Team Lead",
+      "successMetrics": [
+        "Reduction in time spent consolidating and reconciling multi-institutional budgets",
+        "Number of collaborative negotiation sessions completed with conflict resolution",
+        "User satisfaction with conflict highlighting and automated suggestion features",
+        "Compliance rate with funder and institutional budget guidelines in final exports",
+        "Adoption rate of interactive negotiation dashboard and versioning features"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Budget Upload & Import UI",
+          "type": "ui",
+          "responsibility": "Allow collaborators to upload budget drafts (tables/spreadsheets) and input institutional and funder constraints; provide initial validation feedback.",
+          "dependsOn": [],
+          "notes": [
+            "Support common spreadsheet formats (e.g., XLSX, CSV).",
+            "Validate required fields and basic formatting on upload.",
+            "Handle partial or malformed uploads gracefully."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Interactive Negotiation Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display consolidated budget with conflict highlights, comment threads per budget item, and automated reallocation suggestions; support real-time collaboration features.",
+          "dependsOn": [
+            "api-budget",
+            "api-comments",
+            "api-suggestions"
+          ],
+          "notes": [
+            "Support inline commenting and threaded discussions.",
+            "Visual indicators for conflicts and guideline violations.",
+            "Real-time updates via websockets or polling.",
+            "Role-based UI controls for editing and negotiation."
+          ]
+        },
+        {
+          "id": "api-budget",
+          "name": "Budget Consolidation & Validation API",
+          "type": "api",
+          "responsibility": "Process uploaded budgets, consolidate line items, detect conflicts and discrepancies, enforce funder/institutional constraints, and produce reconciled budget summaries.",
+          "dependsOn": [
+            "data-budgets",
+            "data-constraints",
+            "data-users"
+          ],
+          "notes": [
+            "Must handle conflicting category allocations and caps.",
+            "Provide detailed conflict and discrepancy reports.",
+            "Expose endpoints for budget retrieval and updates."
+          ]
+        },
+        {
+          "id": "api-comments",
+          "name": "Comments & Negotiation Thread API",
+          "type": "api",
+          "responsibility": "Manage comment threads tied to individual budget line items to support negotiation discussions and track user input.",
+          "dependsOn": [
+            "data-comments",
+            "data-users"
+          ],
+          "notes": [
+            "Support creation, editing, and deletion of comments.",
+            "Maintain comment history and timestamps.",
+            "Enforce permissions based on user roles."
+          ]
+        },
+        {
+          "id": "api-suggestions",
+          "name": "Automated Budget Reallocation Suggestion Engine",
+          "type": "api",
+          "responsibility": "Analyze consolidated budgets against constraints and generate actionable suggestions for reallocations to resolve conflicts or guideline violations.",
+          "dependsOn": [
+            "api-budget"
+          ],
+          "notes": [
+            "Suggestions are advisory only; no automatic changes.",
+            "Must explain rationale behind each suggestion.",
+            "Update suggestions dynamically as budgets change."
+          ]
+        },
+        {
+          "id": "data-budgets",
+          "name": "Budget Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded budget drafts, consolidated budgets, versions, and related metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Support versioning of budgets for audit and rollback.",
+            "Store line item details, categories, amounts, and narratives.",
+            "Ensure secure storage with encryption at rest."
+          ]
+        },
+        {
+          "id": "data-constraints",
+          "name": "Institutional and Funder Constraints Data Store",
+          "type": "data",
+          "responsibility": "Persist institutional budget caps, funder guidelines, and category limits used for validation and conflict detection.",
+          "dependsOn": [],
+          "notes": [
+            "Allow updates and versioning of constraints as guidelines evolve.",
+            "Support structured representation for automated checks."
+          ]
+        },
+        {
+          "id": "data-comments",
+          "name": "Comments Data Store",
+          "type": "data",
+          "responsibility": "Persist comment threads linked to budget line items, including user info and timestamps.",
+          "dependsOn": [],
+          "notes": [
+            "Support soft deletes and edit history for transparency.",
+            "Ensure access control enforcement."
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User and Role Management Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, roles, permissions, and authentication data for access control.",
+          "dependsOn": [],
+          "notes": [
+            "Support role-based access control to manage editing and viewing rights.",
+            "Store collaborator affiliations and contribution descriptions."
+          ]
+        },
+        {
+          "id": "job-versioning",
+          "name": "Budget Versioning & Audit Job",
+          "type": "job",
+          "responsibility": "Automatically create snapshots of budgets and negotiation states at key milestones or intervals for audit trail and rollback.",
+          "dependsOn": [
+            "data-budgets"
+          ],
+          "notes": [
+            "Trigger on budget updates or negotiation session saves.",
+            "Ensure minimal performance impact."
+          ]
+        },
+        {
+          "id": "integration-export",
+          "name": "Funder-Compliant Budget Export Integration",
+          "type": "integration",
+          "responsibility": "Generate exportable budget tables and justifications in formats compliant with various funding agency requirements.",
+          "dependsOn": [
+            "api-budget",
+            "data-constraints"
+          ],
+          "notes": [
+            "Support multiple export formats (PDF, XLSX, XML).",
+            "Include audit trail metadata in exports.",
+            "Validate exports against latest guidelines before generation."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "BudgetDraft",
+          "purpose": "Store individual collaborator budget drafts including line items and narratives.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "collaboratorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lineItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "narratives",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "collaboratorId",
+            "institutionId",
+            "version"
+          ]
+        },
+        {
+          "name": "ConsolidatedBudget",
+          "purpose": "Store reconciled multi-institutional budget with conflict flags and summary data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetDraftIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lineItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "conflicts",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "createdAt",
+            "version"
+          ]
+        },
+        {
+          "name": "InstitutionalConstraint",
+          "purpose": "Store institutional budget caps and category limits.",
+          "fields": [
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "constraints",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "institutionId",
+            "effectiveDate"
+          ]
+        },
+        {
+          "name": "FunderGuideline",
+          "purpose": "Store funding agency budget guidelines and category limits.",
+          "fields": [
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "guidelines",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderId",
+            "effectiveDate"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Store comments and discussion threads linked to budget line items.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lineItemId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "editedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "parentCommentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "deleted",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "budgetId",
+            "lineItemId",
+            "authorId",
+            "parentCommentId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user profiles, roles, and authentication data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email",
+            "role",
+            "institutionId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Budget Drafts & Constraints",
+          "purpose": "Page for collaborators to upload their budget drafts and input institutional/funder constraints.",
+          "inputs": [
+            "Budget draft files",
+            "Institutional constraints data",
+            "Funder guidelines data"
+          ],
+          "outputs": [
+            "Upload status",
+            "Validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Budget Negotiation Dashboard",
+          "purpose": "Interactive dashboard showing consolidated budget, conflicts, comments, and suggestions for negotiation.",
+          "inputs": [
+            "Selected consolidated budget version"
+          ],
+          "outputs": [
+            "Consolidated budget table",
+            "Conflict highlights",
+            "Comment threads",
+            "Reallocation suggestions"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/export",
+          "title": "Export Budget",
+          "purpose": "Export reconciled budgets in funder-compliant formats with audit trails.",
+          "inputs": [
+            "Consolidated budget version",
+            "Export format selection"
+          ],
+          "outputs": [
+            "Exported budget file"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the platform.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token or error"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/profile",
+          "title": "User Profile & Role Management",
+          "purpose": "Manage user profile, roles, and institution affiliations.",
+          "inputs": [
+            "User profile data"
+          ],
+          "outputs": [
+            "Profile update confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/budgets/upload",
+          "method": "POST",
+          "purpose": "Upload individual collaborator budget drafts and constraints.",
+          "requestShape": "Multipart form with budget files and JSON constraints",
+          "responseShape": "Upload status and validation results",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets/consolidate",
+          "method": "POST",
+          "purpose": "Trigger consolidation and conflict detection for uploaded budgets.",
+          "requestShape": "JSON with budget draft IDs and constraint references",
+          "responseShape": "Consolidated budget summary with conflict report",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets/{id}",
+          "method": "GET",
+          "purpose": "Retrieve consolidated budget details by ID.",
+          "requestShape": "URL param: budget ID",
+          "responseShape": "Consolidated budget data including conflicts",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "POST",
+          "purpose": "Add a comment to a budget line item.",
+          "requestShape": "JSON with budgetId, lineItemId, content, optional parentCommentId",
+          "responseShape": "Created comment object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments/{id}",
+          "method": "GET",
+          "purpose": "Retrieve comment thread for a budget line item.",
+          "requestShape": "URL param: budget line item ID",
+          "responseShape": "List of comments with threading",
+          "auth": "user"
+        },
+        {
+          "route": "/api/suggestions/{budgetId}",
+          "method": "GET",
+          "purpose": "Get automated budget reallocation suggestions for a consolidated budget.",
+          "requestShape": "URL param: consolidated budget ID",
+          "responseShape": "List of reallocation suggestions with explanations",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export/{budgetId}",
+          "method": "POST",
+          "purpose": "Export consolidated budget in selected funder-compliant format.",
+          "requestShape": "JSON with export format and budget ID",
+          "responseShape": "Download link or file stream",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue token.",
+          "requestShape": "JSON with email and password",
+          "responseShape": "Authentication token or error",
+          "auth": "public"
+        },
+        {
+          "route": "/api/users/profile",
+          "method": "GET",
+          "purpose": "Retrieve authenticated user profile.",
+          "requestShape": "None",
+          "responseShape": "User profile data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users/profile",
+          "method": "POST",
+          "purpose": "Update authenticated user profile.",
+          "requestShape": "JSON with profile updates",
+          "responseShape": "Update confirmation",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Budget Version Snapshot",
+          "trigger": "On budget consolidation or negotiation save",
+          "purpose": "Create immutable snapshots of budget versions and negotiation states for audit and rollback."
+        },
+        {
+          "name": "Constraint & Guideline Update Sync",
+          "trigger": "Scheduled (e.g., weekly) or manual trigger",
+          "purpose": "Fetch and update institutional and funder constraints to keep validation up to date."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded budget drafts with missing or inconsistent category labels",
+        "Conflicting constraints between institutional caps and funder guidelines",
+        "Simultaneous edits causing negotiation conflicts or race conditions",
+        "Users attempting unauthorized edits or access to budgets from other institutions",
+        "Large budgets causing performance degradation in consolidation or UI rendering",
+        "Partial uploads or corrupted files during budget import",
+        "Comment threads with deleted or edited comments affecting negotiation clarity",
+        "Version rollback conflicts when multiple users negotiate concurrently"
+      ],
+      "nonGoals": [
+        "Automating final financial decisions or approvals beyond suggesting reallocations",
+        "Providing legal or regulatory advice on grant budgets",
+        "Replacing institutional financial management or accounting systems",
+        "Supporting non-academic or non-research grant budget types",
+        "Handling full document management beyond budget-related files and comments"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receives auth token for session.",
+        "On /upload page, user uploads budget draft files and inputs institutional/funder constraints.",
+        "Frontend sends multipart form data to /api/budgets/upload with files and JSON constraints.",
+        "API validates uploaded files (format, required fields), parses line items and constraints, stores BudgetDraft and constraints in data stores.",
+        "User triggers consolidation via /api/budgets/consolidate with selected draft IDs and constraints references.",
+        "API consolidates budgets, detects conflicts, applies constraints, stores ConsolidatedBudget with conflict flags and versioning.",
+        "On /dashboard page, frontend fetches consolidated budget details (/api/budgets/{id}), comments (/api/comments/{lineItemId}), and suggestions (/api/suggestions/{budgetId}).",
+        "Users add/edit/delete comments via /api/comments POST, with permissions enforced.",
+        "Suggestion engine analyzes consolidated budget and constraints, returns reallocation suggestions with rationale.",
+        "Background job triggers budget version snapshots on consolidation or negotiation save for audit trail.",
+        "On /export page, user selects consolidated budget version and export format, frontend calls /api/export/{budgetId} POST.",
+        "API validates export against latest constraints, generates export file (PDF, XLSX, XML) including audit metadata, returns download link or stream.",
+        "User profile management via /profile page calls /api/users/profile GET and POST for retrieval and updates."
+      ],
+      "validationRules": [
+        "Uploaded budget files must be valid XLSX or CSV format; reject unsupported formats.",
+        "Budget drafts must include required fields: line item categories, amounts, institution IDs.",
+        "Institutional constraints and funder guidelines JSON must conform to predefined schema with category limits and caps.",
+        "Consolidation API must verify all referenced budget drafts exist and belong to authorized institutions.",
+        "Conflict detection must flag category allocation conflicts, budget caps exceeded, and guideline violations.",
+        "Comments must have non-empty content; parentCommentId if provided must reference existing comment in same thread.",
+        "User profile updates must validate email format and role assignments within allowed roles.",
+        "Export requests must specify supported formats; consolidated budget version must exist and be finalized.",
+        "Authentication requires valid email and password; tokens must be verified on all protected API routes.",
+        "Real-time updates must validate user permissions before allowing edits or comments."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with detailed validation error messages for malformed uploads or invalid inputs.",
+        "Return 401 Unauthorized for unauthenticated or unauthorized access attempts.",
+        "Return 403 Forbidden when user attempts actions outside their role or institution scope.",
+        "Return 404 Not Found for missing budget drafts, consolidated budgets, comments, or users.",
+        "Return 409 Conflict when concurrent edits cause negotiation conflicts or version mismatches.",
+        "Gracefully handle partial or corrupted file uploads by rejecting with clear error and allowing retry.",
+        "Log server errors with stack traces; return 500 Internal Server Error with generic message to client.",
+        "For comment edits/deletions, enforce soft delete and maintain edit history; reject unauthorized modifications.",
+        "On export validation failure, return 422 Unprocessable Entity with guideline violation details.",
+        "Use consistent error response schema with error code, message, and optional field-level details."
+      ],
+      "securityNotes": [
+        "Enforce role-based access control on all API routes; only authorized users can upload, consolidate, comment, or export.",
+        "Authenticate users via secure token (e.g., JWT) stored in HttpOnly cookies or Authorization headers.",
+        "Encrypt sensitive data at rest, including budget drafts and user credentials (password hashes).",
+        "Validate and sanitize all inputs to prevent injection attacks, especially in file uploads and JSON fields.",
+        "Implement rate limiting on authentication and upload endpoints to mitigate brute force and DoS attacks.",
+        "Use HTTPS for all client-server communication to protect data in transit.",
+        "Ensure comment threads and budget data are only accessible to users affiliated with relevant institutions.",
+        "Audit all critical actions (uploads, consolidations, exports, profile changes) with user and timestamp metadata.",
+        "Handle session expiration and token revocation securely to prevent unauthorized reuse.",
+        "Implement CSRF protection on state-changing API endpoints."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with valid XLSX budget draft files and JSON constraints",
+          "when": "The user submits the upload form",
+          "then": "The system stores the budget drafts and constraints, returns success status and validation feedback without errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "Multiple budget drafts uploaded from different institutions",
+          "when": "The user triggers consolidation via /api/budgets/consolidate",
+          "then": "The system produces a consolidated budget with conflict flags for overlapping categories and guideline violations"
+        },
+        {
+          "id": "AT-003",
+          "given": "A consolidated budget with conflicts",
+          "when": "The user views the /dashboard page",
+          "then": "The UI displays the consolidated budget table with highlighted conflicts, comment threads per line item, and reallocation suggestions"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user with editing permissions on a budget line item",
+          "when": "The user adds a comment via /api/comments POST",
+          "then": "The comment is stored, visible in the thread, and includes author and timestamp metadata"
+        },
+        {
+          "id": "AT-005",
+          "given": "A consolidated budget version selected on the /export page",
+          "when": "The user requests export in XLSX format",
+          "then": "The system validates compliance, generates the export file with audit metadata, and provides a download link"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthenticated user attempts to access /dashboard",
+          "when": "The user navigates to /dashboard",
+          "then": "The system redirects to /login page"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to upload a corrupted or unsupported budget file",
+          "when": "The user submits the upload form",
+          "then": "The system rejects the upload with a clear validation error message"
+        },
+        {
+          "id": "AT-008",
+          "given": "Two users concurrently edit the same budget negotiation session",
+          "when": "Both submit conflicting changes",
+          "then": "The system detects conflict, returns 409 error, and prompts users to resolve version mismatch"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user tries to comment on a budget line item from another institution without permission",
+          "when": "The user submits a comment",
+          "then": "The system returns 403 Forbidden error"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user updates their profile with invalid email format",
+          "when": "The user submits profile update",
+          "then": "The system rejects the update with validation error"
+        }
+      ],
+      "buildOrder": [
+        "data-users",
+        "data-constraints",
+        "data-budgets",
+        "data-comments",
+        "api-auth/login",
+        "api-users/profile",
+        "ui-upload",
+        "api-budgets/upload",
+        "api-budgets/consolidate",
+        "api-budgets/{id}",
+        "job-versioning",
+        "api-comments",
+        "api-suggestions",
+        "ui-dashboard",
+        "integration-export",
+        "ui-export"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/dashboard",
+          "/export",
+          "/login",
+          "/profile"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/users/profile.ts",
+          "api/budgets/upload.ts",
+          "api/budgets/consolidate.ts",
+          "api/budgets/[id].ts",
+          "api/comments/index.ts",
+          "api/comments/[id].ts",
+          "api/suggestions/[budgetId].ts",
+          "api/export/[budgetId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "BudgetDraft",
+          "ConsolidatedBudget",
+          "InstitutionalConstraint",
+          "FunderGuideline",
+          "Comment"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, edge cases, or clarifications needed to finalize the requirements.",
+        "promptTemplate": "Given the current blueprint and expansion: {{BLUEPRINT}}, {{EXPANDED}}, please provide any missing budget constraints, institutional or funder rules, or negotiation workflow details that should be incorporated. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final page routes, UI components, API endpoints, and data models needed to implement the tool.",
+        "promptTemplate": "Based on the refined requirements and blueprint: {{BLUEPRINT}}, {{EXPANDED}}, design the definitive set of pages, API routes, and data models for the Academic Research Grant Budget Negotiator. Include details about inputs, outputs, and access control. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial code stubs or templates for the defined UI pages and API routes to accelerate development.",
+        "promptTemplate": "Using the finalized architecture and page definitions: {{BLUEPRINT}}, {{EXPANDED}}, generate starter code templates or stubs for the UI pages and API endpoints for the budget negotiation tool. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the front-end pages with backend APIs and database models to enable end-to-end functionality.",
+        "promptTemplate": "Given the existing page stubs and data models: {{BLUEPRINT}}, {{EXPANDED}}, provide detailed instructions or code snippets to integrate front-end UI with backend API and database layers for the budget consolidation and negotiation workflow. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,692 @@
+{
+  "slug": "peer-review-citation-checker",
+  "title": "Academic Peer Reviewer Citation Verification & Consistency Checker",
+  "description": "Upload manuscript files and reference lists to get an instant, structured report highlighting citation inconsistencies, missing or duplicate citations, formatting errors, and a compliance score against your chosen citation style. Designed specifically to reduce peer reviewer workload by automating tedious citation verification tasks.",
+  "inputLabel": "Upload manuscript (DOCX, PDF, or plain text) and reference list (file or text). Optionally specify citation style.",
+  "outputLabel": "Citation verification report with detailed issues, compliance score, and correction suggestions.",
+  "systemPrompt": "You are a citation verification assistant for academic peer reviewers. Given a manuscript text and its reference list, analyze all in-text citations and bibliography entries. Identify citation inconsistencies, missing or duplicate references, formatting errors, and check compliance with the specified citation style if provided. Output a clear, structured plain-text report listing each issue found with references to manuscript locations if possible. Reject unsupported file formats or incomplete inputs with a clear error. Do not evaluate manuscript content quality or plagiarism. Enforce user data confidentiality. Output must be safe, factual, and avoid subjective content evaluation. If citation style is not recognized, note this and proceed with general checks. Refuse any request lacking manuscript text or reference list.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "General Citation Consistency Check",
+      "prompt": "Check the uploaded manuscript and reference list for citation inconsistencies, missing or duplicate citations, and formatting errors. Provide a structured report with issue details and suggestions."
+    },
+    {
+      "label": "Citation Style Compliance",
+      "prompt": "Analyze the manuscript's citations and references for compliance with the specified citation style guidelines. Highlight deviations and provide a summary compliance score."
+    },
+    {
+      "label": "Detailed Citation Error Report",
+      "prompt": "Generate a detailed report identifying all citation errors including mismatched references, incomplete citations, numbering inconsistencies, and formatting problems."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output structured JSON report with fields: issues (array of {type, location, description}), complianceScore (number 0-100), suggestions (array of text).",
+  "clarifyPrompt": "Please upload a manuscript file (DOCX, PDF, or plain text) and a reference list (file or plain text). Optionally specify the citation style to check against (e.g., APA, IEEE). Unsupported file types or missing inputs will be rejected. How can I assist you with your manuscript citation check today?",
+  "finalizePrompt": "Based on the uploaded manuscript and references, generate a comprehensive citation verification report. Include detected inconsistencies, missing or duplicate citations, formatting errors, and a compliance score if a citation style was provided. Provide clear suggestions for correcting errors. Ensure the output is safe, factual, and respects user confidentiality.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Peer Reviewer Citation Verification & Consistency Checker",
+      "niche": {
+        "role": "Academic Peer Reviewer",
+        "scenario": "Reviewing submitted manuscripts for journal or conference publication focusing on citation accuracy and consistency"
+      },
+      "problem": "Peer reviewers spend significant time verifying that all citations in a manuscript are accurate, properly formatted, consistently numbered or named, and that referenced works are correctly attributed. Existing tools focus on grammar, ethical compliance, or content feedback but do not specifically automate citation verification and consistency checking to reduce reviewer workload and improve review quality.",
+      "inputs": [
+        "Full manuscript text (DOCX, PDF, or plain text)",
+        "Reference list or bibliography section",
+        "Journal or conference citation style guidelines (optional)"
+      ],
+      "outputs": [
+        "Structured report highlighting citation inconsistencies, missing references, duplicate citations, and formatting errors",
+        "List of citations that do not match reference list entries or appear incomplete",
+        "Suggestions for correcting citation numbering or in-text cross-referencing",
+        "Summary compliance score against target citation style"
+      ],
+      "whyItWins": [
+        "Fills a gap in peer review support tools by focusing exclusively on citation accuracy and consistency",
+        "Saves reviewers time by automating error detection in a tedious but critical review aspect",
+        "Improves manuscript quality and reduces editorial back-and-forth over citation issues",
+        "Supports multiple document formats and style guides, with customizable rules"
+      ],
+      "upgradePath": {
+        "today": "A single-page app where reviewers upload manuscript and reference list to get an instant citation consistency and accuracy report",
+        "in90Days": "Add integration with popular reference managers (e.g., Zotero, EndNote) and support interactive correction suggestions within the manuscript preview",
+        "in12Months": "Develop a multi-page system with user accounts, batch manuscript processing, collaborative review annotations on citations, version tracking of citation fixes, and integration with journal submission platforms for seamless editorial workflows"
+      },
+      "riskNotes": [
+        "Must carefully handle manuscript data confidentiality and privacy",
+        "Citation style rules can be complex and variable; must allow user customization to avoid false positives",
+        "Limit scope to citation consistency and formatting, avoiding subjective content evaluation to stay within safe advice boundaries"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An academic peer review tool focused on automating citation verification and consistency checking to reduce reviewer workload and improve manuscript quality by detecting citation errors, formatting issues, and compliance with style guidelines.",
+      "primaryUser": "Academic peer reviewers",
+      "successMetrics": [
+        "Reduction in time spent verifying citations per manuscript",
+        "Accuracy and completeness of detected citation inconsistencies",
+        "User adoption rate among peer reviewers",
+        "Positive feedback on report usefulness and error detection",
+        "Number of manuscripts processed and citation issues resolved"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Manuscript Upload & Input UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload manuscripts (DOCX, PDF, plain text), input or upload reference lists, and optionally select citation style guidelines.",
+          "dependsOn": [],
+          "notes": [
+            "Supports drag-and-drop and file validation",
+            "Handles large files with progress indicators",
+            "Input validation for reference list format"
+          ]
+        },
+        {
+          "id": "ui-report",
+          "name": "Citation Report & Correction Suggestions UI",
+          "type": "ui",
+          "responsibility": "Display structured reports highlighting citation inconsistencies, missing or duplicate citations, formatting errors, and compliance scores. In future versions, support interactive correction suggestions and manuscript preview annotations.",
+          "dependsOn": [
+            "api-verification"
+          ],
+          "notes": [
+            "Clear visualization of errors and warnings",
+            "Filter and search within report",
+            "Future: inline manuscript annotation support"
+          ]
+        },
+        {
+          "id": "api-verification",
+          "name": "Citation Verification API",
+          "type": "api",
+          "responsibility": "Process uploaded manuscripts and references to detect citation inconsistencies, formatting errors, missing or duplicate citations, and calculate compliance scores against style guidelines.",
+          "dependsOn": [
+            "data-styleRules"
+          ],
+          "notes": [
+            "Handles parsing of multiple document formats",
+            "Applies customizable citation style rules",
+            "Returns structured, detailed reports"
+          ]
+        },
+        {
+          "id": "data-styleRules",
+          "name": "Citation Style Rules Data Store",
+          "type": "data",
+          "responsibility": "Persist citation style guidelines, user-customized rules, and mappings for formatting and numbering checks.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multiple style guides (e.g., APA, IEEE)",
+            "Allows user overrides to reduce false positives"
+          ]
+        },
+        {
+          "id": "data-manuscripts",
+          "name": "Manuscript & Report Storage",
+          "type": "data",
+          "responsibility": "Persist uploaded manuscripts, extracted citation data, generated reports, user annotations, and version history for batch processing and collaborative workflows.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage to ensure confidentiality",
+            "Version tracking for citation fixes",
+            "Supports batch and collaborative review scenarios"
+          ]
+        },
+        {
+          "id": "integration-refManagers",
+          "name": "Reference Manager Integration",
+          "type": "integration",
+          "responsibility": "Integrate with popular reference managers (e.g., Zotero, EndNote) to import citation data and synchronize reference lists.",
+          "dependsOn": [
+            "api-verification",
+            "data-styleRules"
+          ],
+          "notes": [
+            "OAuth or API key based authentication",
+            "Handles sync conflicts and data mapping"
+          ]
+        },
+        {
+          "id": "job-batchProcessing",
+          "name": "Batch Manuscript Processing Job",
+          "type": "job",
+          "responsibility": "Process multiple manuscripts asynchronously for citation verification, generate reports, and notify users upon completion.",
+          "dependsOn": [
+            "data-manuscripts",
+            "api-verification"
+          ],
+          "notes": [
+            "Handles job queueing and retries on failure",
+            "Scales for large batch sizes"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Manuscript",
+          "purpose": "Store uploaded manuscript files and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "contentExtracted",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "confidential",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "userId"
+          ]
+        },
+        {
+          "name": "CitationReport",
+          "purpose": "Store detailed citation verification reports generated per manuscript.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "issues",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "complianceScore",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "styleGuideUsed",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "manuscriptId"
+          ]
+        },
+        {
+          "name": "CitationStyleRule",
+          "purpose": "Persist citation style rules and user customizations.",
+          "fields": [
+            {
+              "name": "styleName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rulesJson",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "userOverrides",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "styleName"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user account information for authentication and preferences.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        },
+        {
+          "name": "Annotation",
+          "purpose": "Store collaborative annotations on citations within manuscripts.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "citationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "comment",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "manuscriptId",
+            "userId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Manuscript & References",
+          "purpose": "Allow users to upload manuscript files and reference lists, and select citation style guidelines.",
+          "inputs": [
+            "manuscript file",
+            "reference list file or text",
+            "citation style selection (optional)"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "preliminary parsing status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/report/:manuscriptId",
+          "title": "Citation Verification Report",
+          "purpose": "Display detailed citation consistency and accuracy report with error highlights and compliance score.",
+          "inputs": [
+            "manuscriptId"
+          ],
+          "outputs": [
+            "structured citation issues report",
+            "compliance score",
+            "correction suggestions"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings & Citation Style Customization",
+          "purpose": "Allow users to manage account settings and customize citation style rules to reduce false positives.",
+          "inputs": [
+            "user preferences",
+            "custom citation style rules"
+          ],
+          "outputs": [
+            "confirmation of saved preferences"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/batch",
+          "title": "Batch Manuscript Processing",
+          "purpose": "Enable users to upload and process multiple manuscripts asynchronously with status tracking.",
+          "inputs": [
+            "multiple manuscript files",
+            "reference lists",
+            "citation style selection"
+          ],
+          "outputs": [
+            "batch processing status",
+            "links to generated reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/annotations/:manuscriptId",
+          "title": "Collaborative Citation Annotations",
+          "purpose": "Provide interface for reviewers to add, view, and manage annotations on citations collaboratively.",
+          "inputs": [
+            "manuscriptId",
+            "annotation data"
+          ],
+          "outputs": [
+            "annotation list",
+            "annotation creation confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Accept manuscript and reference list uploads and initiate citation verification processing.",
+          "requestShape": "{ manuscriptFile: file, referenceList: file|string, citationStyle: string (optional) }",
+          "responseShape": "{ manuscriptId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/report/:manuscriptId",
+          "method": "GET",
+          "purpose": "Retrieve the citation verification report for a given manuscript.",
+          "requestShape": "{ }",
+          "responseShape": "{ issues: json, complianceScore: number, suggestions: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/styleRules",
+          "method": "GET",
+          "purpose": "Fetch available citation style guidelines and user customizations.",
+          "requestShape": "{ }",
+          "responseShape": "{ styles: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/styleRules",
+          "method": "POST",
+          "purpose": "Save user customized citation style rules.",
+          "requestShape": "{ styleName: string, userOverrides: json }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/annotations/:manuscriptId",
+          "method": "GET",
+          "purpose": "Retrieve annotations for a manuscript.",
+          "requestShape": "{ }",
+          "responseShape": "{ annotations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/annotations/:manuscriptId",
+          "method": "POST",
+          "purpose": "Add a new annotation on a citation.",
+          "requestShape": "{ citationId: string, comment: string }",
+          "responseShape": "{ annotationId: string, success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "BatchCitationVerification",
+          "trigger": "Triggered by batch upload request or scheduled processing",
+          "purpose": "Asynchronously process multiple manuscripts for citation verification and generate reports."
+        },
+        {
+          "name": "NotificationJob",
+          "trigger": "Triggered upon completion of batch or individual manuscript processing",
+          "purpose": "Notify users via email or in-app notifications about report availability or errors."
+        }
+      ],
+      "edgeCases": [
+        "Manuscript files with corrupted or unsupported formats",
+        "Incomplete or missing reference lists",
+        "Citation styles with ambiguous or conflicting rules",
+        "Large manuscripts causing processing timeouts or memory issues",
+        "User customization leading to overly permissive or restrictive rule sets",
+        "Confidential manuscript data leakage or unauthorized access",
+        "Simultaneous edits or annotations causing conflicts",
+        "Network failures during file upload or integration with reference managers"
+      ],
+      "nonGoals": [
+        "Evaluating manuscript content quality beyond citation accuracy",
+        "Automated correction of citation text within manuscript files (only suggestions provided)",
+        "Handling ethical compliance or plagiarism detection",
+        "Providing full manuscript editing or formatting tools",
+        "Supporting citation styles outside of user-configured or popular standards without manual rule input"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses /upload page to submit manuscript file, reference list, and optional citation style.",
+        "Frontend validates inputs and sends POST /api/upload with files and style selection.",
+        "API /api/upload stores manuscript metadata and files in data-manuscripts, triggers citation verification via api-verification component using data-styleRules.",
+        "api-verification parses manuscript and references, applies style rules, generates structured citation report.",
+        "CitationReport is saved in data-manuscripts linked to Manuscript record.",
+        "User navigates to /report/:manuscriptId, frontend requests GET /api/report/:manuscriptId to fetch report data.",
+        "Frontend displays citation issues, compliance score, and suggestions in ui-report component.",
+        "User can customize citation style rules in /settings, which calls GET and POST /api/styleRules to fetch and save userOverrides in data-styleRules.",
+        "Users add/view annotations on /annotations/:manuscriptId, interacting with GET and POST /api/annotations/:manuscriptId endpoints, storing Annotation records.",
+        "Batch uploads via /batch page send multiple manuscripts and references to backend, triggering BatchCitationVerification job.",
+        "BatchCitationVerification asynchronously processes manuscripts, generates reports, and stores results.",
+        "NotificationJob sends user notifications on completion or errors.",
+        "Integration with external reference managers syncs citation data, updating data-styleRules and triggering verification as needed."
+      ],
+      "validationRules": [
+        "Manuscript file must be one of supported formats: DOCX, PDF, plain text; reject corrupted or unsupported files.",
+        "Reference list input must be valid format (file or structured text); validate parseability before processing.",
+        "Citation style selection must match known styles or user-customized styles stored in data-styleRules.",
+        "Uploaded files size limits enforced; large files show progress and may require chunked upload.",
+        "User input for annotation comments must be non-empty strings with max length limits.",
+        "UserOverrides JSON for citation style customization must conform to schema defining allowed rule modifications.",
+        "API endpoints require authenticated user context; userId must match ownership for manuscript and annotations.",
+        "Batch uploads validate each manuscript and reference list individually; reject batch if critical errors found.",
+        "Prevent duplicate manuscript uploads by filename and uploadDate within user scope.",
+        "Annotation creation requires valid citationId linked to manuscript."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with descriptive error messages for invalid inputs or missing required fields.",
+        "Return 401 Unauthorized if user authentication fails or user tries to access resources they do not own.",
+        "Return 404 Not Found if manuscriptId or annotationId does not exist or does not belong to user.",
+        "Handle corrupted or unsupported manuscript files by rejecting upload with clear error and guidance.",
+        "On processing errors in api-verification, return 500 Internal Server Error with retry suggestion; log details for diagnostics.",
+        "Batch processing jobs retry failed manuscripts up to configurable limit; notify user of failures with reasons.",
+        "Network failures during file upload trigger client-side retry mechanisms with exponential backoff.",
+        "Conflicts in annotations (simultaneous edits) resolved via optimistic concurrency control; notify user on conflict.",
+        "Sensitive data access logged; unauthorized access attempts blocked and alerted.",
+        "API responses include consistent error object structure: { errorCode, message, details? }."
+      ],
+      "securityNotes": [
+        "All API routes require authentication; session or token-based auth enforced.",
+        "Manuscript files and reports stored encrypted at rest to ensure confidentiality.",
+        "Access control checks ensure users can only access their own manuscripts, reports, and annotations.",
+        "Input validation and sanitization prevent injection attacks in file uploads and JSON inputs.",
+        "OAuth or API key authentication used for integration with external reference managers; tokens stored securely.",
+        "Rate limiting on upload and annotation APIs to prevent abuse.",
+        "Sensitive user data such as hashedPassword stored securely with strong hashing algorithms.",
+        "Use HTTPS for all client-server communication to protect data in transit.",
+        "Audit logs maintained for critical actions like uploads, report generation, and annotation edits.",
+        "User customization of citation rules validated to prevent injection of malicious code or overly permissive rules."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "Authenticated user on /upload page with valid manuscript (DOCX) and reference list files",
+          "when": "User uploads files and selects citation style, then submits",
+          "then": "System accepts files, returns manuscriptId and status 'processing', and starts verification job"
+        },
+        {
+          "id": "AT-002",
+          "given": "User requests /report/:manuscriptId for a processed manuscript",
+          "when": "User accesses report page",
+          "then": "System returns structured citation issues, compliance score, and suggestions for display"
+        },
+        {
+          "id": "AT-003",
+          "given": "User attempts to upload unsupported manuscript file format",
+          "when": "User submits upload form",
+          "then": "System rejects upload with 400 error and descriptive message about supported formats"
+        },
+        {
+          "id": "AT-004",
+          "given": "User customizes citation style rules on /settings page",
+          "when": "User submits valid userOverrides JSON",
+          "then": "System saves overrides and confirms success"
+        },
+        {
+          "id": "AT-005",
+          "given": "User adds annotation on a citation via /annotations/:manuscriptId",
+          "when": "User submits annotation comment linked to valid citationId",
+          "then": "System stores annotation and returns annotationId with success true"
+        },
+        {
+          "id": "AT-006",
+          "given": "Batch upload of multiple manuscripts with mixed valid and invalid files",
+          "when": "User submits batch upload",
+          "then": "System processes valid files asynchronously, rejects invalid files with error details, and provides batch status updates"
+        },
+        {
+          "id": "AT-007",
+          "given": "Unauthorized user attempts to access /report/:manuscriptId of another user",
+          "when": "User sends GET request to API",
+          "then": "System returns 401 Unauthorized error"
+        },
+        {
+          "id": "AT-008",
+          "given": "Network failure occurs during file upload",
+          "when": "User uploads manuscript",
+          "then": "Client retries upload with exponential backoff and informs user of progress"
+        },
+        {
+          "id": "AT-009",
+          "given": "User requests citation style rules via GET /api/styleRules",
+          "when": "User accesses settings page",
+          "then": "System returns all available styles including user customizations"
+        },
+        {
+          "id": "AT-010",
+          "given": "Simultaneous annotation edits on same citation by multiple users",
+          "when": "Users submit conflicting annotation updates",
+          "then": "System detects conflict, applies optimistic concurrency control, and notifies users of conflict resolution"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database (Manuscript, CitationReport, CitationStyleRule, User, Annotation)",
+        "Implement authentication and user management (User model, login, session handling)",
+        "Develop /upload page UI with file upload components and validation",
+        "Create /api/upload POST route to accept files, store Manuscript, and trigger verification",
+        "Implement api-verification service to parse manuscripts, apply style rules, and generate reports",
+        "Develop /report/:manuscriptId page and GET /api/report/:manuscriptId API to display reports",
+        "Implement data-styleRules storage and GET/POST /api/styleRules APIs for style management",
+        "Develop /settings page UI for user preferences and citation style customization",
+        "Implement /annotations/:manuscriptId GET and POST APIs and UI page for collaborative annotations",
+        "Build batch processing UI (/batch) and backend job BatchCitationVerification with queue and retry logic",
+        "Implement NotificationJob for user notifications on processing completion or errors",
+        "Integrate with external reference managers with OAuth and sync logic",
+        "Add comprehensive validation, error handling, and security enforcement across all APIs",
+        "Implement client-side error handling, progress indicators, and retry mechanisms",
+        "Write automated tests covering acceptance criteria and edge cases",
+        "Deploy and monitor system with logging and audit trails"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/report/[manuscriptId]",
+          "/settings",
+          "/batch",
+          "/annotations/[manuscriptId]"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload.ts",
+          "/api/report/[manuscriptId].ts",
+          "/api/styleRules.ts",
+          "/api/annotations/[manuscriptId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "Manuscript",
+          "CitationReport",
+          "CitationStyleRule",
+          "User",
+          "Annotation"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify any missing constraints or edge cases for the citation verification tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs for the Academic Peer Reviewer Citation Verification tool, please provide any additional constraints, edge cases, or questions you have to refine the requirements. Your input: {{USER_INPUT}}\n\nBlueprint summary:\n{{BLUEPRINT}}\n\nExpanded details:\n{{EXPANDED}}"
+      },
+      {
+        "id": "architect-finalize-pages-and-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final set of UI pages, API endpoints, and data models needed to implement the tool based on refined requirements.",
+        "promptTemplate": "Using the refined requirements and blueprint for the citation verification tool, please finalize and specify all UI pages, backend API routes, and data models needed. Include field names, relationships, and route purposes.\n\nUser input:\n{{USER_INPUT}}\n\nBlueprint:\n{{BLUEPRINT}}\n\nExpanded specs:\n{{EXPANDED}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create starter code stubs for the main UI pages and API endpoints to begin implementation.",
+        "promptTemplate": "Based on the finalized architecture and data models for the citation verification app, generate starter code stubs for the key UI pages and API endpoints. Include route definitions, input and output schemas, and placeholder UI components.\n\nUser input:\n{{USER_INPUT}}\n\nBlueprint:\n{{BLUEPRINT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Plan integration of frontend pages with backend APIs and database models, detailing data flow and authentication.",
+        "promptTemplate": "Plan and describe how to wire the frontend UI pages with backend API routes and database models for the citation verification tool. Include data flow diagrams, authentication enforcement, error handling, and state management.\n\nUser input:\n{{USER_INPUT}}\n\nBlueprint:\n{{BLUEPRINT}}\n\nExpanded specs:\n{{EXPANDED}}"
+      }
+    ]
+  }
+}

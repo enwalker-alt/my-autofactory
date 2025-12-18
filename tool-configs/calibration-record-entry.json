@@ -1,0 +1,694 @@
+{
+  "slug": "calibration-record-entry",
+  "title": "Device Calibration Record Entry",
+  "description": "A single-page tool for academic field research technicians to manually enter or update calibration records for data collection devices, including metadata, calibration dates, methods, results, notes, and optional upload of calibration certificates or reports. Validates input and ensures safe, consistent data entry.",
+  "inputLabel": "Enter calibration record details and optionally upload calibration certificate or report",
+  "outputLabel": "Saved calibration record confirmation or validation error messages",
+  "systemPrompt": "You are an expert assistant helping field research technicians enter or update device calibration records. Only accept requests related to calibration record data entry including device ID, calibration date, method, technician, results, notes, next due date, compliance flag, and optional calibration certificate report upload (PDF or image). Refuse any request unrelated to safe calibration record entry or that attempts disallowed actions. Validate inputs strictly: calibrationDate cannot be in the future beyond 1 day ahead; nextDueDate must be after calibrationDate if provided; uploaded files must be PDF or images and within size limits; serial numbers and IDs must be unique. Output plain text confirmation on success or detailed validation error messages. If structured output is enabled, return the saved calibration record as JSON. Always ensure user input is sanitized and safe. Reject unauthorized or unsafe requests.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Calibration Entry",
+      "prompt": "Please enter the device ID, calibration date (YYYY-MM-DD), and any relevant calibration details such as method, technician, results, and notes. Optionally upload a calibration certificate or report.",
+      "hint": "Provide device ID and calibration date at minimum. Upload only PDF or image files under size limits."
+    },
+    {
+      "label": "Add Next Due Date and Compliance Flag",
+      "prompt": "Enter the calibration record details including next due date for calibration and whether the calibration meets compliance standards (true/false).",
+      "hint": "Ensure next due date is after calibration date. Compliance flag should be boolean."
+    },
+    {
+      "label": "Upload Calibration Document Only",
+      "prompt": "Upload a calibration certificate or report for an existing calibration record by specifying the calibration ID and the document file.",
+      "hint": "Document must be PDF or image. Provide valid calibration ID."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output enabled, return saved CalibrationRecord JSON with fields: calibrationId, deviceId, calibrationDate, method, technician, results, notes, documentUrl, nextDueDate, complianceFlag.",
+  "clarifyPrompt": "Please provide all required calibration record fields and ensure dates and file formats are valid. If any information is missing or unclear, please clarify.",
+  "finalizePrompt": "Confirm submission of the calibration record with the provided details. On success, output saved record confirmation; on failure, provide detailed validation errors.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Device Calibration Tracker",
+      "niche": {
+        "role": "Academic Field Research Technician",
+        "scenario": "Managing and tracking calibration status and history of multiple data collection devices used in field research projects across multiple sites"
+      },
+      "problem": "Field research projects often involve numerous data collection devices (e.g., sensors, handheld instruments) that require regular calibration to ensure data accuracy and validity. Currently, calibration tracking is often done via manual logs or disparate spreadsheets, leading to missed calibrations, inconsistent data quality, and compliance risks. There is no dedicated tool that integrates calibration schedules, device metadata, field site info, and manual calibration results into a centralized, structured system tailored for field research workflows.",
+      "inputs": [
+        "Device metadata (model, serial number, specifications)",
+        "Field site and project identifiers",
+        "Calibration schedules and historical calibration records (date, method, technician, results)",
+        "Manual calibration notes and uploaded calibration certificates or reports",
+        "Device usage logs or assignment to field sites/teams"
+      ],
+      "outputs": [
+        "Centralized calibration status dashboard by device, site, and project",
+        "Automated alerts and reminders for upcoming or overdue calibrations",
+        "Detailed calibration history reports with compliance flags",
+        "Device assignment and usage summaries correlated with calibration status",
+        "Exportable calibration compliance documentation for audits and project reports"
+      ],
+      "whyItWins": [
+        "Fills a critical gap in field research device management where existing tools focus on logistics or data but not calibration specifics",
+        "Reduces risk of data quality issues by ensuring timely calibrations and compliance with research protocols",
+        "Supports multi-site projects with scalable tracking and centralized visibility",
+        "Manual calibration inputs and document uploads allow flexibility for diverse device types and procedures",
+        "Lightweight start with potential to expand into integrated field equipment management and data quality assurance system"
+      ],
+      "upgradePath": {
+        "today": "A simple web app where field technicians can input devices and calibration records manually and receive scheduled alerts and summary dashboards.",
+        "in90Days": "Add device assignment workflows, mobile-friendly interfaces for on-site data entry, and integration with project management tools to link calibration to field schedules.",
+        "in12Months": "Expand to multi-user system with role-based access, automated data import from device firmware or IoT sensors, advanced analytics on device performance trends, and compliance audit management features."
+      },
+      "riskNotes": [
+        "Does not provide medical, legal, or diagnostic advice, focusing solely on device calibration tracking.",
+        "Requires proper user training to ensure accurate manual data entry for calibration records.",
+        "Data security and privacy must be considered when handling project-sensitive device metadata and calibration documents.",
+        "Integration with actual device data sources may require device-specific protocols and permissions."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A centralized web application for academic field research technicians to manage, track, and report on calibration status and history of multiple data collection devices across projects and field sites, ensuring compliance and data quality.",
+      "primaryUser": "Academic Field Research Technician",
+      "successMetrics": [
+        "Percentage reduction in missed or overdue device calibrations",
+        "User adoption rate among field technicians and project managers",
+        "Accuracy and completeness of calibration records entered",
+        "Number of compliance audit reports generated and passed",
+        "User satisfaction with calibration status visibility and alerting"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Calibration Status Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display centralized views of device calibration statuses, upcoming and overdue calibrations, device assignments, and compliance flags.",
+          "dependsOn": [
+            "api-calibration",
+            "api-device",
+            "api-site"
+          ],
+          "notes": [
+            "Supports filtering by device, site, and project.",
+            "Shows summary and detailed views.",
+            "Mobile-friendly design planned for future upgrades."
+          ]
+        },
+        {
+          "id": "ui-data-entry",
+          "name": "Device and Calibration Data Entry UI",
+          "type": "ui",
+          "responsibility": "Provide forms and interfaces for manual entry and editing of device metadata, calibration records, calibration certificate uploads, and device assignments.",
+          "dependsOn": [
+            "api-device",
+            "api-calibration",
+            "api-site"
+          ],
+          "notes": [
+            "Includes validation to reduce data entry errors.",
+            "Supports uploading calibration certificates and reports.",
+            "Future mobile optimization for on-site data entry."
+          ]
+        },
+        {
+          "id": "api-device",
+          "name": "Device Management API",
+          "type": "api",
+          "responsibility": "CRUD operations for device metadata, including model, serial number, specifications, and assignment to sites or teams.",
+          "dependsOn": [
+            "data-device",
+            "data-site"
+          ],
+          "notes": [
+            "Handles device assignment workflows.",
+            "Validates unique serial numbers.",
+            "Supports querying devices by project or site."
+          ]
+        },
+        {
+          "id": "api-calibration",
+          "name": "Calibration Records API",
+          "type": "api",
+          "responsibility": "Manage calibration schedules, historical calibration records, manual calibration notes, and uploaded documents.",
+          "dependsOn": [
+            "data-calibration",
+            "data-device"
+          ],
+          "notes": [
+            "Supports querying calibration status and history.",
+            "Handles document storage references.",
+            "Enforces data integrity on calibration dates and results."
+          ]
+        },
+        {
+          "id": "api-site",
+          "name": "Field Site and Project API",
+          "type": "api",
+          "responsibility": "Manage field site and project identifiers, linking devices and calibrations to specific locations and projects.",
+          "dependsOn": [
+            "data-site"
+          ],
+          "notes": [
+            "Supports multi-site project structures.",
+            "Enables filtering and reporting by site or project."
+          ]
+        },
+        {
+          "id": "job-alerts",
+          "name": "Calibration Alert and Reminder Job",
+          "type": "job",
+          "responsibility": "Periodically scan calibration schedules and send automated alerts/reminders for upcoming or overdue calibrations to users.",
+          "dependsOn": [
+            "data-calibration",
+            "api-device"
+          ],
+          "notes": [
+            "Configurable alert thresholds.",
+            "Handles failure retries and alert delivery status tracking."
+          ]
+        },
+        {
+          "id": "integration-doc-storage",
+          "name": "Document Storage Integration",
+          "type": "integration",
+          "responsibility": "Handle storage and retrieval of uploaded calibration certificates and reports securely.",
+          "dependsOn": [],
+          "notes": [
+            "Supports scalable storage solutions (e.g., cloud storage).",
+            "Ensures secure access and privacy controls."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Device",
+          "purpose": "Store metadata about each data collection device used in field research.",
+          "fields": [
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "model",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "serialNumber",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "specifications",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "assignedSiteId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedProjectId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "serialNumber",
+            "assignedSiteId",
+            "assignedProjectId"
+          ]
+        },
+        {
+          "name": "CalibrationRecord",
+          "purpose": "Track each calibration event, schedule, results, and related documents for devices.",
+          "fields": [
+            {
+              "name": "calibrationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "calibrationDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "method",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "technician",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "results",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "documentUrl",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "nextDueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "complianceFlag",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "calibrationDate",
+            "nextDueDate"
+          ]
+        },
+        {
+          "name": "FieldSite",
+          "purpose": "Represent field research sites and projects to organize devices and calibrations.",
+          "fields": [
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "projectId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user information and roles for future multi-user and role-based access control.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "username",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "username",
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Calibration Status Dashboard",
+          "purpose": "Provide an overview of calibration statuses, upcoming and overdue calibrations, compliance flags, and device assignments.",
+          "inputs": [
+            "filter by device, site, project"
+          ],
+          "outputs": [
+            "calibration status summaries",
+            "alerts",
+            "compliance flags"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/devices",
+          "title": "Device Management",
+          "purpose": "List and manage devices, view and edit device metadata and assignments.",
+          "inputs": [
+            "device metadata fields",
+            "assignment selectors"
+          ],
+          "outputs": [
+            "device lists",
+            "device details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/calibrations",
+          "title": "Calibration Records",
+          "purpose": "Enter, edit, and review calibration records, upload calibration documents, and view calibration history.",
+          "inputs": [
+            "calibration date",
+            "method",
+            "technician",
+            "results",
+            "notes",
+            "document upload"
+          ],
+          "outputs": [
+            "calibration history",
+            "compliance status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/sites",
+          "title": "Field Sites and Projects",
+          "purpose": "Manage field sites and projects, link devices and calibrations to specific locations.",
+          "inputs": [
+            "site and project identifiers",
+            "location data"
+          ],
+          "outputs": [
+            "site/project lists",
+            "linked devices"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Compliance and Calibration Reports",
+          "purpose": "Generate and export calibration history reports, compliance documentation, and audit-ready summaries.",
+          "inputs": [
+            "date ranges",
+            "device/site/project filters"
+          ],
+          "outputs": [
+            "exportable reports (PDF, CSV)"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/devices",
+          "method": "GET",
+          "purpose": "Retrieve list of devices with optional filters.",
+          "requestShape": "query params: {siteId?, projectId?, serialNumber?}",
+          "responseShape": "array of Device objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/devices",
+          "method": "POST",
+          "purpose": "Create a new device record.",
+          "requestShape": "Device object without deviceId",
+          "responseShape": "Created Device object with deviceId",
+          "auth": "user"
+        },
+        {
+          "route": "/api/calibrations",
+          "method": "GET",
+          "purpose": "Retrieve calibration records filtered by device or date range.",
+          "requestShape": "query params: {deviceId?, fromDate?, toDate?}",
+          "responseShape": "array of CalibrationRecord objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/calibrations",
+          "method": "POST",
+          "purpose": "Create or update a calibration record.",
+          "requestShape": "CalibrationRecord object without calibrationId for new",
+          "responseShape": "Saved CalibrationRecord object with calibrationId",
+          "auth": "user"
+        },
+        {
+          "route": "/api/sites",
+          "method": "GET",
+          "purpose": "Retrieve list of field sites and projects.",
+          "requestShape": "none",
+          "responseShape": "array of FieldSite objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/sites",
+          "method": "POST",
+          "purpose": "Create or update a field site or project.",
+          "requestShape": "FieldSite object",
+          "responseShape": "Saved FieldSite object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/compliance",
+          "method": "POST",
+          "purpose": "Generate compliance and calibration history reports.",
+          "requestShape": "{filters: {deviceId?, siteId?, projectId?, dateRange?}}",
+          "responseShape": "{reportUrl: string}",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Calibration Due Alert Job",
+          "trigger": "Scheduled (e.g., daily at midnight)",
+          "purpose": "Scan calibration schedules to identify upcoming or overdue calibrations and send alerts/reminders to assigned users."
+        }
+      ],
+      "edgeCases": [
+        "Devices without assigned field sites or projects must still be tracked and flagged.",
+        "Calibration records with missing or incomplete data require validation and user prompts.",
+        "Uploaded calibration documents may fail to upload or be corrupted; system must handle retries and notify users.",
+        "Overlapping calibration schedules or conflicting calibration results must be detected and flagged.",
+        "Users entering calibration dates in the future or inconsistent with device usage logs should be warned.",
+        "Handling devices retired or decommissioned but with historical calibration data.",
+        "Network failures during data entry or document upload require offline support or retry mechanisms."
+      ],
+      "nonGoals": [
+        "Providing medical, legal, or diagnostic advice related to device data.",
+        "Automated calibration or device firmware management.",
+        "Real-time data collection or sensor data ingestion from devices (planned for future upgrades).",
+        "Comprehensive project management unrelated to device calibration.",
+        "Advanced analytics beyond basic compliance and trend reporting in initial versions."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages (/dashboard, /devices, /calibrations, /sites, /reports).",
+        "UI components send requests to respective API routes with necessary filters or payloads.",
+        "API routes validate input, perform CRUD operations on Prisma models (Device, CalibrationRecord, FieldSite, User).",
+        "API routes interact with integration-doc-storage for uploading or retrieving calibration documents.",
+        "Background job (Calibration Due Alert Job) runs daily, querying CalibrationRecord and Device data to identify upcoming or overdue calibrations and sends alerts to users.",
+        "Reports API generates compliance reports based on filters and returns URLs for downloadable documents.",
+        "UI pages consume API responses to render lists, summaries, forms, and reports.",
+        "Error states and validation feedback propagate back to UI for user correction or notification."
+      ],
+      "validationRules": [
+        "Device.serialNumber must be unique across all devices.",
+        "Device.deviceId, CalibrationRecord.calibrationId, FieldSite.siteId and projectId must be unique identifiers.",
+        "CalibrationRecord.calibrationDate cannot be in the future beyond a configurable threshold (e.g., 1 day ahead).",
+        "CalibrationRecord.nextDueDate, if provided, must be after calibrationDate.",
+        "CalibrationRecord.complianceFlag is boolean and derived from calibration results and schedule compliance logic.",
+        "Uploaded calibration documents must be validated for file type (PDF, image), size limits, and successful upload confirmation.",
+        "FieldSite.siteId and projectId must be unique per site/project combination.",
+        "User inputs on forms must be sanitized and validated for required fields before API submission.",
+        "API endpoints require authenticated user context; reject unauthorized requests.",
+        "Calibration records must not overlap in date ranges for the same device; detect and flag conflicts.",
+        "Devices without assignedSiteId or assignedProjectId are allowed but flagged in UI and reports.",
+        "Calibration notes and results fields accept JSON or string data but require schema validation for expected structure."
+      ],
+      "errorHandling": [
+        "API routes return standard HTTP status codes: 400 for validation errors, 401 for unauthorized, 404 for not found, 409 for conflicts (e.g., duplicate serialNumber), 500 for server errors.",
+        "Validation errors include detailed messages specifying invalid fields and reasons.",
+        "Document upload failures trigger retry logic with exponential backoff; persistent failures notify user with actionable message.",
+        "Background job logs failures and retries alert delivery; alerts failures escalate via monitoring.",
+        "UI displays user-friendly error messages and highlights invalid form fields.",
+        "Network failures during data entry or document upload prompt retry options and local caching where feasible.",
+        "Conflicting calibration schedules or data inconsistencies generate warnings in UI and reports.",
+        "Unhandled exceptions are logged with context for debugging and do not expose sensitive info to users.",
+        "API responses include error codes and messages in JSON format for consistent client handling."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user sessions; implement JWT or session-based auth.",
+        "Role-based access control to be planned for future; initially restrict access to authenticated users only.",
+        "Uploaded documents stored securely with access controls; URLs are signed or time-limited to prevent unauthorized access.",
+        "Input validation and sanitization to prevent injection attacks (SQL, XSS).",
+        "Use HTTPS for all client-server and document storage communications.",
+        "Background job credentials and access to data are secured and limited to necessary scopes.",
+        "Audit logging for critical operations such as device creation, calibration record updates, and document uploads.",
+        "Limit file upload types and sizes to reduce risk of malicious files.",
+        "Ensure error messages do not leak sensitive system or user information."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user accesses the /dashboard page with no filters applied",
+          "when": "The dashboard loads",
+          "then": "The user sees a summary of calibration statuses, upcoming and overdue calibrations, and compliance flags for all devices"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user submits a new device creation form with a unique serialNumber",
+          "when": "The form is submitted",
+          "then": "The device is created successfully and returned with a generated deviceId"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user attempts to create a device with a serialNumber that already exists",
+          "when": "The form is submitted",
+          "then": "The API returns a 409 conflict error and the UI displays a validation message about duplicate serialNumber"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user uploads a calibration document in an unsupported file format",
+          "when": "The upload is attempted",
+          "then": "The system rejects the upload with a validation error and prompts the user to upload a supported file type"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user enters a calibrationDate in the future beyond allowed threshold",
+          "when": "The calibration record is submitted",
+          "then": "The API returns a validation error and the UI prompts the user to correct the date"
+        },
+        {
+          "id": "AT-006",
+          "given": "The Calibration Due Alert Job runs at scheduled time",
+          "when": "It scans calibration records",
+          "then": "It identifies upcoming and overdue calibrations and sends alerts to assigned users, logging success or failure"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user requests a compliance report with device and date range filters",
+          "when": "The report generation API is called",
+          "then": "The system generates and returns a reportUrl for downloading the report in PDF or CSV format"
+        },
+        {
+          "id": "AT-008",
+          "given": "An unauthenticated user attempts to access /devices page or API routes",
+          "when": "The request is made",
+          "then": "The system denies access with a 401 unauthorized response"
+        },
+        {
+          "id": "AT-009",
+          "given": "A device without assignedSiteId or assignedProjectId exists",
+          "when": "The dashboard or reports are viewed",
+          "then": "The device is displayed with a flagged status indicating missing assignment"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user enters overlapping calibration records for the same device",
+          "when": "The records are saved",
+          "then": "The system detects the conflict, flags the records, and prompts the user to resolve the overlap"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Device, CalibrationRecord, FieldSite, User with indexes and constraints",
+        "Implement authentication middleware and user session management",
+        "Develop API routes for /api/devices, /api/calibrations, /api/sites with validation and error handling",
+        "Integrate document storage service for calibration certificate uploads",
+        "Build UI pages: /dashboard, /devices, /calibrations, /sites, /reports with forms and data display components",
+        "Implement background job for Calibration Due Alert Job with scheduling and alert delivery",
+        "Add validation logic on client and server sides for all inputs and uploads",
+        "Implement error handling and user feedback mechanisms in UI",
+        "Develop report generation API and UI integration for compliance reports",
+        "Conduct acceptance testing and fix issues",
+        "Plan and prepare for future mobile optimization and role-based access control"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/devices",
+          "/calibrations",
+          "/sites",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "pages/api/devices/index.ts",
+          "pages/api/calibrations/index.ts",
+          "pages/api/sites/index.ts",
+          "pages/api/reports/compliance.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Device",
+          "CalibrationRecord",
+          "FieldSite",
+          "User"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to fill missing constraints, edge cases, and user scenarios before design.",
+        "promptTemplate": "Given the current blueprint and idea for the Academic Research Data Collection Device Calibration Tracker:\n{{BLUEPRINT}}\n\nPlease provide any missing constraints, edge cases, or requirements you think are critical for the system to handle. Include details about user roles, workflows, or data validation needs.\n\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Finalize detailed page designs, API routes, and data models based on refined requirements.",
+        "promptTemplate": "Using the refined requirements and existing blueprint:\n{{BLUEPRINT}}\n\nDesign and finalize the UI pages, API endpoints, and Prisma data models necessary to implement the system. Include indexes and constraints.\n\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code files for UI pages and API routes for initial implementation.",
+        "promptTemplate": "Based on the finalized architecture:\n{{BLUEPRINT}}\n\nGenerate scaffold code stubs for Next.js pages and API routes to jumpstart development. Include folder structure and file names.\n\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wireup",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to API endpoints and Prisma models, implement validation and error handling.",
+        "promptTemplate": "Using the generated page stubs and data models:\n{{BLUEPRINT}}\n\nImplement the integration between UI pages, API routes, and database models. Add input validation, error handling, and authentication checks.\n\nUser input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,753 @@
+{
+  "slug": "academic-collaboration-network-basic",
+  "title": "Academic Collaboration Network Visualizer & Opportunity Identifier",
+  "description": "Upload your academic research team profiles and publication lists to generate a simple collaboration network graph and receive basic collaborator suggestions based on complementary expertise and past collaborations. Supports user-defined research themes for tailored recommendations.",
+  "inputLabel": "Paste or upload your research team profiles and publication metadata JSON here",
+  "outputLabel": "Collaboration Network Summary and Recommended Collaborators",
+  "systemPrompt": "You are an academic collaboration network assistant. Given user-uploaded JSON data describing research team member profiles (including expertise keywords and publication lists) and publication metadata, generate a clear, concise plain text summary of the existing collaboration network and provide a ranked list of potential new collaborators based on complementary expertise. Always validate input data for required fields and formats. Refuse any request lacking authentication token or containing disallowed content. Do not produce any confidential or sensitive data outputs. Output should be plain text with no HTML or markdown. If data is malformed or missing required fields, respond with a clear error message.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Focus",
+      "prompt": "Summarize the current collaboration network highlighting key researchers, common expertise areas, and collaboration clusters."
+    },
+    {
+      "label": "Collaborator Suggestions",
+      "prompt": "List potential new collaborators ranked by complementary expertise and shared publication themes."
+    },
+    {
+      "label": "Research Theme Insights",
+      "prompt": "Analyze the uploaded data in the context of the user-defined research themes and highlight strategic collaboration opportunities."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "clarifyPrompt": "Please provide your research team profiles and publication metadata as JSON input. Optionally, include user-defined research themes to tailor collaborator suggestions. Ensure data is complete and correctly formatted.",
+  "finalizePrompt": "Based on the uploaded data and optional research themes, generate a collaboration network summary and ranked collaborator recommendations with rationale.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Collaboration Network Visualizer & Opportunity Identifier",
+      "niche": {
+        "role": "Academic Research Team Lead",
+        "scenario": "Planning new interdisciplinary research projects by analyzing existing collaboration networks and identifying strategic partnership opportunities"
+      },
+      "problem": "Academic research team leads lack an integrated, dynamic tool to visualize their current collaboration network and discover potential new collaborators based on complementary expertise, past collaborations, publication impact, and shared funding interests. Existing tools focus on conflict resolution or contribution tracking but do not provide a comprehensive, data-driven collaboration opportunity exploration and visualization system to support strategic research networking and project planning.",
+      "inputs": [
+        "Current research team member profiles (publication records, expertise keywords, past projects)",
+        "Institutional and external researcher databases (optional upload or API connection)",
+        "Publication and grant metadata (titles, abstracts, keywords, funding sources)",
+        "User-defined research themes or project objectives"
+      ],
+      "outputs": [
+        "Interactive, dynamic collaboration network graphs showing existing and potential collaborators",
+        "Ranked list of recommended new collaborators with rationale based on complementary expertise and prior joint funding success",
+        "Strategic partnership opportunity reports including potential funding agencies aligned with proposed collaborations",
+        "Exportable summaries for grant proposals and internal planning"
+      ],
+      "whyItWins": [
+        "Fills a unique gap by combining network visualization with actionable collaborator recommendations tailored to research themes",
+        "Supports repeated use across multiple project planning cycles with dynamic data inputs",
+        "Integrates diverse data sources to produce rich, insightful outputs beyond static contribution tracking or conflict management",
+        "Enables strategic growth of research teams and stronger interdisciplinary grant proposals"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app that accepts team member profiles and publication lists to generate simple collaboration network graphs with basic collaborator suggestions.",
+        "in90Days": "Add integration with institutional publication databases and grant records to enrich network data, plus exportable collaboration opportunity reports tailored to specific research themes.",
+        "in12Months": "Develop a full multi-page platform including advanced interactive visualizations, AI-powered collaborator matching algorithms, personalized strategic partnership planning tools, and collaboration impact tracking dashboards."
+      },
+      "riskNotes": [
+        "Sensitive publication and personnel data must be securely handled and comply with institutional privacy policies.",
+        "Recommendations should be presented as supportive insights, not definitive decisions, to avoid overreliance on automated outputs.",
+        "Data source integration requires careful validation to maintain accuracy and relevance of collaborator suggestions."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A dynamic web platform enabling academic research team leads to visualize existing collaboration networks, identify strategic new collaborators based on complementary expertise and funding history, and generate actionable partnership opportunity reports to support interdisciplinary project planning and grant proposals.",
+      "primaryUser": "Academic Research Team Lead",
+      "successMetrics": [
+        "Number of collaboration networks created and analyzed",
+        "User engagement with collaborator recommendations and network visualizations",
+        "Frequency of export/report generation for grant proposals",
+        "User-reported satisfaction with recommendation relevance and visualization clarity",
+        "Integration success rate with institutional and external data sources"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide the main user interface for uploading data, viewing collaboration network graphs, exploring collaborator recommendations, and accessing reports and exports.",
+          "dependsOn": [
+            "api-network",
+            "api-recommendation",
+            "data-userProfiles"
+          ],
+          "notes": [
+            "Includes interactive network visualization with zoom, filter, and highlight features.",
+            "Supports user input of research themes and project objectives.",
+            "Handles authentication and session management."
+          ]
+        },
+        {
+          "id": "api-network",
+          "name": "Collaboration Network API",
+          "type": "api",
+          "responsibility": "Process user and external data to construct collaboration graphs, exposing endpoints to fetch network data and metadata for visualization.",
+          "dependsOn": [
+            "data-userProfiles",
+            "data-publications",
+            "data-grants"
+          ],
+          "notes": [
+            "Supports incremental updates as new data is uploaded or integrated.",
+            "Validates data consistency and handles missing or incomplete records."
+          ]
+        },
+        {
+          "id": "api-recommendation",
+          "name": "Collaborator Recommendation API",
+          "type": "api",
+          "responsibility": "Analyze collaboration networks and metadata to generate ranked collaborator suggestions with rationale based on expertise complementarity, prior joint funding, and publication impact.",
+          "dependsOn": [
+            "api-network",
+            "data-userProfiles",
+            "data-publications",
+            "data-grants"
+          ],
+          "notes": [
+            "Includes configurable parameters for research themes and weighting factors.",
+            "Returns explanations to support transparency and user trust."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store user profiles, publication records, grant metadata, collaboration networks, user-defined themes, and generated reports securely and in compliance with privacy policies.",
+          "dependsOn": [],
+          "notes": [
+            "Implements access controls and encryption for sensitive data.",
+            "Supports versioning and audit logs for data changes."
+          ]
+        },
+        {
+          "id": "integration-dataSources",
+          "name": "Data Source Integration Module",
+          "type": "integration",
+          "responsibility": "Manage connections and data ingestion from institutional publication databases, external researcher directories, and grant records via APIs or file uploads.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Includes data validation and normalization pipelines.",
+            "Handles failures gracefully with retry and alert mechanisms."
+          ]
+        },
+        {
+          "id": "job-reportGeneration",
+          "name": "Report Generation Background Job",
+          "type": "job",
+          "responsibility": "Generate exportable strategic partnership opportunity reports and summaries for grant proposals based on current data and user inputs.",
+          "dependsOn": [
+            "data-storage",
+            "api-recommendation"
+          ],
+          "notes": [
+            "Runs asynchronously to avoid UI blocking.",
+            "Supports multiple export formats (PDF, DOCX)."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "UserProfile",
+          "purpose": "Represent individual researchers including their expertise, publication records, and past projects.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "expertiseKeywords",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "publicationIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "pastProjectIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "name",
+            "expertiseKeywords"
+          ]
+        },
+        {
+          "name": "Publication",
+          "purpose": "Store metadata about publications relevant to collaboration analysis.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "abstract",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "keywords",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "authorIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "publicationDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "impactFactor",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "fundingSourceIds",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "keywords",
+            "authorIds"
+          ]
+        },
+        {
+          "name": "Grant",
+          "purpose": "Capture grant metadata including funding agencies and associated projects.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fundingAgency",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "associatedProjectIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "researcherIds",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "fundingAgency",
+            "researcherIds"
+          ]
+        },
+        {
+          "name": "CollaborationNetwork",
+          "purpose": "Persist collaboration graph data including nodes (researchers) and edges (collaborations).",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "nodes",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "edges",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "userId"
+          ]
+        },
+        {
+          "name": "ResearchTheme",
+          "purpose": "Store user-defined research themes or project objectives to guide recommendations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "keywords",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "userId"
+          ]
+        },
+        {
+          "name": "Report",
+          "purpose": "Store generated strategic partnership opportunity reports and export metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "themeId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "format",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "userId",
+            "themeId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the platform securely.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "login status"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Collaboration Network Dashboard",
+          "purpose": "Main interface for uploading data, viewing collaboration graphs, and exploring collaborator recommendations.",
+          "inputs": [
+            "user profile data upload",
+            "research themes input"
+          ],
+          "outputs": [
+            "interactive network graph",
+            "recommended collaborators list"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reports and Exports",
+          "purpose": "View, generate, and download strategic partnership opportunity reports and summaries.",
+          "inputs": [
+            "selected research theme",
+            "export format selection"
+          ],
+          "outputs": [
+            "generated report previews",
+            "exported files"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings",
+          "purpose": "Manage user profile, data source integrations, and privacy preferences.",
+          "inputs": [
+            "profile updates",
+            "data source configurations"
+          ],
+          "outputs": [
+            "settings confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/network",
+          "method": "POST",
+          "purpose": "Create or update collaboration network data based on uploaded profiles and publications.",
+          "requestShape": "JSON with user profiles, publications, grants, and optional research themes",
+          "responseShape": "JSON with network graph data and status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/network",
+          "method": "GET",
+          "purpose": "Retrieve collaboration network data for visualization.",
+          "requestShape": "Query parameters with user ID and optional filters",
+          "responseShape": "JSON with nodes and edges representing the collaboration network",
+          "auth": "user"
+        },
+        {
+          "route": "/api/recommendations",
+          "method": "POST",
+          "purpose": "Generate ranked collaborator recommendations based on current network and research themes.",
+          "requestShape": "JSON with user ID, research theme keywords, and weighting parameters",
+          "responseShape": "JSON with ranked list of collaborators and rationale explanations",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports",
+          "method": "POST",
+          "purpose": "Request generation of strategic partnership opportunity reports.",
+          "requestShape": "JSON with user ID, selected research theme ID, and export format",
+          "responseShape": "JSON with report generation status and report ID",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/{reportId}",
+          "method": "GET",
+          "purpose": "Download generated report by report ID.",
+          "requestShape": "Report ID in path",
+          "responseShape": "Binary file stream of the report",
+          "auth": "user"
+        },
+        {
+          "route": "/api/integrations/upload",
+          "method": "POST",
+          "purpose": "Upload external researcher or publication data files.",
+          "requestShape": "Multipart/form-data with file uploads",
+          "responseShape": "JSON with upload status and validation results",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ReportGenerationJob",
+          "trigger": "Triggered by user report generation request",
+          "purpose": "Asynchronously generate exportable strategic partnership opportunity reports without blocking UI."
+        },
+        {
+          "name": "DataIntegrationSyncJob",
+          "trigger": "Scheduled periodic sync or triggered by new data source configuration",
+          "purpose": "Fetch and ingest data from institutional and external APIs, validate and normalize data for platform use."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or inconsistent publication or grant metadata causing gaps in network graph or recommendations.",
+        "Data source API failures or rate limiting leading to partial or delayed data updates.",
+        "User uploads corrupted or improperly formatted data files.",
+        "Privacy policy changes requiring data access restrictions or data deletion.",
+        "Overlapping or conflicting expertise keywords reducing recommendation clarity.",
+        "Users misinterpreting recommendations as definitive decisions rather than supportive insights.",
+        "Large collaboration networks causing performance degradation in visualization or API response times."
+      ],
+      "nonGoals": [
+        "Providing conflict resolution or contribution tracking features beyond collaboration visualization and recommendations.",
+        "Replacing institutional data governance or compliance policies.",
+        "Automating grant application submission or management.",
+        "Serving as a general-purpose publication repository or citation manager.",
+        "Providing real-time collaboration editing or communication tools."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving an authentication token for session management.",
+        "Authenticated user accesses /dashboard to upload user profile data and define research themes.",
+        "Dashboard UI sends uploaded data and themes to /api/network (POST) to create or update collaboration network.",
+        "/api/network validates and processes data, updates CollaborationNetwork model, and returns network graph data.",
+        "Dashboard fetches network data from /api/network (GET) for interactive visualization.",
+        "User requests collaborator recommendations by submitting research theme keywords and weighting parameters to /api/recommendations (POST).",
+        "/api/recommendation analyzes current network and metadata, returning ranked collaborator list with rationale.",
+        "User navigates to /reports to select research themes and export formats, submitting requests to /api/reports (POST).",
+        "/api/reports triggers asynchronous ReportGenerationJob to generate reports in requested formats.",
+        "User downloads generated reports via /api/reports/{reportId} (GET), receiving binary file streams.",
+        "User configures data source integrations and uploads external data files via /api/integrations/upload (POST).",
+        "Integration module validates, normalizes, and stores data in persistent storage, triggering DataIntegrationSyncJob for scheduled syncs.",
+        "All data stored securely with access controls and encryption, supporting versioning and audit logs."
+      ],
+      "validationRules": [
+        "Authentication tokens must be validated on all protected API routes; reject unauthorized requests with 401 status.",
+        "User profile uploads must include required fields: id (string), name (string), expertiseKeywords (non-empty JSON array), publicationIds (JSON array).",
+        "Publication records require id, title, keywords (non-empty JSON array), authorIds (JSON array).",
+        "Grant records must have id, title, fundingAgency, and researcherIds (JSON array).",
+        "Research themes require id, userId, title, keywords (non-empty JSON array), and createdAt date.",
+        "Report generation requests must include valid userId, existing themeId (optional), and supported export format (PDF, DOCX).",
+        "File uploads must be validated for file type, size limits, and parseability; reject corrupted or unsupported files with descriptive errors.",
+        "API inputs must be sanitized to prevent injection attacks; JSON fields must conform to expected schema and types.",
+        "Network data updates must ensure consistency: nodes reference existing user profiles; edges reference valid node IDs.",
+        "Recommendation parameters must be within acceptable ranges; research theme keywords must be non-empty arrays.",
+        "Pagination or filtering parameters (if any) must be validated for type and range."
+      ],
+      "errorHandling": [
+        "Return HTTP 400 with detailed error messages for validation failures on input data.",
+        "Return HTTP 401 Unauthorized for missing or invalid authentication tokens.",
+        "Return HTTP 404 Not Found for requests referencing non-existent resources (e.g., reportId, themeId).",
+        "Return HTTP 500 Internal Server Error for unexpected failures, with logging for diagnostics.",
+        "For file upload errors, return 422 Unprocessable Entity with validation results specifying issues.",
+        "API responses include status fields indicating success or failure, with error codes and human-readable messages.",
+        "Background jobs log errors and send alerts for failures; retry mechanisms implemented for transient errors.",
+        "Handle partial data availability gracefully by returning partial results with warnings where applicable.",
+        "Rate limiting and API integration failures trigger retries with exponential backoff and user notifications.",
+        "UI displays error notifications and guidance for corrective actions based on API error responses."
+      ],
+      "securityNotes": [
+        "All API routes requiring authentication must verify JWT or session tokens securely.",
+        "Sensitive data such as user emails and grant details must be encrypted at rest and in transit (HTTPS).",
+        "Access controls restrict data visibility to authorized users only; users can only access their own data and reports.",
+        "Implement CSRF protection on state-changing API endpoints.",
+        "Validate and sanitize all user inputs to prevent injection attacks (SQL, NoSQL, XSS).",
+        "File uploads are scanned and validated to prevent malicious content.",
+        "Audit logs record data changes and access events for compliance and troubleshooting.",
+        "Privacy policy compliance includes data retention limits and user data deletion upon request.",
+        "Rate limiting applied to APIs to prevent abuse and denial-of-service attacks.",
+        "Use secure cookie flags and HTTP headers (e.g., Content Security Policy) to enhance client security."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "The user logs in via /login with correct email and password",
+          "then": "The system returns an authentication token and login status indicating success"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /dashboard",
+          "when": "The user uploads valid user profile data and research themes",
+          "then": "The system creates or updates the collaboration network and returns updated network graph data"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user with existing collaboration network data",
+          "when": "The user requests collaborator recommendations with valid research theme keywords and weighting parameters",
+          "then": "The system returns a ranked list of collaborators with rationale explanations"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user on /reports",
+          "when": "The user requests generation of a report with valid theme ID and export format",
+          "then": "The system accepts the request, triggers asynchronous report generation, and returns report generation status and report ID"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user with a generated report",
+          "when": "The user downloads the report via /api/reports/{reportId}",
+          "then": "The system returns the binary file stream of the report with correct content type"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user uploading external data files",
+          "when": "The user uploads files via /api/integrations/upload",
+          "then": "The system validates files, returns upload status and validation results, and stores valid data"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user attempts to access /dashboard or protected APIs",
+          "when": "The user sends requests without valid authentication",
+          "then": "The system rejects requests with HTTP 401 Unauthorized"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads corrupted or improperly formatted data files",
+          "when": "The system processes the upload",
+          "then": "The system returns descriptive validation errors and rejects the upload"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user requests collaboration network data with filters",
+          "when": "The system receives the request",
+          "then": "The system returns consistent network graph data with nodes and edges matching filters"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user triggers report generation",
+          "when": "The background job fails due to transient error",
+          "then": "The system retries the job and alerts the user if failure persists"
+        }
+      ],
+      "buildOrder": [
+        "Implement Prisma data models for UserProfile, Publication, Grant, CollaborationNetwork, ResearchTheme, and Report with indexes.",
+        "Develop authentication system and /login page with token issuance and session management.",
+        "Build /api/network POST and GET endpoints with data validation, network graph construction, and incremental update support.",
+        "Create Dashboard UI page (/dashboard) integrating network visualization, data upload, and research theme input.",
+        "Develop /api/recommendations POST endpoint for collaborator ranking with configurable parameters and rationale generation.",
+        "Implement Data Source Integration Module with file upload API (/api/integrations/upload), validation, normalization, and storage.",
+        "Build /reports page with report selection, generation request, and preview capabilities.",
+        "Develop /api/reports POST and GET endpoints to trigger asynchronous report generation and serve generated files.",
+        "Implement background jobs: ReportGenerationJob and DataIntegrationSyncJob with retry and alert mechanisms.",
+        "Create /settings page for profile and integration management with secure update flows.",
+        "Add comprehensive error handling and security middleware across API routes.",
+        "Optimize network visualization performance and API response times for large datasets.",
+        "Implement audit logging, access controls, encryption, and privacy compliance features.",
+        "Conduct acceptance testing and edge case validation before production deployment."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/reports",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "/api/network/index.ts",
+          "/api/recommendations/index.ts",
+          "/api/reports/index.ts",
+          "/api/reports/[reportId].ts",
+          "/api/integrations/upload.ts"
+        ],
+        "prismaModelsToAdd": [
+          "UserProfile",
+          "Publication",
+          "Grant",
+          "CollaborationNetwork",
+          "ResearchTheme",
+          "Report"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints, edge cases, and detailed user needs for the academic collaboration network tool.",
+        "promptTemplate": "Given the current idea and blueprint: {{BLUEPRINT}}\nPlease provide further detail or missing constraints regarding user roles, data privacy, input formats, or desired features for the Academic Research Collaboration Network Visualizer & Opportunity Identifier. Your input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Detail the final page designs, input/output shapes, and data models needed for the platform.",
+        "promptTemplate": "Based on the refined requirements and expanded specs: {{EXPANDED}}\nPlease specify the detailed API routes, page components, and database models for the academic collaboration network platform. Include data validation rules and user flows. Your notes: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create starter code and UI layouts for key pages in the platform.",
+        "promptTemplate": "Using the finalized blueprint and data models: {{BLUEPRINT}}\nGenerate React/Next.js page stub code for the key pages: login, dashboard, reports, and settings. Include placeholders for inputs, outputs, and API integration points. Your additions: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the connections between UI pages, backend APIs, and database models.",
+        "promptTemplate": "Given the existing pages and API specs: {{EXPANDED}}\nDescribe or generate code snippets to wire user inputs on pages to API calls, validate data, and store/retrieve from the database. Focus on authentication, data flow, error handling, and security. Your instructions: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

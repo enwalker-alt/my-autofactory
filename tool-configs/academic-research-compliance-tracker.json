@@ -1,0 +1,804 @@
+{
+  "slug": "academic-research-compliance-tracker",
+  "title": "Academic Research Data Collection Compliance Tracker",
+  "description": "Upload approved protocols and periodic site reports to generate compliance summaries, alerts, and issue flags for academic research data managers overseeing multi-site data collection activities.",
+  "inputLabel": "Upload Protocols or Site Reports (PDF, CSV, JSON) with Metadata",
+  "outputLabel": "Compliance Summary and Alerts",
+  "systemPrompt": "You are a compliance assistant for academic research data managers. Accept uploaded protocols, site reports, or incident reports in PDF, CSV, or JSON formats along with metadata. Validate all inputs to reject unsupported file types, virus-infected files, or uploads containing sensitive personal data. Summarize compliance status per site and overall project adherence based on uploaded data, flagging potential protocol deviations or missing reports. Provide clear, concise, and audit-ready text output with alerts and compliance summaries. Refuse any request lacking authentication or violating privacy rules. Do not provide legal or ethical advice, only compliance status summaries and alerts. Respond only in plain text. Enforce security and validation strictly.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary View",
+      "prompt": "Provide a concise compliance summary for the uploaded protocols and site reports, highlighting any alerts or deviations.",
+      "hint": "Use this to get a high-level compliance overview."
+    },
+    {
+      "label": "Detailed Alert Report",
+      "prompt": "Generate a detailed report listing all flagged compliance issues, missing reports, and potential protocol deviations based on the uploaded data.",
+      "hint": "Use this for thorough compliance issue investigation."
+    },
+    {
+      "label": "Communication Template Suggestion",
+      "prompt": "Based on detected compliance issues, suggest communication templates to address non-compliance with field teams.",
+      "hint": "Use this to prepare messages for issue resolution."
+    },
+    {
+      "label": "Compliance Risk Assessment",
+      "prompt": "Create a structured compliance and risk assessment summary suitable for funding agencies and ethics boards.",
+      "hint": "Use this for audit-ready reporting."
+    }
+  ],
+  "clarifyPrompt": "Please confirm you have uploaded valid protocol or site report files in PDF, CSV, or JSON formats and provided all required metadata without sensitive personal data. Also confirm you are authenticated.",
+  "finalizePrompt": "Based on the uploaded documents and metadata, generate a compliance summary highlighting adherence status per site, any alerts for missing or late reports, and potential protocol deviations. Provide clear instructions for next steps if issues are flagged.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Compliance Tracker",
+      "niche": {
+        "role": "Academic Research Data Manager",
+        "scenario": "Managing and monitoring data collection activities across multiple decentralized research sites to ensure adherence to approved protocols and ethical standards"
+      },
+      "problem": "Academic research data managers often struggle to effectively track compliance with data collection protocols and ethical requirements across multiple field sites or collaborators. Current tools focus on planning or documentation generation but lack a centralized system for continuous, real-time compliance monitoring, issue flagging, and communication management during data collection phases.",
+      "inputs": [
+        "Approved data collection protocols and ethical guidelines (uploaded documents or structured input forms)",
+        "Periodic data collection logs or status reports from each site (uploaded files or manual input)",
+        "Field site metadata including personnel, timelines, and data types collected",
+        "Incident or deviation reports submitted by field teams"
+      ],
+      "outputs": [
+        "Centralized compliance dashboard summarizing adherence status per site and overall",
+        "Automated alerts and flags for potential protocol deviations or missing reports",
+        "Structured compliance and risk assessment reports for funding agencies and ethics boards",
+        "Communication templates and task assignments for addressing non-compliance issues"
+      ],
+      "whyItWins": [
+        "Fills a critical gap between planning tools and final reporting by enabling active, ongoing compliance tracking during data collection",
+        "Supports multi-site coordination with real-time visibility into field activities and issues",
+        "Reduces risk of ethical violations and data quality problems by early detection and structured follow-up",
+        "Provides audit-ready documentation and communication workflows to satisfy funders and IRBs"
+      ],
+      "upgradePath": {
+        "today": "Provide a lightweight web app for uploading protocols and periodic site reports, generating compliance summaries and alerts",
+        "in90Days": "Add collaborative issue tracking, communication tools, and customizable compliance checklists to support proactive management",
+        "in12Months": "Develop a full multi-tenant system integrating data collection progress tracking, real-time mobile data entry by field teams, analytics on compliance trends, and automated reporting pipelines for funders and ethics boards"
+      },
+      "riskNotes": [
+        "Must carefully avoid processing or storing sensitive personal data to maintain privacy compliance",
+        "Should clearly disclaim it does not substitute for ethical or legal advice",
+        "Requires secure handling of uploaded documents and reports to protect confidentiality",
+        "Needs scalable design to handle multiple research projects and sites without performance degradation"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A centralized compliance tracking system for academic research data managers to monitor adherence to data collection protocols and ethical guidelines across multiple decentralized research sites, enabling real-time visibility, issue flagging, and structured communication.",
+      "primaryUser": "Academic Research Data Manager",
+      "successMetrics": [
+        "Number of research sites actively reporting data collection status",
+        "Reduction in protocol deviations detected late or unaddressed",
+        "User engagement with compliance dashboards and alerts",
+        "Timeliness and completeness of compliance reports generated",
+        "Positive feedback from funding agencies and ethics boards on audit readiness"
+      ],
+      "components": [
+        {
+          "id": "ui_dashboard",
+          "name": "Compliance Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide real-time visualization of compliance status per site, alerts, and overall project health; allow navigation to detailed reports and issue management.",
+          "dependsOn": [
+            "api_compliance",
+            "data_models"
+          ],
+          "notes": [
+            "Must support filtering by project, site, and date ranges.",
+            "Should display alert flags prominently with drill-down capabilities."
+          ]
+        },
+        {
+          "id": "ui_dataEntry",
+          "name": "Data Entry & Upload UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload protocols, periodic site reports, incident/deviation reports, and input site metadata via structured forms.",
+          "dependsOn": [
+            "api_upload",
+            "data_models"
+          ],
+          "notes": [
+            "Include validation to prevent upload of sensitive personal data.",
+            "Support multiple file formats (PDF, CSV, JSON)."
+          ]
+        },
+        {
+          "id": "api_compliance",
+          "name": "Compliance Monitoring API",
+          "type": "api",
+          "responsibility": "Process uploaded data, evaluate compliance status, generate alerts and flags, and provide data for dashboards and reports.",
+          "dependsOn": [
+            "data_models"
+          ],
+          "notes": [
+            "Must implement rules engine for protocol adherence checks.",
+            "Handle missing or late reports gracefully."
+          ]
+        },
+        {
+          "id": "api_upload",
+          "name": "Data Upload API",
+          "type": "api",
+          "responsibility": "Handle secure upload and storage of protocols, reports, and metadata; validate inputs; ensure confidentiality and integrity.",
+          "dependsOn": [
+            "data_models"
+          ],
+          "notes": [
+            "Include virus scanning and file type validation.",
+            "Encrypt stored documents."
+          ]
+        },
+        {
+          "id": "data_models",
+          "name": "Core Data Models",
+          "type": "data",
+          "responsibility": "Define and persist structured data for protocols, sites, reports, incidents, users, and compliance statuses.",
+          "dependsOn": [],
+          "notes": [
+            "Design to avoid storing sensitive personal data.",
+            "Support multi-project and multi-site scalability."
+          ]
+        },
+        {
+          "id": "job_alerts",
+          "name": "Compliance Alert Background Job",
+          "type": "job",
+          "responsibility": "Periodically analyze incoming data to detect deviations, missing reports, and trigger alerts and notifications to users.",
+          "dependsOn": [
+            "data_models",
+            "api_compliance"
+          ],
+          "notes": [
+            "Must retry on transient failures.",
+            "Throttle notifications to avoid alert fatigue."
+          ]
+        },
+        {
+          "id": "integration_comm",
+          "name": "Communication & Task Assignment Integration",
+          "type": "integration",
+          "responsibility": "Provide templates and workflows for communication with field teams to address non-compliance; integrate with email or messaging systems.",
+          "dependsOn": [
+            "api_compliance",
+            "data_models"
+          ],
+          "notes": [
+            "Support customizable message templates.",
+            "Track task status and responses."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "ResearchProject",
+          "purpose": "Represents an academic research project encompassing multiple sites and protocols.",
+          "fields": [
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId"
+          ]
+        },
+        {
+          "name": "Site",
+          "purpose": "Metadata about each decentralized research site including personnel and timelines.",
+          "fields": [
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "personnel",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "dataTypesCollected",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "projectId"
+          ]
+        },
+        {
+          "name": "Protocol",
+          "purpose": "Approved data collection protocols and ethical guidelines uploaded or entered for projects.",
+          "fields": [
+            {
+              "name": "protocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documentUrl",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "structuredData",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "protocolId",
+            "projectId"
+          ]
+        },
+        {
+          "name": "SiteReport",
+          "purpose": "Periodic data collection logs or status reports submitted by each site.",
+          "fields": [
+            {
+              "name": "reportId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "submittedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "reportData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "documentUrl",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "reportId",
+            "siteId",
+            "submittedAt"
+          ]
+        },
+        {
+          "name": "IncidentReport",
+          "purpose": "Reports of incidents or deviations from protocols submitted by field teams.",
+          "fields": [
+            {
+              "name": "incidentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "severity",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "documentUrl",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "incidentId",
+            "siteId",
+            "reportedAt"
+          ]
+        },
+        {
+          "name": "ComplianceStatus",
+          "purpose": "Aggregated compliance status and alerts per site and project.",
+          "fields": [
+            {
+              "name": "statusId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lastEvaluatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "isCompliant",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "alerts",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "statusId",
+            "siteId",
+            "projectId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Users of the system including research data managers and site personnel.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Compliance Dashboard",
+          "purpose": "Display real-time compliance status, alerts, and summaries for projects and sites.",
+          "inputs": [
+            "project filters",
+            "site filters",
+            "date range"
+          ],
+          "outputs": [
+            "compliance status",
+            "alerts",
+            "summary charts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/upload",
+          "title": "Upload Protocols and Reports",
+          "purpose": "Allow users to upload approved protocols, site reports, and incident reports.",
+          "inputs": [
+            "file uploads",
+            "metadata forms"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/issues",
+          "title": "Issue and Communication Management",
+          "purpose": "Manage flagged compliance issues, assign tasks, and send communication templates to field teams.",
+          "inputs": [
+            "issue filters",
+            "task assignments",
+            "message templates"
+          ],
+          "outputs": [
+            "issue lists",
+            "task status",
+            "communication logs"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Compliance Reports",
+          "purpose": "Generate structured compliance and risk assessment reports for funders and ethics boards.",
+          "inputs": [
+            "project selection",
+            "date range",
+            "report type"
+          ],
+          "outputs": [
+            "downloadable reports",
+            "report summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Receive and securely store uploaded protocols, reports, and metadata.",
+          "requestShape": "{ file: binary, metadata: json }",
+          "responseShape": "{ success: boolean, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance/status",
+          "method": "GET",
+          "purpose": "Retrieve compliance status and alerts for specified projects and sites.",
+          "requestShape": "{ projectId: string, siteId?: string, dateRange?: {start: date, end: date} }",
+          "responseShape": "{ complianceStatus: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/issues",
+          "method": "GET",
+          "purpose": "Fetch flagged compliance issues and their statuses.",
+          "requestShape": "{ projectId: string, filters?: json }",
+          "responseShape": "{ issues: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/issues/assign",
+          "method": "POST",
+          "purpose": "Assign tasks or communication templates to address compliance issues.",
+          "requestShape": "{ issueId: string, assigneeId: string, messageTemplateId?: string }",
+          "responseShape": "{ success: boolean, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Generate compliance and risk assessment reports.",
+          "requestShape": "{ projectId: string, reportType: string, dateRange: {start: date, end: date} }",
+          "responseShape": "{ reportUrl: string, summary: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user credentials and return access token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: json }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Compliance Evaluation Job",
+          "trigger": "Scheduled (e.g., hourly or daily)",
+          "purpose": "Analyze newly uploaded reports and incident data to update compliance status and generate alerts."
+        },
+        {
+          "name": "Alert Notification Job",
+          "trigger": "On compliance status change or scheduled intervals",
+          "purpose": "Send notifications and reminders to users about flagged issues or missing reports."
+        },
+        {
+          "name": "Report Generation Pipeline",
+          "trigger": "On user request or scheduled (e.g., monthly)",
+          "purpose": "Compile and format audit-ready compliance and risk assessment reports for download."
+        }
+      ],
+      "edgeCases": [
+        "Late or missing site reports requiring alerts and escalation.",
+        "Partial or malformed uploads needing validation and user feedback.",
+        "Multiple conflicting incident reports from the same site.",
+        "Handling protocol updates mid-project and re-evaluating compliance.",
+        "User role changes affecting access to sensitive compliance data.",
+        "Temporary system outages during critical data uploads or report generation.",
+        "Ensuring no sensitive personal data is stored or exposed inadvertently.",
+        "Scaling to support many concurrent projects and sites without performance loss."
+      ],
+      "nonGoals": [
+        "Providing legal or ethical advice beyond compliance status reporting.",
+        "Storing or processing sensitive personal data such as identifiable participant information.",
+        "Replacing existing planning or documentation generation tools.",
+        "Direct mobile data collection apps for field teams (planned for future upgrades).",
+        "Full-fledged communication platform beyond templated emails or messages.",
+        "Automated decision-making or enforcement of compliance beyond alerting."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving an authentication token for subsequent requests.",
+        "Authenticated user accesses /dashboard, providing filters (projectId, siteId, dateRange) to fetch compliance status and alerts from /api/compliance/status.",
+        "User uploads protocols, site reports, or incident reports via /upload page, submitting files and metadata to /api/upload.",
+        "/api/upload validates file types, scans for viruses, encrypts documents, and stores metadata in the database.",
+        "Compliance Monitoring API (/api/compliance/status) aggregates data from protocols, site reports, and incident reports to evaluate compliance status using a rules engine.",
+        "Background job 'Compliance Evaluation Job' periodically processes newly uploaded data to update compliance statuses and generate alerts.",
+        "Alerts and flagged issues are accessible via /issues page, which fetches data from /api/issues with optional filters.",
+        "Users assign tasks or send communication templates to field teams via /issues page, posting assignments to /api/issues/assign.",
+        "Background job 'Alert Notification Job' sends notifications based on compliance status changes or scheduled intervals, throttling to prevent alert fatigue.",
+        "Users generate compliance reports on /reports page by submitting parameters to /api/reports/generate, which compiles and returns downloadable reports.",
+        "Background job 'Report Generation Pipeline' supports scheduled or on-demand report compilation and formatting.",
+        "Integration component manages communication templates and tracks task statuses and responses, interfacing with messaging/email systems."
+      ],
+      "validationRules": [
+        "Authentication required for all pages and API routes except /login.",
+        "File uploads must be limited to PDF, CSV, and JSON formats; reject others with clear error messages.",
+        "Uploaded files must pass virus scanning before storage.",
+        "Metadata forms must not contain sensitive personal data; validate fields accordingly.",
+        "Date fields must be valid ISO 8601 dates; startDate must be before endDate where applicable.",
+        "ProjectId, SiteId, ProtocolId, ReportId, IncidentId, StatusId, UserId must be non-empty strings matching expected ID formats.",
+        "Compliance status requests must include valid projectId; siteId and dateRange are optional but if provided must be valid.",
+        "Issue assignment requests must include existing issueId and assigneeId; messageTemplateId is optional but if provided must exist.",
+        "Report generation requests must include valid projectId, reportType (from allowed types), and valid dateRange with start before end.",
+        "User login requires valid email format and non-empty password.",
+        "Prevent partial or malformed uploads by validating file integrity and metadata completeness before processing.",
+        "Reject uploads or data entries that attempt to include sensitive personal data fields.",
+        "Ensure role-based access control: only authorized roles can access or modify compliance data and assign tasks."
+      ],
+      "errorHandling": [
+        "Return 401 Unauthorized for unauthenticated requests to protected routes.",
+        "Return 400 Bad Request with descriptive error messages for validation failures (e.g., invalid file type, missing required fields).",
+        "Return 413 Payload Too Large for files exceeding size limits.",
+        "Return 422 Unprocessable Entity for virus-infected files or malformed uploads.",
+        "Gracefully handle missing or late reports by marking compliance status accordingly and generating alerts.",
+        "On transient failures in background jobs, implement retry logic with exponential backoff.",
+        "Throttle alert notifications to avoid overwhelming users; log and monitor alert delivery failures.",
+        "Return 500 Internal Server Error for unexpected exceptions with generic error messages; log detailed errors for diagnostics.",
+        "Provide user-friendly error messages on UI pages reflecting API error responses.",
+        "Handle conflicting incident reports by flagging for manual review and notifying data managers.",
+        "During system outages, queue uploads and report generation requests, informing users of delays.",
+        "Ensure no sensitive personal data is exposed in error messages or logs."
+      ],
+      "securityNotes": [
+        "Enforce HTTPS for all client-server communications.",
+        "Use secure authentication tokens (e.g., JWT) with expiration and refresh mechanisms.",
+        "Encrypt stored documents and sensitive metadata at rest.",
+        "Implement role-based access control restricting data visibility and operations.",
+        "Validate and sanitize all user inputs to prevent injection attacks.",
+        "Perform virus scanning on all uploaded files before processing or storage.",
+        "Log access and changes to compliance data for audit trails.",
+        "Avoid storing or processing any sensitive personal data to comply with privacy requirements.",
+        "Use secure email/messaging integrations with authentication and encryption.",
+        "Regularly update dependencies and monitor for security vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /dashboard page",
+          "when": "The user applies filters for a specific project and date range",
+          "then": "The system fetches and displays real-time compliance status and alerts relevant to the filters"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the /upload page",
+          "when": "The user uploads a PDF protocol document with valid metadata",
+          "then": "The system validates, scans, encrypts, stores the document, and returns a success confirmation"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user attempts to upload an executable file",
+          "when": "The upload is submitted",
+          "then": "The system rejects the upload with a validation error indicating unsupported file type"
+        },
+        {
+          "id": "AT-004",
+          "given": "An unauthenticated user tries to access /dashboard",
+          "when": "The user navigates to the page",
+          "then": "The system redirects to /login or returns 401 Unauthorized"
+        },
+        {
+          "id": "AT-005",
+          "given": "A background job runs the Compliance Evaluation Job",
+          "when": "New site reports and incident reports are present",
+          "then": "The system updates compliance statuses and generates alerts accordingly"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user on the /issues page",
+          "when": "The user assigns a task to a team member with a message template",
+          "then": "The system records the assignment and sends the communication, updating task status"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user requests a compliance report on /reports",
+          "when": "The user submits valid projectId, reportType, and dateRange",
+          "then": "The system generates and returns a downloadable report URL and summary"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads a file containing sensitive personal data fields",
+          "when": "The upload is submitted",
+          "then": "The system rejects the upload with a validation error preventing storage"
+        },
+        {
+          "id": "AT-009",
+          "given": "Multiple conflicting incident reports from the same site exist",
+          "when": "The compliance evaluation runs",
+          "then": "The system flags the conflict for manual review and notifies the data manager"
+        },
+        {
+          "id": "AT-010",
+          "given": "The system experiences a temporary outage during report generation",
+          "when": "A user requests a report",
+          "then": "The system queues the request and informs the user of the delay"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Core Data Models with Prisma schema.",
+        "Implement authentication system and /api/auth/login route.",
+        "Develop Data Upload API (/api/upload) with validation, virus scanning, and encryption.",
+        "Develop Compliance Monitoring API (/api/compliance/status) with rules engine.",
+        "Create Compliance Dashboard UI (/dashboard) integrating with compliance API.",
+        "Create Data Entry & Upload UI (/upload) integrating with upload API.",
+        "Implement Issue Management APIs (/api/issues and /api/issues/assign) and UI (/issues).",
+        "Implement Report Generation API (/api/reports/generate) and Reports UI (/reports).",
+        "Develop background jobs: Compliance Evaluation Job, Alert Notification Job, Report Generation Pipeline.",
+        "Implement Communication & Task Assignment Integration with messaging/email systems.",
+        "Add role-based access control and security hardening.",
+        "Implement error handling and user-friendly feedback across UI and APIs.",
+        "Conduct acceptance testing and performance/scalability testing.",
+        "Deploy and monitor system with logging and alerting."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/upload",
+          "/issues",
+          "/reports",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/upload.ts",
+          "/api/compliance/status.ts",
+          "/api/issues/index.ts",
+          "/api/issues/assign.ts",
+          "/api/reports/generate.ts"
+        ],
+        "prismaModelsToAdd": [
+          "ResearchProject",
+          "Site",
+          "Protocol",
+          "SiteReport",
+          "IncidentReport",
+          "ComplianceStatus",
+          "User"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints or clarifications to complete the requirements.",
+        "promptTemplate": "Given the current blueprint: {{BLUEPRINT}}\nAnd expanded specs: {{EXPANDED}}\nPlease ask the user ({{USER_INPUT}}) any clarifying questions or request additional constraints needed to finalize the requirements."
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the application pages and core data models based on refined requirements.",
+        "promptTemplate": "Using the refined requirements and blueprint: {{BLUEPRINT}}\nDefine the detailed pages and data models for the application. Use the user input: {{USER_INPUT}} to adjust designs as needed."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate stub implementations for the application pages to scaffold the UI.",
+        "promptTemplate": "Based on the finalized pages and data models: {{BLUEPRINT}}\nGenerate stub code or detailed outlines for each page. Incorporate user input: {{USER_INPUT}} to tailor the stubs."
+      },
+      {
+        "id": "integrator-wire-up",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate UI pages with backend APIs and database models to form a functioning system.",
+        "promptTemplate": "With the completed page stubs and API definitions: {{BLUEPRINT}}\nDescribe and generate code snippets or instructions to connect UI pages with APIs and the database. Use user input context: {{USER_INPUT}}."
+      }
+    ]
+  }
+}

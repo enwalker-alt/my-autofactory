@@ -1,0 +1,774 @@
+{
+  "slug": "grant-proposal-collab-revision",
+  "title": "Academic Grant Proposal Collaborative Revision",
+  "description": "Upload multiple draft texts and collaborator comments to generate a unified, version-controlled grant proposal draft with basic comment resolution and export support.",
+  "inputLabel": "Paste or upload your grant proposal drafts and comments below.",
+  "outputLabel": "Unified draft proposal with resolved comments and summary.",
+  "systemPrompt": "You are a specialized assistant for academic grant proposal teams. Accept multiple draft texts and comments as input, then produce a unified, version-controlled draft proposal text with highlighted changes and a summary of resolved and conflicting comments. Refuse any requests unrelated to academic grant proposals or that attempt to upload unsupported file types or disallowed content. Enforce privacy and data security by not exposing sensitive contributor data. Output plain text summarizing the unified content and comment resolutions. If structured-output is enabled, include JSON with sections: unifiedDraft (string), resolvedComments (array), conflictingComments (array).",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Merge & Comment Summary",
+      "prompt": "Merge the provided draft texts into a single unified proposal draft. Highlight changes between versions and summarize all comments, indicating which are resolved and which conflict. Provide a plain text output suitable for academic grant revision teams."
+    },
+    {
+      "label": "Focus on Comment Conflict Resolution",
+      "prompt": "Analyze the uploaded drafts and comments to identify conflicting or unresolved comments. Provide a detailed listing of conflicts and suggest possible resolutions without altering the original draft text."
+    },
+    {
+      "label": "Prepare Export-Ready Draft Summary",
+      "prompt": "Consolidate all drafts and comments into a final unified draft text with tracked changes and a compliance checklist summary. Output a plain text export summary highlighting readiness for submission."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, respond with JSON containing: { unifiedDraft: string, resolvedComments: [{id:string,content:string,author:string}], conflictingComments: [{id:string,content:string,conflictsWith: [string]}] }",
+  "clarifyPrompt": "Please provide your draft texts and any collaborator comments. Ensure files are Word (.docx) or plain text. Describe any specific sections or conflicts you want to focus on.",
+  "finalizePrompt": "Review the unified draft and comment summary. Confirm if you need an export-ready package or further revision assistance.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Revision Workspace",
+      "niche": {
+        "role": "academic research grant writing teams",
+        "scenario": "collaboratively revising and harmonizing multi-author grant proposal drafts with version tracking and integrated comment resolution"
+      },
+      "problem": "Academic grant proposals often require multiple collaborators to draft, revise, and harmonize complex narrative sections, budget justifications, and compliance statements. Existing tools address individual tasks (e.g., budget allocation, ethical statements) but lack an integrated system tailored specifically for collaborative multi-author grant writing workflows. This leads to version confusion, duplicated effort, unresolved contradictory comments, and inefficiency in producing a coherent, polished final submission.",
+      "inputs": [
+        "Multiple draft document versions (word processor files or text inputs) from different collaborators",
+        "Consolidated reviewer or collaborator comments and annotations",
+        "Funder guidelines and proposal templates",
+        "Contributor metadata (roles, expertise, section assignments)"
+      ],
+      "outputs": [
+        "Unified, version-controlled draft proposal document with tracked changes",
+        "Structured comment resolution dashboard highlighting conflicting or unresolved feedback",
+        "Contributor activity log and contribution summary",
+        "Automated consistency checks across sections (e.g., budget vs narrative alignment)",
+        "Export-ready final proposal package with compliance checklist"
+      ],
+      "whyItWins": [
+        "Specifically designed for the complex, multi-author academic grant writing process, filling a gap not addressed by existing single-function tools",
+        "Facilitates smooth collaboration by integrating version control, comment resolution, and contributor tracking in one workspace",
+        "Reduces redundant edits and conflicting revisions through structured, transparent workflows",
+        "Supports adherence to funder formatting and compliance requirements via integrated guideline checks",
+        "Lays foundation for scalable features like AI-assisted revision suggestions, automated risk mitigation content, and integrated budget-narrative alignment"
+      ],
+      "upgradePath": {
+        "today": "Offer a lightweight web app for uploading multiple draft texts and comments, providing a unified version view and basic comment resolution support with simple export options.",
+        "in90Days": "Add contributor role management, automated consistency checks between budget and narrative sections, and integration of funder guideline templates for compliance reminders.",
+        "in12Months": "Develop a full multi-page collaboration platform with AI-powered revision suggestions, conflict detection in content and budget, real-time multi-user editing, workflow automation (task assignments, deadlines), and comprehensive final proposal package generation supporting multiple funders."
+      },
+      "riskNotes": [
+        "Must ensure strict data privacy and security due to sensitive grant proposal content and unpublished intellectual property",
+        "Avoid replacing human judgment in content decisions; AI suggestions should be advisory only to prevent compliance or ethical risks",
+        "Handle diverse document formats and collaboration workflows flexibly to accommodate varied institutional practices",
+        "Careful UI/UX design needed to prevent complexity from overwhelming users unfamiliar with advanced version control systems"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative web platform tailored for academic research grant writing teams to upload, revise, and harmonize multi-author grant proposal drafts with integrated version control, comment resolution, contributor tracking, and compliance checks, evolving into a comprehensive multi-user collaboration and AI-assisted revision workspace.",
+      "primaryUser": "Academic research grant writing teams including principal investigators, co-investigators, and administrative support staff",
+      "successMetrics": [
+        "Reduction in version conflicts and duplicated edits during grant proposal drafting",
+        "Increased user adoption and active collaboration sessions per grant proposal",
+        "Percentage of resolved comments and annotations before final submission",
+        "Accuracy and completeness of compliance checks against funder guidelines",
+        "User satisfaction scores related to workflow transparency and ease of use"
+      ],
+      "components": [
+        {
+          "id": "ui-portal",
+          "name": "User Interface Portal",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for uploading drafts, viewing unified versioned proposals, managing comments, contributor roles, compliance checks, and exporting final packages.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Pages include draft upload, unified document viewer, comment resolution dashboard, contributor management, compliance checklist, and export interface.",
+            "UI must balance advanced version control features with simplicity to avoid overwhelming users.",
+            "Support file uploads (e.g. Word, text) and rich text display with tracked changes visualization."
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API Layer",
+          "type": "api",
+          "responsibility": "Handle authentication, document version management, comment and annotation CRUD, contributor metadata management, compliance checks, and export generation.",
+          "dependsOn": [
+            "data-storage",
+            "integration-guidelines"
+          ],
+          "notes": [
+            "Expose RESTful endpoints for all UI interactions.",
+            "Implement business logic for merging drafts, tracking changes, and comment resolution state.",
+            "Ensure strict access control and data privacy enforcement."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Persist all grant proposal drafts, version histories, comments, contributor metadata, compliance templates, and activity logs.",
+          "dependsOn": [],
+          "notes": [
+            "Design schema to efficiently store multiple document versions and their diffs.",
+            "Store contributor roles and section assignments to support access control and activity summaries.",
+            "Maintain audit logs for all changes and comment resolutions."
+          ]
+        },
+        {
+          "id": "integration-guidelines",
+          "name": "Funder Guidelines & Template Integration",
+          "type": "integration",
+          "responsibility": "Manage import, storage, and application of funder-specific proposal templates and compliance rules for automated checks.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Support multiple funders with versioned guideline templates.",
+            "Provide structured rules for automated consistency and compliance checks.",
+            "Allow updates to guidelines without disrupting ongoing proposals."
+          ]
+        },
+        {
+          "id": "job-consistency-checks",
+          "name": "Background Consistency & Compliance Checks",
+          "type": "job",
+          "responsibility": "Periodically analyze draft proposals to detect inconsistencies (e.g., budget vs narrative alignment) and compliance violations, updating dashboards and notifications.",
+          "dependsOn": [
+            "data-storage",
+            "integration-guidelines"
+          ],
+          "notes": [
+            "Run asynchronously to avoid UI blocking.",
+            "Flag conflicting or missing information for user review.",
+            "Prepare data for comment resolution dashboard highlighting unresolved issues."
+          ]
+        },
+        {
+          "id": "job-activity-logging",
+          "name": "Contributor Activity Logging Job",
+          "type": "job",
+          "responsibility": "Aggregate and summarize contributor actions and edits to generate activity logs and contribution summaries.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Support transparency and accountability in multi-author workflows.",
+            "Feed data to UI dashboards for contributor overview."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "GrantProposal",
+          "purpose": "Represents a single grant proposal project with metadata, versions, contributors, and compliance status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "complianceChecklist",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "funderId"
+          ]
+        },
+        {
+          "name": "DocumentVersion",
+          "purpose": "Stores individual versions of proposal drafts with content and metadata for version control.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "parentVersionId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "changeSummary",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "authorId"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Represents comments or annotations linked to specific document sections or versions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolvedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "conflictWith",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "versionId",
+            "authorId",
+            "resolved"
+          ]
+        },
+        {
+          "name": "Contributor",
+          "purpose": "Stores metadata about contributors including roles, expertise, and assigned sections.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "expertise",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedSections",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "userId"
+          ]
+        },
+        {
+          "name": "FunderGuideline",
+          "purpose": "Holds funder-specific proposal templates and compliance rules.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "template",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "complianceRules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName",
+            "version"
+          ]
+        },
+        {
+          "name": "ActivityLog",
+          "purpose": "Tracks contributor actions and edits for audit and summary purposes.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "userId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Drafts",
+          "purpose": "Allow users to upload multiple draft documents and initial comments for a grant proposal.",
+          "inputs": [
+            "Document files (Word, text)",
+            "Initial comments",
+            "Contributor metadata"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Parsed document preview"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposal/:id/view",
+          "title": "Unified Proposal Viewer",
+          "purpose": "Display the unified, version-controlled draft proposal with tracked changes and integrated comments.",
+          "inputs": [
+            "Proposal ID"
+          ],
+          "outputs": [
+            "Unified document view",
+            "Change highlights",
+            "Comments and annotations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposal/:id/comments",
+          "title": "Comment Resolution Dashboard",
+          "purpose": "Provide interface to review, resolve, and manage conflicting or unresolved comments and annotations.",
+          "inputs": [
+            "Proposal ID"
+          ],
+          "outputs": [
+            "Comment list",
+            "Conflict indicators",
+            "Resolution controls"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposal/:id/contributors",
+          "title": "Contributor Management",
+          "purpose": "Manage contributor roles, expertise, and section assignments for the proposal team.",
+          "inputs": [
+            "Proposal ID"
+          ],
+          "outputs": [
+            "Contributor list",
+            "Role assignment forms"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposal/:id/compliance",
+          "title": "Compliance Checklist",
+          "purpose": "Display automated compliance and consistency check results against funder guidelines.",
+          "inputs": [
+            "Proposal ID"
+          ],
+          "outputs": [
+            "Compliance status",
+            "Issues and warnings"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposal/:id/export",
+          "title": "Export Final Proposal",
+          "purpose": "Generate and download export-ready final proposal package including all documents and compliance checklists.",
+          "inputs": [
+            "Proposal ID"
+          ],
+          "outputs": [
+            "Export package (PDF, Word, ZIP)"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/proposals",
+          "method": "POST",
+          "purpose": "Create a new grant proposal project with initial metadata.",
+          "requestShape": "{ title: string, funderId: string }",
+          "responseShape": "{ proposalId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/versions",
+          "method": "POST",
+          "purpose": "Upload a new draft version for a proposal.",
+          "requestShape": "{ content: json, authorId: string, parentVersionId?: string, changeSummary?: string }",
+          "responseShape": "{ versionId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/comments",
+          "method": "POST",
+          "purpose": "Add or update comments/annotations on a proposal version.",
+          "requestShape": "{ versionId: string, content: string, resolved: boolean, conflictWith?: json }",
+          "responseShape": "{ commentId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/contributors",
+          "method": "POST",
+          "purpose": "Add or update contributor metadata for a proposal.",
+          "requestShape": "{ userId: string, role: string, expertise?: string, assignedSections?: json }",
+          "responseShape": "{ contributorId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/compliance-check",
+          "method": "GET",
+          "purpose": "Retrieve automated compliance and consistency check results for a proposal.",
+          "requestShape": "None",
+          "responseShape": "{ complianceChecklist: json, issues: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/export",
+          "method": "GET",
+          "purpose": "Generate and retrieve the final export package for a proposal.",
+          "requestShape": "None",
+          "responseShape": "{ downloadUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ConsistencyAndComplianceChecker",
+          "trigger": "Scheduled (e.g. every 10 minutes) or on document/version update",
+          "purpose": "Analyze proposals to detect inconsistencies between sections and compliance violations, updating dashboards and notifications."
+        },
+        {
+          "name": "ContributorActivityAggregator",
+          "trigger": "Scheduled (e.g. daily) or on contributor action",
+          "purpose": "Aggregate contributor edits and actions to update activity logs and contribution summaries."
+        }
+      ],
+      "edgeCases": [
+        "Conflicting comments on the same text span from multiple contributors requiring clear conflict resolution UI.",
+        "Simultaneous uploads of draft versions causing version merge conflicts needing manual or assisted resolution.",
+        "Handling diverse document formats and partial or malformed uploads gracefully with user feedback.",
+        "Contributor role changes mid-project affecting access and editing permissions.",
+        "Compliance rules updates after proposal creation requiring re-validation and user notification.",
+        "Data privacy breaches or unauthorized access attempts requiring robust authentication and audit trails.",
+        "Large proposals causing performance issues in unified document rendering and diff calculations."
+      ],
+      "nonGoals": [
+        "Replacing human editorial judgment with automated content decisions; AI suggestions are advisory only.",
+        "Providing a full-featured word processor or real-time multi-user editing in initial versions.",
+        "Supporting non-academic or non-grant writing workflows outside the defined niche.",
+        "Handling grant submission to funders directly; focus is on proposal preparation and export.",
+        "Managing institutional compliance workflows beyond funder guidelines integration."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via UI Portal; session token is validated on API Core endpoints.",
+        "On /upload page, user uploads draft documents and initial comments; UI sends files and metadata to API Core /api/proposals (POST) and /api/proposals/:id/versions (POST).",
+        "API Core stores proposal metadata and document versions in Data Storage using Prisma models.",
+        "Background job ConsistencyAndComplianceChecker runs asynchronously, fetching proposals and versions from Data Storage and guidelines from Integration Guidelines, performing compliance and consistency analysis, then updating complianceChecklist and issues in Data Storage.",
+        "ContributorActivityAggregator job aggregates contributor actions from ActivityLog entries in Data Storage and updates summaries.",
+        "UI Portal pages (/proposal/:id/view, /comments, /contributors, /compliance, /export) fetch data via API Core endpoints, which query Data Storage and return structured JSON responses.",
+        "User actions on comments, contributors, and versions invoke respective API Core endpoints to create/update data, triggering background jobs as needed.",
+        "Export endpoint generates final package on demand, returning a download URL to the UI.",
+        "Audit logs are created on all data mutations to track contributor activity and changes."
+      ],
+      "validationRules": [
+        "Proposal creation requires non-empty title and valid existing funderId.",
+        "Document version uploads must include valid JSON content, authorId matching authenticated user, and optional parentVersionId referencing existing version of the same proposal.",
+        "Comments must be linked to existing proposal and version IDs; content must be non-empty string; resolved is boolean; conflictWith if present must be valid JSON referencing conflicting comment IDs.",
+        "Contributor metadata requires valid userId, role from predefined roles list (e.g., Principal Investigator, Co-Investigator, Admin Support), optional expertise string, and assignedSections as JSON array of valid section identifiers.",
+        "Compliance check endpoint requires authenticated user with access to the proposal.",
+        "Export endpoint requires authenticated user with appropriate permissions.",
+        "File uploads on /upload page must be validated for allowed formats (Word docx, plain text), size limits, and scanned for corruption or partial uploads.",
+        "All IDs must be UUID strings conforming to standard format.",
+        "API requests must include authentication tokens and be authorized for the target proposal and user role."
+      ],
+      "errorHandling": [
+        "API endpoints return HTTP 400 for validation errors with descriptive messages.",
+        "Unauthorized access returns HTTP 401 or 403 with clear error indicating permission issues.",
+        "File upload errors return HTTP 422 with details on file format or size issues.",
+        "Background jobs log errors and retry transient failures; critical failures trigger alerts.",
+        "UI displays user-friendly error messages for failed uploads, permission denials, and network issues.",
+        "Conflict detection in comments and versions surfaces conflict indicators in UI with instructions for manual resolution.",
+        "API responses include error codes and messages in JSON for client-side handling.",
+        "Unexpected server errors return HTTP 500 with generic message; detailed logs stored server-side for diagnostics."
+      ],
+      "securityNotes": [
+        "All API routes require authentication; session tokens or JWTs validated on each request.",
+        "Access control enforced per proposal based on contributor roles; users can only access proposals they are assigned to.",
+        "Audit logs record all data mutations with userId and timestamps for accountability.",
+        "File uploads scanned for malware and restricted to safe formats.",
+        "Sensitive data such as user credentials and tokens never logged or exposed.",
+        "Rate limiting and throttling applied to API endpoints to prevent abuse.",
+        "Compliance with data privacy regulations (e.g., GDPR) ensured by limiting data exposure and providing data deletion mechanisms.",
+        "Background jobs run with least privilege and secure access to data stores.",
+        "Export packages generated on demand with secure temporary URLs that expire after download."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on /upload page with valid Word and text draft files",
+          "when": "User uploads multiple drafts with initial comments and contributor metadata",
+          "then": "The system creates a new proposal, stores document versions, and returns upload confirmation with parsed document previews"
+        },
+        {
+          "id": "AT-002",
+          "given": "A proposal with multiple document versions and comments",
+          "when": "User visits /proposal/:id/view page",
+          "then": "The UI displays unified document view with tracked changes and integrated comments correctly highlighted"
+        },
+        {
+          "id": "AT-003",
+          "given": "A proposal with conflicting comments on the same text span",
+          "when": "User opens /proposal/:id/comments dashboard",
+          "then": "The UI shows conflict indicators and allows user to resolve or mark comments as resolved"
+        },
+        {
+          "id": "AT-004",
+          "given": "A proposal with contributors assigned roles and sections",
+          "when": "User accesses /proposal/:id/contributors page",
+          "then": "The contributor list and role assignment forms are displayed and allow updates that persist correctly"
+        },
+        {
+          "id": "AT-005",
+          "given": "A proposal with compliance checks run by background job",
+          "when": "User views /proposal/:id/compliance page",
+          "then": "The compliance status and issues are displayed accurately reflecting latest checks"
+        },
+        {
+          "id": "AT-006",
+          "given": "A proposal ready for finalization",
+          "when": "User requests export via /proposal/:id/export",
+          "then": "The system generates export package and returns a valid download URL"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user attempts to access any protected page or API",
+          "when": "Request is made",
+          "then": "The system denies access with HTTP 401 Unauthorized"
+        },
+        {
+          "id": "AT-008",
+          "given": "User uploads a malformed or unsupported file format",
+          "when": "Upload is attempted",
+          "then": "The system rejects the upload with clear error message and does not create proposal or version"
+        },
+        {
+          "id": "AT-009",
+          "given": "Simultaneous uploads of new versions for the same proposal",
+          "when": "Conflicting versions are detected",
+          "then": "The system flags merge conflicts and surfaces manual resolution UI"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database schema",
+        "Implement authentication and user session management in API Core",
+        "Develop API Core endpoints for proposals, versions, comments, contributors",
+        "Create UI Portal pages for /upload and /proposal/:id/view with basic functionality",
+        "Implement file upload handling and document parsing logic",
+        "Develop background jobs for consistency and compliance checks and activity logging",
+        "Integrate funder guidelines management and compliance rules application",
+        "Build comment resolution dashboard and contributor management UI pages",
+        "Implement compliance checklist and export functionality pages",
+        "Add conflict detection and resolution mechanisms in API and UI",
+        "Implement comprehensive validation and error handling across API and UI",
+        "Add audit logging and security hardening",
+        "Conduct acceptance testing and performance optimization",
+        "Deploy and monitor background jobs and API services"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/proposal/[id]/view",
+          "/proposal/[id]/comments",
+          "/proposal/[id]/contributors",
+          "/proposal/[id]/compliance",
+          "/proposal/[id]/export"
+        ],
+        "apiFilesToCreate": [
+          "/api/proposals/index.ts",
+          "/api/proposals/[id]/versions.ts",
+          "/api/proposals/[id]/comments.ts",
+          "/api/proposals/[id]/contributors.ts",
+          "/api/proposals/[id]/compliance-check.ts",
+          "/api/proposals/[id]/export.ts"
+        ],
+        "prismaModelsToAdd": [
+          "GrantProposal",
+          "DocumentVersion",
+          "Comment",
+          "Contributor",
+          "FunderGuideline",
+          "ActivityLog"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Gather missing constraints and clarify ambiguous requirements to refine the project scope.",
+        "promptTemplate": "Given the initial idea and blueprint: {{IDEA_SPEC}} and {{BLUEPRINT}}, please provide any missing constraints, clarifications, or user needs based on your domain expertise. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define detailed page designs and data models to fully specify the system architecture.",
+        "promptTemplate": "Using the refined idea and blueprint: {{IDEA_SPEC}} and {{BLUEPRINT}}, and expansion details: {{EXPANDED}}, finalize the page routes, UI components, and data model schemas needed. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial UI page stubs and API endpoint scaffolds for development.",
+        "promptTemplate": "Given the architecture plans: {{BLUEPRINT}} and expansions: {{EXPANDED}}, generate code stubs or templates for the UI pages and API routes to start implementation. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI components with backend API and database models to enable end-to-end functionality.",
+        "promptTemplate": "With the UI and API stubs ready: {{BLUEPRINT}} and {{EXPANDED}}, outline or generate integration code and configuration to wire UI pages to API endpoints and database models. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

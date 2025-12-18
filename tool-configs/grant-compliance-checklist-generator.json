@@ -1,0 +1,866 @@
+{
+  "slug": "grant-compliance-checklist-generator",
+  "title": "Research Grant Compliance Checklist Generator",
+  "description": "Upload your draft grant proposal and funder compliance guidelines to generate a tailored compliance checklist highlighting coverage and gaps for each funder’s current requirements.",
+  "inputLabel": "Paste your grant proposal text or upload proposal document(s) and upload funder compliance guideline document(s) or URLs",
+  "outputLabel": "Tailored Compliance Checklist and Gap Summary",
+  "systemPrompt": "You are a compliance assistant helping academic research grant writers and administrators. Given the user's grant proposal text and funder compliance guideline documents or URLs, generate a tailored compliance checklist that aligns the proposal with each funder's current compliance requirements. Highlight coverage and gaps clearly. Refuse to provide any legal advice or binding determinations; only provide informational compliance assistance. Validate inputs for file types (PDF, DOCX, text) and reject unsupported or unsafe content. Ensure all outputs are safe, clear, and actionable. Output in plain text unless structured-output is enabled, then output JSON with checklist items and coverage summary. Enforce privacy and security by not storing or sharing user data beyond the session.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Focused Compliance Checklist",
+      "prompt": "Generate a concise, focused compliance checklist covering the most critical requirements from the uploaded funder guidelines mapped to the proposal text.",
+      "hint": "Use this to get a streamlined checklist emphasizing key compliance points."
+    },
+    {
+      "label": "Detailed Gap Analysis",
+      "prompt": "Provide a detailed gap analysis highlighting proposal sections that do not fully meet each funder's compliance requirements, with suggestions for improvement.",
+      "hint": "Use this for an in-depth review of compliance gaps and actionable recommendations."
+    },
+    {
+      "label": "Summary Coverage Report",
+      "prompt": "Summarize overall compliance coverage status for each funder based on the uploaded proposal and guidelines, indicating percentages of fulfilled requirements.",
+      "hint": "Use this to quickly assess compliance completeness across funders."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output enabled, output JSON with keys: checklistItems (array of compliance items with status and notes), coverageSummary (object summarizing compliance coverage by funder).",
+  "clarifyPrompt": "Please provide your grant proposal text or upload proposal documents, and upload or provide URLs for funder compliance guidelines. Ensure files are PDF, DOCX, or text format. You may also add relevant project metadata as JSON text.",
+  "finalizePrompt": "Review the generated compliance checklist and gap summary carefully. Remember this is compliance assistance, not legal advice. Use the checklist to improve your proposal's adherence to funder requirements before submission.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Funder-Specific Compliance Navigator",
+      "niche": {
+        "role": "Academic research grant writers and administrators",
+        "scenario": "Preparing and submitting grant proposals to multiple funding agencies with differing, complex, and frequently updated compliance requirements"
+      },
+      "problem": "Grant writers face challenges navigating and ensuring adherence to diverse, evolving funder-specific compliance criteria (ethical, financial, reporting, data management, risk mitigation) which are often scattered across multiple documents and websites. Manual interpretation and cross-checking consume significant time and risk compliance errors that can jeopardize funding.",
+      "inputs": [
+        "Draft grant proposal document(s) (PDF, DOCX, or text)",
+        "Funder compliance guideline documents or URLs",
+        "Project metadata (e.g., budget, team, data types, ethical considerations)",
+        "Past compliance reports or reviewer feedback (optional)"
+      ],
+      "outputs": [
+        "Tailored, consolidated compliance checklist aligned to each funder's current requirements",
+        "Proposal section-level mapping highlighting compliance coverage and gaps",
+        "Risk flag summaries with actionable recommendations for mitigation",
+        "Automated reminders for key compliance deadlines and reporting milestones",
+        "Versioned compliance tracking dashboard for multi-proposal management"
+      ],
+      "whyItWins": [
+        "Directly integrates funder-specific compliance complexities into grant writing workflow, reducing fragmented manual research",
+        "Provides actionable, specific compliance insights rather than generic checklists, increasing proposal quality and funding success chances",
+        "Supports iterative proposal development with version-controlled compliance tracking and gap analyses",
+        "Offers scalability from single proposals to institution-wide grant portfolio compliance management",
+        "Enhances transparency and accountability for research administrators managing multi-funder projects"
+      ],
+      "upgradePath": {
+        "today": "Single-page app to upload proposal and funder guidelines to generate a tailored compliance checklist and gap report",
+        "in90Days": "Add interactive proposal section mapping, risk flagging with justifications, and basic deadline reminder integration with calendar apps",
+        "in12Months": "Develop full multi-page dashboard supporting multiple proposals, version control, collaborative compliance workflows, funder guideline auto-updates via API, and integration with institutional grant management systems"
+      },
+      "riskNotes": [
+        "Must ensure privacy and security of sensitive proposal and personnel data",
+        "Funder guidelines can change often; requires ongoing updates and validation to maintain accuracy",
+        "Tool must avoid providing legal advice; frame outputs as compliance assistance, not binding determinations",
+        "User input errors (e.g., outdated docs) could lead to misleading compliance insights—clear disclaimers and validation needed"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A compliance navigator tool for academic research grant writers and administrators that consolidates and maps funder-specific compliance requirements to grant proposals, providing tailored checklists, gap analyses, risk flags, and deadline reminders with version-controlled dashboards and collaboration features.",
+      "primaryUser": "Academic research grant writers and administrators",
+      "successMetrics": [
+        "Reduction in time spent manually researching and cross-checking funder compliance requirements",
+        "Increase in compliance coverage and reduction of compliance gaps in submitted proposals",
+        "User adoption rate among grant writers and research administrators",
+        "Accuracy and currency of funder guideline data and compliance checklists",
+        "User satisfaction with actionable recommendations and risk flagging features",
+        "Number of proposals managed and tracked within the system over time"
+      ],
+      "components": [
+        {
+          "id": "ui-portal",
+          "name": "User Interface Portal",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for proposal uploads, funder guideline inputs, compliance checklist viewing, proposal section mapping, risk flagging, reminders, and dashboard management.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Must support file uploads (PDF, DOCX, text) with validation and preview",
+            "Interactive UI for mapping proposal sections to compliance items",
+            "Dashboard for versioned proposal compliance tracking and reminders",
+            "Role-based access control for grant writers and administrators"
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API Service",
+          "type": "api",
+          "responsibility": "Handle business logic including parsing documents, extracting compliance requirements, generating tailored checklists, mapping and gap analysis, risk flagging, deadline management, and user authentication.",
+          "dependsOn": [
+            "data-storage",
+            "integration-calendar",
+            "integration-funder-guidelines"
+          ],
+          "notes": [
+            "Must validate inputs and sanitize sensitive data",
+            "Provide endpoints for proposal and guideline uploads, compliance report generation, mapping updates, and reminders",
+            "Enforce authorization and data privacy",
+            "Support version control for proposals and compliance data"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage and Management",
+          "type": "data",
+          "responsibility": "Persist user data including proposals, funder guidelines, compliance checklists, mapping data, risk flags, reminders, user profiles, and version histories.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure encryption at rest and in transit for sensitive data",
+            "Support indexing for efficient retrieval of compliance items by funder and proposal",
+            "Maintain audit logs for changes and access",
+            "Support schema evolution for version control"
+          ]
+        },
+        {
+          "id": "job-guideline-updater",
+          "name": "Funder Guideline Auto-Updater Job",
+          "type": "job",
+          "responsibility": "Periodically fetch and validate funder guideline updates via APIs or web scraping to keep compliance data current.",
+          "dependsOn": [
+            "integration-funder-guidelines",
+            "data-storage"
+          ],
+          "notes": [
+            "Handle failures in fetching or parsing guidelines gracefully",
+            "Notify admins of significant changes or update failures",
+            "Log update history and changes for traceability"
+          ]
+        },
+        {
+          "id": "integration-funder-guidelines",
+          "name": "Funder Guidelines Integration",
+          "type": "integration",
+          "responsibility": "Interface with external funder systems or websites to retrieve compliance guideline documents or structured data.",
+          "dependsOn": [],
+          "notes": [
+            "Support multiple data sources and formats",
+            "Implement caching and rate limiting to avoid overloading external systems",
+            "Provide fallback for manual guideline uploads"
+          ]
+        },
+        {
+          "id": "integration-calendar",
+          "name": "Calendar and Reminder Integration",
+          "type": "integration",
+          "responsibility": "Integrate with external calendar services (e.g., Google Calendar, Outlook) to sync compliance deadlines and reporting milestones as reminders.",
+          "dependsOn": [
+            "api-core"
+          ],
+          "notes": [
+            "Securely manage user calendar authorization tokens",
+            "Allow users to customize reminder settings",
+            "Handle calendar API rate limits and errors gracefully"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user account information and roles",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Proposal",
+          "purpose": "Store uploaded grant proposal documents and metadata",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documents",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "title"
+          ]
+        },
+        {
+          "name": "FunderGuideline",
+          "purpose": "Store funder compliance guideline documents and structured requirements",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sourceUrl",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "documents",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "requirements",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName"
+          ]
+        },
+        {
+          "name": "ComplianceChecklist",
+          "purpose": "Tailored checklist items mapped to proposal and funder requirements",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderGuidelineId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "items",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "funderGuidelineId"
+          ]
+        },
+        {
+          "name": "ProposalSectionMapping",
+          "purpose": "Mapping of proposal sections to compliance checklist items and gap analysis",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "mappingData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "gapAnalysis",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId"
+          ]
+        },
+        {
+          "name": "RiskFlag",
+          "purpose": "Risk flags with justifications and recommendations related to compliance gaps",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "flagType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "justification",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "recommendation",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "flagType"
+          ]
+        },
+        {
+          "name": "Reminder",
+          "purpose": "Automated reminders for compliance deadlines and reporting milestones",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reminderDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sent",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "reminderDate"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the compliance navigator",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/upload-proposal",
+          "title": "Upload Proposal",
+          "purpose": "Allow users to upload grant proposal documents and enter project metadata",
+          "inputs": [
+            "proposal documents (PDF, DOCX, text)",
+            "project metadata"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/upload-funder-guidelines",
+          "title": "Upload Funder Guidelines",
+          "purpose": "Allow users to upload or link funder compliance guideline documents or URLs",
+          "inputs": [
+            "guideline documents or URLs"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/compliance-checklist",
+          "title": "Compliance Checklist",
+          "purpose": "Display tailored compliance checklist generated for selected proposal and funder(s)",
+          "inputs": [
+            "proposal selection",
+            "funder selection"
+          ],
+          "outputs": [
+            "compliance checklist",
+            "compliance coverage summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposal-mapping",
+          "title": "Proposal Section Mapping",
+          "purpose": "Interactive UI to map proposal sections to compliance requirements and identify gaps",
+          "inputs": [
+            "proposal text sections",
+            "compliance checklist items"
+          ],
+          "outputs": [
+            "mapping visualization",
+            "gap analysis"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/risk-flags",
+          "title": "Risk Flags and Recommendations",
+          "purpose": "View risk flags with justifications and actionable recommendations for mitigation",
+          "inputs": [
+            "proposal selection"
+          ],
+          "outputs": [
+            "risk flags list",
+            "recommendations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Compliance Dashboard",
+          "purpose": "Versioned dashboard for managing multiple proposals, tracking compliance status and reminders",
+          "inputs": [
+            "user proposals"
+          ],
+          "outputs": [
+            "compliance status summaries",
+            "reminder notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings",
+          "purpose": "Manage user profile, calendar integrations, and notification preferences",
+          "inputs": [
+            "profile data",
+            "calendar auth tokens",
+            "notification preferences"
+          ],
+          "outputs": [
+            "update confirmation",
+            "error messages"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return access token",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: { id: string, email: string, role: string } }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/proposals",
+          "method": "POST",
+          "purpose": "Upload new proposal documents and metadata",
+          "requestShape": "{ title: string, documents: file[], metadata: json }",
+          "responseShape": "{ proposalId: string, version: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funder-guidelines",
+          "method": "POST",
+          "purpose": "Upload or link funder compliance guidelines",
+          "requestShape": "{ funderName: string, documents?: file[], sourceUrl?: string }",
+          "responseShape": "{ funderGuidelineId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance-checklist",
+          "method": "GET",
+          "purpose": "Retrieve tailored compliance checklist for a proposal and funder",
+          "requestShape": "{ proposalId: string, funderGuidelineId: string }",
+          "responseShape": "{ checklistItems: json, coverageSummary: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposal-mapping",
+          "method": "POST",
+          "purpose": "Submit or update proposal section to compliance item mappings",
+          "requestShape": "{ proposalId: string, mappingData: json }",
+          "responseShape": "{ success: boolean, gapAnalysis: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/risk-flags",
+          "method": "GET",
+          "purpose": "Retrieve risk flags and recommendations for a proposal",
+          "requestShape": "{ proposalId: string }",
+          "responseShape": "{ riskFlags: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reminders",
+          "method": "GET",
+          "purpose": "Get upcoming compliance reminders for user proposals",
+          "requestShape": "{ userId: string }",
+          "responseShape": "{ reminders: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/settings/calendar-integration",
+          "method": "POST",
+          "purpose": "Connect or update user's calendar integration tokens",
+          "requestShape": "{ calendarAuthToken: string }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "FunderGuidelineAutoUpdate",
+          "trigger": "Scheduled (e.g., daily or weekly)",
+          "purpose": "Automatically fetch and update funder compliance guidelines to maintain current data"
+        },
+        {
+          "name": "ReminderNotificationDispatcher",
+          "trigger": "Scheduled (e.g., hourly)",
+          "purpose": "Send upcoming compliance deadline reminders to users via email or calendar integration"
+        },
+        {
+          "name": "ProposalVersionArchiver",
+          "trigger": "On proposal update",
+          "purpose": "Archive previous versions of proposals and compliance data for audit and rollback"
+        }
+      ],
+      "edgeCases": [
+        "User uploads outdated or incorrect funder guidelines leading to inaccurate compliance checklists",
+        "Proposal documents in unsupported or corrupted file formats causing parsing failures",
+        "Funder guideline source URLs become unavailable or change format unexpectedly",
+        "Simultaneous edits by multiple users causing mapping or checklist data conflicts",
+        "Calendar integration tokens expire or are revoked, preventing reminder syncing",
+        "Sensitive proposal data exposure due to security misconfiguration or breach",
+        "Network failures during guideline auto-update or reminder dispatch jobs",
+        "Users misunderstanding compliance assistance as legal advice leading to liability concerns"
+      ],
+      "nonGoals": [
+        "Providing legally binding compliance or legal advice",
+        "Full grant proposal writing or editing functionality",
+        "Automated grant proposal scoring or funding decision prediction",
+        "Support for non-academic or non-research grant compliance requirements",
+        "Offline or mobile-only app versions",
+        "Integration with all possible funder systems at launch (focus on common funders first)"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI portal pages and submits inputs (e.g., login credentials, proposal uploads, guideline uploads, mapping data).",
+        "UI portal sends authenticated API requests to core API service endpoints with validated and sanitized inputs.",
+        "Core API service processes requests: authenticates users, parses uploaded documents, extracts compliance requirements, generates tailored checklists, performs mapping and gap analysis, flags risks, manages reminders, and handles version control.",
+        "Core API service interacts with data storage to persist and retrieve user data, proposals, guidelines, checklists, mappings, risk flags, reminders, and version histories.",
+        "Background jobs (e.g., funder guideline auto-updater, reminder dispatcher, proposal version archiver) run on schedule or triggers, interacting with integration services and data storage to update data and notify users.",
+        "Integration services fetch external funder guideline data and calendar services, providing data to core API or syncing reminders.",
+        "UI portal receives API responses and renders outputs such as authentication tokens, confirmation messages, compliance checklists, mapping visualizations, risk flags, dashboard summaries, and error messages.",
+        "User actions on UI trigger further API calls to update or retrieve data, maintaining real-time collaboration and version control."
+      ],
+      "validationRules": [
+        "Login: Validate email format and password presence; reject empty or malformed inputs.",
+        "Proposal upload: Accept only supported file types (PDF, DOCX, text); validate file size limits; require non-empty title; validate JSON metadata structure.",
+        "Funder guideline upload: Require funderName; accept either documents or sourceUrl; validate URL format if provided; validate file types and sizes for documents.",
+        "Compliance checklist retrieval: Require valid proposalId and funderGuidelineId; verify user authorization to access proposal data.",
+        "Proposal mapping submission: Require valid proposalId; validate mappingData JSON schema; check user authorization; prevent conflicting simultaneous edits via optimistic concurrency control or locking.",
+        "Risk flags retrieval: Require valid proposalId; verify user authorization.",
+        "Reminders retrieval: Require userId matching authenticated user; validate date formats if filters applied.",
+        "Calendar integration: Validate calendarAuthToken format and expiration; sanitize tokens before storage.",
+        "General: Sanitize all inputs to prevent injection attacks; enforce role-based access control on all protected endpoints."
+      ],
+      "errorHandling": [
+        "Return standardized error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors).",
+        "Provide clear error messages for UI display, including validation failures, authentication issues, file parsing errors, and external integration failures.",
+        "Log all errors with context for audit and debugging, including user ID, request data (excluding sensitive info), and timestamps.",
+        "Gracefully handle external API failures (e.g., funder guideline fetch, calendar sync) with retries and fallback to manual uploads or cached data.",
+        "Detect and resolve data conflicts from simultaneous edits by rejecting conflicting updates with informative messages and suggesting refresh.",
+        "For background jobs, catch exceptions to prevent job crashes; log failures; notify admins of repeated or critical failures via email or dashboard alerts.",
+        "Mask sensitive data in error logs and responses to avoid data leaks.",
+        "Implement rate limiting and throttling to prevent abuse and degrade gracefully under load."
+      ],
+      "securityNotes": [
+        "Enforce HTTPS for all client-server communications to protect data in transit.",
+        "Store sensitive data (password hashes, calendar tokens, proposal documents) encrypted at rest using strong encryption algorithms.",
+        "Use secure password hashing algorithms (e.g., bcrypt or Argon2) with salts.",
+        "Implement JWT or similar token-based authentication with short-lived tokens and refresh mechanisms.",
+        "Apply role-based access control to restrict UI and API access based on user roles (grant writer, administrator).",
+        "Sanitize all user inputs to prevent injection attacks (SQL, NoSQL, XSS).",
+        "Limit file upload types and sizes; scan uploaded files for malware if possible.",
+        "Audit all data access and modifications with logs including user ID and timestamps.",
+        "Securely manage third-party integration credentials and tokens; rotate regularly.",
+        "Implement CSRF protection on state-changing API endpoints.",
+        "Regularly review and update dependencies to patch security vulnerabilities.",
+        "Educate users that compliance assistance is informational and not legal advice to mitigate liability."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on the login page",
+          "then": "They receive an authentication token and are redirected to the dashboard"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the upload proposal page",
+          "when": "They upload supported proposal documents with valid metadata",
+          "then": "The system confirms upload with proposal ID and version number"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on the upload funder guidelines page",
+          "when": "They upload guideline documents or provide a valid source URL",
+          "then": "The system confirms successful guideline upload with funderGuidelineId"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with proposals and funder guidelines",
+          "when": "They request a compliance checklist for a selected proposal and funder",
+          "then": "The system returns a tailored checklist and coverage summary"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on the proposal mapping page",
+          "when": "They submit mapping data linking proposal sections to compliance items",
+          "then": "The system saves the mapping and returns gap analysis results"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user viewing risk flags",
+          "when": "They select a proposal",
+          "then": "The system displays risk flags with justifications and recommendations"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user on the dashboard",
+          "when": "They view their proposals",
+          "then": "The system shows compliance status summaries and upcoming reminders"
+        },
+        {
+          "id": "AT-008",
+          "given": "An authenticated user updating calendar integration settings",
+          "when": "They submit a valid calendar authorization token",
+          "then": "The system confirms successful update"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user uploads an unsupported file type for a proposal",
+          "when": "They submit the upload form",
+          "then": "The system rejects the upload with a validation error message"
+        },
+        {
+          "id": "AT-010",
+          "given": "The funder guideline auto-update job runs",
+          "when": "It encounters a network failure",
+          "then": "It logs the failure and notifies administrators without crashing"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models and database schema for all data models with indexes and relations",
+        "Implement user authentication API (/api/auth/login) with secure password hashing and token issuance",
+        "Build UI login page with validation and error handling",
+        "Develop proposal upload API and UI page with file validation and metadata input",
+        "Develop funder guideline upload API and UI page supporting documents and URLs",
+        "Implement core API logic for parsing documents, extracting requirements, and generating compliance checklists",
+        "Build compliance checklist retrieval API and UI page",
+        "Implement proposal section mapping API and interactive UI with gap analysis visualization",
+        "Develop risk flags retrieval API and UI page",
+        "Create dashboard UI page showing proposals, compliance summaries, and reminders",
+        "Implement reminders API and calendar integration API with secure token management",
+        "Build user settings page for profile and calendar integration management",
+        "Develop background jobs: funder guideline auto-updater, reminder notification dispatcher, proposal version archiver",
+        "Integrate external funder guideline sources with caching and error handling",
+        "Integrate calendar services with token refresh and error management",
+        "Add role-based access control across UI and API layers",
+        "Implement audit logging and error logging infrastructure",
+        "Perform security hardening and input sanitization",
+        "Write and run acceptance tests and edge case scenarios",
+        "Deploy and monitor system with alerting for failures and security incidents"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/upload-proposal",
+          "/upload-funder-guidelines",
+          "/compliance-checklist",
+          "/proposal-mapping",
+          "/risk-flags",
+          "/dashboard",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/proposals/index.ts",
+          "/api/funder-guidelines/index.ts",
+          "/api/compliance-checklist/index.ts",
+          "/api/proposal-mapping/index.ts",
+          "/api/risk-flags/index.ts",
+          "/api/reminders/index.ts",
+          "/api/settings/calendar-integration.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Proposal",
+          "FunderGuideline",
+          "ComplianceChecklist",
+          "ProposalSectionMapping",
+          "RiskFlag",
+          "Reminder"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather missing constraints or details about user needs, data inputs, outputs, and edge cases for the compliance navigator.",
+        "promptTemplate": "You are a planner refining the requirements for the Academic Research Grant Compliance Navigator. Given the current blueprint and idea: {{BLUEPRINT}}, and expanded specs: {{EXPANDED}}, ask detailed questions to clarify any missing constraints, user scenarios, or compliance nuances before design."
+      },
+      {
+        "id": "architect-finalize-structure",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final set of UI pages, API endpoints, and data models required to implement the compliance navigator based on refined requirements.",
+        "promptTemplate": "You are an architect finalizing the system design. Using the refined requirements and blueprint: {{BLUEPRINT}}, define the pages, API routes, and data models needed to implement the Academic Research Grant Compliance Navigator. Include relations, fields, and access controls."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial UI page stubs with input forms, validation, and placeholders for compliance checklist generation and display.",
+        "promptTemplate": "You are a builder creating the initial UI pages for the compliance navigator. Based on the architect’s design: {{BLUEPRINT}}, and expanded specs: {{EXPANDED}}, generate code or detailed specs for page stubs including proposal upload, guideline upload, and checklist display."
+      },
+      {
+        "id": "integrator-wire-ui-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages with backend API endpoints and persist data in the database, ensuring security and validation.",
+        "promptTemplate": "You are an integrator wiring the system together. Using the builder’s pages and architect’s APIs and data models: {{BLUEPRINT}}, connect UI inputs and outputs to backend API calls and database persistence. Enforce validation, security, and error handling as specified in: {{EXPANDED}}."
+      }
+    ]
+  }
+}

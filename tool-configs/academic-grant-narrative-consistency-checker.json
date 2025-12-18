@@ -1,0 +1,839 @@
+{
+  "slug": "academic-grant-narrative-consistency-checker",
+  "title": "Academic Grant Narrative Consistency & Impact Alignment Checker",
+  "description": "Upload draft proposal sections and funder priority documents to get a structured report highlighting narrative inconsistencies, alignment gaps, and improvement suggestions to enhance your academic grant proposals.",
+  "inputLabel": "Paste or upload your proposal sections and funder priority documents below. Optionally include contributor comments or revision notes.",
+  "outputLabel": "Narrative Consistency & Alignment Report",
+  "systemPrompt": "You are a specialized assistant to analyze academic grant proposal documents and funder priority criteria. Your task is to identify narrative inconsistencies across multiple proposal sections, assess alignment with funder priorities, and suggest improvements for clarity, coherence, and persuasiveness. You must not provide legal, financial, or compliance advice. Refuse any request that attempts to solicit such advice or disallowed content. Always remind users that outputs are advisory and require human review. Accept input as pasted text or uploaded files representing proposal sections and funder criteria. Produce a structured textual report highlighting mismatches in objectives, conflicting claims, alignment gaps, and actionable narrative improvement suggestions. Ensure all outputs are safe, confidential, and suitable for academic grant writers and administrators.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Focus",
+      "prompt": "Analyze the provided proposal sections and funder criteria and produce a concise summary report highlighting the most critical narrative inconsistencies and alignment gaps."
+    },
+    {
+      "label": "Detailed Analysis",
+      "prompt": "Provide an in-depth analysis of the proposal sections against the funder priorities, listing all detected inconsistencies, contradictions, and alignment issues with detailed improvement suggestions."
+    },
+    {
+      "label": "Improvement Suggestions Only",
+      "prompt": "Review the proposal content and funder criteria and generate focused suggestions for enhancing clarity, coherence, and persuasive impact without listing detailed inconsistencies."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "The output JSON includes keys: inconsistencies (array), alignmentGaps (array), improvementSuggestions (array of strings), summary (string).",
+  "clarifyPrompt": "Please provide the proposal sections text or upload the relevant documents. Optionally upload funder priority documents and any contributor comments or revision notes.",
+  "finalizePrompt": "Generate a structured report analyzing narrative consistency and alignment with funder priorities, highlighting issues and actionable suggestions.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Grant Narrative Consistency & Impact Alignment Checker",
+      "niche": {
+        "role": "Academic grant writers and research administrators",
+        "scenario": "During grant proposal drafting and revision phases to ensure narrative consistency, alignment with funder priorities, and internal coherence across multiple proposal sections"
+      },
+      "problem": "Grant proposals often involve multiple contributors and complex narratives spanning project goals, methodology, budget justifications, risk assessments, and impact statements. Ensuring consistency and alignment across these sections with funder priorities is labor-intensive, error-prone, and lacks automated verification tools beyond basic formatting or expense categorization.",
+      "inputs": [
+        "Multiple draft proposal document sections (e.g., project overview, methodology, budget narrative, impact statement, risk mitigation)",
+        "Funder priority and evaluation criteria documents",
+        "Contributor comments or revision notes (optional)"
+      ],
+      "outputs": [
+        "Structured report highlighting narrative inconsistencies across proposal sections (e.g., mismatched objectives, conflicting impact claims)",
+        "Alignment analysis between proposal content and funder priorities, with flagged gaps or overstatements",
+        "Suggestions for narrative improvements to enhance clarity, coherence, and persuasiveness",
+        "Collaboration dashboard summarizing outstanding revision tasks and contributor inputs"
+      ],
+      "whyItWins": [
+        "Addresses a critical but under-automated pain point in complex academic grant writing workflows",
+        "Supports multi-contributor projects by tracking narrative consistency and revision states",
+        "Combines natural language analysis with funder-specific evaluation criteria for tailored feedback",
+        "Facilitates iterative improvements rather than one-off text polishing, enabling repeated use across proposal cycles"
+      ],
+      "upgradePath": {
+        "today": "Provide a lightweight web tool that accepts uploaded proposal section drafts and funder documents, generating a structured textual consistency and alignment report with actionable suggestions.",
+        "in90Days": "Add a collaboration interface allowing multiple contributors to upload sections, comment on flagged issues, track resolution status, and receive prioritized revision task lists.",
+        "in12Months": "Develop a full multi-page grant proposal management system integrating version control, collaborative editing, automated consistency checks, impact projection visualizations, and seamless export to funder submission formats."
+      },
+      "riskNotes": [
+        "Must carefully avoid offering specific legal or financial advice; outputs should be advisory and encourage user review.",
+        "Sensitive proposal contents require secure handling and confidentiality assurances.",
+        "Automated narrative analysis may generate false positives; human review remains essential."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web-based system to assist academic grant writers and administrators in ensuring narrative consistency, alignment with funder priorities, and collaborative revision management across multi-section grant proposals.",
+      "primaryUser": "Academic grant writers and research administrators managing multi-contributor grant proposals",
+      "successMetrics": [
+        "Reduction in narrative inconsistencies across proposal sections as measured by user feedback",
+        "Increased alignment scores between proposal content and funder priorities",
+        "User adoption rate of collaboration features and revision tracking",
+        "Positive user ratings on clarity and usefulness of automated suggestions",
+        "Secure handling of sensitive proposal data with no reported breaches"
+      ],
+      "components": [
+        {
+          "id": "ui-portal",
+          "name": "User Interface Portal",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for uploading documents, viewing reports, managing collaboration, and tracking revision tasks.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Pages include upload forms, report dashboards, collaboration boards, and user account management.",
+            "Supports authentication and role-based access controls."
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API Service",
+          "type": "api",
+          "responsibility": "Handle user requests, document uploads, trigger analysis jobs, serve reports, manage collaboration data, and enforce security/authentication.",
+          "dependsOn": [
+            "data-storage",
+            "nlp-analysis",
+            "auth-service"
+          ],
+          "notes": [
+            "Exposes REST endpoints for UI and integrations.",
+            "Validates inputs and manages error handling for document processing."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage Layer",
+          "type": "data",
+          "responsibility": "Persist user accounts, proposal documents, funder criteria, analysis reports, collaboration comments, revision tasks, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage for sensitive proposal content.",
+            "Indexes on proposal IDs, user IDs, and document types for efficient retrieval."
+          ]
+        },
+        {
+          "id": "nlp-analysis",
+          "name": "Narrative Consistency & Alignment Analyzer",
+          "type": "job",
+          "responsibility": "Perform natural language processing to detect inconsistencies across proposal sections, align content with funder priorities, and generate improvement suggestions.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Uses configurable funder criteria to tailor analysis.",
+            "Generates structured reports highlighting issues and recommendations.",
+            "Designed to minimize false positives but requires human review."
+          ]
+        },
+        {
+          "id": "auth-service",
+          "name": "Authentication & Authorization Service",
+          "type": "integration",
+          "responsibility": "Manage user identity, authentication, session management, and role-based access control.",
+          "dependsOn": [],
+          "notes": [
+            "Supports secure login, password recovery, and multi-factor authentication.",
+            "Ensures data access restrictions per user roles."
+          ]
+        },
+        {
+          "id": "collaboration-manager",
+          "name": "Collaboration & Revision Task Manager",
+          "type": "api",
+          "responsibility": "Manage contributor comments, revision status tracking, task prioritization, and notifications within proposals.",
+          "dependsOn": [
+            "data-storage",
+            "api-core"
+          ],
+          "notes": [
+            "Supports multi-user concurrent interactions with conflict resolution.",
+            "Integrates with UI dashboard for task summaries."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user identity, roles, and authentication info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Proposal",
+          "purpose": "Represent a grant proposal with multiple document sections and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "ownerId",
+            "status"
+          ]
+        },
+        {
+          "name": "DocumentSection",
+          "purpose": "Store individual sections of a proposal (e.g., methodology, budget narrative).",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sectionType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "sectionType"
+          ]
+        },
+        {
+          "name": "FunderCriteria",
+          "purpose": "Store funder priority documents and evaluation criteria used for alignment analysis.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "criteriaContent",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName"
+          ]
+        },
+        {
+          "name": "AnalysisReport",
+          "purpose": "Store generated reports on narrative consistency, alignment, and suggestions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "reportData",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "generatedAt"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Store contributor comments linked to proposal sections and flagged issues.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sectionId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "sectionId",
+            "authorId"
+          ]
+        },
+        {
+          "name": "RevisionTask",
+          "purpose": "Track revision tasks generated from analysis reports and collaboration comments.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedTo",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "priority",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "assignedTo",
+            "status"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system securely.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/proposals",
+          "title": "Proposal Dashboard",
+          "purpose": "List and manage user's proposals with status overview.",
+          "inputs": [],
+          "outputs": [
+            "proposal list",
+            "status indicators"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposals/:id/upload",
+          "title": "Upload Proposal Sections",
+          "purpose": "Allow users to upload or update proposal document sections and funder criteria.",
+          "inputs": [
+            "document files",
+            "section type",
+            "funder criteria files (optional)"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposals/:id/report",
+          "title": "Consistency & Alignment Report",
+          "purpose": "Display generated analysis report highlighting inconsistencies, alignment gaps, and suggestions.",
+          "inputs": [],
+          "outputs": [
+            "structured report data",
+            "visual highlights",
+            "suggestions"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposals/:id/collaboration",
+          "title": "Collaboration Dashboard",
+          "purpose": "Manage contributor comments, revision tasks, and track resolution status.",
+          "inputs": [
+            "comments",
+            "task updates"
+          ],
+          "outputs": [
+            "comment threads",
+            "task lists",
+            "notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/profile",
+          "title": "User Profile & Settings",
+          "purpose": "Manage user account settings, password, and notification preferences.",
+          "inputs": [
+            "profile updates"
+          ],
+          "outputs": [
+            "update confirmation",
+            "error messages"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return access token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/proposals",
+          "method": "GET",
+          "purpose": "Retrieve list of proposals for authenticated user.",
+          "requestShape": "none",
+          "responseShape": "{ proposals: Proposal[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals",
+          "method": "POST",
+          "purpose": "Create a new proposal.",
+          "requestShape": "{ title: string }",
+          "responseShape": "{ proposalId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/upload-section",
+          "method": "POST",
+          "purpose": "Upload or update a proposal document section.",
+          "requestShape": "{ sectionType: string, content: string }",
+          "responseShape": "{ success: boolean, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/upload-funder-criteria",
+          "method": "POST",
+          "purpose": "Upload funder priority and evaluation criteria documents.",
+          "requestShape": "{ funderName: string, criteriaContent: string }",
+          "responseShape": "{ success: boolean, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/generate-report",
+          "method": "POST",
+          "purpose": "Trigger narrative consistency and alignment analysis for a proposal.",
+          "requestShape": "none",
+          "responseShape": "{ jobId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/report",
+          "method": "GET",
+          "purpose": "Retrieve the latest analysis report for a proposal.",
+          "requestShape": "none",
+          "responseShape": "{ reportData: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/comments",
+          "method": "GET",
+          "purpose": "Fetch comments linked to a proposal.",
+          "requestShape": "none",
+          "responseShape": "{ comments: Comment[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/comments",
+          "method": "POST",
+          "purpose": "Add a new comment to a proposal or section.",
+          "requestShape": "{ sectionId?: string, content: string }",
+          "responseShape": "{ commentId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/revision-tasks",
+          "method": "GET",
+          "purpose": "Retrieve revision tasks for a proposal.",
+          "requestShape": "none",
+          "responseShape": "{ tasks: RevisionTask[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/revision-tasks",
+          "method": "POST",
+          "purpose": "Create or update a revision task.",
+          "requestShape": "{ description: string, assignedTo?: string, priority: string, status: string }",
+          "responseShape": "{ taskId: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "NarrativeConsistencyAnalysisJob",
+          "trigger": "Triggered by API call to generate report",
+          "purpose": "Perform NLP analysis to detect inconsistencies and alignment gaps, then store structured report."
+        },
+        {
+          "name": "RevisionTaskNotificationJob",
+          "trigger": "Periodic schedule or on task/comment updates",
+          "purpose": "Send notifications to assigned contributors about outstanding revision tasks and comments."
+        },
+        {
+          "name": "DataRetentionCleanupJob",
+          "trigger": "Scheduled (e.g., monthly)",
+          "purpose": "Archive or delete old proposals and user data per retention policies to maintain security."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded documents with incompatible formats or corrupted content causing analysis failures.",
+        "Conflicting comments or revision tasks created concurrently by multiple contributors.",
+        "False positives or negatives in automated narrative inconsistency detection leading to user confusion.",
+        "Unauthorized access attempts or session hijacking risks requiring robust security measures.",
+        "Large proposals with many sections causing performance bottlenecks in analysis and report generation.",
+        "Incomplete or missing funder criteria documents reducing alignment analysis accuracy.",
+        "Users uploading sensitive data without proper encryption or access controls.",
+        "Network interruptions during uploads or report generation causing partial data states."
+      ],
+      "nonGoals": [
+        "Providing legal, financial, or compliance advice beyond advisory suggestions.",
+        "Replacing human judgment in grant proposal content decisions.",
+        "Supporting full document editing or word processing features.",
+        "Integrating with external grant submission portals or funder systems in initial phases.",
+        "Automating budget calculations or financial auditing.",
+        "Handling non-academic grant types or non-English languages initially."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI portal pages, authenticates via /api/login, receives token for session management.",
+        "Authenticated user requests proposal lists (/api/proposals GET) to populate dashboard.",
+        "User creates new proposals via /api/proposals POST, receives proposalId.",
+        "User uploads proposal document sections via /api/proposals/:id/upload-section POST with sectionType and content.",
+        "User optionally uploads funder criteria via /api/proposals/:id/upload-funder-criteria POST.",
+        "Upon upload completion, user triggers analysis via /api/proposals/:id/generate-report POST, which enqueues NarrativeConsistencyAnalysisJob.",
+        "NLP job fetches proposal sections and funder criteria from data-storage, performs analysis, stores structured AnalysisReport.",
+        "User views generated report via /api/proposals/:id/report GET, UI renders structured report data with visual highlights and suggestions.",
+        "Users collaborate by fetching comments (/api/proposals/:id/comments GET) and revision tasks (/api/proposals/:id/revision-tasks GET).",
+        "Users add comments (/api/proposals/:id/comments POST) and create/update revision tasks (/api/proposals/:id/revision-tasks POST).",
+        "Collaboration-manager handles concurrent updates, conflict resolution, and triggers RevisionTaskNotificationJob for notifications.",
+        "Background DataRetentionCleanupJob runs periodically to archive/delete old data per retention policies.",
+        "All API routes enforce authentication and role-based authorization via auth-service integration.",
+        "Sensitive data stored encrypted in data-storage, accessed only via authorized API calls."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "Proposal creation: title required, non-empty string.",
+        "Upload section: sectionType must be one of predefined valid types; content must be non-empty string; proposalId must exist and user must have access.",
+        "Upload funder criteria: funderName non-empty; criteriaContent non-empty; proposalId must exist and user authorized.",
+        "Generate report: proposalId must exist; user must have access; reject if analysis job already running.",
+        "Add comment: content non-empty; if sectionId provided, must belong to proposal; user authorized.",
+        "Create/update revision task: description non-empty; priority must be one of defined levels (e.g., low, medium, high); status must be valid (e.g., open, in-progress, closed); assignedTo if provided must be valid user with access.",
+        "All inputs sanitized to prevent injection attacks.",
+        "File uploads (if any) validated for allowed formats and size limits.",
+        "Dates validated for correct ISO format where applicable."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Authorization failures return 403 Forbidden.",
+        "Validation errors return 400 Bad Request with detailed field error messages.",
+        "Resource not found returns 404 Not Found.",
+        "Concurrent modification conflicts return 409 Conflict with instructions to refresh.",
+        "Internal server errors return 500 with generic message; detailed logs stored server-side.",
+        "File upload errors return 422 Unprocessable Entity with cause (e.g., invalid format).",
+        "Background job failures logged and retried with exponential backoff; user notified of analysis failures.",
+        "Network interruptions during uploads or report generation handled with resumable uploads or retry prompts.",
+        "API responses include consistent error object structure: { code, message, details? }."
+      ],
+      "securityNotes": [
+        "All API routes except /api/login require valid JWT access token.",
+        "Role-based access control enforced on all proposal-related endpoints to restrict data access.",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt).",
+        "Sensitive proposal content encrypted at rest in data-storage layer.",
+        "Multi-factor authentication supported via auth-service integration.",
+        "Session tokens have expiration and refresh mechanisms.",
+        "Input sanitization to prevent XSS, SQL injection, and other injection attacks.",
+        "Audit logs maintained for all critical actions (login, uploads, edits).",
+        "Rate limiting on login and sensitive endpoints to prevent brute force.",
+        "Secure HTTPS enforced for all client-server communications.",
+        "Background jobs access data with least privilege principle.",
+        "Data retention policies enforced to delete/archive sensitive data timely.",
+        "Conflict resolution mechanisms to prevent data corruption in concurrent edits."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and can access protected routes"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /proposals",
+          "when": "They request their proposal list",
+          "then": "They receive a list of proposals with correct status indicators"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user with proposal ownership",
+          "when": "They upload a valid document section with supported sectionType",
+          "then": "The upload succeeds with confirmation and the section is stored"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with proposal ownership",
+          "when": "They upload funder criteria with valid funderName and content",
+          "then": "The criteria is stored and linked to the proposal"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user with proposal ownership and uploaded sections",
+          "when": "They trigger report generation",
+          "then": "The system enqueues analysis job and returns job status"
+        },
+        {
+          "id": "AT-006",
+          "given": "A completed analysis report exists for a proposal",
+          "when": "User requests the report",
+          "then": "They receive structured report data with visual highlights and suggestions"
+        },
+        {
+          "id": "AT-007",
+          "given": "Multiple contributors on a proposal",
+          "when": "They add comments and revision tasks concurrently",
+          "then": "Comments and tasks are saved without conflicts and visible to all authorized users"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to access a proposal they do not own",
+          "when": "They request proposal data or upload sections",
+          "then": "Access is denied with 403 Forbidden"
+        },
+        {
+          "id": "AT-009",
+          "given": "User submits invalid input (e.g., empty title on proposal creation)",
+          "when": "They send the request",
+          "then": "They receive 400 Bad Request with detailed validation error"
+        },
+        {
+          "id": "AT-010",
+          "given": "Network interruption during document upload",
+          "when": "User retries upload",
+          "then": "Upload completes successfully without data corruption"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for all data entities with encryption where needed",
+        "Implement auth-service integration and JWT-based authentication middleware",
+        "Create API routes for user login and proposal CRUD operations with validation and error handling",
+        "Develop UI pages for login and proposal dashboard with authentication flow",
+        "Implement document section upload API and UI with file validation and storage",
+        "Implement funder criteria upload API and UI",
+        "Develop background job infrastructure and NarrativeConsistencyAnalysisJob integration",
+        "Implement report retrieval API and UI report page with visualization",
+        "Create collaboration-manager APIs for comments and revision tasks with concurrency handling",
+        "Develop collaboration dashboard UI with comment threads and task lists",
+        "Implement background jobs for notifications and data retention cleanup",
+        "Add comprehensive error handling, logging, and security hardening",
+        "Perform acceptance testing and edge case validation",
+        "Deploy with HTTPS and monitoring"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/proposals",
+          "/proposals/[id]/upload",
+          "/proposals/[id]/report",
+          "/proposals/[id]/collaboration",
+          "/profile"
+        ],
+        "apiFilesToCreate": [
+          "api/login.ts",
+          "api/proposals/index.ts",
+          "api/proposals/[id]/upload-section.ts",
+          "api/proposals/[id]/upload-funder-criteria.ts",
+          "api/proposals/[id]/generate-report.ts",
+          "api/proposals/[id]/report.ts",
+          "api/proposals/[id]/comments.ts",
+          "api/proposals/[id]/revision-tasks.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Proposal",
+          "DocumentSection",
+          "FunderCriteria",
+          "AnalysisReport",
+          "Comment",
+          "RevisionTask"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify any missing constraints, user needs, or edge cases for the academic grant narrative consistency checker.",
+        "promptTemplate": "You are a planner refining the project requirements for the Academic Grant Narrative Consistency & Impact Alignment Checker. Given the current blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, ask detailed questions to uncover missing constraints, user scenarios, or potential risks. Focus on {{USER_INPUT}}."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the final set of UI pages and data models needed to build the grant narrative checker system.",
+        "promptTemplate": "You are an architect finalizing the system design for the Academic Grant Narrative Consistency & Impact Alignment Checker. Using the idea: {{IDEA}}, blueprint: {{BLUEPRINT}}, and expanded specs: {{EXPANDED}}, define the complete list of UI pages with routes and inputs/outputs, and finalize data model schemas including fields and relations. Address {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code or detailed page stubs for each UI page defined in the blueprint for the grant checker.",
+        "promptTemplate": "You are a builder tasked with generating page stubs for the Academic Grant Narrative Consistency & Impact Alignment Checker. Based on the final pages and data models: {{BLUEPRINT.pages}}, {{BLUEPRINT.dataModels}}, create scaffolded code or detailed outlines for each page including forms, inputs, and placeholders. Focus on {{USER_INPUT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the frontend pages to backend API routes and database models with secure authentication and error handling.",
+        "promptTemplate": "You are an integrator wiring the Academic Grant Narrative Consistency & Impact Alignment Checker frontend to backend. Using the API routes: {{BLUEPRINT.apiRoutes}}, data models: {{BLUEPRINT.dataModels}}, and UI pages: {{BLUEPRINT.pages}}, describe how to connect inputs and outputs through API calls, enforce authentication, handle errors, and persist data. Consider {{USER_INPUT}}."
+      }
+    ]
+  }
+}

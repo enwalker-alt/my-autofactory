@@ -1,0 +1,716 @@
+{
+  "slug": "protocol-version-comparator-impact-annotator",
+  "title": "Research Protocol Version Comparator & Impact Annotator",
+  "description": "Upload two research protocol versions (PDF, DOCX, or text) to generate a detailed side-by-side textual diff report with categorized changes and basic compliance/ethical impact annotations flagged by keyword heuristics. Optional upload of compliance or ethical guideline files supported. Designed for academic research compliance officers to streamline protocol review.",
+  "inputLabel": "Upload two protocol versions and optional guideline file(s)",
+  "outputLabel": "Comparison report with change categories and impact flags",
+  "systemPrompt": "You are a compliance-focused document comparison assistant. Given two uploaded research protocol documents and optional compliance or ethical guideline files, parse and extract text, perform a detailed multi-version diff, categorize changes by research protocol relevant categories (study design, participant criteria, data handling, etc.), and annotate potential compliance or ethical impact using keyword-based heuristics from guidelines. Output a clear, detailed textual side-by-side comparison highlighting all changes with color-coded categories and impact flags. Refuse any request lacking two protocol versions or containing unsupported file formats. Do not provide legal or medical advice. Always prioritize confidentiality and safety. Respond in plain text format unless structured-output is enabled. Enforce strict validation and error handling for file types and content.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Compliance Check",
+      "prompt": "Compare two uploaded protocol versions focusing on identifying changes related to participant criteria and data handling. Highlight potential compliance issues flagged by keywords from the provided guidelines."
+    },
+    {
+      "label": "Study Design Focus",
+      "prompt": "Generate a detailed side-by-side diff emphasizing changes to study design elements and annotate any ethical impact concerns based on guidelines."
+    },
+    {
+      "label": "Full Protocol Comparison",
+      "prompt": "Produce a comprehensive comparison of the two protocol versions, categorizing all changes and annotating compliance and ethical impact across all sections."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with fields: diffText (string), changes (array of {category, text, impactFlag}), summary (string).",
+  "clarifyPrompt": "Please upload exactly two research protocol documents in PDF, DOCX, or plain text format. Optionally upload compliance or ethical guideline files in JSON format. Do you have all files ready?",
+  "finalizePrompt": "Generating a detailed comparison report with categorized changes and impact annotations based on the uploaded documents and guidelines. This may take a moment.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Protocol Version Comparator & Impact Annotator",
+      "niche": {
+        "role": "Academic Research Compliance Officer",
+        "scenario": "Comparing multiple versions of research protocols to identify changes and assess potential compliance or ethical impact before approval"
+      },
+      "problem": "Compliance officers and research ethics boards often receive multiple revised versions of research protocols. Manually comparing versions to identify substantive changes, assess their compliance and ethical impact, and communicate these findings to reviewers and researchers is time-consuming and error-prone. Existing tools focus on budget, data, or manuscript comparison but lack tailored protocol version comparison with impact annotations relevant to compliance and ethics review.",
+      "inputs": [
+        "Two or more versions of research protocol documents (PDF, DOCX, or text)",
+        "Compliance and ethical guidelines references or checklists (optional upload)",
+        "Annotations or comments from reviewers (optional)"
+      ],
+      "outputs": [
+        "Detailed, side-by-side comparison report highlighting all textual changes",
+        "Automatic categorization of changes by type (e.g., study design, participant criteria, data handling)",
+        "Impact annotations indicating potential compliance or ethical concerns for each change",
+        "Summary dashboard with risk flags and recommended focus areas for ethics review",
+        "Exportable reports for communication with researchers and regulatory bodies"
+      ],
+      "whyItWins": [
+        "Specialized focus on research protocols and compliance/ethics impact, filling a gap not covered by general document comparison tools",
+        "Saves compliance officers significant time and reduces risk of overlooking critical changes",
+        "Supports multi-version comparisons and integrates reviewer inputs for collaborative workflow",
+        "Provides actionable, structured insights rather than just textual diffs, improving decision quality",
+        "Can start lightweight with document diff and basic tagging, then grow into a sophisticated multi-user review system"
+      ],
+      "upgradePath": {
+        "today": "Single-page app allowing upload of two protocol versions to generate a detailed textual diff report with basic change categorization and simple impact flags based on keyword matches",
+        "in90Days": "Add multi-version comparison, reviewer comment integration, customizable compliance/ethics checklists, and a summary dashboard with prioritized risk areas and collaborative annotation features",
+        "in12Months": "Develop into a full multi-page compliance review system with user roles (officers, reviewers, researchers), workflow tracking, automated alerting on high-risk changes, integration with protocol submission systems, and analytics on revision patterns"
+      },
+      "riskNotes": [
+        "Must ensure strict document confidentiality and security due to sensitive protocol content",
+        "Automated impact annotations rely on heuristics and guidelines; human oversight remains critical",
+        "Avoid providing legal or medical advice; tool is advisory and supports human decision-making",
+        "Careful version parsing needed to handle diverse document formats and structures robustly"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized multi-version research protocol comparison and annotation system designed for academic research compliance officers to efficiently identify, categorize, and assess changes across protocol versions with compliance and ethical impact annotations, supporting collaborative review workflows and secure communication.",
+      "primaryUser": "Academic Research Compliance Officer",
+      "successMetrics": [
+        "Reduction in time taken to compare protocol versions and produce impact reports",
+        "Accuracy and completeness of detected changes and impact annotations",
+        "User adoption rate among compliance officers and ethics board reviewers",
+        "Number of collaborative annotations and reviewer inputs per protocol review",
+        "Positive feedback on decision support quality and report usefulness"
+      ],
+      "components": [
+        {
+          "id": "ui-compare",
+          "name": "Protocol Comparison UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload protocol versions, view detailed side-by-side textual diffs, categorized changes, and impact annotations; enable navigation across multiple versions and changes.",
+          "dependsOn": [
+            "api-compare",
+            "data-protocols"
+          ],
+          "notes": [
+            "Supports PDF, DOCX, and text uploads with progress and error feedback",
+            "Highlights changes with color-coded categories and impact flags",
+            "Handles multi-version comparison views",
+            "Responsive design for desktop use"
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Summary Dashboard UI",
+          "type": "ui",
+          "responsibility": "Present aggregated risk flags, prioritized focus areas, and reviewer annotations summary to help compliance officers quickly assess protocol review status and critical issues.",
+          "dependsOn": [
+            "api-dashboard",
+            "data-protocols",
+            "data-annotations"
+          ],
+          "notes": [
+            "Includes filters by risk level, change category, and reviewer",
+            "Visualizes trends and revision patterns over time",
+            "Supports export of dashboard summaries"
+          ]
+        },
+        {
+          "id": "api-compare",
+          "name": "Comparison & Annotation API",
+          "type": "api",
+          "responsibility": "Process uploaded protocol documents to extract text, perform multi-version diff analysis, categorize changes, and generate impact annotations based on heuristics and uploaded guidelines.",
+          "dependsOn": [
+            "integration-docparser",
+            "data-protocols",
+            "data-guidelines"
+          ],
+          "notes": [
+            "Handles document parsing failures gracefully with error messages",
+            "Supports incremental processing for large documents",
+            "Stores intermediate diff results for performance"
+          ]
+        },
+        {
+          "id": "api-dashboard",
+          "name": "Dashboard Data API",
+          "type": "api",
+          "responsibility": "Provide aggregated and filtered data about protocol changes, risk flags, annotations, and reviewer comments to power the summary dashboard and reporting exports.",
+          "dependsOn": [
+            "data-protocols",
+            "data-annotations"
+          ],
+          "notes": [
+            "Supports pagination and sorting for large datasets",
+            "Implements access control to ensure confidentiality"
+          ]
+        },
+        {
+          "id": "data-protocols",
+          "name": "Protocol Versions Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded protocol documents, extracted text, version metadata, diff results, and categorized changes with impact flags.",
+          "dependsOn": [],
+          "notes": [
+            "Stores original documents securely with encryption",
+            "Indexes by protocol ID, version number, and upload timestamp"
+          ]
+        },
+        {
+          "id": "data-guidelines",
+          "name": "Compliance & Ethics Guidelines Store",
+          "type": "data",
+          "responsibility": "Store uploaded or default compliance and ethical guidelines, checklists, and keyword sets used for automated impact annotation heuristics.",
+          "dependsOn": [],
+          "notes": [
+            "Supports versioning of guidelines for audit trail",
+            "Allows user customization and uploads"
+          ]
+        },
+        {
+          "id": "data-annotations",
+          "name": "Reviewer Annotations & Comments Store",
+          "type": "data",
+          "responsibility": "Persist reviewer comments, annotations on changes, and collaborative notes linked to protocol versions and specific diffs.",
+          "dependsOn": [
+            "data-protocols"
+          ],
+          "notes": [
+            "Supports multi-user concurrent annotations with conflict handling",
+            "Stores timestamps and user metadata for audit"
+          ]
+        },
+        {
+          "id": "integration-docparser",
+          "name": "Document Parsing & Text Extraction Service",
+          "type": "integration",
+          "responsibility": "Convert uploaded PDF, DOCX, or text protocol documents into structured plain text suitable for diff and analysis.",
+          "dependsOn": [],
+          "notes": [
+            "Handles diverse document formatting and embedded objects",
+            "Returns parsing errors with actionable messages"
+          ]
+        },
+        {
+          "id": "job-impact-update",
+          "name": "Impact Annotation Background Job",
+          "type": "job",
+          "responsibility": "Periodically re-run impact annotation heuristics on stored diffs when guidelines or heuristics update, ensuring annotations remain current.",
+          "dependsOn": [
+            "data-protocols",
+            "data-guidelines",
+            "api-compare"
+          ],
+          "notes": [
+            "Runs asynchronously to avoid blocking user requests",
+            "Logs failures and alerts admins on repeated errors"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "ProtocolVersion",
+          "purpose": "Represents a specific uploaded version of a research protocol with metadata and extracted text.",
+          "fields": [
+            {
+              "name": "protocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "uploaderUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "originalDocument",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "extractedText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "diffResults",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "protocolId",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "ChangeCategory",
+          "purpose": "Defines categories for protocol changes such as study design, participant criteria, or data handling.",
+          "fields": [
+            {
+              "name": "categoryId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "categoryId"
+          ]
+        },
+        {
+          "name": "ImpactAnnotation",
+          "purpose": "Stores automated or reviewer-added annotations indicating compliance or ethical impact for specific changes.",
+          "fields": [
+            {
+              "name": "annotationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "protocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "changeId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "impactLevel",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "protocolId",
+            "versionNumber",
+            "changeId"
+          ]
+        },
+        {
+          "name": "ReviewerComment",
+          "purpose": "Captures comments or annotations made by reviewers linked to protocol versions or specific changes.",
+          "fields": [
+            {
+              "name": "commentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "protocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "changeId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "commentText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "protocolId",
+            "versionNumber",
+            "changeId"
+          ]
+        },
+        {
+          "name": "GuidelineSet",
+          "purpose": "Stores compliance and ethical guideline documents or keyword sets used for impact annotation heuristics.",
+          "fields": [
+            {
+              "name": "guidelineId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "uploadedByUserId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "guidelineId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Protocol Versions",
+          "purpose": "Allow users to upload two or more protocol versions and optional guideline/checklist files to initiate comparison.",
+          "inputs": [
+            "protocol document files (PDF, DOCX, text)",
+            "optional compliance/ethics guideline files"
+          ],
+          "outputs": [
+            "upload success/failure status",
+            "processing progress"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/compare",
+          "title": "Protocol Version Comparison",
+          "purpose": "Display detailed side-by-side diff of uploaded protocol versions with categorized changes and impact annotations.",
+          "inputs": [
+            "selected protocol versions"
+          ],
+          "outputs": [
+            "textual diff view",
+            "change categories",
+            "impact flags",
+            "reviewer annotations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Summary Dashboard",
+          "purpose": "Provide an overview of risk flags, prioritized focus areas, and reviewer comments across protocol reviews.",
+          "inputs": [
+            "filters by protocol, risk level, reviewer"
+          ],
+          "outputs": [
+            "aggregated risk summaries",
+            "visualizations",
+            "export options"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/annotations",
+          "title": "Reviewer Annotations & Comments",
+          "purpose": "Interface for reviewers to add, edit, and view annotations linked to specific changes in protocol versions.",
+          "inputs": [
+            "selected protocol version and change"
+          ],
+          "outputs": [
+            "existing comments",
+            "annotation submission forms"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/export",
+          "title": "Export Comparison Reports",
+          "purpose": "Generate and download exportable reports summarizing protocol version differences, impact annotations, and reviewer comments.",
+          "inputs": [
+            "protocol versions",
+            "report format options"
+          ],
+          "outputs": [
+            "downloadable report file"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/compare",
+          "method": "POST",
+          "purpose": "Accept protocol document uploads, parse and extract text, perform multi-version diff, categorize changes, and generate impact annotations.",
+          "requestShape": "{ protocolFiles: File[], guidelineFiles?: File[] }",
+          "responseShape": "{ protocolId: string, versionNumbers: string[], diffSummary: json, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/diff/:protocolId",
+          "method": "GET",
+          "purpose": "Retrieve detailed diff results, categorized changes, and impact annotations for specified protocol versions.",
+          "requestShape": "{ versionNumbers: string[] }",
+          "responseShape": "{ diffDetails: json, annotations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/annotations",
+          "method": "POST",
+          "purpose": "Submit new reviewer annotations or comments linked to protocol changes.",
+          "requestShape": "{ protocolId: string, versionNumber: string, changeId: string, commentText: string }",
+          "responseShape": "{ annotationId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/dashboard",
+          "method": "GET",
+          "purpose": "Fetch aggregated risk flags, change categories, and reviewer comment summaries for dashboard display.",
+          "requestShape": "{ filters?: json }",
+          "responseShape": "{ summaryData: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/export",
+          "method": "POST",
+          "purpose": "Generate exportable reports based on selected protocol versions and options.",
+          "requestShape": "{ protocolId: string, versionNumbers: string[], format: string }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Recalculate Impact Annotations",
+          "trigger": "Scheduled (e.g., nightly) or on guideline updates",
+          "purpose": "Reprocess stored diffs to update impact annotations based on latest guidelines and heuristics."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded documents with unsupported or corrupted formats causing parsing failures",
+        "Protocols with minimal textual changes but significant semantic impact requiring manual review",
+        "Conflicting reviewer annotations on the same change requiring conflict resolution",
+        "Large protocol documents causing performance bottlenecks in diff processing and UI rendering",
+        "Unauthorized access attempts to sensitive protocol data",
+        "Simultaneous uploads or edits causing race conditions or data inconsistencies"
+      ],
+      "nonGoals": [
+        "Providing legal, medical, or ethical advice beyond advisory annotations",
+        "Replacing human compliance officers or ethics board decision-making",
+        "Supporting manuscript or budget comparisons unrelated to research protocols",
+        "Handling protocol submission workflows outside of version comparison and annotation",
+        "Supporting mobile-first or offline usage in initial versions"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses /upload page to submit two or more protocol document files and optional guideline files.",
+        "UI-compare uploads files via POST /api/compare; API-compare receives files, calls integration-docparser to extract text from each document.",
+        "API-compare performs multi-version diff analysis on extracted texts, categorizes changes, and applies impact annotation heuristics using data-guidelines.",
+        "API-compare stores protocol versions, extracted texts, diff results, and annotations in data-protocols and data-annotations stores.",
+        "User navigates to /compare page selecting protocol versions; UI-compare fetches detailed diff and annotations via GET /api/diff/:protocolId with versionNumbers.",
+        "User views side-by-side diffs with categorized changes and impact flags, and reviewer annotations displayed.",
+        "Reviewers add/edit annotations/comments on /annotations page; UI posts new annotations to POST /api/annotations, which stores them in data-annotations.",
+        "User accesses /dashboard page; UI-dashboard fetches aggregated risk flags, change categories, and reviewer comment summaries via GET /api/dashboard with filters.",
+        "User may export reports from /reports/export page; UI posts export request to POST /api/reports/export, which generates report and returns download URL.",
+        "Background job 'Recalculate Impact Annotations' runs periodically or on guideline updates, reprocessing stored diffs and updating impact annotations asynchronously."
+      ],
+      "validationRules": [
+        "Uploaded protocol files must be PDF, DOCX, or plain text formats; reject unsupported or corrupted files with clear error messages.",
+        "Guideline files, if provided, must be valid JSON or supported formats for guidelines; validate schema before processing.",
+        "ProtocolVersion requires non-empty protocolId, versionNumber, uploadDate, uploaderUserId, originalDocument, and extractedText.",
+        "Diff results and annotations must be consistent with stored protocol versions and versionNumbers.",
+        "Annotation submissions require valid protocolId, versionNumber, existing changeId, non-empty commentText, and authenticated userId.",
+        "API endpoints must validate authentication tokens and user permissions before processing requests.",
+        "Filters for dashboard API must be validated for allowed fields and value types to prevent injection or invalid queries.",
+        "Report export requests must validate protocolId, versionNumbers array non-empty, and format within allowed export types (e.g., PDF, DOCX)."
+      ],
+      "errorHandling": [
+        "API-compare returns structured error responses with error codes and messages for parsing failures, unsupported formats, or processing errors.",
+        "Integration-docparser returns actionable error messages on parsing failures; API-compare surfaces these to UI with user-friendly explanations.",
+        "All API routes validate inputs and return 400 Bad Request with details on invalid parameters.",
+        "Authentication failures return 401 Unauthorized; authorization failures return 403 Forbidden.",
+        "Background job logs errors and retries transient failures; alerts admins on repeated failures via monitoring system.",
+        "UI components display progress indicators during uploads and processing; show error banners or modals on failures with retry options.",
+        "Conflict detection for concurrent annotation edits returns 409 Conflict with instructions to refresh or merge changes.",
+        "Large document processing timeouts return 503 Service Unavailable with retry-after headers."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user sessions; enforce role-based access control to restrict sensitive protocol data.",
+        "Store original protocol documents encrypted at rest; restrict access to authorized users only.",
+        "Sanitize all user inputs, especially annotations and comments, to prevent XSS and injection attacks.",
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Implement rate limiting on upload and annotation APIs to prevent abuse.",
+        "Audit logs for uploads, annotations, and guideline changes must record userId and timestamps for traceability.",
+        "Background jobs must run with least privilege access to data stores.",
+        "Ensure CORS policies restrict API access to authorized front-end origins."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with two valid protocol documents (PDF and DOCX) and one guideline file.",
+          "when": "The user uploads the files and submits the form.",
+          "then": "The system successfully parses documents, performs diff analysis, categorizes changes, generates impact annotations, and returns success status with protocolId and versionNumbers."
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the /compare page selecting two protocol versions for comparison.",
+          "when": "The user requests the diff view.",
+          "then": "The system displays a side-by-side textual diff with color-coded change categories, impact flags, and reviewer annotations loaded correctly."
+        },
+        {
+          "id": "AT-003",
+          "given": "A reviewer authenticated and viewing a specific change on the /annotations page.",
+          "when": "The reviewer submits a new annotation comment.",
+          "then": "The annotation is saved, visible immediately in the UI, and stored with correct user metadata and timestamp."
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user on the /dashboard page applying filters by risk level and reviewer.",
+          "when": "The user fetches dashboard data.",
+          "then": "The system returns aggregated risk summaries and visualizations matching the filters, supporting pagination and sorting."
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on the /reports/export page selecting protocol versions and report format PDF.",
+          "when": "The user requests report generation.",
+          "then": "The system generates the report asynchronously and provides a downloadable URL upon completion."
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthenticated user attempts to access /compare or any API route.",
+          "when": "The user sends a request.",
+          "then": "The system denies access with 401 Unauthorized response."
+        },
+        {
+          "id": "AT-007",
+          "given": "A user uploads a corrupted or unsupported protocol document file.",
+          "when": "The upload is processed.",
+          "then": "The system returns a clear error message indicating the parsing failure and does not store invalid data."
+        },
+        {
+          "id": "AT-008",
+          "given": "Two reviewers attempt to edit annotations on the same change simultaneously.",
+          "when": "Conflicting edits are submitted.",
+          "then": "The system detects conflict, returns 409 Conflict, and prompts users to resolve or refresh."
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for ProtocolVersion, ChangeCategory, ImpactAnnotation, ReviewerComment, GuidelineSet.",
+        "Implement integration-docparser service for document parsing and text extraction.",
+        "Develop API-compare route to handle uploads, parsing, diff, categorization, and impact annotation storage.",
+        "Build UI-upload page with file upload, progress, and error feedback.",
+        "Implement API-diff GET route to retrieve detailed diffs and annotations.",
+        "Develop UI-compare page to display side-by-side diffs with categorized changes and annotations.",
+        "Implement API-annotations POST route for submitting reviewer comments and annotations.",
+        "Build UI-annotations page for annotation management.",
+        "Implement API-dashboard GET route for aggregated data with filtering, pagination, and sorting.",
+        "Develop UI-dashboard page with visualizations and export options.",
+        "Implement API-reports/export POST route for generating downloadable reports.",
+        "Build /reports/export page for report generation and download.",
+        "Develop background job for recalculating impact annotations on guideline updates.",
+        "Add authentication and authorization middleware across API routes and pages.",
+        "Implement error handling, input validation, and security hardening.",
+        "Write acceptance tests and perform integration testing.",
+        "Deploy and monitor background jobs and APIs."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/compare",
+          "/dashboard",
+          "/annotations",
+          "/reports/export"
+        ],
+        "apiFilesToCreate": [
+          "/api/compare.ts",
+          "/api/diff/[protocolId].ts",
+          "/api/annotations.ts",
+          "/api/dashboard.ts",
+          "/api/reports/export.ts"
+        ],
+        "prismaModelsToAdd": [
+          "ProtocolVersion",
+          "ChangeCategory",
+          "ImpactAnnotation",
+          "ReviewerComment",
+          "GuidelineSet"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify missing constraints, edge cases, and user needs for the protocol version comparator and impact annotator tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease list any unclear requirements, missing constraints, or edge cases that need clarification to ensure a robust design."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the detailed page routes, UI components, and database schema models required to implement the multi-version protocol comparison and annotation system.",
+        "promptTemplate": "Using the idea and blueprint: {{IDEA_SPEC}}, {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease specify the final set of pages, API endpoints, and data models needed for the system."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs or detailed outlines for the main UI pages and components to jumpstart frontend development of the protocol comparison tool.",
+        "promptTemplate": "With the finalized pages and data models: {{BLUEPRINT.pages}}, {{BLUEPRINT.dataModels}}\nUser input: {{USER_INPUT}}\nProvide starter code snippets or detailed component outlines for the pages."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Plan the integration of frontend pages with backend APIs and database models, including authentication, data flow, and error handling.",
+        "promptTemplate": "Given the pages, APIs, and data models: {{BLUEPRINT.pages}}, {{BLUEPRINT.apiRoutes}}, {{BLUEPRINT.dataModels}}\nUser input: {{USER_INPUT}}\nDescribe how to connect the UI components to backend services and data persistence layers securely and robustly."
+      }
+    ]
+  }
+}

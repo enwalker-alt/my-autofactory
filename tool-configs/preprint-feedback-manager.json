@@ -1,0 +1,701 @@
+{
+  "slug": "preprint-feedback-manager",
+  "title": "Academic Preprint Feedback Manager",
+  "description": "Consolidate and prioritize peer feedback on your preprint manuscripts by pasting preprint URLs and raw feedback comments to generate actionable summaries and response plans.",
+  "inputLabel": "Enter your preprint URLs and paste raw feedback comments (optionally upload feedback files).",
+  "outputLabel": "Consolidated feedback summary and prioritized action item list",
+  "systemPrompt": "You are an assistant helping academic researchers consolidate and organize peer feedback on their preprint manuscripts. Accept input containing preprint URLs and raw feedback comments or notes. Parse and normalize the input, identify key topics and sentiment, prioritize feedback items, and produce a clear, structured summary report with action items prioritized by urgency and relevance. Clearly separate public feedback from private notes. Refuse requests that include manuscript full text or any confidential data without explicit consent. Output only plain text summaries and action lists unless structured output is enabled. Enforce privacy and safety rigorously. If input is invalid or disallowed, respond with a clear refusal message.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Focus",
+      "prompt": "Please consolidate the pasted feedback into a clear summary report highlighting main topics and sentiment."
+    },
+    {
+      "label": "Action Items Focus",
+      "prompt": "Generate a prioritized list of actionable response items and revision tasks from the feedback."
+    },
+    {
+      "label": "Full Consolidation",
+      "prompt": "Provide a combined feedback summary with topic clusters, sentiment analysis, and action item prioritization."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output enabled, output JSON with keys: summary (string), actionItems (array of {task:string, priority:number, deadline:string|null}), feedbackSources (array of strings).",
+  "clarifyPrompt": "Please provide the preprint URLs and raw feedback comments or upload feedback files. Specify if any notes are private. Avoid sharing manuscript full text.",
+  "finalizePrompt": "Review the consolidated feedback summary and prioritized action items. Confirm if you want to export or save this data.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Preprint Peer Engagement Manager",
+      "niche": {
+        "role": "Academic Researchers",
+        "scenario": "Managing and organizing community feedback and interactions on their uploaded preprint manuscripts across multiple platforms before formal journal submission"
+      },
+      "problem": "Academic researchers often upload preprints to multiple platforms (e.g., arXiv, bioRxiv, institutional repositories) and receive scattered, unstructured feedback and discussion comments from peers, making it difficult to track, prioritize, and respond efficiently during the critical pre-submission phase.",
+      "inputs": [
+        "Links or identifiers to preprint uploads on various servers",
+        "Raw feedback comments, peer review notes, and discussion threads (imported or pasted)",
+        "Researcher’s own notes or response drafts",
+        "Metadata about preprint versions and submission timelines"
+      ],
+      "outputs": [
+        "Consolidated, prioritized feedback summary report organized by topic and sentiment",
+        "Structured action item list for responses and manuscript revisions with deadlines",
+        "Engagement dashboard showing feedback sources, activity timelines, and response status",
+        "Exportable summaries and response drafts for collaborator sharing"
+      ],
+      "whyItWins": [
+        "Addresses a currently underserved, critical pre-publication phase distinct from formal peer review",
+        "Consolidates fragmented feedback from multiple platforms into a single actionable interface",
+        "Supports ongoing, iterative manuscript improvement with clear prioritization of community inputs",
+        "Boosts researcher productivity and response quality during a repetitive, high-impact workflow"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web tool where researchers paste or upload preprint URLs and feedback comments to generate a consolidated feedback summary and action list",
+        "in90Days": "Add integrations with popular preprint servers APIs to auto-import comments and discussion threads, plus user accounts to save multiple projects",
+        "in12Months": "Develop a full multi-page app with real-time notifications, collaborative team commenting, versioned response tracking, analytics on engagement trends, and export to manuscript management software"
+      },
+      "riskNotes": [
+        "Must ensure privacy and compliance by not storing or exposing confidential manuscript content without explicit consent",
+        "Avoid offering any formal peer review or editorial judgments to remain advisory/supportive only",
+        "Careful handling of diverse platform APIs and comment formats to maintain data integrity",
+        "Must clearly distinguish between public feedback and private notes to prevent accidental sharing"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A platform for academic researchers to consolidate, organize, and manage peer feedback on preprint manuscripts from multiple sources, enabling prioritized response and manuscript improvement before formal journal submission.",
+      "primaryUser": "Academic researchers managing preprint feedback and engagement",
+      "successMetrics": [
+        "Number of preprint projects managed per user",
+        "User engagement frequency with feedback consolidation and action lists",
+        "Reduction in time spent tracking and responding to feedback",
+        "User satisfaction with feedback prioritization and dashboard insights",
+        "Adoption rate of integrations with preprint servers and collaboration features"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Engagement Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display consolidated feedback summaries, action items, timelines, and engagement analytics to the researcher.",
+          "dependsOn": [
+            "api-feedback",
+            "data-feedback",
+            "api-user"
+          ],
+          "notes": [
+            "Supports filtering by feedback source, sentiment, and priority.",
+            "Shows response status and deadlines for action items.",
+            "Visualizes activity timelines and engagement trends."
+          ]
+        },
+        {
+          "id": "ui-preprintProject",
+          "name": "Preprint Project Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to create, edit, and manage preprint projects including metadata, uploaded URLs, and notes.",
+          "dependsOn": [
+            "api-preprintProject",
+            "api-user",
+            "data-preprintProject"
+          ],
+          "notes": [
+            "Supports adding multiple preprint URLs and version metadata.",
+            "Enables input of researcher notes and response drafts.",
+            "Supports export of summaries and drafts."
+          ]
+        },
+        {
+          "id": "api-feedback",
+          "name": "Feedback Processing API",
+          "type": "api",
+          "responsibility": "Receive, parse, consolidate, and prioritize feedback comments and discussion threads from multiple platforms and user inputs.",
+          "dependsOn": [
+            "data-feedback",
+            "integration-preprintAPIs"
+          ],
+          "notes": [
+            "Handles diverse input formats and normalizes data structure.",
+            "Performs sentiment analysis and topic clustering for prioritization.",
+            "Maintains clear separation of public feedback and private notes."
+          ]
+        },
+        {
+          "id": "api-preprintProject",
+          "name": "Preprint Project API",
+          "type": "api",
+          "responsibility": "Manage CRUD operations for preprint projects, metadata, user notes, and response drafts.",
+          "dependsOn": [
+            "data-preprintProject",
+            "api-user"
+          ],
+          "notes": [
+            "Enforces access control and privacy constraints.",
+            "Supports export functionality for summaries and drafts."
+          ]
+        },
+        {
+          "id": "api-user",
+          "name": "User Management API",
+          "type": "api",
+          "responsibility": "Handle user authentication, authorization, and account management.",
+          "dependsOn": [
+            "data-user"
+          ],
+          "notes": [
+            "Supports secure login and session management.",
+            "Enables user-specific data isolation."
+          ]
+        },
+        {
+          "id": "data-preprintProject",
+          "name": "Preprint Project Data Store",
+          "type": "data",
+          "responsibility": "Persist preprint project metadata, URLs, version info, user notes, and response drafts.",
+          "dependsOn": [],
+          "notes": [
+            "Stores multiple versions and timelines per project.",
+            "Ensures private notes are flagged and access-controlled."
+          ]
+        },
+        {
+          "id": "data-feedback",
+          "name": "Feedback Data Store",
+          "type": "data",
+          "responsibility": "Persist imported and user-submitted feedback comments, discussion threads, sentiment tags, and action items.",
+          "dependsOn": [
+            "data-preprintProject"
+          ],
+          "notes": [
+            "Supports tagging feedback by source, topic, sentiment, and priority.",
+            "Stores action item statuses and deadlines."
+          ]
+        },
+        {
+          "id": "data-user",
+          "name": "User Data Store",
+          "type": "data",
+          "responsibility": "Persist user account information, preferences, and authentication credentials.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive data and comply with privacy standards."
+          ]
+        },
+        {
+          "id": "integration-preprintAPIs",
+          "name": "Preprint Server API Integrations",
+          "type": "integration",
+          "responsibility": "Connect with external preprint servers (e.g., arXiv, bioRxiv) to import feedback comments and discussion threads automatically.",
+          "dependsOn": [
+            "api-feedback"
+          ],
+          "notes": [
+            "Handles API rate limits and data format inconsistencies.",
+            "Requires user authorization for accessing private or restricted data.",
+            "Must maintain data integrity and privacy compliance."
+          ]
+        },
+        {
+          "id": "job-feedbackAggregation",
+          "name": "Feedback Aggregation Background Job",
+          "type": "job",
+          "responsibility": "Periodically fetch new feedback from integrated preprint servers and update consolidated feedback data.",
+          "dependsOn": [
+            "integration-preprintAPIs",
+            "data-feedback"
+          ],
+          "notes": [
+            "Schedules based on user project timelines and server API limits.",
+            "Handles failures with retries and error logging."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Stores user account and authentication information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "PreprintProject",
+          "purpose": "Represents a researcher's preprint manuscript project with metadata and user notes.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preprintUrls",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "versionMetadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "submissionTimeline",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "userNotes",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "responseDrafts",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "title"
+          ]
+        },
+        {
+          "name": "Feedback",
+          "purpose": "Stores individual feedback comments, discussion threads, and associated metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preprintProjectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sourcePlatform",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "author",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "sentiment",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "topicTags",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "priority",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "isPrivateNote",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "actionItemStatus",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "deadline",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "preprintProjectId",
+            "sourcePlatform",
+            "priority"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access their preprint projects and feedback data.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/projects",
+          "title": "Preprint Projects List",
+          "purpose": "Display all preprint projects for the logged-in user with summary info.",
+          "inputs": [],
+          "outputs": [
+            "list of projects with metadata and status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/new",
+          "title": "Create New Preprint Project",
+          "purpose": "Form to create a new preprint project with URLs and metadata.",
+          "inputs": [
+            "title",
+            "preprint URLs",
+            "version info",
+            "submission timeline"
+          ],
+          "outputs": [
+            "confirmation",
+            "project ID"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:id",
+          "title": "Preprint Project Detail",
+          "purpose": "View and manage consolidated feedback, action items, notes, and drafts for a specific project.",
+          "inputs": [
+            "project ID"
+          ],
+          "outputs": [
+            "feedback summary",
+            "action item list",
+            "user notes",
+            "response drafts",
+            "engagement dashboard"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:id/export",
+          "title": "Export Summaries and Drafts",
+          "purpose": "Export consolidated feedback summaries and response drafts for collaborator sharing or manuscript management software.",
+          "inputs": [
+            "project ID",
+            "export format selection"
+          ],
+          "outputs": [
+            "exported file or link"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of preprint projects for authenticated user.",
+          "requestShape": "none",
+          "responseShape": "[{ id: string, title: string, updatedAt: date }]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new preprint project.",
+          "requestShape": "{ title: string, preprintUrls: string[], versionMetadata?: json, submissionTimeline?: json }",
+          "responseShape": "{ id: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:id",
+          "method": "GET",
+          "purpose": "Retrieve detailed project info including feedback and notes.",
+          "requestShape": "none",
+          "responseShape": "{ project: PreprintProject, feedback: Feedback[], actionItems: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:id/feedback",
+          "method": "POST",
+          "purpose": "Submit raw feedback comments or discussion threads for consolidation.",
+          "requestShape": "{ content: string, sourcePlatform: string, isPrivateNote?: boolean }",
+          "responseShape": "{ success: boolean, feedbackId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:id/export",
+          "method": "GET",
+          "purpose": "Export consolidated feedback summaries and drafts.",
+          "requestShape": "{ format: string }",
+          "responseShape": "{ exportUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Periodic Feedback Aggregation",
+          "trigger": "Scheduled (e.g., every 6 hours) or on-demand per user project",
+          "purpose": "Fetch new feedback and discussion threads from integrated preprint server APIs and update consolidated feedback data."
+        }
+      ],
+      "edgeCases": [
+        "Handling inconsistent or malformed feedback data from diverse platform APIs.",
+        "Managing API rate limits and failures during feedback import without data loss.",
+        "Ensuring private notes are never exposed in shared exports or public views.",
+        "Supporting projects with multiple preprint versions and overlapping feedback timelines.",
+        "Gracefully handling user session expiration during active feedback management.",
+        "Detecting and merging duplicate or highly similar feedback comments.",
+        "Providing fallback for manual feedback input when API integrations fail or are unavailable."
+      ],
+      "nonGoals": [
+        "Providing formal peer review or editorial judgments on manuscript quality.",
+        "Hosting or storing full manuscript content beyond metadata and user notes.",
+        "Replacing existing manuscript submission or journal peer review systems.",
+        "Supporting real-time chat or discussion forums beyond imported feedback consolidation.",
+        "Automated manuscript rewriting or content generation based on feedback."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/auth/login; receives authentication token on success.",
+        "Authenticated user requests /projects page; frontend calls GET /api/projects to fetch list of user's preprint projects.",
+        "User navigates to /projects/new to create a new project; submits form data to POST /api/projects; server validates and stores project metadata in data-preprintProject.",
+        "User views /projects/:id; frontend calls GET /api/projects/:id to retrieve detailed project info including consolidated feedback and action items from data-preprintProject and data-feedback.",
+        "User submits new feedback via POST /api/projects/:id/feedback; API normalizes, performs sentiment analysis, tags, and stores feedback in data-feedback.",
+        "Background job periodically triggers feedback aggregation job-feedbackAggregation, which calls integration-preprintAPIs to fetch new feedback from external preprint servers, normalizes and updates data-feedback.",
+        "User requests export at /projects/:id/export; frontend calls GET /api/projects/:id/export with format; API generates export file from consolidated data and returns export URL.",
+        "Throughout, api-user manages authentication and authorization, ensuring user-specific data isolation and access control."
+      ],
+      "validationRules": [
+        "Login API: email must be valid email format; password must be non-empty string.",
+        "Project creation: title is required, non-empty string; preprintUrls must be non-empty array of valid URLs; versionMetadata and submissionTimeline if provided must be valid JSON objects.",
+        "Project detail retrieval: project ID must exist and belong to authenticated user.",
+        "Feedback submission: content is required, non-empty string; sourcePlatform is required and must be among supported platforms; isPrivateNote defaults to false if omitted.",
+        "Export request: format must be among supported export formats (e.g., PDF, DOCX, JSON).",
+        "All APIs requiring authentication must validate session token and user identity.",
+        "Data fields like dates must be valid ISO 8601 strings where applicable."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with descriptive error messages on validation failures.",
+        "Return 401 Unauthorized when authentication token is missing, invalid, or expired.",
+        "Return 403 Forbidden if user attempts to access or modify projects or feedback not owned by them.",
+        "Return 404 Not Found if requested project or feedback does not exist.",
+        "Handle external API failures in integration-preprintAPIs with retries, exponential backoff, and log errors; surface user-friendly messages if manual feedback input is needed.",
+        "For background job failures, log errors and retry according to schedule; do not block user operations.",
+        "On unexpected server errors, return 500 Internal Server Error with generic message and log details internally."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all client-server communications to protect tokens and sensitive data.",
+        "Store hashed passwords using strong hashing algorithms (e.g., bcrypt) with salts.",
+        "Implement secure session management with HTTP-only, secure cookies or token-based authentication (e.g., JWT).",
+        "Enforce strict access control on all API routes to ensure users can only access their own data.",
+        "Encrypt sensitive user data at rest, especially authentication credentials and private notes.",
+        "Sanitize all user inputs to prevent injection attacks.",
+        "Ensure private notes and feedback marked as private are never exposed in public APIs or exports.",
+        "Rate limit API endpoints to prevent abuse and brute force attacks.",
+        "Validate and sanitize data imported from external preprint APIs to prevent malformed or malicious content."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and are redirected to /projects"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /projects",
+          "when": "They request the list of projects",
+          "then": "They receive a list of their preprint projects with correct metadata"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /projects/new",
+          "when": "They submit a new project with valid title and URLs",
+          "then": "The project is created, stored, and the user receives the new project ID"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user viewing /projects/:id",
+          "when": "They request project details",
+          "then": "They receive project metadata, consolidated feedback, action items, notes, and drafts"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on /projects/:id/feedback",
+          "when": "They submit new feedback content with source platform",
+          "then": "Feedback is stored, normalized, sentiment analyzed, and linked to the project"
+        },
+        {
+          "id": "AT-006",
+          "given": "The background job runs periodically",
+          "when": "It fetches new feedback from preprint servers",
+          "then": "New feedback is consolidated and updated in the feedback data store without data loss"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user requests export on /projects/:id/export",
+          "when": "They specify a supported export format",
+          "then": "They receive a valid export file or download link containing summaries and drafts"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to access a project they do not own",
+          "when": "They request project details or feedback",
+          "then": "They receive a 403 Forbidden error"
+        },
+        {
+          "id": "AT-009",
+          "given": "Malformed or incomplete feedback data is submitted",
+          "when": "The API receives the data",
+          "then": "It returns 400 Bad Request with descriptive error messages"
+        },
+        {
+          "id": "AT-010",
+          "given": "Private notes exist in feedback",
+          "when": "User exports project data or views feedback summaries",
+          "then": "Private notes are excluded from exports and public views"
+        }
+      ],
+      "buildOrder": [
+        "Implement data models in Prisma: User, PreprintProject, Feedback",
+        "Develop api-user for authentication and user management",
+        "Create data stores: data-user, data-preprintProject, data-feedback",
+        "Implement api-preprintProject for CRUD operations and access control",
+        "Implement api-feedback for feedback submission, normalization, and prioritization",
+        "Develop integration-preprintAPIs to connect with external preprint servers",
+        "Build job-feedbackAggregation background job for periodic feedback fetching",
+        "Develop UI pages: /login, /projects, /projects/new, /projects/:id, /projects/:id/export",
+        "Integrate UI components with APIs and implement client-side validation",
+        "Implement export functionality in api-preprintProject",
+        "Add error handling, logging, and security hardening",
+        "Write and run acceptance tests",
+        "Deploy and monitor system"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/projects",
+          "/projects/new",
+          "/projects/[id]",
+          "/projects/[id]/export"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/projects/index.ts",
+          "api/projects/[id].ts",
+          "api/projects/[id]/feedback.ts",
+          "api/projects/[id]/export.ts",
+          "api/user.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "PreprintProject",
+          "Feedback"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints, clarifications, and additional user needs to refine the project requirements.",
+        "promptTemplate": "Given the current blueprint and idea:\n{{BLUEPRINT}}\nUser input:\n{{USER_INPUT}}\n\nPlease ask clarifying questions or request missing constraints to better define the requirements."
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the detailed page routes, UI components, and data models needed to implement the platform.",
+        "promptTemplate": "Based on the refined requirements and blueprint:\n{{BLUEPRINT}}\nUser input:\n{{USER_INPUT}}\n\nPlease produce detailed page definitions and data model schemas to support the application."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs and scaffolding for the defined UI pages and API routes.",
+        "promptTemplate": "Using the finalized pages and data models:\n{{BLUEPRINT}}\nUser input:\n{{USER_INPUT}}\n\nGenerate starter code stubs for each page and API endpoint to accelerate development."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring connecting UI pages with API endpoints and underlying database models.",
+        "promptTemplate": "Given the page stubs and API definitions:\n{{BLUEPRINT}}\nUser input:\n{{USER_INPUT}}\n\nProvide integration code and instructions to connect UI, API, and database layers for full functionality."
+      }
+    ]
+  }
+}

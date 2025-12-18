@@ -1,0 +1,685 @@
+{
+  "slug": "academic-dataset-provenance-impact-analyzer",
+  "title": "Academic Dataset Provenance & Impact Analyzer",
+  "description": "Upload dataset versions with metadata and change logs to generate a basic provenance timeline preview and impact annotations summary for academic research data management.",
+  "inputLabel": "Upload dataset version file (CSV, Excel, or JSON) with optional metadata and change log",
+  "outputLabel": "Provenance timeline summary and impact assessment notes",
+  "systemPrompt": "You are an assistant helping an academic research data manager analyze dataset version provenance and impacts. Accept one dataset version file (CSV, Excel, or JSON) plus optional JSON metadata and change log text. Validate file format and metadata correctness. Reject unsupported file types or corrupted data with clear error messages. Generate a concise textual summary describing the dataset version's provenance timeline entry and any potential impact annotations based on provided metadata and change log. Output only plain text summary or JSON if requested. Enforce data privacy and security. Refuse requests missing authentication or with invalid inputs. Do not attempt definitive impact conclusions without human review. Keep responses factual, clear, and actionable.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Provenance Summary",
+      "prompt": "Generate a concise provenance timeline entry and impact annotation summary from the uploaded dataset version file, metadata, and change log. Focus on describing dataset changes, timestamps, and possible research impact notes."
+    },
+    {
+      "label": "Detailed Impact Annotation",
+      "prompt": "Analyze the dataset version upload in detail, highlighting changes from previous versions, possible effects on research outputs, and flag uncertain impact conclusions for human review."
+    },
+    {
+      "label": "Metadata Validation and Summary",
+      "prompt": "Validate the uploaded metadata JSON and summarize its key provenance information and annotations relevant to dataset version history."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output a JSON object with keys: {\"versionSummary\": string, \"impactAnnotations\": string, \"metadataValidation\": string (optional)}",
+  "clarifyPrompt": "Please provide the dataset version file (CSV, Excel, or JSON), optional metadata as JSON text, and any change log annotations. Confirm your authentication status. Ask for help if uncertain about file formats or metadata structure.",
+  "finalizePrompt": "Generate the final provenance timeline summary and impact annotation report based on the provided dataset version file, metadata, and change logs. Ensure output is clear, concise, and suitable for audit documentation.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Dataset Provenance & Version Impact Analyzer",
+      "niche": {
+        "role": "Academic Research Data Manager",
+        "scenario": "Managing and documenting dataset provenance, version histories, and their impact on research outputs"
+      },
+      "problem": "Academic research data managers need to track detailed provenance and version histories of datasets used across multiple projects, understand how changes in datasets affect research findings, and communicate these impacts clearly to collaborators and stakeholders. Existing tools mostly focus on version control or metadata management separately, lacking integrated analysis of dataset evolution and its consequences.",
+      "inputs": [
+        "Dataset version files (CSV, Excel, JSON) with timestamps",
+        "Metadata records describing dataset origin, transformations, and usage",
+        "Research output documents or summary notes referencing datasets",
+        "Change log annotations or commit messages"
+      ],
+      "outputs": [
+        "Interactive multi-version provenance timeline visualizing dataset changes and annotations",
+        "Structured report linking dataset versions to observed impacts or changes in research results",
+        "Automated impact assessment summaries highlighting potential data-driven result variations",
+        "Exportable audit-ready documentation of dataset evolution and impact rationale"
+      ],
+      "whyItWins": [
+        "Integrates provenance tracking with impact analysis, going beyond simple version control",
+        "Supports repeated, ongoing use as datasets evolve and projects progress",
+        "Provides actionable insights for research reproducibility and transparency",
+        "Fulfills a unique gap in managing complex data lineage in academic workflows",
+        "Lays groundwork for scalable multi-page app with rich visualizations and collaborative features"
+      ],
+      "upgradePath": {
+        "today": "Offer a lightweight web tool to upload dataset versions and metadata to generate a basic provenance timeline with simple impact annotations and exportable reports.",
+        "in90Days": "Develop interactive visualizations linking dataset changes to research outputs, enable collaborative annotation and version comparison, and integrate notifications for data managers on critical changes.",
+        "in12Months": "Expand into a full multi-page system supporting multi-user workflows, automated data difference detection, integration with research repositories and manuscript management systems, and advanced impact simulation models."
+      },
+      "riskNotes": [
+        "Must ensure data security and privacy compliance given potentially sensitive research datasets",
+        "Avoid over-automating impact conclusions without human review to prevent misleading interpretations",
+        "Require clear user guidance to correctly interpret provenance and impact reports",
+        "Handle heterogeneous dataset formats robustly to maintain usability"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A system for academic research data managers to track dataset provenance and version histories, analyze impacts on research outputs, and generate audit-ready documentation with interactive visualizations and collaborative features.",
+      "primaryUser": "Academic Research Data Manager",
+      "successMetrics": [
+        "Number of datasets and versions uploaded and tracked",
+        "User engagement with provenance timelines and impact reports",
+        "Accuracy and clarity of impact assessment summaries as rated by users",
+        "Frequency of collaborative annotations and version comparisons",
+        "Exported audit reports generated and shared"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend UI",
+          "type": "ui",
+          "responsibility": "Provide multi-page user interface for dataset uploads, provenance timeline visualization, impact analysis reports, collaborative annotations, and export functions.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Pages include dashboard, dataset upload, provenance timeline, impact report, and settings.",
+            "Must handle heterogeneous dataset formats gracefully with user guidance.",
+            "Support authentication and role-based access controls in future upgrades."
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API",
+          "type": "api",
+          "responsibility": "Handle dataset version ingestion, metadata management, provenance data aggregation, impact analysis processing, report generation, and user collaboration endpoints.",
+          "dependsOn": [
+            "data-storage",
+            "integration-research-repos"
+          ],
+          "notes": [
+            "Expose RESTful endpoints for all major features.",
+            "Ensure secure access controls and data validation.",
+            "Support incremental upgrades for advanced impact simulation."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage Layer",
+          "type": "data",
+          "responsibility": "Persist datasets, metadata, version histories, provenance records, annotations, user info, and generated reports securely and efficiently.",
+          "dependsOn": [],
+          "notes": [
+            "Design schema to link dataset versions to research outputs and annotations.",
+            "Index on dataset IDs, version timestamps, and project associations for fast queries.",
+            "Ensure data privacy compliance and encryption at rest."
+          ]
+        },
+        {
+          "id": "job-impact-analysis",
+          "name": "Impact Analysis Background Job",
+          "type": "job",
+          "responsibility": "Process dataset version differences and metadata to generate automated impact assessment summaries and update provenance timelines asynchronously.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Runs on dataset upload or metadata update triggers.",
+            "Includes safeguards to flag uncertain conclusions for human review.",
+            "Can be extended with advanced simulation models in future phases."
+          ]
+        },
+        {
+          "id": "integration-research-repos",
+          "name": "Research Repository Integration",
+          "type": "integration",
+          "responsibility": "Connect with external research repositories and manuscript management systems to import dataset references and export provenance reports.",
+          "dependsOn": [
+            "api-core"
+          ],
+          "notes": [
+            "Start with basic import/export APIs; expand to bi-directional sync.",
+            "Handle authentication and data format mapping.",
+            "Facilitate traceability from datasets to research outputs."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "DatasetVersion",
+          "purpose": "Represents a single version of a dataset with associated file, timestamp, and provenance metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileReference",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "changeLog",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "datasetId",
+            "versionNumber",
+            "uploadTimestamp"
+          ]
+        },
+        {
+          "name": "Dataset",
+          "purpose": "Represents a dataset entity tracked across multiple versions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "ownerUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "ownerUserId",
+            "name"
+          ]
+        },
+        {
+          "name": "ResearchOutput",
+          "purpose": "Represents research documents or notes referencing datasets and their versions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contentSummary",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "referencedDatasetVersions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "createdAt"
+          ]
+        },
+        {
+          "name": "ImpactAssessment",
+          "purpose": "Stores automated and manual annotations linking dataset version changes to observed or potential impacts on research outputs.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "researchOutputId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "impactSummary",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "confidenceLevel",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "annotatedByUserId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "datasetVersionId",
+            "researchOutputId"
+          ]
+        },
+        {
+          "name": "UserAnnotation",
+          "purpose": "Captures collaborative notes and comments from users on dataset versions and impacts.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "targetType",
+            "targetId",
+            "userId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Dashboard",
+          "purpose": "Overview of datasets, recent uploads, impact summaries, and notifications.",
+          "inputs": [],
+          "outputs": [
+            "Dataset summaries",
+            "Recent impact assessments",
+            "User notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/datasets/upload",
+          "title": "Upload Dataset Version",
+          "purpose": "Page to upload new dataset versions along with metadata and change logs.",
+          "inputs": [
+            "Dataset files (CSV, Excel, JSON)",
+            "Metadata records",
+            "Change log annotations"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Basic provenance timeline preview"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/datasets/:datasetId/provenance",
+          "title": "Provenance Timeline",
+          "purpose": "Interactive multi-version timeline visualizing dataset changes, annotations, and linked research outputs.",
+          "inputs": [
+            "Dataset ID"
+          ],
+          "outputs": [
+            "Visual timeline",
+            "Annotations",
+            "Version details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/datasets/:datasetId/impact-report",
+          "title": "Impact Report",
+          "purpose": "Structured report linking dataset versions to impacts on research outputs with export options.",
+          "inputs": [
+            "Dataset ID"
+          ],
+          "outputs": [
+            "Impact assessment summaries",
+            "Exportable reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/annotations",
+          "title": "Collaborative Annotations",
+          "purpose": "Interface for users to add, view, and manage annotations on datasets and impacts.",
+          "inputs": [
+            "Target dataset/version/impact"
+          ],
+          "outputs": [
+            "Annotation threads",
+            "User comments"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/datasets",
+          "method": "POST",
+          "purpose": "Create a new dataset entity.",
+          "requestShape": "{ name: string, description?: string }",
+          "responseShape": "{ id: string, name: string, description?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets/:datasetId/versions",
+          "method": "POST",
+          "purpose": "Upload a new dataset version with metadata and change logs.",
+          "requestShape": "{ file: file, metadata?: json, changeLog?: string }",
+          "responseShape": "{ versionId: string, uploadTimestamp: date }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets/:datasetId/provenance",
+          "method": "GET",
+          "purpose": "Retrieve provenance timeline data for a dataset.",
+          "requestShape": "None",
+          "responseShape": "{ versions: array, annotations: array }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets/:datasetId/impact-assessments",
+          "method": "GET",
+          "purpose": "Fetch impact assessment summaries for a dataset.",
+          "requestShape": "None",
+          "responseShape": "{ impacts: array }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/annotations",
+          "method": "POST",
+          "purpose": "Add a user annotation to a dataset version or impact.",
+          "requestShape": "{ targetType: string, targetId: string, content: string }",
+          "responseShape": "{ annotationId: string, createdAt: date }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/research-outputs",
+          "method": "POST",
+          "purpose": "Add or update research output documents referencing datasets.",
+          "requestShape": "{ title: string, contentSummary?: string, referencedDatasetVersions: array }",
+          "responseShape": "{ outputId: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ImpactAssessmentJob",
+          "trigger": "Dataset version upload or metadata update",
+          "purpose": "Analyze dataset version differences and metadata to generate or update impact assessment summaries."
+        }
+      ],
+      "edgeCases": [
+        "Handling corrupted or unsupported dataset file formats during upload.",
+        "Conflicting annotations or impact assessments from multiple users.",
+        "Incomplete or missing metadata that impedes provenance linkage.",
+        "Large datasets causing performance bottlenecks in visualization rendering.",
+        "False positive or misleading automated impact conclusions requiring manual override.",
+        "Data privacy breaches if access controls are misconfigured.",
+        "Network interruptions during file uploads or report exports."
+      ],
+      "nonGoals": [
+        "Providing full-fledged dataset version control like Git.",
+        "Automating definitive impact conclusions without human review.",
+        "Serving as a general-purpose research manuscript management system.",
+        "Handling raw data processing or cleaning beyond metadata and provenance.",
+        "Supporting real-time collaborative editing of datasets."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses frontend pages requiring authentication.",
+        "On /datasets/upload, user submits dataset file, optional metadata, and change log.",
+        "Frontend calls POST /api/datasets/:datasetId/versions to upload dataset version.",
+        "API validates input, stores file reference and metadata in Data Storage Layer (Prisma models).",
+        "API triggers ImpactAssessmentJob asynchronously upon successful upload.",
+        "ImpactAssessmentJob processes dataset version differences and metadata, generates impact summaries, stores ImpactAssessment records.",
+        "User accesses /dashboard, frontend fetches dataset summaries, recent impact assessments, and notifications via API endpoints.",
+        "User views provenance timeline on /datasets/:datasetId/provenance, frontend calls GET /api/datasets/:datasetId/provenance to retrieve versions and annotations.",
+        "User views impact report on /datasets/:datasetId/impact-report, frontend calls GET /api/datasets/:datasetId/impact-assessments to fetch impact summaries.",
+        "User adds annotations via /annotations page, frontend calls POST /api/annotations with target info and content.",
+        "Annotations stored in Data Storage Layer linked to target entities.",
+        "Integration with external research repositories via API-core endpoints for import/export of dataset references and provenance reports.",
+        "Exportable reports generated by API-core using stored data and served to frontend for download."
+      ],
+      "validationRules": [
+        "Dataset creation: 'name' is required, non-empty string; 'description' optional string.",
+        "Dataset version upload: file must be one of supported formats (CSV, Excel, JSON); metadata if provided must be valid JSON; changeLog optional string.",
+        "Dataset version upload: file size limits enforced; corrupted or unsupported files rejected with clear error.",
+        "Provenance timeline requests: datasetId must exist and belong to requesting user or accessible scope.",
+        "Impact assessment fetch: datasetId must exist and be accessible.",
+        "Annotations: targetType must be one of ['DatasetVersion', 'ImpactAssessment']; targetId must exist; content required non-empty string.",
+        "Research output creation/update: title required non-empty string; referencedDatasetVersions must be non-empty array of valid datasetVersion IDs.",
+        "All API inputs validated for type, presence, and format before processing.",
+        "Reject requests with missing or invalid authentication tokens."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with descriptive messages for validation failures.",
+        "Return 401 Unauthorized if authentication missing or invalid.",
+        "Return 403 Forbidden if user tries to access or modify resources they do not own or have rights to.",
+        "Return 404 Not Found if requested dataset, version, annotation, or research output does not exist.",
+        "Return 413 Payload Too Large for files exceeding size limits.",
+        "Return 500 Internal Server Error for unexpected failures with logged error details.",
+        "On file upload failure due to corruption or unsupported format, respond with specific error and guidance.",
+        "API responses include error codes and messages to enable frontend user-friendly error display.",
+        "Background job logs errors and flags uncertain impact conclusions for manual review without blocking job completion."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication; enforce via middleware.",
+        "Role-based access controls to be added in future upgrades; currently restrict access to resource owners.",
+        "Validate and sanitize all inputs to prevent injection attacks.",
+        "Store dataset files and sensitive data encrypted at rest.",
+        "Use HTTPS for all client-server communications.",
+        "Limit file upload size and scan files for malware if possible.",
+        "Implement rate limiting on API endpoints to prevent abuse.",
+        "Ensure annotations and impact assessments cannot be manipulated by unauthorized users.",
+        "Audit logs for dataset uploads, impact assessments, and annotations for traceability.",
+        "Secure integration endpoints with authentication and data format validation."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /datasets/upload page with a valid CSV dataset file and metadata",
+          "when": "The user submits the upload form",
+          "then": "The API accepts the upload, stores the dataset version, triggers impact analysis job, and frontend shows upload confirmation and provenance preview"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user requests the provenance timeline for a dataset they own",
+          "when": "The frontend calls GET /api/datasets/:datasetId/provenance",
+          "then": "The API returns all dataset versions and related annotations, and the frontend displays an interactive timeline"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user tries to upload a dataset version with an unsupported file format",
+          "when": "The user submits the upload",
+          "then": "The API rejects the request with a 400 error and descriptive message about supported formats"
+        },
+        {
+          "id": "AT-004",
+          "given": "An unauthenticated user attempts to access /dashboard",
+          "when": "The user navigates to /dashboard",
+          "then": "The frontend redirects to login page or shows unauthorized access message"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user adds an annotation targeting a dataset version",
+          "when": "The user submits annotation content",
+          "then": "The API stores the annotation linked to the dataset version and returns annotationId and timestamp"
+        },
+        {
+          "id": "AT-006",
+          "given": "The ImpactAssessmentJob runs after a dataset version upload",
+          "when": "The job completes processing",
+          "then": "ImpactAssessment records are created or updated, with uncertain conclusions flagged for review"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user requests an impact report for a dataset",
+          "when": "The frontend calls GET /api/datasets/:datasetId/impact-assessments",
+          "then": "The API returns structured impact summaries and export options are available"
+        },
+        {
+          "id": "AT-008",
+          "given": "Multiple users add conflicting annotations on the same impact assessment",
+          "when": "Annotations are submitted concurrently",
+          "then": "All annotations are stored without data loss and visible in annotation threads"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user uploads a very large dataset file",
+          "when": "The upload is processed",
+          "then": "The system handles the upload without crashing, and frontend shows progress or warnings if needed"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user attempts to fetch data for a dataset they do not own",
+          "when": "The API receives the request",
+          "then": "The API responds with 403 Forbidden"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database (Dataset, DatasetVersion, ResearchOutput, ImpactAssessment, UserAnnotation, User)",
+        "Implement authentication middleware and user model scaffolding",
+        "Develop API routes for dataset creation and version upload with validation and error handling",
+        "Implement file storage mechanism with encryption and size limits",
+        "Build ImpactAssessmentJob background job framework and trigger on dataset version upload",
+        "Develop API routes for provenance timeline and impact assessment retrieval",
+        "Create frontend pages: /datasets/upload, /dashboard with data fetching and display",
+        "Implement annotation API and frontend /annotations page",
+        "Develop provenance timeline page with interactive visualization components",
+        "Develop impact report page with export functionality",
+        "Integrate basic external research repository import/export APIs",
+        "Add comprehensive error handling and user-friendly messages in frontend",
+        "Add security hardening and input sanitization",
+        "Write and run acceptance tests",
+        "Plan for future role-based access control and advanced impact simulation features"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/datasets/upload",
+          "/datasets/[datasetId]/provenance",
+          "/datasets/[datasetId]/impact-report",
+          "/annotations"
+        ],
+        "apiFilesToCreate": [
+          "/api/datasets/index.ts",
+          "/api/datasets/[datasetId]/versions.ts",
+          "/api/datasets/[datasetId]/provenance.ts",
+          "/api/datasets/[datasetId]/impact-assessments.ts",
+          "/api/annotations.ts",
+          "/api/research-outputs.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Dataset",
+          "DatasetVersion",
+          "ResearchOutput",
+          "ImpactAssessment",
+          "UserAnnotation",
+          "User (for authentication and ownership)"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, edge cases, or preferences to better define the system requirements.",
+        "promptTemplate": "You are the planner refining the project requirements for the Academic Dataset Provenance & Impact Analyzer. Given the current blueprint and expanded specs: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease ask clarifying questions or request missing constraints to ensure a complete and precise requirements document."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the pages, API endpoints, and data models for the multi-page app based on refined requirements.",
+        "promptTemplate": "You are the architect finalizing the design for the Academic Dataset Provenance & Impact Analyzer. Using the idea, blueprint, and expanded specs: {{IDEA}}, {{BLUEPRINT}}, {{EXPANDED}}\nUser input: {{USER_INPUT}}\nPlease produce a detailed design for pages, API routes, and data models aligned with the project goals and constraints."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code stubs for frontend pages and basic API handlers to jump-start development.",
+        "promptTemplate": "You are the builder generating initial code stubs. Given the finalized design and user input: {{BLUEPRINT}}, {{USER_INPUT}}\nGenerate scaffold code for the next frontend pages and API routes with placeholders and comments for future implementation."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate frontend pages with backend API routes and database models, ensuring end-to-end data flow and security.",
+        "promptTemplate": "You are the integrator wiring frontend pages to backend APIs and database models. Given the expanded data flow, validation, and security notes: {{EXPANDED}}\nUser input: {{USER_INPUT}}\nProvide detailed integration steps and code to connect UI, API endpoints, and data storage securely and reliably."
+      }
+    ]
+  }
+}

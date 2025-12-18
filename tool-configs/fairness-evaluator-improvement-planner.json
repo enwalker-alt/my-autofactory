@@ -1,0 +1,770 @@
+{
+  "slug": "fairness-evaluator-improvement-planner",
+  "title": "Academic Research Dataset FAIRness Evaluator & Improvement Planner",
+  "description": "Upload your dataset metadata, sample data files, documentation, and licensing info to receive a structured FAIRness evaluation report with prioritized improvement suggestions. Designed for academic research data managers to assess and enhance dataset compliance with FAIR principles in a streamlined, advisory manner.",
+  "inputLabel": "Paste or upload your dataset metadata (e.g., Dublin Core XML, DataCite JSON-LD), sample data files (CSV, Excel, JSON), documentation text, and licensing description below. You may upload multiple files as needed.",
+  "outputLabel": "FAIRness Evaluation Report and Improvement Plan",
+  "systemPrompt": "You are a specialized assistant for academic research data managers evaluating the FAIRness compliance of research datasets. Given the provided dataset metadata, sample data files, documentation text, and licensing information, analyze these inputs to produce a clear, structured FAIRness evaluation report. The report must include scores or ratings for each of the FAIR principles (Findability, Accessibility, Interoperability, Reusability), a detailed checklist highlighting missing or insufficient FAIR components, and a prioritized, stepwise improvement plan with actionable recommendations to enhance dataset FAIRness. Your evaluation should be advisory, transparent, and avoid guaranteeing compliance. Refuse to process any inputs that appear to contain sensitive personal data or violate privacy. Output the report as plain text, optionally in JSON if requested, with clear sections and actionable guidance. Use only provided inputs and do not guess missing information. Enforce strict safety and privacy rules.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Report",
+      "prompt": "Provide a concise summary of the dataset's FAIRness evaluation, highlighting key scores and top improvement actions."
+    },
+    {
+      "label": "Detailed Checklist",
+      "prompt": "Generate a detailed checklist of FAIR components present or missing in the dataset, organized by each FAIR principle."
+    },
+    {
+      "label": "Improvement Plan",
+      "prompt": "Produce a prioritized, stepwise improvement plan with actionable recommendations to enhance dataset FAIRness."
+    },
+    {
+      "label": "Full FAIRness Report",
+      "prompt": "Create a comprehensive FAIRness evaluation report including scores, checklist, improvement plan, and explanatory notes."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output a JSON object with keys: 'scores' (object with FAIR principle keys and numeric ratings), 'checklist' (array of items with 'principle', 'item', 'status', 'notes'), and 'improvementPlan' (array of steps with 'priority', 'action', 'details').",
+  "clarifyPrompt": "To provide an accurate FAIRness evaluation, please confirm you have uploaded dataset metadata files, sample data files, documentation, and licensing information relevant to your dataset. Also specify any organizational or funder FAIR guidelines to consider.",
+  "finalizePrompt": "Based on the inputs provided, generate the final FAIRness evaluation report with scores, checklist, and improvement plan. Ensure clarity, transparency, and actionable advice.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Dataset FAIRness Evaluator & Improvement Planner",
+      "niche": {
+        "role": "Academic Research Data Manager",
+        "scenario": "Evaluating and improving the FAIRness (Findability, Accessibility, Interoperability, Reusability) of research datasets prior to publication or sharing."
+      },
+      "problem": "Academic research data managers often struggle to systematically assess and improve the FAIR principles compliance of their datasets, lacking an integrated tool that analyzes dataset metadata, formats, licensing, and documentation to produce clear FAIRness evaluation and actionable improvement plans.",
+      "inputs": [
+        "Dataset metadata files (e.g., Dublin Core, DataCite XML, JSON-LD)",
+        "Sample data files or dataset snapshots (CSV, Excel, JSON, etc.)",
+        "Description of dataset licensing and access conditions",
+        "Existing documentation or README text files",
+        "Relevant organizational or funder FAIR guidelines"
+      ],
+      "outputs": [
+        "Structured FAIRness evaluation report with scores or ratings per FAIR principle",
+        "Detailed checklist highlighting missing or insufficient FAIR components",
+        "Prioritized, stepwise dataset improvement plan with recommended actions",
+        "Exportable compliance documentation templates",
+        "Visual dashboard tracking FAIRness progress over time"
+      ],
+      "whyItWins": [
+        "Fills a gap by providing a specialized, integrated FAIRness assessment tool tailored to academic research data managers, unlike generic metadata validators or data management plan generators.",
+        "Automates a complex multi-dimensional evaluation of datasets, saving significant manual effort and reducing human error in FAIR compliance assessment.",
+        "Delivers actionable, prioritized improvement plans, not just diagnostic reports, facilitating practical dataset enhancement workflows.",
+        "Supports iterative dataset development with progress tracking, encouraging continuous FAIR improvements aligned with evolving standards.",
+        "Enables better compliance with funder and publisher data sharing requirements, enhancing research visibility and reuse."
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app accepting dataset metadata and sample files to produce a simple FAIRness checklist and improvement suggestions in a single report.",
+        "in90Days": "Add interactive dashboards, integration with common metadata standards and repositories, user accounts for dataset project tracking, and exportable improvement plan templates.",
+        "in12Months": "Develop a full multi-page system with dataset version control, collaborative FAIR improvement workflows, automated metadata enrichment suggestions, integration with institutional repositories and funder portals, and FAIR compliance certification support."
+      },
+      "riskNotes": [
+        "Must carefully handle sensitive or unpublished data with strict privacy and security measures.",
+        "Evaluation algorithms should remain advisory and transparent to avoid overclaiming compliance or guaranteeing FAIRness.",
+        "Needs to stay updated with evolving FAIR principles and metadata standards to remain relevant and accurate."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized web application for academic research data managers to evaluate, track, and improve the FAIRness of research datasets through automated assessments, actionable improvement plans, and progress dashboards.",
+      "primaryUser": "Academic Research Data Manager",
+      "successMetrics": [
+        "Number of datasets assessed and tracked within the system",
+        "User engagement with improvement plans and dashboard features",
+        "Reduction in manual effort for FAIR compliance evaluation reported by users",
+        "Positive user feedback on clarity and usefulness of FAIRness reports",
+        "Adoption by institutions or research groups for dataset FAIRness management"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provides visual summary of FAIRness scores, progress tracking over time, and access to dataset projects and reports.",
+          "dependsOn": [
+            "api-auth",
+            "api-dataset",
+            "data-dataset",
+            "data-fairnessReport"
+          ],
+          "notes": [
+            "Supports interactive charts and filtering by dataset/project.",
+            "Shows prioritized improvement plan status and completion progress."
+          ]
+        },
+        {
+          "id": "ui-datasetManagement",
+          "name": "Dataset Management UI",
+          "type": "ui",
+          "responsibility": "Allows users to upload metadata, sample data files, documentation, and licensing info; view/edit dataset details and improvement plans.",
+          "dependsOn": [
+            "api-auth",
+            "api-dataset",
+            "api-fairnessEvaluation",
+            "data-dataset",
+            "data-improvementPlan"
+          ],
+          "notes": [
+            "Supports multiple metadata standards input formats.",
+            "Enables versioning and history viewing for datasets."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Manages user accounts, sessions, and access control for dataset projects and FAIRness data.",
+          "dependsOn": [
+            "data-user"
+          ],
+          "notes": [
+            "Supports secure login, password reset, and role-based access.",
+            "Ensures data privacy and compliance with sensitive dataset handling."
+          ]
+        },
+        {
+          "id": "api-dataset",
+          "name": "Dataset Management API",
+          "type": "api",
+          "responsibility": "Handles dataset metadata, file uploads, versioning, and retrieval operations.",
+          "dependsOn": [
+            "data-dataset",
+            "data-fileStorage"
+          ],
+          "notes": [
+            "Validates input formats and metadata schema compliance.",
+            "Manages storage references for uploaded sample data and documents."
+          ]
+        },
+        {
+          "id": "api-fairnessEvaluation",
+          "name": "FAIRness Evaluation API",
+          "type": "api",
+          "responsibility": "Processes uploaded dataset inputs to generate FAIRness evaluation reports, checklists, and improvement plans.",
+          "dependsOn": [
+            "data-fairnessReport",
+            "data-improvementPlan",
+            "integration-guidelines"
+          ],
+          "notes": [
+            "Implements modular evaluation algorithms per FAIR principle.",
+            "Produces transparent advisory scores and recommendations.",
+            "Handles asynchronous processing for large datasets."
+          ]
+        },
+        {
+          "id": "data-dataset",
+          "name": "Dataset Metadata and Files Store",
+          "type": "data",
+          "responsibility": "Persists dataset metadata, uploaded sample files, documentation, licensing info, and version history.",
+          "dependsOn": [],
+          "notes": [
+            "Stores references to file storage locations securely.",
+            "Supports dataset version control and audit trails."
+          ]
+        },
+        {
+          "id": "data-fairnessReport",
+          "name": "FAIRness Evaluation Reports Store",
+          "type": "data",
+          "responsibility": "Stores structured FAIRness evaluation results, scores, checklists, and timestamps per dataset version.",
+          "dependsOn": [
+            "data-dataset"
+          ],
+          "notes": [
+            "Enables historical comparisons and progress tracking."
+          ]
+        },
+        {
+          "id": "data-improvementPlan",
+          "name": "Improvement Plans Store",
+          "type": "data",
+          "responsibility": "Persists prioritized, stepwise dataset improvement plans with recommended actions and completion status.",
+          "dependsOn": [
+            "data-fairnessReport"
+          ],
+          "notes": [
+            "Supports user updates on action completion and notes."
+          ]
+        },
+        {
+          "id": "data-user",
+          "name": "User Accounts Store",
+          "type": "data",
+          "responsibility": "Stores user profile information, authentication credentials, roles, and preferences.",
+          "dependsOn": [],
+          "notes": [
+            "Ensures secure storage of sensitive authentication data."
+          ]
+        },
+        {
+          "id": "integration-guidelines",
+          "name": "FAIR Guidelines & Metadata Standards Integration",
+          "type": "integration",
+          "responsibility": "Maintains up-to-date FAIR principles, metadata standards, and organizational/funder guidelines for evaluation reference.",
+          "dependsOn": [],
+          "notes": [
+            "Supports updates to evaluation algorithms as standards evolve.",
+            "May integrate with external repositories or guideline APIs."
+          ]
+        },
+        {
+          "id": "backgroundJob-fairnessEvaluation",
+          "name": "Asynchronous FAIRness Evaluation Job",
+          "type": "job",
+          "responsibility": "Processes datasets in background to generate FAIRness reports and improvement plans without blocking user requests.",
+          "dependsOn": [
+            "api-fairnessEvaluation",
+            "data-dataset"
+          ],
+          "notes": [
+            "Handles retries and failure notifications on processing errors."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Stores user authentication and profile data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLoginAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Dataset",
+          "purpose": "Represents a research dataset with metadata, files, versions, and ownership.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "metadataFiles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "sampleDataFiles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "documentationFiles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "licensingInfo",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "ownerId",
+            "title"
+          ]
+        },
+        {
+          "name": "FairnessReport",
+          "purpose": "Stores FAIRness evaluation results and checklists for a dataset version.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetVersion",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "evaluationDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "scores",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "checklist",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "datasetId",
+            "evaluationDate"
+          ]
+        },
+        {
+          "name": "ImprovementPlan",
+          "purpose": "Contains prioritized improvement actions linked to a FAIRness report.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fairnessReportId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "actions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "priorities",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "completionStatus",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "fairnessReportId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access dataset management and FAIRness evaluation features.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "login success/failure message"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "FAIRness Dashboard",
+          "purpose": "Visualize FAIRness scores, improvement progress, and recent activity across user datasets.",
+          "inputs": [],
+          "outputs": [
+            "interactive charts",
+            "dataset summaries",
+            "notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/datasets",
+          "title": "Dataset List & Management",
+          "purpose": "List user datasets, create new datasets, and access dataset details.",
+          "inputs": [],
+          "outputs": [
+            "dataset list",
+            "create/edit dataset forms"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/datasets/:id",
+          "title": "Dataset Detail & FAIRness Evaluation",
+          "purpose": "View dataset metadata, upload files, trigger FAIRness evaluation, and review reports and improvement plans.",
+          "inputs": [
+            "metadata files",
+            "sample data files",
+            "documentation",
+            "licensing info"
+          ],
+          "outputs": [
+            "FAIRness report",
+            "improvement plan",
+            "version history"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/improvement-plans/:id",
+          "title": "Improvement Plan Detail",
+          "purpose": "View and update prioritized improvement actions for a dataset FAIRness report.",
+          "inputs": [
+            "action completion updates",
+            "notes"
+          ],
+          "outputs": [
+            "current plan status",
+            "action details"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/datasets",
+          "method": "GET",
+          "purpose": "Retrieve list of datasets owned by authenticated user.",
+          "requestShape": "none",
+          "responseShape": "[ Dataset ]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets",
+          "method": "POST",
+          "purpose": "Create a new dataset with metadata and initial files.",
+          "requestShape": "{ title: string, metadataFiles?: json, sampleDataFiles?: json, documentationFiles?: json, licensingInfo?: string }",
+          "responseShape": "{ datasetId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets/:id",
+          "method": "GET",
+          "purpose": "Retrieve detailed dataset info including versions and files.",
+          "requestShape": "none",
+          "responseShape": "Dataset",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets/:id/fairness-evaluate",
+          "method": "POST",
+          "purpose": "Trigger asynchronous FAIRness evaluation for the specified dataset version.",
+          "requestShape": "{ version: number }",
+          "responseShape": "{ jobId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/fairness-reports/:datasetId",
+          "method": "GET",
+          "purpose": "Retrieve FAIRness evaluation reports for a dataset.",
+          "requestShape": "none",
+          "responseShape": "[ FairnessReport ]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/improvement-plans/:reportId",
+          "method": "GET",
+          "purpose": "Get improvement plan linked to a FAIRness report.",
+          "requestShape": "none",
+          "responseShape": "ImprovementPlan",
+          "auth": "user"
+        },
+        {
+          "route": "/api/improvement-plans/:planId",
+          "method": "POST",
+          "purpose": "Update improvement plan actions and completion status.",
+          "requestShape": "{ actions?: json, completionStatus?: json, notes?: string }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "FAIRness Evaluation Processor",
+          "trigger": "Triggered by API request to evaluate a dataset version",
+          "purpose": "Runs evaluation algorithms asynchronously to generate FAIRness reports and improvement plans, updating data stores upon completion."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or malformed metadata files without failing entire evaluation.",
+        "Managing large dataset sample files with timeouts or partial analysis fallback.",
+        "Ensuring data privacy and secure access for unpublished or sensitive datasets.",
+        "Dealing with evolving FAIR principles and metadata standards requiring re-evaluation or report updates.",
+        "Handling concurrent edits or uploads to the same dataset version with conflict resolution.",
+        "Gracefully recovering from background job failures and notifying users."
+      ],
+      "nonGoals": [
+        "Providing full data repository hosting or long-term data storage beyond metadata and sample files references.",
+        "Guaranteeing official FAIR compliance certification or legal validation.",
+        "Replacing domain-specific metadata creation tools or general data management plan generators.",
+        "Supporting non-academic or non-research dataset types outside FAIR principles scope."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/auth/login.",
+        "On successful authentication, user receives token and userId, stored client-side for authenticated requests.",
+        "Authenticated user accesses /dashboard which calls /api/datasets (GET) to fetch owned datasets and /api/fairness-reports/:datasetId (GET) for reports to display scores and progress.",
+        "User navigates to /datasets to view dataset list fetched from /api/datasets (GET).",
+        "User creates a new dataset via /datasets page submitting form data to /api/datasets (POST), which validates and stores metadata and file references, returning datasetId.",
+        "User views or edits dataset details at /datasets/:id, fetching dataset info from /api/datasets/:id (GET).",
+        "User uploads metadata files, sample data files, documentation, or licensing info via /datasets/:id page, updating dataset via /api/datasets/:id (PATCH or POST if supported).",
+        "User triggers FAIRness evaluation on a dataset version by calling /api/datasets/:id/fairness-evaluate (POST) with version number, which enqueues background job.",
+        "Background job processes dataset asynchronously, generating FAIRnessReport and ImprovementPlan, storing results in data stores.",
+        "User views FAIRness reports via /api/fairness-reports/:datasetId (GET) and improvement plans via /api/improvement-plans/:reportId (GET).",
+        "User updates improvement plan actions and completion status via /api/improvement-plans/:planId (POST).",
+        "Dashboard UI reflects updated FAIRness scores and improvement progress based on latest data."
+      ],
+      "validationRules": [
+        "Login API: Validate email format and password presence; reject invalid credentials with generic error.",
+        "Dataset creation: Title required, non-empty string; metadataFiles, sampleDataFiles, documentationFiles must be valid JSON if provided; licensingInfo optional string.",
+        "Dataset updates: Validate file references and metadata schema compliance against supported metadata standards.",
+        "FAIRness evaluation trigger: version number must be positive integer and correspond to existing dataset version.",
+        "Improvement plan updates: actions and completionStatus must be valid JSON structures; notes optional string with max length limit.",
+        "All authenticated API routes require valid token and user ownership verification for dataset or report access.",
+        "File uploads must be scanned for allowed types and size limits; metadata files must conform to supported standards schemas.",
+        "Concurrent edits to dataset metadata or improvement plans must be detected and rejected or merged with conflict resolution."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with generic message to avoid information leakage.",
+        "Validation errors return 400 Bad Request with field-specific error messages.",
+        "Access denied due to ownership or role returns 403 Forbidden.",
+        "Not found resources return 404 Not Found.",
+        "Background job failures log errors, retry up to configured attempts, and notify users via dashboard notifications or email.",
+        "Large file uploads exceeding limits return 413 Payload Too Large.",
+        "Malformed metadata files during evaluation are logged and skipped with partial evaluation results returned.",
+        "API responses include consistent error object with code, message, and optional details.",
+        "Client UI displays error messages in context with retry options where applicable."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all client-server communication to protect credentials and tokens.",
+        "Store hashed passwords securely using strong hashing algorithms (e.g., bcrypt).",
+        "Implement role-based access control to restrict dataset and report access to owners and authorized roles.",
+        "Sanitize and validate all inputs to prevent injection attacks.",
+        "Use secure cookies or authorization headers for session tokens with appropriate expiration and refresh mechanisms.",
+        "Ensure file uploads are scanned and stored securely with access restrictions.",
+        "Audit logs for user actions on datasets and FAIRness evaluations for compliance and troubleshooting.",
+        "Protect background job processing endpoints and queues from unauthorized access.",
+        "Regularly update FAIR guidelines integration to avoid outdated or insecure dependencies."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and are redirected to /dashboard"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /datasets page",
+          "when": "They request their dataset list",
+          "then": "They receive a list of datasets they own with correct metadata"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user submits new dataset data with valid metadata and files",
+          "when": "They POST to /api/datasets",
+          "then": "A new dataset is created, and datasetId is returned"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user views a dataset detail page",
+          "when": "They fetch dataset info via /api/datasets/:id",
+          "then": "They receive full dataset details including version history and file references"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user triggers FAIRness evaluation for a dataset version",
+          "when": "They POST to /api/datasets/:id/fairness-evaluate with valid version",
+          "then": "A job is queued, and jobId with status is returned"
+        },
+        {
+          "id": "AT-006",
+          "given": "A FAIRness evaluation job completes successfully",
+          "when": "User requests FAIRness reports for the dataset",
+          "then": "They receive the latest FAIRnessReport with scores and checklist"
+        },
+        {
+          "id": "AT-007",
+          "given": "An improvement plan exists for a FAIRness report",
+          "when": "User fetches the improvement plan via /api/improvement-plans/:reportId",
+          "then": "They receive the plan with actions, priorities, and completion status"
+        },
+        {
+          "id": "AT-008",
+          "given": "User updates improvement plan actions and completion status",
+          "when": "They POST updates to /api/improvement-plans/:planId",
+          "then": "The plan is updated and success response is returned"
+        },
+        {
+          "id": "AT-009",
+          "given": "User attempts to access dataset they do not own",
+          "when": "They request dataset details or update",
+          "then": "They receive 403 Forbidden error"
+        },
+        {
+          "id": "AT-010",
+          "given": "User uploads malformed metadata files",
+          "when": "FAIRness evaluation runs",
+          "then": "Evaluation completes with partial results and logs warnings without failing entirely"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, Dataset, FairnessReport, ImprovementPlan with fields and indexes.",
+        "Implement api-auth routes for login, session management, and role-based access control.",
+        "Implement data-user store with secure password hashing and user management.",
+        "Implement api-dataset routes for dataset CRUD operations, file upload handling, and metadata validation.",
+        "Implement data-dataset store with versioning and file reference management.",
+        "Implement integration-guidelines module to provide FAIR principles and metadata standards references.",
+        "Implement api-fairnessEvaluation routes to trigger evaluation jobs and return status.",
+        "Implement backgroundJob-fairnessEvaluation processor to run evaluation algorithms asynchronously and update data stores.",
+        "Implement data-fairnessReport and data-improvementPlan stores for evaluation results and improvement plans.",
+        "Implement api routes for fetching fairness reports and improvement plans, and updating improvement plans.",
+        "Develop UI pages: /login, /dashboard, /datasets, /datasets/:id, /improvement-plans/:id with appropriate data fetching and forms.",
+        "Integrate charts and filtering in dashboard UI to visualize FAIRness scores and progress.",
+        "Implement client-side validation and error handling for forms and API interactions.",
+        "Implement concurrency control and conflict resolution for dataset edits and improvement plan updates.",
+        "Implement comprehensive error handling and user notifications for background job failures and API errors.",
+        "Perform security audits and testing for authentication, authorization, and data privacy compliance.",
+        "Write and run acceptance tests to validate all critical user flows and edge cases."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/datasets",
+          "/datasets/[id]",
+          "/improvement-plans/[id]"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/datasets/index.ts",
+          "/api/datasets/[id].ts",
+          "/api/datasets/[id]/fairness-evaluate.ts",
+          "/api/fairness-reports/[datasetId].ts",
+          "/api/improvement-plans/[reportId].ts",
+          "/api/improvement-plans/[planId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Dataset",
+          "FairnessReport",
+          "ImprovementPlan"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, clarifications, or additional details required to finalize the tool requirements.",
+        "promptTemplate": "You are the planner refining the requirements for the FAIRness Evaluator & Improvement Planner tool. Given the current blueprint and expanded specs: {{BLUEPRINT}}\n\nUser input or questions: {{USER_INPUT}}\n\nList any missing constraints, clarifications needed, or suggested refinements to ensure the tool fully meets academic research data managers' needs."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the pages, data models, and API endpoints needed to implement the FAIRness evaluation tool based on refined requirements.",
+        "promptTemplate": "You are the architect designing the FAIRness Evaluator & Improvement Planner. Using the idea and blueprint: {{IDEA}}, {{BLUEPRINT}}\n\nIncorporate any refinements from the planner phase.\n\nDefine the final pages, data models, and API routes needed to fully support the tool's core workflow and future scalability."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for the UI pages, API endpoints, and data models defined by the architect, enabling rapid prototyping of the FAIRness evaluation tool.",
+        "promptTemplate": "You are the builder tasked with generating code stubs for the FAIRness Evaluator & Improvement Planner. Based on the architect's finalized design: {{ARCHITECT_OUTPUT}}\n\nCreate skeleton implementations of UI pages, API handlers, and data model definitions to enable early development and testing."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the integration of UI pages with API endpoints and the database, ensuring secure, validated data flow for FAIRness evaluation and improvement planning.",
+        "promptTemplate": "You are the integrator connecting the FAIRness Evaluator & Improvement Planner components. Using the builder's code stubs: {{BUILDER_OUTPUT}}\n\nImplement data binding between UI, API, and database layers with validation, authentication, and error handling to realize the full dataset FAIRness workflow."
+      }
+    ]
+  }
+}

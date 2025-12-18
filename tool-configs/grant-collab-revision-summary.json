@@ -1,0 +1,843 @@
+{
+  "slug": "grant-collab-revision-summary",
+  "title": "Academic Grant Proposal Revision Summary Generator",
+  "description": "Upload your grant proposal draft and contributor comments to generate a consolidated, color-coded revision summary report with contributor attribution and a prioritized revision task list.",
+  "inputLabel": "Upload your grant proposal draft file (Word, PDF, or text) and paste contributor comments below:",
+  "outputLabel": "Consolidated Revision Summary and Task List",
+  "systemPrompt": "You are an expert assistant specialized in academic research grant proposal collaborative revision workflows. Given an uploaded grant proposal draft and contributor comments, generate a consolidated revision history highlighting changes with contributor attribution, detect any conflicting edits, and produce a structured feedback summary report categorizing comments by section and priority. Additionally, create a revision task list with assigned action items and deadlines if provided. Only accept supported file formats (Word, PDF, text) and reject unsupported or corrupted files with a clear error message. Enforce strict data privacy: do not output any sensitive user authentication or internal data. Output in plain text by default. If structured-output feature enabled, output valid JSON with revisionHistory, feedbackSummary, and revisionTasks fields. Refuse requests missing draft file or comments. Enforce maximum comment length of 1000 characters. Always ensure safe and high-quality output aligned with academic grant writing standards.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Focused",
+      "prompt": "Generate a concise consolidated revision summary highlighting key changes and contributor attributions with minimal technical detail.",
+      "hint": "Good for quick overview of revisions."
+    },
+    {
+      "label": "Detailed Feedback & Tasks",
+      "prompt": "Produce a detailed feedback summary categorized by section and priority and generate a comprehensive revision task list with assignments and deadlines.",
+      "hint": "Best for managing revision workflow and tasks."
+    },
+    {
+      "label": "Conflict Detection Emphasis",
+      "prompt": "Focus on detecting and clearly flagging conflicting edits among contributors in the revision history and provide guidance on resolution.",
+      "hint": "Use when reviewing complex overlapping edits."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output a JSON object with keys: revisionHistory (string or structured diff), feedbackSummary (object categorizing comments by section and priority), and revisionTasks (array of tasks with description, assignedUserId, dueDate, and status).",
+  "clarifyPrompt": "Please upload a supported draft document file (Word, PDF, or text) and paste contributor comments below. Ensure comments are clear, under 1000 characters each, and include contributor names and timestamps if possible.",
+  "finalizePrompt": "Review the consolidated revision summary and task list carefully for accuracy. Confirm or request refinement for better categorization or conflict detection.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Revision Tracker",
+      "niche": {
+        "role": "Academic research grant writing teams",
+        "scenario": "Collaboratively drafting and revising grant proposals with multiple contributors and reviewers across institutions"
+      },
+      "problem": "Grant writing teams often struggle to coordinate revisions, track contributor inputs, and consolidate feedback across multiple drafts and collaborators, leading to version conflicts, missed comments, and inefficient revision cycles that can jeopardize proposal quality and submission deadlines.",
+      "inputs": [
+        "Uploaded grant proposal draft documents (Word, PDF, or text)",
+        "Contributor and reviewer comments and annotations",
+        "Version metadata (timestamps, contributor identity)",
+        "Project timeline and submission deadlines"
+      ],
+      "outputs": [
+        "Consolidated, color-coded revision history with contributor attribution",
+        "Structured feedback summary reports categorizing comments by section and priority",
+        "Automated conflict detection in overlapping edits",
+        "Revision task list with assigned action items and deadlines",
+        "Visual dashboard tracking revision progress against timeline"
+      ],
+      "whyItWins": [
+        "Fills a gap between document editors and project management tools by focusing specifically on academic grant proposal collaborative revision workflows",
+        "Reduces coordination overhead and risk of lost feedback by centralizing revision tracking with contributor-specific attribution",
+        "Supports repeated iterative use through integrated timeline and task management features tailored to grant submission cycles",
+        "Enables clearer accountability and faster consensus building among distributed teams",
+        "Facilitates higher quality proposal submissions by ensuring thorough, organized revision processes"
+      ],
+      "upgradePath": {
+        "today": "Provide a simple web tool to upload a proposal draft and individual contributor comments to generate a consolidated, annotated revision summary report and task list.",
+        "in90Days": "Add multi-user online collaboration features with live comment aggregation, edit conflict alerts, contributor notifications, and timeline tracking dashboards.",
+        "in12Months": "Expand into a full multi-page grant proposal collaboration platform with integrated document editing, version control, real-time chat, deadline and milestone management, funder guideline compliance checking, and export-ready submission packages."
+      },
+      "riskNotes": [
+        "Must ensure strict data security and privacy for unpublished grant proposals and contributor intellectual property.",
+        "Avoid functionality overlap with existing document editors and project management tools by emphasizing domain-specific workflows and outputs.",
+        "Requires careful UI/UX design to keep complex collaborative revision data comprehensible and actionable.",
+        "Potential challenges in parsing diverse document formats and comment types consistently."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized collaborative revision tracking platform for academic research grant writing teams that centralizes draft uploads, contributor comments, version metadata, and project timelines to produce consolidated revision histories, feedback summaries, conflict detection, task lists, and progress dashboards, enabling efficient, accountable, and high-quality grant proposal submissions.",
+      "primaryUser": "Academic research grant writing teams including contributors, reviewers, and project leads",
+      "successMetrics": [
+        "Reduction in revision coordination time and version conflicts",
+        "Increased number of proposals completed on or before deadlines",
+        "User engagement with revision dashboards and task lists",
+        "Positive user feedback on clarity and usefulness of consolidated revision reports",
+        "Adoption rate among academic grant writing teams"
+      ],
+      "components": [
+        {
+          "id": "ui-pages",
+          "name": "User Interface Pages",
+          "type": "ui",
+          "responsibility": "Provide interactive web pages for uploading drafts, viewing consolidated revision histories, managing feedback and tasks, and tracking project timelines and progress dashboards.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Must support clear visualization of revision attributions and color-coded comments.",
+            "UI/UX must simplify complex collaborative data for diverse user roles.",
+            "Pages require authentication for access control."
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API",
+          "type": "api",
+          "responsibility": "Handle all client-server interactions including document uploads, comment submissions, version metadata management, revision consolidation, conflict detection, task management, and timeline tracking.",
+          "dependsOn": [
+            "data-storage",
+            "integration-docparser"
+          ],
+          "notes": [
+            "Must enforce strict authentication and authorization.",
+            "Provide endpoints optimized for real-time collaboration features in future upgrades.",
+            "Handle error cases such as invalid document formats and conflicting edits."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage Layer",
+          "type": "data",
+          "responsibility": "Persist all grant proposal drafts, contributor comments, version metadata, project timelines, tasks, and user data securely.",
+          "dependsOn": [],
+          "notes": [
+            "Data must be encrypted at rest to ensure confidentiality.",
+            "Design schema to efficiently query revision histories and feedback summaries.",
+            "Support version control metadata for audit trails."
+          ]
+        },
+        {
+          "id": "integration-docparser",
+          "name": "Document Parsing and Annotation Integration",
+          "type": "integration",
+          "responsibility": "Parse uploaded documents (Word, PDF, text) to extract text and embedded comments/annotations, normalize diverse comment types, and enable structured revision tracking.",
+          "dependsOn": [],
+          "notes": [
+            "Must handle multiple document formats with high fidelity.",
+            "Normalize comment metadata including contributor identity and timestamps.",
+            "Fail gracefully on unsupported or corrupted documents."
+          ]
+        },
+        {
+          "id": "background-revisionConsolidation",
+          "name": "Revision Consolidation Job",
+          "type": "job",
+          "responsibility": "Process uploaded drafts and contributor comments to generate consolidated, color-coded revision histories with contributor attribution and detect overlapping edit conflicts.",
+          "dependsOn": [
+            "data-storage",
+            "integration-docparser"
+          ],
+          "notes": [
+            "Runs asynchronously to avoid blocking user actions.",
+            "Must handle large documents and multiple contributors efficiently.",
+            "Detect and flag conflicting edits for user review."
+          ]
+        },
+        {
+          "id": "background-feedbackSummary",
+          "name": "Feedback Summary and Task List Generation Job",
+          "type": "job",
+          "responsibility": "Analyze consolidated revision data to produce structured feedback summary reports categorized by section and priority, and generate actionable revision task lists with assigned contributors and deadlines.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Supports prioritization to focus team efforts.",
+            "Integrates with project timeline data to set realistic deadlines.",
+            "Updates task statuses as revisions progress."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents contributors, reviewers, and project leads with authentication and role information",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "GrantProposal",
+          "purpose": "Stores metadata and references to uploaded draft documents for a grant proposal project",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "deadline",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "ownerUserId",
+            "deadline"
+          ]
+        },
+        {
+          "name": "DraftDocument",
+          "purpose": "Represents each uploaded draft version of a grant proposal with associated metadata",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileLocation",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantProposalId",
+            "uploadTimestamp"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Stores individual contributor comments or annotations linked to specific draft documents and sections",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "draftDocumentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "section",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "priority",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "draftDocumentId",
+            "authorUserId",
+            "section"
+          ]
+        },
+        {
+          "name": "RevisionHistory",
+          "purpose": "Stores consolidated revision data with contributor attributions and conflict flags",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contentDiff",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "contributorAttributions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "conflictFlags",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantProposalId"
+          ]
+        },
+        {
+          "name": "FeedbackSummary",
+          "purpose": "Structured summary of comments categorized by section and priority for a grant proposal",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "summaryData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantProposalId"
+          ]
+        },
+        {
+          "name": "RevisionTask",
+          "purpose": "Tracks actionable revision tasks with assigned contributors and deadlines",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedUserId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantProposalId",
+            "assignedUserId",
+            "status"
+          ]
+        },
+        {
+          "name": "ProjectTimeline",
+          "purpose": "Stores timeline milestones, deadlines, and progress tracking data for a grant proposal",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "milestones",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "progressStatus",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "grantProposalId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the platform",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/proposals",
+          "title": "Grant Proposals Dashboard",
+          "purpose": "List and manage grant proposals, showing progress summaries and deadlines",
+          "inputs": [],
+          "outputs": [
+            "list of proposals with statuses",
+            "quick access to proposal details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposals/:id/upload",
+          "title": "Upload Draft Document",
+          "purpose": "Upload new draft versions of grant proposals",
+          "inputs": [
+            "file upload",
+            "optional comments"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposals/:id/revisions",
+          "title": "Revision History and Consolidated Comments",
+          "purpose": "View consolidated revision history with color-coded contributor attributions and comment summaries",
+          "inputs": [],
+          "outputs": [
+            "revision history visualization",
+            "comment lists",
+            "conflict alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposals/:id/tasks",
+          "title": "Revision Task List",
+          "purpose": "Manage actionable revision tasks with assignments and deadlines",
+          "inputs": [
+            "task creation",
+            "status updates"
+          ],
+          "outputs": [
+            "task list",
+            "task statuses",
+            "notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposals/:id/dashboard",
+          "title": "Project Timeline and Progress Dashboard",
+          "purpose": "Visualize project milestones, deadlines, and revision progress",
+          "inputs": [],
+          "outputs": [
+            "timeline charts",
+            "progress indicators"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return access token",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/proposals",
+          "method": "GET",
+          "purpose": "Retrieve list of grant proposals for authenticated user",
+          "requestShape": "none",
+          "responseShape": "Array<GrantProposal>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals",
+          "method": "POST",
+          "purpose": "Create a new grant proposal project",
+          "requestShape": "{ title: string, deadline: date }",
+          "responseShape": "GrantProposal",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/upload",
+          "method": "POST",
+          "purpose": "Upload a new draft document for a proposal",
+          "requestShape": "{ file: binary, optionalComments?: string }",
+          "responseShape": "{ success: boolean, draftDocument: DraftDocument }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/revisions",
+          "method": "GET",
+          "purpose": "Get consolidated revision history and comments for a proposal",
+          "requestShape": "none",
+          "responseShape": "{ revisionHistory: RevisionHistory, comments: Comment[], conflictFlags: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/tasks",
+          "method": "GET",
+          "purpose": "Retrieve revision tasks for a proposal",
+          "requestShape": "none",
+          "responseShape": "Array<RevisionTask>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/tasks",
+          "method": "POST",
+          "purpose": "Create or update a revision task",
+          "requestShape": "{ description: string, assignedUserId?: string, dueDate?: date, status: string }",
+          "responseShape": "RevisionTask",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/timeline",
+          "method": "GET",
+          "purpose": "Retrieve project timeline and progress data",
+          "requestShape": "none",
+          "responseShape": "ProjectTimeline",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Revision Consolidation Job",
+          "trigger": "Triggered asynchronously after draft document upload or comment submission",
+          "purpose": "Generate consolidated revision history with contributor attribution and detect overlapping edit conflicts"
+        },
+        {
+          "name": "Feedback Summary and Task List Generation Job",
+          "trigger": "Triggered after revision consolidation completes or on-demand",
+          "purpose": "Produce structured feedback summaries and actionable revision task lists with assignments and deadlines"
+        }
+      ],
+      "edgeCases": [
+        "Handling corrupted or unsupported document formats gracefully with user feedback",
+        "Conflicting edits made simultaneously by multiple contributors leading to complex conflict resolution scenarios",
+        "Late changes made close to submission deadlines requiring urgent task reprioritization",
+        "Users with intermittent connectivity during multi-user collaboration sessions",
+        "Ensuring data privacy and access control when collaborators are from different institutions",
+        "Scaling consolidation jobs for very large documents with numerous comments and contributors"
+      ],
+      "nonGoals": [
+        "Replacing full-featured document editors (e.g., Word, Google Docs) with integrated editing capabilities in initial versions",
+        "Providing general-purpose project management unrelated to grant proposal revision workflows",
+        "Supporting non-academic or non-grant writing collaboration scenarios",
+        "Automated writing or content generation assistance",
+        "Funder guideline compliance checking and export-ready submission packaging in initial releases"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI pages and authenticates via /login page, receiving an authentication token.",
+        "Authenticated users fetch grant proposals list from /api/proposals (GET) to populate dashboard.",
+        "Users create new proposals via /api/proposals (POST) with title and deadline.",
+        "Users upload draft documents through /proposals/:id/upload page, which calls /api/proposals/:id/upload (POST) with file and optional comments.",
+        "Uploaded documents are parsed asynchronously by integration-docparser to extract text and comments.",
+        "Background Revision Consolidation Job triggers after upload or comment submission, consolidating revisions, attributing contributors, and detecting conflicts, storing results in RevisionHistory.",
+        "Background Feedback Summary and Task List Generation Job runs after consolidation, generating feedback summaries and revision tasks linked to proposals.",
+        "Users view consolidated revision histories and comments via /proposals/:id/revisions page, fetching data from /api/proposals/:id/revisions (GET).",
+        "Users manage revision tasks via /proposals/:id/tasks page, interacting with /api/proposals/:id/tasks (GET and POST) for retrieval and updates.",
+        "Project timeline and progress data are fetched from /api/proposals/:id/timeline (GET) and visualized on /proposals/:id/dashboard page.",
+        "All API interactions enforce authentication and authorization, ensuring users can only access proposals they are authorized for."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password must not be empty.",
+        "GrantProposal creation: title must be non-empty string; deadline must be a valid future date.",
+        "DraftDocument upload: file must be one of supported formats (Word, PDF, text); file size limits enforced; optionalComments max length 1000 characters.",
+        "RevisionTask creation/update: description required; status must be one of predefined statuses (e.g., 'pending', 'in-progress', 'completed'); assignedUserId, if provided, must correspond to a user in the proposal team; dueDate, if provided, must be a valid date not past the proposal deadline.",
+        "API route parameters (e.g., proposal id) must be valid UUIDs and correspond to existing resources accessible by the user.",
+        "Comments: content must be non-empty; priority, if provided, must be one of defined levels (e.g., 'low', 'medium', 'high').",
+        "All date fields must be valid ISO 8601 date strings.",
+        "File uploads must be scanned for viruses/malware before processing."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Authorization failures return 403 Forbidden when users attempt to access unauthorized resources.",
+        "Validation errors return 400 Bad Request with detailed field-level error messages.",
+        "Unsupported or corrupted document uploads return 422 Unprocessable Entity with user-friendly error explaining the issue.",
+        "Background job failures are logged with error details; users receive notifications if their upload or revision consolidation fails.",
+        "API endpoints return 500 Internal Server Error for unexpected failures with generic error messages; detailed errors logged server-side.",
+        "Conflict detection flags are surfaced in UI with explanations and guidance for resolution.",
+        "File upload errors (e.g., size limits, format) return specific error codes and messages.",
+        "Network or connectivity issues during collaboration sessions trigger retries and user notifications."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/login require JWT-based authentication tokens.",
+        "User passwords stored hashed with strong algorithm (e.g., bcrypt) and never returned in API responses.",
+        "Access control enforced on all resources: users can only access proposals and data where they have explicit permissions.",
+        "Data encrypted at rest in database and secure storage for uploaded files.",
+        "File uploads scanned for malware before processing.",
+        "Sensitive data such as contributor identities in comments and revisions are only shown to authorized users.",
+        "Rate limiting and brute force protection on login endpoint.",
+        "Use HTTPS for all client-server communications.",
+        "Audit logging of critical actions such as uploads, task updates, and login attempts.",
+        "Background jobs run in secure environment with limited access to data."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive a valid authentication token and user info"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user",
+          "when": "They request /api/proposals (GET)",
+          "then": "They receive a list of grant proposals they own or contribute to"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user",
+          "when": "They create a new proposal with valid title and future deadline",
+          "then": "A new GrantProposal is created and returned with correct fields"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user on a proposal page",
+          "when": "They upload a supported draft document with optional comments",
+          "then": "The upload succeeds, draft document is stored, and background consolidation job is triggered"
+        },
+        {
+          "id": "AT-005",
+          "given": "A proposal with multiple draft documents and comments",
+          "when": "The background revision consolidation job runs",
+          "then": "RevisionHistory is generated with contributor attributions and conflicts flagged"
+        },
+        {
+          "id": "AT-006",
+          "given": "A proposal with consolidated revisions",
+          "when": "The feedback summary and task generation job runs",
+          "then": "FeedbackSummary and RevisionTasks are created with correct categorization and assignments"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user viewing /proposals/:id/revisions",
+          "when": "They load the page",
+          "then": "They see consolidated revision history with color-coded contributor attributions, comment lists, and conflict alerts"
+        },
+        {
+          "id": "AT-008",
+          "given": "An authenticated user on /proposals/:id/tasks",
+          "when": "They create or update a revision task with valid data",
+          "then": "The task is saved and reflected in the task list with updated status"
+        },
+        {
+          "id": "AT-009",
+          "given": "An authenticated user viewing /proposals/:id/dashboard",
+          "when": "They load the page",
+          "then": "They see project timeline charts and progress indicators reflecting current data"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user uploads an unsupported or corrupted document",
+          "when": "The upload is attempted",
+          "then": "They receive a clear error message explaining the issue without system crash"
+        },
+        {
+          "id": "AT-011",
+          "given": "Multiple contributors upload conflicting edits simultaneously",
+          "when": "Revision consolidation runs",
+          "then": "Conflicts are detected, flagged, and visible to users for resolution"
+        },
+        {
+          "id": "AT-012",
+          "given": "An unauthenticated user attempts to access protected API routes",
+          "when": "They make requests",
+          "then": "They receive 401 Unauthorized errors"
+        }
+      ],
+      "buildOrder": [
+        "data-storage: Define and implement Prisma models and database schema for all data models.",
+        "integration-docparser: Implement document parsing and annotation extraction service.",
+        "api-core: Develop authentication API (/api/auth/login) and user management.",
+        "api-core: Implement proposal management APIs (/api/proposals GET and POST).",
+        "api-core: Implement draft document upload API with integration to docparser (/api/proposals/:id/upload).",
+        "background-revisionConsolidation: Implement asynchronous job for revision consolidation.",
+        "background-feedbackSummary: Implement feedback summary and task list generation job.",
+        "api-core: Implement APIs for fetching revisions, tasks, and timelines (/api/proposals/:id/revisions, /tasks, /timeline).",
+        "ui-pages: Develop login page with authentication flow.",
+        "ui-pages: Develop proposals dashboard page.",
+        "ui-pages: Develop draft upload page with file upload and comments.",
+        "ui-pages: Develop revision history page with visualization and conflict alerts.",
+        "ui-pages: Develop revision task list page with task creation and status updates.",
+        "ui-pages: Develop project timeline and progress dashboard page.",
+        "Testing: Implement validation, error handling, and acceptance tests.",
+        "Security: Implement authentication, authorization, encryption, and secure file handling.",
+        "Deployment and monitoring setup."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/proposals",
+          "/proposals/[id]/upload",
+          "/proposals/[id]/revisions",
+          "/proposals/[id]/tasks",
+          "/proposals/[id]/dashboard"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.js",
+          "/api/proposals/index.js",
+          "/api/proposals/[id]/upload.js",
+          "/api/proposals/[id]/revisions.js",
+          "/api/proposals/[id]/tasks.js",
+          "/api/proposals/[id]/timeline.js"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "GrantProposal",
+          "DraftDocument",
+          "Comment",
+          "RevisionHistory",
+          "FeedbackSummary",
+          "RevisionTask",
+          "ProjectTimeline"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints or details to clarify the exact needs and edge cases for the collaborative revision tracker tool.",
+        "promptTemplate": "Given the current blueprint and expansion for the Academic Research Grant Collaborative Revision Tracker:\n\n{{BLUEPRINT}}\n\n{{EXPANDED}}\n\nUser input: {{USER_INPUT}}\n\nPlease ask detailed questions to clarify missing constraints, edge cases, or specific user scenarios to ensure the tool meets all requirements."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and confirm the final set of UI pages and data models needed to implement the collaborative revision tracking platform.",
+        "promptTemplate": "Based on the idea, blueprint, and expanded specs:\n\n{{IDEA}}\n\n{{BLUEPRINT}}\n\n{{EXPANDED}}\n\nUser input: {{USER_INPUT}}\n\nPlease provide a detailed final list of UI pages and their purposes, along with data models and key fields required for implementation."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Produce scaffolding code or detailed descriptions for the frontend pages to be implemented next.",
+        "promptTemplate": "Using the finalized pages and data models:\n\n{{PAGES}}\n\nUser input: {{USER_INPUT}}\n\nGenerate stub code snippets, component outlines, or detailed descriptions for each UI page to guide frontend development."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Plan and describe how frontend pages will interact with backend API routes and the database models for seamless functionality.",
+        "promptTemplate": "Given the UI pages, API routes, and data models:\n\n{{PAGES}}\n\n{{API_ROUTES}}\n\n{{DATA_MODELS}}\n\nUser input: {{USER_INPUT}}\n\nExplain how to wire frontend pages to backend APIs and database models, including data flow, authentication, and error handling."
+      }
+    ]
+  }
+}

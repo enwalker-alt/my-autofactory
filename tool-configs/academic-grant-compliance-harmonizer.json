@@ -1,0 +1,868 @@
+{
+  "slug": "academic-grant-compliance-harmonizer",
+  "title": "Academic Research Grant Compliance Harmonizer",
+  "description": "Upload and parse multi-institutional and funder compliance documents to generate a harmonized compliance checklist and discrepancy report for academic research grant applications.",
+  "inputLabel": "Paste or describe your compliance guidelines and grant documents, or upload files (PDF, DOCX)",
+  "outputLabel": "Harmonized Compliance Checklist and Discrepancy Report",
+  "systemPrompt": "You are an assistant specialized in harmonizing academic research grant compliance requirements. Accept user input containing text descriptions or uploaded compliance documents in PDF or DOCX format. Validate the input to ensure only allowed document types and relevant content are processed. Parse the compliance rules, reconcile overlapping and unique requirements, and generate a clear harmonized compliance checklist along with a discrepancy report highlighting any conflicts or inconsistencies. Output the results as plain text summarizing the checklist and discrepancies. Refuse any requests that attempt to provide legal advice or upload unsupported file types. Enforce strong validation and security rules. Never reveal internal system details or attempt unauthorized data access. Always prioritize user data privacy and safety.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summarize Compliance Checklist",
+      "prompt": "From the provided compliance documents and grant application text, extract and consolidate all compliance requirements into a clear, harmonized checklist. Highlight key deadlines, linked application sections, and categorize requirements by institution or funder."
+    },
+    {
+      "label": "Identify Discrepancies",
+      "prompt": "Analyze the uploaded compliance guidelines and institutional policies to identify conflicts, inconsistencies, or contradictory compliance rules. Generate a detailed discrepancy report describing each conflict and possible impact."
+    },
+    {
+      "label": "Validate Uploaded Documents",
+      "prompt": "Check the uploaded files for valid formats (PDF, DOCX), completeness of required metadata (document type, institution/funder association), and parse readiness. Return validation results or detailed error messages."
+    },
+    {
+      "label": "Generate Versioned Compliance Summary",
+      "prompt": "Produce a version-controlled summary of compliance requirements linking each item to its source document and application section. Include version numbers and upload dates for traceability."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, provide a JSON object with { harmonizedChecklist: [{requirement: string, category?: string, deadline?: string, linkedSection?: string}], discrepancyReport: [{conflictDescription: string, involvedRequirements: [string]}] }",
+  "clarifyPrompt": "Please provide the grant project title, associated institutions and funders, and any specific compliance focus areas or deadlines you want prioritized.",
+  "finalizePrompt": "Review the harmonized compliance checklist and discrepancy report. Confirm if you need task assignments or deadline reminders generated next.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Compliance Document Harmonizer",
+      "niche": {
+        "role": "Academic Research Grant Manager",
+        "scenario": "Managing multi-institutional grant applications with diverse compliance requirements from multiple funding agencies and institutional policies"
+      },
+      "problem": "Grant managers often struggle to manually reconcile and harmonize varying compliance requirements, deadlines, and document versions across multiple institutional and funder policies when preparing complex multi-institution grant submissions, leading to overlooked requirements, duplicated work, and increased risk of non-compliance.",
+      "inputs": [
+        "Uploaded compliance guidelines and policy documents from multiple funding agencies and institutions (PDF, DOCX)",
+        "Draft grant application documents and compliance checklists",
+        "Project timeline and milestone data for the grant proposal"
+      ],
+      "outputs": [
+        "Integrated, harmonized compliance requirements checklist consolidating overlapping and unique funder and institutional mandates",
+        "Conflict and discrepancy report highlighting inconsistent or contradictory compliance rules",
+        "Version-controlled compliance document repository linking requirements to specific application sections",
+        "Automated reminders and task assignments for upcoming compliance deadlines across institutions"
+      ],
+      "whyItWins": [
+        "Automates complex manual reconciliation of multi-source compliance rules, reducing errors and oversight",
+        "Supports collaborative multi-institution teams by centralizing compliance documents and status tracking",
+        "Generates actionable summary reports that clarify responsibilities and streamline preparation workflows",
+        "Facilitates ongoing compliance monitoring beyond grant submission, aiding reporting and audits"
+      ],
+      "upgradePath": {
+        "today": "Single-page app that allows upload and parsing of compliance documents, producing a harmonized compliance checklist and discrepancy report",
+        "in90Days": "Add version control for compliance documents, task assignment features, and deadline reminders integrated with calendar tools",
+        "in12Months": "Develop a multi-page collaborative platform with user roles, real-time compliance status dashboards, cross-institution communication channels, and automated compliance reporting generation"
+      },
+      "riskNotes": [
+        "Must ensure secure handling of sensitive grant and institutional documents",
+        "Avoid providing legal advice—tool focuses on harmonizing and tracking compliance requirements, not interpreting them",
+        "User input accuracy for uploaded documents is critical to generate valid results",
+        "Complexity of parsing diverse compliance language requires robust document processing and ongoing updates"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research grant managers to upload, parse, and harmonize multi-institutional and multi-funder compliance documents, generating integrated checklists, discrepancy reports, and managing deadlines and tasks to reduce risk of non-compliance.",
+      "primaryUser": "Academic Research Grant Manager",
+      "successMetrics": [
+        "Reduction in missed compliance requirements during grant submissions",
+        "Decrease in duplicated compliance-related work across institutions",
+        "User adoption and active collaboration across multiple institutions",
+        "Accuracy and completeness of harmonized compliance checklists",
+        "Timely completion of compliance-related tasks and milestones"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend UI",
+          "type": "ui",
+          "responsibility": "Provide user interfaces for document upload, compliance checklist viewing, discrepancy reports, task management, version control, and dashboards.",
+          "dependsOn": [
+            "api-backend"
+          ],
+          "notes": [
+            "Supports multi-page navigation and user roles",
+            "Handles file uploads with progress and error feedback",
+            "Displays complex harmonized compliance data clearly",
+            "Includes authentication and authorization UI flows"
+          ]
+        },
+        {
+          "id": "api-backend",
+          "name": "Backend API",
+          "type": "api",
+          "responsibility": "Expose RESTful endpoints for document upload, parsing, harmonization, checklist generation, discrepancy reporting, task and deadline management, user and role management.",
+          "dependsOn": [
+            "data-db",
+            "job-document-parser",
+            "integration-calendar"
+          ],
+          "notes": [
+            "Implements business logic for compliance reconciliation",
+            "Handles authentication and authorization",
+            "Validates inputs and manages error states",
+            "Supports version control and audit trails"
+          ]
+        },
+        {
+          "id": "data-db",
+          "name": "Database",
+          "type": "data",
+          "responsibility": "Persist users, institutions, uploaded documents, parsed compliance requirements, harmonized checklists, discrepancy reports, tasks, deadlines, versions, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Schema designed for versioning and linking documents to requirements",
+            "Indexes for fast retrieval of compliance items by institution and funder",
+            "Secure storage with encryption for sensitive documents"
+          ]
+        },
+        {
+          "id": "job-document-parser",
+          "name": "Document Parsing and Harmonization Job",
+          "type": "job",
+          "responsibility": "Process uploaded compliance documents asynchronously to extract compliance requirements, identify overlaps and conflicts, and generate harmonized checklists and discrepancy reports.",
+          "dependsOn": [
+            "data-db"
+          ],
+          "notes": [
+            "Handles multiple document formats (PDF, DOCX)",
+            "Uses NLP and rule-based extraction techniques",
+            "Retries and error handling for parsing failures",
+            "Logs parsing results and flags ambiguous or unprocessable content"
+          ]
+        },
+        {
+          "id": "integration-calendar",
+          "name": "Calendar and Notification Integration",
+          "type": "integration",
+          "responsibility": "Integrate with external calendar services (e.g., Google Calendar, Outlook) to push deadline reminders and sync task due dates; send email or in-app notifications for upcoming compliance deadlines.",
+          "dependsOn": [
+            "api-backend"
+          ],
+          "notes": [
+            "Supports user opt-in and configuration of notification preferences",
+            "Handles API rate limits and failures gracefully",
+            "Logs notification delivery status"
+          ]
+        },
+        {
+          "id": "job-reminder-scheduler",
+          "name": "Reminder and Task Scheduler Job",
+          "type": "job",
+          "responsibility": "Periodically scan upcoming compliance deadlines and tasks to trigger notifications and reminders via the integration component and internal messaging.",
+          "dependsOn": [
+            "data-db",
+            "integration-calendar"
+          ],
+          "notes": [
+            "Runs on a configurable schedule (e.g., daily)",
+            "Handles missed or delayed notifications",
+            "Supports escalation for overdue tasks"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents platform users with roles and institution affiliations",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notificationPreferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "institutionId"
+          ]
+        },
+        {
+          "name": "Institution",
+          "purpose": "Represents an academic or funding institution",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "Document",
+          "purpose": "Uploaded compliance or grant application documents with versioning",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploaderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "contentMetadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "institutionId",
+            "funderId",
+            "type",
+            "version"
+          ]
+        },
+        {
+          "name": "ComplianceRequirement",
+          "purpose": "Parsed individual compliance requirements extracted from documents",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "category",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "deadline",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "linkedApplicationSection",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "documentId",
+            "category",
+            "deadline"
+          ]
+        },
+        {
+          "name": "HarmonizedChecklist",
+          "purpose": "Consolidated checklist merging overlapping and unique compliance requirements",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "requirements",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "version"
+          ]
+        },
+        {
+          "name": "DiscrepancyReport",
+          "purpose": "Report highlighting conflicts and inconsistencies among compliance requirements",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "conflicts",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "generatedDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId"
+          ]
+        },
+        {
+          "name": "Task",
+          "purpose": "Tasks assigned to users related to compliance deadlines and document preparation",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedToUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedRequirementId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "assignedToUserId",
+            "dueDate",
+            "status"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Represents a grant application project linking institutions, documents, and compliance data",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "funders",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "timeline",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "title"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the platform",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Compliance Dashboard",
+          "purpose": "Display project status, upcoming deadlines, tasks, and summary compliance metrics",
+          "inputs": [],
+          "outputs": [
+            "project summaries",
+            "task lists",
+            "deadline reminders"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/documents/upload",
+          "title": "Upload Compliance Documents",
+          "purpose": "Allow users to upload and version compliance and grant documents",
+          "inputs": [
+            "file upload",
+            "document type",
+            "associated institution/funder"
+          ],
+          "outputs": [
+            "upload status",
+            "parsing job status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/checklist",
+          "title": "Harmonized Compliance Checklist",
+          "purpose": "View and interact with the integrated compliance requirements checklist",
+          "inputs": [],
+          "outputs": [
+            "checklist items",
+            "version info",
+            "linked documents"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/discrepancies",
+          "title": "Discrepancy Report",
+          "purpose": "View conflicts and inconsistencies among compliance requirements",
+          "inputs": [],
+          "outputs": [
+            "conflict details",
+            "recommendations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/tasks",
+          "title": "Task and Deadline Management",
+          "purpose": "Manage compliance-related tasks, assignments, and deadlines",
+          "inputs": [
+            "task creation",
+            "task updates"
+          ],
+          "outputs": [
+            "task lists",
+            "deadline calendar"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/admin/users",
+          "title": "User and Role Management",
+          "purpose": "Administer users, roles, and institution affiliations",
+          "inputs": [
+            "user data",
+            "role assignments"
+          ],
+          "outputs": [
+            "user lists",
+            "role info"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue token",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "List projects accessible by user",
+          "requestShape": "none",
+          "responseShape": "Array<Project>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/documents",
+          "method": "POST",
+          "purpose": "Upload a compliance or grant document",
+          "requestShape": "{ file: binary, type: string, institutionId?: string, funderId?: string }",
+          "responseShape": "{ documentId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/checklist",
+          "method": "GET",
+          "purpose": "Retrieve harmonized compliance checklist",
+          "requestShape": "none",
+          "responseShape": "HarmonizedChecklist",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/discrepancies",
+          "method": "GET",
+          "purpose": "Retrieve discrepancy report for project",
+          "requestShape": "none",
+          "responseShape": "DiscrepancyReport",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/tasks",
+          "method": "GET",
+          "purpose": "List tasks for a project",
+          "requestShape": "none",
+          "responseShape": "Array<Task>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/tasks",
+          "method": "POST",
+          "purpose": "Create or update a task",
+          "requestShape": "{ id?: string, description: string, assignedToUserId: string, dueDate: string, status: string, relatedRequirementId?: string }",
+          "responseShape": "Task",
+          "auth": "user"
+        },
+        {
+          "route": "/api/admin/users",
+          "method": "GET",
+          "purpose": "List all users (admin only)",
+          "requestShape": "none",
+          "responseShape": "Array<User>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/admin/users",
+          "method": "POST",
+          "purpose": "Create or update user (admin only)",
+          "requestShape": "{ id?: string, email: string, name: string, role: string, institutionId?: string }",
+          "responseShape": "User",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Document Parsing and Harmonization",
+          "trigger": "Triggered asynchronously upon document upload",
+          "purpose": "Parse uploaded documents to extract compliance requirements, identify overlaps and conflicts, and generate harmonized checklists and discrepancy reports"
+        },
+        {
+          "name": "Reminder and Task Scheduler",
+          "trigger": "Scheduled to run daily",
+          "purpose": "Scan upcoming deadlines and tasks to send notifications and reminders via calendar integrations and in-app messaging"
+        }
+      ],
+      "edgeCases": [
+        "Uploaded documents contain ambiguous or contradictory compliance language that cannot be automatically reconciled",
+        "Parsing failures due to unsupported document formats or corrupted files",
+        "Multiple users concurrently editing tasks or checklists causing version conflicts",
+        "Missed or delayed notifications due to external calendar API rate limits or outages",
+        "User uploads sensitive documents with incorrect access permissions",
+        "Incomplete or inaccurate user input metadata leading to misclassification of documents",
+        "Handling projects with very large numbers of compliance requirements and documents impacting performance"
+      ],
+      "nonGoals": [
+        "Providing legal interpretation or advice on compliance requirements",
+        "Automatically filling or completing grant application forms",
+        "Replacing institutional or funder compliance officers or legal teams",
+        "Supporting document formats beyond PDF and DOCX initially",
+        "Real-time collaborative editing of compliance checklists (planned for future upgrades)"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses frontend UI pages and submits requests (e.g., login, document upload, task management).",
+        "Frontend sends authenticated API requests to backend endpoints with necessary parameters and files.",
+        "API backend validates inputs, enforces authorization, and interacts with the database via Prisma models.",
+        "On document upload, API stores metadata and file, then triggers asynchronous Document Parsing and Harmonization job.",
+        "Document Parsing job processes files, extracts compliance requirements, identifies conflicts, and updates HarmonizedChecklist and DiscrepancyReport in DB.",
+        "Reminder and Task Scheduler job runs daily, scanning tasks and deadlines, sending notifications via Integration Calendar component.",
+        "Frontend periodically fetches updated data (projects, checklists, tasks, discrepancy reports) via API to update UI.",
+        "Admin users manage users and roles via dedicated API endpoints and UI pages.",
+        "Authentication tokens are issued on login and used for subsequent API calls to enforce session and permissions."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password must be non-empty.",
+        "Document upload: file must be PDF or DOCX; document type must be from predefined enum; institutionId and funderId, if provided, must exist in DB.",
+        "Task creation/update: description non-empty; assignedToUserId must reference existing user; dueDate must be a valid future date; status must be one of ['pending', 'in-progress', 'completed', 'overdue']; relatedRequirementId, if provided, must exist.",
+        "User creation/update (admin): email valid and unique; role must be from predefined roles (e.g., admin, manager, viewer); institutionId, if provided, must exist.",
+        "API routes with :projectId param: projectId must exist and user must have access rights.",
+        "Pagination and limits on list endpoints to prevent performance issues with large data sets.",
+        "File uploads: enforce max file size limits and scan for malware if possible.",
+        "Input JSON fields must conform to expected types and required fields."
+      ],
+      "errorHandling": [
+        "API returns standard HTTP status codes: 400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors.",
+        "Error responses include structured JSON with error code, message, and optionally field-level validation errors.",
+        "Frontend displays user-friendly error messages and retry options where applicable (e.g., upload failures).",
+        "Document parsing job logs parsing errors and flags ambiguous content for manual review; retries failed parsing with exponential backoff.",
+        "Background jobs handle transient failures gracefully and log errors for monitoring.",
+        "Rate limiting and throttling applied on API endpoints to prevent abuse.",
+        "Authentication token expiration handled by prompting re-login.",
+        "Concurrency conflicts (e.g., task updates) return 409 Conflict with instructions to refresh data."
+      ],
+      "securityNotes": [
+        "All API routes except login require authentication via JWT tokens.",
+        "Role-based access control enforced on API endpoints and UI pages (e.g., admin-only routes).",
+        "Sensitive documents stored encrypted at rest with access restricted to authorized users.",
+        "File uploads scanned and validated to prevent injection or malware.",
+        "User input sanitized to prevent injection attacks.",
+        "Audit logs maintained for critical actions (document uploads, task changes, user management).",
+        "Notification preferences stored securely and respected during notification dispatch.",
+        "Use HTTPS for all client-server communication.",
+        "Implement CSRF protection on state-changing API calls.",
+        "Limit data exposure in API responses based on user roles and project affiliations."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and user info, and can access protected pages"
+        },
+        {
+          "id": "AT-002",
+          "given": "A logged-in user on a project page",
+          "when": "They upload a valid PDF document with correct metadata",
+          "then": "The document is accepted, stored, and a parsing job is triggered with status feedback"
+        },
+        {
+          "id": "AT-003",
+          "given": "A project with multiple uploaded documents",
+          "when": "The Document Parsing job completes successfully",
+          "then": "A harmonized checklist and discrepancy report are generated and retrievable via API"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user viewing the task management page",
+          "when": "They create a new task with valid data",
+          "then": "The task is saved, assigned, and appears in the task list with correct due date and status"
+        },
+        {
+          "id": "AT-005",
+          "given": "An admin user",
+          "when": "They create a new user with valid role and institution",
+          "then": "The user is added to the system and appears in the user list"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user uploads a corrupted or unsupported document format",
+          "when": "The upload is attempted",
+          "then": "The API rejects the upload with a clear error message and no parsing job is triggered"
+        },
+        {
+          "id": "AT-007",
+          "given": "Multiple users concurrently editing the same task",
+          "when": "They submit conflicting updates",
+          "then": "The system detects conflict and returns a 409 error prompting refresh"
+        },
+        {
+          "id": "AT-008",
+          "given": "A scheduled Reminder and Task Scheduler job runs",
+          "when": "There are upcoming deadlines and tasks",
+          "then": "Notifications are sent respecting user preferences and logged for delivery status"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user without access tries to fetch a project checklist",
+          "when": "They call the /api/projects/:projectId/checklist endpoint",
+          "then": "The API returns 403 Forbidden"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user uploads a document with missing required metadata",
+          "when": "They submit the upload request",
+          "then": "The API returns 400 with validation error details"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database schema",
+        "Implement authentication and authorization middleware and /api/auth/login endpoint",
+        "Build user and role management API and admin UI pages",
+        "Implement project listing API and dashboard UI",
+        "Develop document upload API with file storage and metadata validation",
+        "Integrate asynchronous Document Parsing and Harmonization job with job queue",
+        "Create APIs and UI pages for harmonized checklist and discrepancy reports",
+        "Build task and deadline management APIs and UI with concurrency control",
+        "Implement Integration Calendar component and notification sending logic",
+        "Develop Reminder and Task Scheduler background job",
+        "Add error handling, logging, and audit trail features",
+        "Implement frontend authentication flows and protected routes",
+        "Add input validation and error feedback on all UI forms",
+        "Conduct acceptance testing and performance tuning",
+        "Prepare deployment and monitoring setup"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/projects/[projectId]/documents/upload",
+          "/projects/[projectId]/checklist",
+          "/projects/[projectId]/discrepancies",
+          "/projects/[projectId]/tasks",
+          "/admin/users"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/projects/index.ts",
+          "/api/projects/[projectId]/documents.ts",
+          "/api/projects/[projectId]/checklist.ts",
+          "/api/projects/[projectId]/discrepancies.ts",
+          "/api/projects/[projectId]/tasks.ts",
+          "/api/admin/users.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Institution",
+          "Document",
+          "ComplianceRequirement",
+          "HarmonizedChecklist",
+          "DiscrepancyReport",
+          "Task",
+          "Project"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and add missing constraints or details for the compliance harmonization tool",
+        "promptTemplate": "Given the current blueprint: {{BLUEPRINT}} and the user input: {{USER_INPUT}}, please ask any clarifying questions needed to refine the requirements and constraints for the Academic Research Grant Compliance Harmonizer."
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the required UI pages, API routes, and database models based on refined requirements",
+        "promptTemplate": "Based on the refined requirements and blueprint: {{BLUEPRINT}}, finalize the list of UI pages, API endpoints, and data models needed to implement the compliance harmonization platform."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code and stubs for the frontend pages and API endpoints",
+        "promptTemplate": "Using the finalized pages and API routes from {{BLUEPRINT}}, generate code stubs or templates for each page and endpoint, including basic input forms and output placeholders."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages to backend API and database models to enable full functionality",
+        "promptTemplate": "Describe how to integrate the frontend UI pages with the backend API routes and database schema to implement the full compliance harmonization workflow as specified in {{BLUEPRINT}}."
+      }
+    ]
+  }
+}

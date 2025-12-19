@@ -1,0 +1,873 @@
+{
+  "slug": "calibration-forecast-basic",
+  "title": "Calibration Forecast & Alert Generator",
+  "description": "Upload your equipment metadata and calibration records to generate a predictive calibration schedule and compliance alerts, helping academic research lab managers anticipate upcoming calibration needs and prevent equipment downtime.",
+  "inputLabel": "Paste or upload equipment metadata and calibration records (JSON or CSV).",
+  "outputLabel": "Calibration forecast summary and upcoming alerts",
+  "systemPrompt": "You are a calibration forecasting assistant for academic research lab managers. Given equipment metadata including make, model, calibration frequency, last calibration date, and historical calibration records, produce a predictive calibration schedule highlighting upcoming calibration windows within the next 90 days. Identify any devices at risk of non-compliance or overdue calibration. Output a plain text summary with clear dates and risk flags. Refuse any input that contains personally identifiable information or unrelated content. Validate that dates and frequencies are logical and warn if data is missing or inconsistent. Only output text unless structured-output mode is enabled, then output valid JSON with fields: equipmentId, nextCalibrationDate, daysUntilCalibration, complianceRisk (boolean).",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Forecast",
+      "prompt": "Generate a concise calibration forecast summary for all uploaded equipment, focusing on upcoming calibrations within 90 days and highlighting any compliance risks.",
+      "hint": "Good for quick overview reports."
+    },
+    {
+      "label": "Detailed JSON Forecast",
+      "prompt": "Provide a detailed JSON list of upcoming calibrations with fields: equipmentId, nextCalibrationDate, daysUntilCalibration, complianceRisk.",
+      "hint": "Use for integration with other tools."
+    },
+    {
+      "label": "Compliance Risk Focus",
+      "prompt": "List only equipment that are overdue or at risk of failing calibration compliance, with recommendations.",
+      "hint": "Prioritize urgent actions."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output enabled, output must be a JSON array of objects: { equipmentId: string, nextCalibrationDate: string (ISO date), daysUntilCalibration: number, complianceRisk: boolean }",
+  "clarifyPrompt": "Please upload equipment metadata and calibration records in JSON or CSV format. Include fields: id, make, model, calibrationFrequencyDays, lastCalibrationDate. Ask if you need help with data formatting or have questions about calibration forecasting.",
+  "finalizePrompt": "Review the generated calibration forecast and alerts. Confirm the data is accurate and complete. If you want to refine or add usage logs and project schedules, please specify.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Equipment Calibration Forecast & Optimization System",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Managing calibration schedules and forecasting equipment downtime to optimize lab operations and compliance"
+      },
+      "problem": "Lab managers struggle to proactively forecast upcoming equipment calibrations and potential downtime across multiple devices, leading to operational bottlenecks, compliance risks, and inefficient resource allocation. Current tools mostly support manual entry or simple record keeping without actionable forecasting or optimization capability.",
+      "inputs": [
+        "Equipment metadata (make, model, calibration frequency, last calibration date)",
+        "Historical calibration records and results",
+        "Equipment usage logs or schedule",
+        "Compliance deadlines and standards",
+        "Planned research project timelines and equipment demand forecasts"
+      ],
+      "outputs": [
+        "Predictive calibration schedule forecasts highlighting upcoming calibration windows and at-risk devices",
+        "Downtime and operational impact projections integrating planned research schedules",
+        "Optimized calibration planning recommendations balancing compliance, equipment availability, and lab resource constraints",
+        "Automated alerts and reminders for upcoming calibrations with compliance risk flags",
+        "Interactive dashboards showing calibration status, forecast trends, and critical path equipment"
+      ],
+      "whyItWins": [
+        "Transforms static calibration record keeping into a dynamic, predictive management system that increases lab operational efficiency",
+        "Integrates compliance requirements with real equipment usage and project demand data for realistic optimization",
+        "Helps prevent unexpected equipment downtime by anticipating bottlenecks well in advance",
+        "Supports multi-equipment and multi-project environments, addressing a common complexity in academic labs",
+        "Provides a clear upgrade path from a simple calibration tracker to a full-featured lab resource optimization platform"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web tool to upload equipment metadata and calibration records to generate upcoming calibration schedules and simple alerts.",
+        "in90Days": "Add integration of equipment usage logs and research project timelines to produce conflict-aware calibration forecasts and basic optimization suggestions with interactive calendar views.",
+        "in12Months": "Develop a multi-page system with dashboard visualizations, scenario simulation for calibration planning, team collaboration features, automated compliance reporting, and integration with lab inventory and booking systems."
+      },
+      "riskNotes": [
+        "Requires careful handling of potentially sensitive lab operation data to maintain confidentiality.",
+        "Needs accurate user input or integration with equipment management systems to produce reliable forecasts.",
+        "Complex optimization might need tuning to avoid overly rigid schedules that conflict with real-world lab flexibility."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A predictive and optimization system for academic research lab managers to forecast equipment calibration schedules, anticipate downtime, and optimize lab resource allocation while ensuring compliance.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Reduction in unexpected equipment downtime due to calibration",
+        "Increase in on-time calibration compliance rates",
+        "User adoption rate and frequency of forecast dashboard usage",
+        "Accuracy of calibration schedule forecasts versus actual calibrations",
+        "User satisfaction with optimization recommendations and alerts"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide interactive visualizations of calibration status, forecast trends, risk flags, and critical equipment paths.",
+          "dependsOn": [
+            "api-forecast",
+            "api-alerts",
+            "data-equipment",
+            "data-calibrationRecords",
+            "data-projects"
+          ],
+          "notes": [
+            "Supports drill-down from summary to device-level details",
+            "Must handle real-time updates and user customization of views"
+          ]
+        },
+        {
+          "id": "ui-dataEntry",
+          "name": "Data Entry & Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload and manage equipment metadata, calibration records, usage logs, compliance standards, and project timelines.",
+          "dependsOn": [
+            "api-equipment",
+            "api-calibrationRecords",
+            "api-usageLogs",
+            "api-projects",
+            "api-compliance"
+          ],
+          "notes": [
+            "Supports bulk uploads and manual edits",
+            "Includes validation and error feedback for critical inputs"
+          ]
+        },
+        {
+          "id": "api-forecast",
+          "name": "Forecasting & Optimization API",
+          "type": "api",
+          "responsibility": "Generate predictive calibration schedules, downtime projections, and optimization recommendations based on input data and constraints.",
+          "dependsOn": [
+            "data-equipment",
+            "data-calibrationRecords",
+            "data-usageLogs",
+            "data-projects",
+            "data-compliance"
+          ],
+          "notes": [
+            "Implements forecasting algorithms and optimization heuristics",
+            "Handles conflict detection between calibration needs and project schedules"
+          ]
+        },
+        {
+          "id": "api-alerts",
+          "name": "Alerts & Notifications API",
+          "type": "api",
+          "responsibility": "Manage automated alerts and reminders for upcoming calibrations and compliance risks, delivering notifications to users.",
+          "dependsOn": [
+            "api-forecast",
+            "data-users"
+          ],
+          "notes": [
+            "Supports configurable alert thresholds and channels",
+            "Handles alert suppression and escalation logic"
+          ]
+        },
+        {
+          "id": "data-equipment",
+          "name": "Equipment Data Store",
+          "type": "data",
+          "responsibility": "Persist equipment metadata including make, model, calibration frequency, and last calibration date.",
+          "dependsOn": [],
+          "notes": [
+            "Must support versioning or history tracking for equipment changes"
+          ]
+        },
+        {
+          "id": "data-calibrationRecords",
+          "name": "Calibration Records Store",
+          "type": "data",
+          "responsibility": "Store historical calibration records and results for all equipment.",
+          "dependsOn": [
+            "data-equipment"
+          ],
+          "notes": [
+            "Includes calibration outcomes and compliance status",
+            "Supports audit trails for compliance reporting"
+          ]
+        },
+        {
+          "id": "data-usageLogs",
+          "name": "Equipment Usage Logs Store",
+          "type": "data",
+          "responsibility": "Persist equipment usage logs or schedules to inform calibration forecasting and downtime impact analysis.",
+          "dependsOn": [
+            "data-equipment"
+          ],
+          "notes": [
+            "May integrate with external booking or inventory systems in future"
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Research Projects Data Store",
+          "type": "data",
+          "responsibility": "Store planned research project timelines and equipment demand forecasts to assess calibration impact on lab operations.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multi-project and multi-equipment associations"
+          ]
+        },
+        {
+          "id": "data-compliance",
+          "name": "Compliance Standards Store",
+          "type": "data",
+          "responsibility": "Persist compliance deadlines, standards, and rules relevant to equipment calibration.",
+          "dependsOn": [],
+          "notes": [
+            "Allows updates to compliance rules as regulations evolve"
+          ]
+        },
+        {
+          "id": "job-scheduleRecalculation",
+          "name": "Scheduled Forecast Recalculation Job",
+          "type": "job",
+          "responsibility": "Periodically recalculate calibration forecasts and optimization plans based on updated data inputs.",
+          "dependsOn": [
+            "api-forecast",
+            "data-equipment",
+            "data-calibrationRecords",
+            "data-usageLogs",
+            "data-projects",
+            "data-compliance"
+          ],
+          "notes": [
+            "Runs daily or configurable frequency",
+            "Handles partial failures with retry and alerting"
+          ]
+        },
+        {
+          "id": "integration-externalSystems",
+          "name": "External Systems Integration",
+          "type": "integration",
+          "responsibility": "Integrate with lab inventory, equipment management, and booking systems to import usage logs and equipment metadata.",
+          "dependsOn": [
+            "data-equipment",
+            "data-usageLogs"
+          ],
+          "notes": [
+            "Supports secure data exchange and authentication",
+            "Handles data format inconsistencies and sync conflicts"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Equipment",
+          "purpose": "Store metadata for each piece of lab equipment relevant to calibration scheduling.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "make",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "model",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "calibrationFrequencyDays",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "lastCalibrationDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "make",
+            "model"
+          ]
+        },
+        {
+          "name": "CalibrationRecord",
+          "purpose": "Historical record of calibrations performed on equipment.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "calibrationDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "result",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "complianceStatus",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "equipmentId",
+            "calibrationDate"
+          ]
+        },
+        {
+          "name": "UsageLog",
+          "purpose": "Records of equipment usage to assess calibration impact and downtime.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "equipmentId",
+            "startTime",
+            "endTime"
+          ]
+        },
+        {
+          "name": "ResearchProject",
+          "purpose": "Details of research projects that require equipment usage and affect calibration scheduling.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "equipmentDemand",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "name",
+            "startDate",
+            "endDate"
+          ]
+        },
+        {
+          "name": "ComplianceStandard",
+          "purpose": "Compliance rules and deadlines related to equipment calibration.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "deadlineDays",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "applicableEquipmentModels",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "User accounts and preferences for alerts and access control.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alertPreferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Calibration Forecast Dashboard",
+          "purpose": "Visualize upcoming calibration schedules, risk flags, downtime projections, and optimization recommendations.",
+          "inputs": [
+            "User filters (date range, equipment selection)",
+            "Project filters"
+          ],
+          "outputs": [
+            "Forecast charts",
+            "Risk alerts",
+            "Optimization suggestions"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/equipment",
+          "title": "Equipment Management",
+          "purpose": "Manage equipment metadata and view calibration history.",
+          "inputs": [
+            "Equipment details",
+            "Bulk upload files"
+          ],
+          "outputs": [
+            "Equipment list",
+            "Calibration records"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/calibrations",
+          "title": "Calibration Records",
+          "purpose": "View and enter calibration records and results.",
+          "inputs": [
+            "Calibration data entry forms",
+            "Bulk upload"
+          ],
+          "outputs": [
+            "Calibration record list",
+            "Compliance status indicators"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects",
+          "title": "Research Project Scheduling",
+          "purpose": "Manage research project timelines and equipment demand forecasts.",
+          "inputs": [
+            "Project details",
+            "Equipment demand inputs"
+          ],
+          "outputs": [
+            "Project list",
+            "Schedule conflicts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/alerts",
+          "title": "Alerts and Notifications",
+          "purpose": "Configure and view upcoming calibration alerts and compliance warnings.",
+          "inputs": [
+            "Alert preferences",
+            "Notification settings"
+          ],
+          "outputs": [
+            "Active alerts",
+            "Alert history"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User and Compliance Settings",
+          "purpose": "Manage user profiles, roles, and compliance standards.",
+          "inputs": [
+            "User info",
+            "Compliance standard data"
+          ],
+          "outputs": [
+            "User list",
+            "Compliance rules"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/equipment",
+          "method": "GET",
+          "purpose": "Fetch equipment metadata list.",
+          "requestShape": "none",
+          "responseShape": "Array of Equipment objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/equipment",
+          "method": "POST",
+          "purpose": "Create or update equipment metadata.",
+          "requestShape": "Equipment object",
+          "responseShape": "Success status and updated Equipment object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/calibrations",
+          "method": "GET",
+          "purpose": "Retrieve calibration records for equipment.",
+          "requestShape": "Query params: equipmentId, date range",
+          "responseShape": "Array of CalibrationRecord objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/calibrations",
+          "method": "POST",
+          "purpose": "Add or update calibration records.",
+          "requestShape": "CalibrationRecord object",
+          "responseShape": "Success status and updated CalibrationRecord",
+          "auth": "user"
+        },
+        {
+          "route": "/api/usageLogs",
+          "method": "POST",
+          "purpose": "Upload equipment usage logs.",
+          "requestShape": "Array of UsageLog objects",
+          "responseShape": "Success status and summary",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Fetch research project timelines and equipment demands.",
+          "requestShape": "none",
+          "responseShape": "Array of ResearchProject objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create or update research projects.",
+          "requestShape": "ResearchProject object",
+          "responseShape": "Success status and updated ResearchProject",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance",
+          "method": "GET",
+          "purpose": "Retrieve compliance standards and deadlines.",
+          "requestShape": "none",
+          "responseShape": "Array of ComplianceStandard objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/forecast",
+          "method": "GET",
+          "purpose": "Get predictive calibration schedules and downtime forecasts.",
+          "requestShape": "Query params: date range, equipment filters",
+          "responseShape": "Forecast data including schedules, risk flags, and optimization suggestions",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts",
+          "method": "GET",
+          "purpose": "Fetch active and historical calibration alerts for user.",
+          "requestShape": "none",
+          "responseShape": "Array of alert objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts/preferences",
+          "method": "POST",
+          "purpose": "Update user alert preferences.",
+          "requestShape": "Alert preferences object",
+          "responseShape": "Success status",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Daily Forecast Recalculation",
+          "trigger": "Scheduled daily at off-peak hours",
+          "purpose": "Recalculate calibration forecasts and optimization plans to reflect latest data inputs."
+        },
+        {
+          "name": "Alert Dispatch Job",
+          "trigger": "Triggered after forecast recalculation or user preference update",
+          "purpose": "Send alerts and reminders to users about upcoming calibrations and compliance risks."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or missing equipment metadata causing forecast inaccuracies",
+        "Conflicting calibration schedules due to overlapping project demands",
+        "Delayed or failed data imports from external systems",
+        "User input errors or invalid calibration records",
+        "Handling equipment decommissioning or replacement mid-cycle",
+        "Compliance rules updates that invalidate existing schedules",
+        "Network failures during alert dispatch",
+        "User role changes affecting access to sensitive data"
+      ],
+      "nonGoals": [
+        "Direct control or automation of calibration procedures",
+        "Real-time equipment monitoring or sensor integration",
+        "Full lab inventory management beyond calibration-relevant metadata",
+        "Financial or procurement management for equipment",
+        "Mobile app development in initial phases",
+        "Support for non-academic or industrial lab environments"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages (Dashboard, Equipment, Calibrations, Projects, Alerts, Settings).",
+        "UI pages fetch data from respective API routes with user auth tokens.",
+        "Data Entry UI sends create/update requests to APIs for Equipment, CalibrationRecords, UsageLogs, Projects, and Compliance standards.",
+        "Forecast API aggregates data from Equipment, CalibrationRecords, UsageLogs, Projects, and Compliance data stores to generate predictive schedules and optimization suggestions.",
+        "Alerts API consumes forecast data and user alert preferences to generate and deliver alerts and notifications.",
+        "Scheduled background job triggers daily recalculation of forecasts using latest data and updates forecast cache or database.",
+        "Alert dispatch job runs after forecast recalculation or user preference changes to send notifications via configured channels.",
+        "External Systems Integration imports equipment metadata and usage logs securely, handling data conflicts and syncing with internal data stores.",
+        "UI Dashboard subscribes or polls for real-time updates on forecasts, alerts, and optimization recommendations.",
+        "User inputs on filters and preferences propagate to API calls to tailor data returned and visualizations."
+      ],
+      "validationRules": [
+        "Equipment POST: id (required, unique string), make (required string), model (required string), calibrationFrequencyDays (required positive number), lastCalibrationDate (optional valid date), location (optional string), status (optional string).",
+        "CalibrationRecord POST: id (required unique string), equipmentId (required existing Equipment id), calibrationDate (required valid date), result (optional string), complianceStatus (optional string), notes (optional string).",
+        "UsageLog POST: each log must have id (unique string), equipmentId (existing Equipment id), startTime and endTime (valid dates with endTime > startTime), optional userId and projectId (valid references if provided).",
+        "ResearchProject POST: id (unique string), name (required string), startDate and endDate (valid dates with endDate >= startDate), equipmentDemand (optional JSON with valid equipment references), status (optional string).",
+        "ComplianceStandard POST: id (unique string), name (required string), deadlineDays (required positive number), description (optional string), applicableEquipmentModels (optional JSON array of strings).",
+        "Alert Preferences POST: valid JSON structure matching user alert settings schema.",
+        "API query parameters validated for correct types and ranges (e.g., date ranges, equipment filters).",
+        "Bulk uploads validate each record individually with aggregated error reporting.",
+        "User inputs validated for required fields, data types, and logical consistency before processing."
+      ],
+      "errorHandling": [
+        "API routes return standard HTTP status codes: 400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors.",
+        "Validation errors return detailed messages specifying invalid fields and reasons.",
+        "Bulk upload endpoints report per-record success/failure with error details for failed entries.",
+        "Background jobs log errors with context and implement retry logic with exponential backoff for transient failures.",
+        "External system integration handles data format inconsistencies by logging and skipping invalid records, with alerts for manual review.",
+        "Conflict detection in forecasts returns warnings or errors with actionable messages for user resolution.",
+        "UI displays user-friendly error messages and inline validation feedback.",
+        "Network or database failures trigger retries where appropriate and notify users of temporary unavailability.",
+        "Access control errors return clear messages without leaking sensitive information."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user sessions with role-based access control.",
+        "Sensitive data access restricted based on user roles (e.g., admin vs. standard user).",
+        "Input validation prevents injection attacks and ensures data integrity.",
+        "External system integrations use secure authentication (e.g., OAuth, API keys) and encrypted data transfer.",
+        "User alert preferences and personal data stored securely with encryption at rest.",
+        "Audit trails maintained for critical data changes (equipment, calibration records, compliance standards).",
+        "CSRF protection enabled for state-changing API requests.",
+        "Rate limiting applied to API endpoints to prevent abuse.",
+        "Logs and error reports sanitized to avoid leaking sensitive information."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated lab manager on the /dashboard page with equipment and calibration data present",
+          "when": "They apply date range and equipment filters",
+          "then": "The dashboard displays updated forecast charts, risk alerts, and optimization suggestions matching the filters"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the /equipment page",
+          "when": "They submit a new equipment entry with valid data",
+          "then": "The equipment is saved, and the updated equipment list including the new entry is displayed"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user attempts to upload calibration records with some invalid entries",
+          "when": "They submit the bulk upload",
+          "then": "The system accepts valid records, rejects invalid ones with detailed error messages, and reports the summary"
+        },
+        {
+          "id": "AT-004",
+          "given": "The scheduled forecast recalculation job runs",
+          "when": "It completes successfully",
+          "then": "Forecast data is updated and available via the /api/forecast GET endpoint"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user updates their alert preferences via /api/alerts/preferences POST",
+          "when": "The update is successful",
+          "then": "The preferences are saved, and subsequent alerts respect the new settings"
+        },
+        {
+          "id": "AT-006",
+          "given": "An external system integration imports usage logs with some data format inconsistencies",
+          "when": "The import process runs",
+          "then": "Valid logs are saved, invalid entries are logged and skipped, and an alert is generated for manual review"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user without proper role attempts to access /api/compliance POST",
+          "when": "They make the request",
+          "then": "The system returns 403 Forbidden and denies access"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user submits calibration record with a calibrationDate in the future",
+          "when": "They submit the form",
+          "then": "The system rejects the input with a validation error indicating invalid calibrationDate"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user views the /alerts page",
+          "when": "They have active alerts",
+          "then": "The page displays all active alerts and alert history relevant to the user"
+        },
+        {
+          "id": "AT-010",
+          "given": "A network failure occurs during alert dispatch job",
+          "when": "The job attempts to send notifications",
+          "then": "The failure is logged, retries are scheduled, and an admin alert is generated if repeated failures occur"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database",
+        "Implement authentication and user role management",
+        "Develop API routes for Equipment, CalibrationRecords, UsageLogs, Projects, Compliance standards with validation and error handling",
+        "Build Data Entry & Management UI pages with forms and bulk upload support",
+        "Implement Forecasting & Optimization API with initial algorithms and data aggregation",
+        "Develop Dashboard UI with visualization components and real-time update support",
+        "Create Alerts & Notifications API with alert generation and user preference management",
+        "Build Alerts UI page for viewing and configuring alerts",
+        "Implement background jobs for forecast recalculation and alert dispatch with retry and logging",
+        "Develop External Systems Integration with secure data import and conflict handling",
+        "Create Settings UI for user profiles and compliance standards management",
+        "Add comprehensive acceptance tests and validation coverage",
+        "Deploy and monitor system with logging and alerting"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/equipment",
+          "/calibrations",
+          "/projects",
+          "/alerts",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "/api/equipment.ts",
+          "/api/calibrations.ts",
+          "/api/usageLogs.ts",
+          "/api/projects.ts",
+          "/api/compliance.ts",
+          "/api/forecast.ts",
+          "/api/alerts.ts",
+          "/api/alerts/preferences.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Equipment",
+          "CalibrationRecord",
+          "UsageLog",
+          "ResearchProject",
+          "ComplianceStandard",
+          "User"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to gather missing constraints or details about calibration forecasting and lab management workflows.",
+        "promptTemplate": "You are a planner refining the calibration forecast system requirements. Given the current blueprint:\n\n{{BLUEPRINT}}\n\nAnd the user's inputs:\n\n{{USER_INPUT}}\n\nWhat additional constraints, edge cases, or user needs should be addressed to better define the system?"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages, API routes, and data models needed to build the calibration forecast and optimization system.",
+        "promptTemplate": "You are the system architect. Based on the idea and blueprint:\n\n{{BLUEPRINT}}\n\nAnd any refined requirements:\n\n{{REFINED_REQUIREMENTS}}\n\nProduce a detailed specification of UI pages, data models, and API endpoints required to implement the system."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code templates and UI stubs for each page in the calibration forecast system to accelerate front-end development.",
+        "promptTemplate": "You are a frontend builder. Given the finalized pages and data models:\n\n{{ARCHITECT_SPECS}}\n\nGenerate React/Next.js page stubs with placeholder components and comments for calibration forecast, equipment management, and alerts."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the integration wiring between UI pages, backend APIs, and the database models for the calibration forecast system.",
+        "promptTemplate": "You are the integrator. Given the page stubs, API specs, and data models:\n\n{{BUILDER_OUTPUT}}\n\nImplement the data flow and API connectivity ensuring validation, authentication, and error handling for the calibration forecast platform."
+      }
+    ]
+  }
+}

@@ -1,0 +1,712 @@
+{
+  "slug": "academic-license-compatibility-checker",
+  "title": "Academic Research Data License Compatibility Checker",
+  "description": "Upload dataset metadata and license documents to automatically assess multi-license compatibility, highlight conflicts, and receive actionable recommendations for compliant academic data sharing.",
+  "inputLabel": "Upload dataset metadata files and license documents (CSV, JSON, XML, or text). Optionally describe your intended data sharing or linkage scenario.",
+  "outputLabel": "License compatibility report including compatibility matrix, risk flags, recommendations, and plain-language summary.",
+  "systemPrompt": "You are an expert assistant helping academic research data managers analyze uploaded dataset metadata and license documents for license compatibility. Accept file uploads in CSV, JSON, XML, or plain text formats along with an optional scenario description. Validate inputs strictly and refuse unsupported or corrupted files with clear error messages. Parse license terms carefully, flag ambiguous or incomplete extractions for manual review, and never provide legal advice—only advisory outputs encouraging consultation with legal experts. Produce a structured compatibility matrix, risk flags, actionable recommendations, and a plain-language summary. Output must be plain text or valid JSON if structured-output is enabled. Always sanitize inputs and ensure outputs are safe and clear. If requests are disallowed or unsafe, refuse politely with explanation.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Compatibility Check",
+      "prompt": "Analyze the uploaded dataset metadata and license documents for compatibility. Provide a compatibility matrix, risk flags, recommendations for resolving conflicts, and a plain-language summary.",
+      "hint": "Use this preset for a general compatibility assessment."
+    },
+    {
+      "label": "Focus on Risk Flags",
+      "prompt": "Evaluate the licenses and highlight any compliance risk flags with detailed explanations. Summarize potential issues in plain language.",
+      "hint": "Use this to quickly identify high-risk license conflicts."
+    },
+    {
+      "label": "Detailed Recommendations",
+      "prompt": "Generate actionable recommendations to resolve any detected license incompatibilities or suggest alternative license options. Include a summary of compatibility.",
+      "hint": "Use this to get guidance on mitigating license conflicts."
+    },
+    {
+      "label": "Summary Only",
+      "prompt": "Provide a clear, plain-language summary of the combined dataset licenses, focusing on usage constraints and sharing considerations without detailed matrices.",
+      "hint": "Use this for a concise overview."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, produce a JSON object with fields: compatibilityMatrix (object), riskFlags (object), recommendations (object), summaryText (string).",
+  "clarifyPrompt": "Please provide the dataset metadata files and license documents in supported formats (CSV, JSON, XML, or plain text). You may optionally describe your intended data sharing or linkage scenario (max 1000 characters). Upload files carefully to avoid corrupted or unsupported formats.",
+  "finalizePrompt": "Review the license compatibility analysis carefully. Remember, this tool provides advisory information only and is not a substitute for legal advice. Consult legal experts before final decisions.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data License Compatibility Checker",
+      "niche": {
+        "role": "Academic Research Data Manager",
+        "scenario": "Before sharing or publishing research datasets, ensuring that combined or linked datasets have compatible licenses and usage restrictions to avoid legal or ethical conflicts."
+      },
+      "problem": "Academic research data managers struggle to manually verify and reconcile the compatibility of multiple dataset licenses and usage restrictions when combining or sharing datasets, risking compliance violations or limiting dataset reuse potential.",
+      "inputs": [
+        "Dataset metadata files including license types and terms (e.g., CSV, JSON, XML)",
+        "Text excerpts or scanned license documents",
+        "Descriptions of intended data sharing or linkage scenarios"
+      ],
+      "outputs": [
+        "Structured license compatibility matrix highlighting conflicts and alignments",
+        "Clear, plain-language summaries of license terms and constraints",
+        "Actionable recommendations for resolving incompatibilities or selecting alternative licenses",
+        "Compliance risk flags and notes tailored for academic data sharing"
+      ],
+      "whyItWins": [
+        "Fills a unique gap in academic data workflows by automating complex, error-prone license compatibility assessments",
+        "Supports repeated use across multiple datasets and projects, addressing a frequent pain point in data sharing",
+        "Generates actionable insights beyond simple license identification, aiding decision-making on dataset reuse and combination",
+        "Differentiates from existing compliance or data management tools by focusing specifically on multi-license compatibility rather than single-license validation"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web tool where data managers upload dataset metadata and license docs to receive an initial compatibility report and recommendations.",
+        "in90Days": "Expanded multi-page app with user accounts, historical compatibility tracking, integration with popular data repositories' APIs for license metadata auto-import, and collaboration features for data sharing teams.",
+        "in12Months": "Full-featured platform including license negotiation workflow modules, institutional policy integration, automated license updating alerts, and visual dashboards for portfolio-wide license compliance management across projects and collaborators."
+      },
+      "riskNotes": [
+        "Must carefully avoid offering legal advice; outputs are advisory and encourage consultation with legal experts for final decisions.",
+        "Sensitive to accurate license text extraction and interpretation; requires robust NLP and metadata validation to minimize errors.",
+        "Should ensure data privacy and security for uploaded documents and metadata."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An academic research data license compatibility checker that helps data managers upload dataset metadata and license documents to automatically assess multi-license compatibility, highlight conflicts, and provide actionable recommendations to ensure compliant data sharing and reuse.",
+      "primaryUser": "Academic Research Data Manager",
+      "successMetrics": [
+        "Accuracy and clarity of license compatibility assessments",
+        "Number of datasets/projects processed per user",
+        "User adoption and repeat usage rates",
+        "Reduction in manual license reconciliation time",
+        "User satisfaction with actionable recommendations"
+      ],
+      "components": [
+        {
+          "id": "ui-landing",
+          "name": "Landing and Upload UI",
+          "type": "ui",
+          "responsibility": "Provide a simple interface for users to upload dataset metadata files, license documents, and describe sharing scenarios; display initial compatibility reports.",
+          "dependsOn": [
+            "api-upload",
+            "api-compatibility"
+          ],
+          "notes": [
+            "Supports multiple file formats (CSV, JSON, XML, text).",
+            "Handles file validation and basic error feedback.",
+            "Initial version is a single upload page; expandable to multi-page UI."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "User Dashboard and History",
+          "type": "ui",
+          "responsibility": "Allow authenticated users to view past compatibility assessments, manage datasets and projects, and collaborate with team members.",
+          "dependsOn": [
+            "api-auth",
+            "api-projects",
+            "data-user",
+            "data-project"
+          ],
+          "notes": [
+            "Introduced in 90-day upgrade.",
+            "Supports project-based organization and collaboration."
+          ]
+        },
+        {
+          "id": "api-upload",
+          "name": "File Upload and Parsing API",
+          "type": "api",
+          "responsibility": "Accept dataset metadata and license document uploads, parse and extract license information and usage terms, and validate inputs.",
+          "dependsOn": [
+            "integration-nlp",
+            "data-license",
+            "data-upload-session"
+          ],
+          "notes": [
+            "Handles multiple input formats and text extraction.",
+            "Performs initial validation and error handling.",
+            "Stores parsed license metadata for further analysis."
+          ]
+        },
+        {
+          "id": "api-compatibility",
+          "name": "License Compatibility Analysis API",
+          "type": "api",
+          "responsibility": "Analyze combined dataset licenses for compatibility, generate compatibility matrices, risk flags, plain-language summaries, and recommendations.",
+          "dependsOn": [
+            "data-license",
+            "data-compatibility-report"
+          ],
+          "notes": [
+            "Core logic for multi-license compatibility assessment.",
+            "Produces structured outputs for UI consumption.",
+            "Must carefully avoid legal advice; outputs are advisory."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication and Authorization API",
+          "type": "api",
+          "responsibility": "Manage user accounts, authentication sessions, and access control for project and report data.",
+          "dependsOn": [
+            "data-user"
+          ],
+          "notes": [
+            "Supports OAuth or email/password login.",
+            "Required for multi-user collaboration features."
+          ]
+        },
+        {
+          "id": "data-license",
+          "name": "License Metadata Store",
+          "type": "data",
+          "responsibility": "Persist parsed license information, license terms, and usage restrictions extracted from uploaded documents and metadata files.",
+          "dependsOn": [],
+          "notes": [
+            "Stores canonical license identifiers and custom extracted terms.",
+            "Supports versioning for license updates."
+          ]
+        },
+        {
+          "id": "data-compatibility-report",
+          "name": "Compatibility Reports Store",
+          "type": "data",
+          "responsibility": "Persist generated license compatibility matrices, summaries, risk flags, and recommendations per analysis session or project.",
+          "dependsOn": [
+            "data-license"
+          ],
+          "notes": [
+            "Enables historical tracking and audit.",
+            "Supports export and sharing features."
+          ]
+        },
+        {
+          "id": "data-user",
+          "name": "User and Access Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, authentication credentials, roles, and permissions.",
+          "dependsOn": [],
+          "notes": [
+            "Ensures secure handling of sensitive user data."
+          ]
+        },
+        {
+          "id": "data-project",
+          "name": "Project and Collaboration Store",
+          "type": "data",
+          "responsibility": "Persist projects, dataset groupings, team memberships, and collaboration metadata.",
+          "dependsOn": [
+            "data-user",
+            "data-compatibility-report"
+          ],
+          "notes": [
+            "Supports multi-user collaboration and project history."
+          ]
+        },
+        {
+          "id": "integration-nlp",
+          "name": "NLP License Text Extraction Service",
+          "type": "integration",
+          "responsibility": "Process uploaded license documents using NLP to extract license terms, usage restrictions, and relevant clauses.",
+          "dependsOn": [],
+          "notes": [
+            "Critical for accurate interpretation of scanned or text excerpts.",
+            "Must handle OCR errors and ambiguous language robustly."
+          ]
+        },
+        {
+          "id": "background-license-update-alerts",
+          "name": "License Update Monitoring Job",
+          "type": "job",
+          "responsibility": "Periodically check for updates or changes in known licenses and alert users with affected datasets or projects.",
+          "dependsOn": [
+            "data-license",
+            "data-user",
+            "data-project"
+          ],
+          "notes": [
+            "Planned for long-term upgrade.",
+            "Helps maintain ongoing compliance awareness."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user authentication and profile data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "License",
+          "purpose": "Represent parsed license metadata and extracted terms.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "canonicalName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "terms",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "sourceText",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "canonicalName"
+          ]
+        },
+        {
+          "name": "CompatibilityReport",
+          "purpose": "Store results of license compatibility analyses.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "licenseIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "compatibilityMatrix",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "riskFlags",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "recommendations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "summaryText",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "projectId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Group datasets and reports for collaboration and history tracking.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "memberIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "ownerId"
+          ]
+        },
+        {
+          "name": "UploadSession",
+          "purpose": "Track individual upload sessions and raw inputs before parsing.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "uploadedFiles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "scenarioDescription",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "createdAt"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "License Compatibility Checker - Upload",
+          "purpose": "Landing page for uploading dataset metadata, license documents, and describing sharing scenarios to generate compatibility reports.",
+          "inputs": [
+            "Dataset metadata files",
+            "License documents",
+            "Sharing scenario description"
+          ],
+          "outputs": [
+            "Compatibility matrix",
+            "Risk flags",
+            "Recommendations",
+            "Plain-language summaries"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "User Dashboard",
+          "purpose": "Authenticated user home to view past reports, manage projects, and collaborate with team members.",
+          "inputs": [
+            "User authentication"
+          ],
+          "outputs": [
+            "List of projects",
+            "Historical compatibility reports",
+            "Collaboration invites"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:projectId",
+          "title": "Project Detail and Collaboration",
+          "purpose": "View and manage datasets, license reports, and team members within a project.",
+          "inputs": [
+            "Project ID",
+            "User authentication"
+          ],
+          "outputs": [
+            "Project datasets",
+            "Compatibility reports",
+            "Team member list"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Accept dataset metadata and license document uploads, parse and extract license information.",
+          "requestShape": "{ files: File[], scenarioDescription: string }",
+          "responseShape": "{ uploadSessionId: string, parsedLicenses: License[] }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/compatibility",
+          "method": "POST",
+          "purpose": "Analyze uploaded licenses for compatibility and produce reports.",
+          "requestShape": "{ licenseIds: string[], scenarioDescription: string }",
+          "responseShape": "{ compatibilityMatrix: object, riskFlags: object, recommendations: object, summaryText: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and create session.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of user projects.",
+          "requestShape": "none",
+          "responseShape": "{ projects: Project[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/reports",
+          "method": "GET",
+          "purpose": "Retrieve compatibility reports for a project.",
+          "requestShape": "none",
+          "responseShape": "{ reports: CompatibilityReport[] }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "License Update Monitoring Job",
+          "trigger": "Scheduled (e.g., daily or weekly)",
+          "purpose": "Check for updates in known licenses and notify users with affected datasets or projects."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded license documents with ambiguous, conflicting, or incomplete license terms requiring fallback or manual review.",
+        "OCR or NLP extraction errors leading to inaccurate license term interpretation.",
+        "Multiple licenses with circular or complex compatibility relationships.",
+        "User uploads unsupported file formats or corrupted metadata files.",
+        "Unauthorized access attempts to projects or reports.",
+        "Simultaneous uploads or analyses causing race conditions or data consistency issues.",
+        "Users misunderstanding advisory outputs as legal advice."
+      ],
+      "nonGoals": [
+        "Providing legally binding advice or formal legal consultation.",
+        "Full-scale data repository management or hosting of datasets.",
+        "Automated license negotiation or legal contract generation in initial versions.",
+        "Handling licenses outside academic research data scope (e.g., commercial software licenses).",
+        "Replacing institutional legal compliance departments."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User visits '/' landing page and uploads dataset metadata files, license documents, and enters a sharing scenario description.",
+        "Landing page sends POST request to '/api/upload' with files and scenarioDescription.",
+        "API Upload endpoint validates files, parses license information using NLP License Text Extraction Service, stores parsed licenses in License Metadata Store, and creates an UploadSession record.",
+        "API Upload returns uploadSessionId and parsedLicenses to the UI.",
+        "User triggers compatibility analysis by sending POST request to '/api/compatibility' with licenseIds and scenarioDescription (requires authentication if user wants to save reports).",
+        "API Compatibility endpoint retrieves license data, performs multi-license compatibility analysis, generates compatibility matrix, risk flags, recommendations, and summary text.",
+        "Compatibility report is optionally stored in Compatibility Reports Store linked to user and project if authenticated.",
+        "User views compatibility results on the landing page or dashboard.",
+        "Authenticated users access '/dashboard' to view projects and past reports via '/api/projects' and '/api/projects/:projectId/reports'.",
+        "Project detail page fetches project datasets, compatibility reports, and team members for collaboration.",
+        "Background License Update Monitoring Job periodically checks for license updates and notifies affected users."
+      ],
+      "validationRules": [
+        "Uploaded files must be one of supported formats: CSV, JSON, XML, or plain text; reject unsupported or corrupted files with clear error messages.",
+        "Scenario description is optional but if provided, must be a non-empty string with max length 1000 characters.",
+        "License parsing must verify presence of key license terms; if ambiguous or incomplete, flag for manual review.",
+        "Authentication endpoints validate email format and password strength on login.",
+        "API endpoints requiring authentication must verify valid user session or token.",
+        "License compatibility API requires non-empty array of valid license IDs; reject requests with missing or invalid IDs.",
+        "Project and report retrieval APIs validate user access rights to requested resources.",
+        "All inputs must be sanitized to prevent injection attacks.",
+        "Concurrency controls to prevent race conditions during simultaneous uploads or analyses."
+      ],
+      "errorHandling": [
+        "File upload errors return HTTP 400 with descriptive messages for invalid formats or corrupted files.",
+        "Parsing errors from NLP service return HTTP 422 with details on ambiguous or incomplete license extraction.",
+        "Authentication failures return HTTP 401 Unauthorized with generic error messages to avoid information leakage.",
+        "Authorization failures for project or report access return HTTP 403 Forbidden.",
+        "Internal server errors return HTTP 500 with generic error message and log detailed error for diagnostics.",
+        "API responses include error codes and messages in consistent JSON structure.",
+        "UI displays user-friendly error notifications and guidance for corrective actions.",
+        "Fallback to manual review prompt when automated license extraction is unreliable.",
+        "Rate limiting and throttling to handle excessive or malformed requests gracefully."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Store passwords hashed with a strong algorithm (e.g., bcrypt) and never in plaintext.",
+        "Implement JWT or session-based authentication with secure, HttpOnly cookies or tokens.",
+        "Enforce role-based access control for project and report data.",
+        "Sanitize all user inputs to prevent XSS, SQL injection, and other injection attacks.",
+        "Validate and restrict uploaded file types and sizes to prevent malicious uploads.",
+        "Use CSRF protection on state-changing API endpoints.",
+        "Log authentication and authorization failures for monitoring suspicious activity.",
+        "Ensure background job accesses data with least privilege principle.",
+        "Provide clear disclaimers that outputs are advisory and not legal advice."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user visits the landing page and uploads valid dataset metadata and license documents in supported formats",
+          "when": "They submit the upload form with a sharing scenario description",
+          "then": "The system accepts the files, parses license information, returns parsed licenses, and displays initial compatibility report without errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user uploads unsupported or corrupted files",
+          "when": "They submit the upload form",
+          "then": "The system rejects the upload with clear error messages indicating invalid file format or corruption"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user requests license compatibility analysis with valid license IDs",
+          "when": "They submit the analysis request",
+          "then": "The system returns a compatibility matrix, risk flags, recommendations, and summary text, and stores the report linked to the user and project"
+        },
+        {
+          "id": "AT-004",
+          "given": "An unauthenticated user attempts to access the dashboard or project pages",
+          "when": "They navigate to '/dashboard' or '/project/:projectId'",
+          "then": "The system redirects them to login page or returns 401 Unauthorized"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user attempts to access a project or report they do not have permission for",
+          "when": "They request project or report data via API",
+          "then": "The system returns 403 Forbidden and does not expose data"
+        },
+        {
+          "id": "AT-006",
+          "given": "The NLP License Text Extraction Service encounters ambiguous or incomplete license text",
+          "when": "The upload API processes the files",
+          "then": "The system flags the license for manual review and informs the user about potential extraction issues"
+        },
+        {
+          "id": "AT-007",
+          "given": "Multiple users upload and analyze licenses simultaneously",
+          "when": "Concurrent API requests occur",
+          "then": "The system handles concurrency without data corruption or race conditions"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user logs in with valid credentials",
+          "when": "They submit login form",
+          "then": "The system authenticates the user, returns a session token, and allows access to authenticated routes"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, License, CompatibilityReport, Project, UploadSession",
+        "Implement API Auth endpoints for user login and session management",
+        "Implement data stores and access layers for User, License, CompatibilityReport, Project, UploadSession",
+        "Integrate NLP License Text Extraction Service for license parsing",
+        "Implement API Upload endpoint with file validation, parsing, and storage",
+        "Implement API Compatibility endpoint with license compatibility analysis logic",
+        "Develop Landing and Upload UI page with file upload and compatibility display",
+        "Implement User Dashboard UI with project and report listing",
+        "Implement Project Detail UI with datasets, reports, and collaboration features",
+        "Implement API endpoints for projects and project reports with access control",
+        "Add error handling, validation, and security features across APIs and UI",
+        "Implement background License Update Monitoring Job",
+        "Write acceptance tests and perform end-to-end testing",
+        "Deploy and monitor application"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/index.tsx",
+          "/dashboard.tsx",
+          "/project/[projectId].tsx"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/upload.ts",
+          "/api/compatibility.ts",
+          "/api/projects/index.ts",
+          "/api/projects/[projectId]/reports.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "License",
+          "CompatibilityReport",
+          "Project",
+          "UploadSession"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify missing constraints or edge cases in the project requirements.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}}\n{{EXPANDED}}\nPlease identify any missing constraints, clarify ambiguous requirements, or propose additional edge cases or scenarios relevant to the Academic Research Data License Compatibility Checker. Respond with questions or requests for further details from the user."
+      },
+      {
+        "id": "architect-finalize-models-pages",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the full set of pages, data models, and API endpoints for the multi-page app.",
+        "promptTemplate": "Based on the refined requirements and blueprint: {{BLUEPRINT}}\n{{EXPANDED}}\nDesign a comprehensive set of pages, data models, and API endpoints needed to implement the Academic Research Data License Compatibility Checker. Include user roles, permissions, and data flow considerations. Provide detailed schema outlines and page routing."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code stubs for the main pages and UI components to scaffold the app.",
+        "promptTemplate": "Using the finalized architecture and data models: {{BLUEPRINT}}\n{{EXPANDED}}\nGenerate starter code stubs (e.g., React/Next.js components) for the main application pages: landing upload page, dashboard, project detail. Include placeholders for API integrations and UI elements."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the integration wiring between frontend pages, backend APIs, and database models.",
+        "promptTemplate": "Given the page stubs and finalized API/data models: {{BLUEPRINT}}\n{{EXPANDED}}\nProvide detailed implementation plans and code for wiring the frontend pages to backend API endpoints and database layers. Include authentication, file upload handling, license parsing calls, and compatibility analysis invocation."
+      }
+    ]
+  }
+}

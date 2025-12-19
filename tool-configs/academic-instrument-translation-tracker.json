@@ -1,0 +1,894 @@
+{
+  "slug": "academic-instrument-translation-tracker",
+  "title": "Academic Research Instrument Translation & Adaptation Tracker",
+  "description": "A lightweight single-page web app to upload original research instruments and their translations, track version metadata, adaptation notes, and generate side-by-side comparison reports to support transparent cross-cultural instrument adaptation workflows.",
+  "inputLabel": "Paste original instrument text or translated version, including metadata and adaptation notes. Optionally upload instrument or translation files.",
+  "outputLabel": "Structured summary of uploaded instrument or translation version, including version metadata and side-by-side comparison report if requested.",
+  "systemPrompt": "You are an academic research instrument translation and adaptation workflow assistant. Accept only valid requests to track original instrument texts and their translated versions with metadata, including translator, reviewer, version number, adaptation notes, and approval status. Refuse any request that attempts to perform automated translation or suggests replacing expert consultation. Output must be plain text or JSON if requested. Enforce data privacy and disallow disallowed content. Validate inputs strictly. Provide side-by-side comparison reports highlighting differences and adaptation rationale upon request. Do not generate or modify instrument text beyond formatting. Refuse any unsafe, incomplete, or unauthorized requests. Use only the features and workflows defined in this tool config.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Add Original Instrument",
+      "prompt": "I want to upload a new original research instrument text with title, description, and original text. Please validate and summarize the instrument metadata and content.",
+      "hint": "Use this to add a new instrument to track."
+    },
+    {
+      "label": "Add Translation Version",
+      "prompt": "I want to upload a translated instrument version including language, translated text, optional back-translation text, adaptation notes, translator name, and version metadata. Validate inputs and return structured version info.",
+      "hint": "Use this to add a new translation version for an existing instrument."
+    },
+    {
+      "label": "Generate Side-by-Side Comparison",
+      "prompt": "Please generate a side-by-side comparison report between two instrument versions given instrument ID, language and version number pairs. Highlight differences, adaptation notes, and approval statuses.",
+      "hint": "Use this to review translation differences and adaptation rationale."
+    },
+    {
+      "label": "Summarize Instrument Versions",
+      "prompt": "Provide a structured summary of all translation versions for a given instrument ID, including version numbers, languages, translators, reviewers, approval statuses, and adaptation notes.",
+      "hint": "Use this to get an overview of instrument translation history."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON includes fields: instrumentId, title, description, originalText, translations: [{language, versionNumber, translatedText, backTranslationText?, adaptationNotes?, translator, reviewer?, approvalStatus, createdDate}], and optionally comparisonReport: {diffs, adaptationRationale, approvalSummary}.",
+  "clarifyPrompt": "Please clarify the instrument or translation details you want to upload or the report you want to generate. Provide required metadata fields clearly.",
+  "finalizePrompt": "Confirm your submission or request. If you want to add or update instrument or translation data, ensure all required fields are included and valid. For reports, specify instrument ID and version pairs precisely.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Instrument Translation & Cultural Adaptation Tracker",
+      "niche": {
+        "role": "Academic Researcher in Cross-Cultural Studies",
+        "scenario": "Developing, translating, and culturally adapting psychological or social science survey instruments for multi-country or multi-language research projects"
+      },
+      "problem": "Researchers conducting cross-cultural studies must translate and culturally adapt their instruments to maintain validity across languages and contexts. Existing tools do not systematically track translation versions, adaptation decisions, cultural notes, back-translation results, or approval workflows, making it difficult to ensure transparency, consistency, and reproducibility in multi-site collaborations.",
+      "inputs": [
+        "Original instrument text (survey questions, instructions)",
+        "Translated instrument versions in multiple languages",
+        "Back-translation texts",
+        "Cultural adaptation notes and rationale",
+        "Reviewer comments and approval statuses",
+        "Version metadata (date, translator, reviewer)"
+      ],
+      "outputs": [
+        "Structured translation and adaptation version history",
+        "Side-by-side comparison reports highlighting changes and adaptation rationale",
+        "Compliance and completeness checklist for translation and cultural adaptation steps",
+        "Exportable documentation packages for funders, ethics boards, and collaborators"
+      ],
+      "whyItWins": [
+        "Fills a gap for systematic, transparent management of instrument translation and adaptation workflows unlike basic text translators or version trackers",
+        "Supports repeated use through version control and audit trails critical in multi-language, multi-site research",
+        "Improves collaboration among linguists, researchers, and ethics reviewers by centralizing notes, approvals, and feedback",
+        "Boosts reproducibility and compliance with best practice guidelines for cross-cultural instrument adaptation"
+      ],
+      "upgradePath": {
+        "today": "Lightweight web app for uploading instrument texts and translations to create simple side-by-side comparisons and version logs",
+        "in90Days": "Add collaboration features: multi-user roles, comment threads, approval workflows, and cultural adaptation checklist templates",
+        "in12Months": "Develop into a full multi-page system including automated consistency checks, integration with survey platforms, comprehensive reporting dashboards, and export formats compatible with ethics submissions and publications"
+      },
+      "riskNotes": [
+        "Must ensure data privacy and confidentiality for unpublished research instruments",
+        "Avoid providing automated translation to prevent inaccurate or inappropriate adaptations",
+        "Focus on tracking and documentation; do not replace expert human translation or cultural consultation"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web-based system to systematically track, document, and manage the translation and cultural adaptation process of academic research instruments across multiple languages and sites, ensuring transparency, collaboration, and reproducibility.",
+      "primaryUser": "Academic researchers, translators, cultural consultants, and ethics reviewers involved in cross-cultural instrument adaptation projects.",
+      "successMetrics": [
+        "Number of active multi-language instrument projects managed",
+        "User adoption rate among cross-cultural research teams",
+        "Percentage of instruments with complete version histories and approval workflows",
+        "User satisfaction with collaboration and reporting features",
+        "Reduction in errors or inconsistencies reported in translated instruments"
+      ],
+      "components": [
+        {
+          "id": "ui_instrumentManagement",
+          "name": "Instrument Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to create, upload, and manage original instruments and their translated/adapted versions, including metadata and version histories.",
+          "dependsOn": [
+            "api_instrument",
+            "data_instrument",
+            "api_userAuth"
+          ],
+          "notes": [
+            "Supports uploading original texts and multiple translation versions.",
+            "Displays version history and metadata clearly.",
+            "Handles large text inputs and supports rich text formatting for questions and instructions."
+          ]
+        },
+        {
+          "id": "ui_collaboration",
+          "name": "Collaboration & Approval UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for multi-user collaboration including commenting, cultural adaptation notes, approval workflows, and checklist management.",
+          "dependsOn": [
+            "api_comments",
+            "api_approval",
+            "data_comments",
+            "data_approval",
+            "api_userAuth"
+          ],
+          "notes": [
+            "Supports role-based access (translator, reviewer, researcher).",
+            "Threaded comments and notifications for updates.",
+            "Checklist templates for cultural adaptation steps."
+          ]
+        },
+        {
+          "id": "ui_reportingExport",
+          "name": "Reporting and Export UI",
+          "type": "ui",
+          "responsibility": "Enable generation of side-by-side comparison reports, compliance checklists, and exportable documentation packages for external stakeholders.",
+          "dependsOn": [
+            "api_reporting",
+            "api_export",
+            "data_instrument",
+            "data_approval",
+            "api_userAuth"
+          ],
+          "notes": [
+            "Supports exporting in multiple formats (PDF, DOCX, JSON).",
+            "Reports highlight changes, rationale, and approval statuses.",
+            "Filters for project, language, and version."
+          ]
+        },
+        {
+          "id": "api_instrument",
+          "name": "Instrument Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for instruments, translations, back-translations, adaptation notes, and version metadata.",
+          "dependsOn": [
+            "data_instrument",
+            "api_userAuth"
+          ],
+          "notes": [
+            "Enforces data validation and version control rules.",
+            "Supports querying by project, language, and version.",
+            "Manages upload and storage of large text fields."
+          ]
+        },
+        {
+          "id": "api_collaboration",
+          "name": "Collaboration & Approval API",
+          "type": "api",
+          "responsibility": "Manage comments, cultural adaptation notes, approval workflows, user roles, and checklist templates.",
+          "dependsOn": [
+            "data_comments",
+            "data_approval",
+            "data_users",
+            "api_userAuth"
+          ],
+          "notes": [
+            "Supports role-based permissions and audit trails.",
+            "Handles notifications and status updates.",
+            "Stores checklist progress and templates."
+          ]
+        },
+        {
+          "id": "api_reportingExport",
+          "name": "Reporting and Export API",
+          "type": "api",
+          "responsibility": "Generate comparison reports, compliance checklists, and export documentation packages on demand.",
+          "dependsOn": [
+            "data_instrument",
+            "data_approval",
+            "api_instrument",
+            "api_collaboration"
+          ],
+          "notes": [
+            "Implements side-by-side text diff algorithms.",
+            "Ensures exports comply with privacy and confidentiality requirements.",
+            "Supports multiple export formats."
+          ]
+        },
+        {
+          "id": "data_instrument",
+          "name": "Instrument Data Store",
+          "type": "data",
+          "responsibility": "Persist original instruments, translated versions, back-translations, adaptation notes, version metadata, and related documents.",
+          "dependsOn": [],
+          "notes": [
+            "Must support versioning and audit trails.",
+            "Sensitive data must be encrypted at rest.",
+            "Indexes for efficient querying by project, language, and version."
+          ]
+        },
+        {
+          "id": "data_collaboration",
+          "name": "Collaboration Data Store",
+          "type": "data",
+          "responsibility": "Persist user comments, approval statuses, user roles, checklist templates, and adaptation rationale.",
+          "dependsOn": [],
+          "notes": [
+            "Supports threaded comments and timestamps.",
+            "Stores approval workflow states and history.",
+            "Role-based access control data."
+          ]
+        },
+        {
+          "id": "api_userAuth",
+          "name": "User Authentication and Authorization API",
+          "type": "api",
+          "responsibility": "Manage user accounts, authentication, authorization, and role-based access control.",
+          "dependsOn": [
+            "data_users"
+          ],
+          "notes": [
+            "Supports secure login, password reset, and session management.",
+            "Enforces access control on all APIs and UI components."
+          ]
+        },
+        {
+          "id": "data_users",
+          "name": "User Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, roles, permissions, and authentication credentials.",
+          "dependsOn": [],
+          "notes": [
+            "Passwords stored securely with hashing and salting.",
+            "Supports multi-role assignments per user."
+          ]
+        },
+        {
+          "id": "job_dataBackup",
+          "name": "Scheduled Data Backup Job",
+          "type": "job",
+          "responsibility": "Periodically back up all persistent data stores to secure offsite storage to prevent data loss.",
+          "dependsOn": [
+            "data_instrument",
+            "data_collaboration",
+            "data_users"
+          ],
+          "notes": [
+            "Backup frequency configurable (e.g., daily).",
+            "Verifies backup integrity and alerts on failures."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Instrument",
+          "purpose": "Store original instrument texts and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "originalText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "title"
+          ]
+        },
+        {
+          "name": "TranslationVersion",
+          "purpose": "Store translated instrument text, back-translations, adaptation notes, and version metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "instrumentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "language",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "translatedText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "backTranslationText",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "adaptationNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "translator",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reviewer",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "approvalStatus",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "instrumentId",
+            "language",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Store user comments and discussion threads related to instruments and translations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedTranslationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parentCommentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "relatedTranslationId",
+            "authorId"
+          ]
+        },
+        {
+          "name": "ApprovalWorkflow",
+          "purpose": "Track approval statuses, decisions, and history for translation versions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "translationVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "approvedBy",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "approvalDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "comments",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "translationVersionId",
+            "status"
+          ]
+        },
+        {
+          "name": "ChecklistTemplate",
+          "purpose": "Define templates for cultural adaptation checklists used in approval workflows.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "items",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "ChecklistProgress",
+          "purpose": "Track progress of checklist completion per translation version.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "translationVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "completedItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "translationVersionId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user profiles, roles, and authentication credentials.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/instruments",
+          "title": "Instrument Dashboard",
+          "purpose": "List and manage all instruments and their translation projects.",
+          "inputs": [],
+          "outputs": [
+            "Instrument list with metadata and status summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/instruments/:id",
+          "title": "Instrument Detail",
+          "purpose": "View and edit original instrument and its translation versions with version history.",
+          "inputs": [
+            "Instrument ID"
+          ],
+          "outputs": [
+            "Original text, translations, version metadata, adaptation notes"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/translations/:translationId/collaboration",
+          "title": "Collaboration & Approval",
+          "purpose": "View and participate in comments, cultural adaptation notes, and approval workflows for a translation version.",
+          "inputs": [
+            "Translation Version ID"
+          ],
+          "outputs": [
+            "Comments, checklist status, approval status, user roles"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reporting and Export",
+          "purpose": "Generate and export comparison reports, compliance checklists, and documentation packages.",
+          "inputs": [
+            "Project filters, language, version selections"
+          ],
+          "outputs": [
+            "Generated reports and export files"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token or session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/instruments",
+          "method": "GET",
+          "purpose": "Retrieve list of instruments accessible to the user.",
+          "requestShape": "Query parameters for filtering and pagination",
+          "responseShape": "List of instrument metadata and status summaries",
+          "auth": "user"
+        },
+        {
+          "route": "/api/instruments",
+          "method": "POST",
+          "purpose": "Create a new instrument with original text and metadata.",
+          "requestShape": "{ title, description?, originalText }",
+          "responseShape": "{ instrumentId, createdDate }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/instruments/:id",
+          "method": "GET",
+          "purpose": "Get detailed data for a single instrument including translations and versions.",
+          "requestShape": "Instrument ID in path",
+          "responseShape": "Instrument details with translation versions and metadata",
+          "auth": "user"
+        },
+        {
+          "route": "/api/translations",
+          "method": "POST",
+          "purpose": "Add a new translation version for an instrument.",
+          "requestShape": "{ instrumentId, language, translatedText, backTranslationText?, adaptationNotes?, translator }",
+          "responseShape": "{ translationVersionId, versionNumber, createdDate }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "POST",
+          "purpose": "Add a comment or reply related to a translation version.",
+          "requestShape": "{ relatedTranslationId, content, parentCommentId? }",
+          "responseShape": "{ commentId, createdDate }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/approvals",
+          "method": "POST",
+          "purpose": "Update approval status and add approval comments for a translation version.",
+          "requestShape": "{ translationVersionId, status, comments? }",
+          "responseShape": "{ approvalId, approvalDate }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/checklists/templates",
+          "method": "GET",
+          "purpose": "Retrieve available checklist templates for cultural adaptation.",
+          "requestShape": "None",
+          "responseShape": "List of checklist templates",
+          "auth": "user"
+        },
+        {
+          "route": "/api/checklists/progress",
+          "method": "POST",
+          "purpose": "Update checklist progress for a translation version.",
+          "requestShape": "{ translationVersionId, completedItems }",
+          "responseShape": "{ progressId, lastUpdated }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/comparison",
+          "method": "POST",
+          "purpose": "Generate side-by-side comparison report for selected instrument versions.",
+          "requestShape": "{ instrumentId, language1, version1, language2, version2 }",
+          "responseShape": "{ reportUrl }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export/documentation",
+          "method": "POST",
+          "purpose": "Generate exportable documentation package for a project or instrument.",
+          "requestShape": "{ instrumentId, languages?, versions?, format }",
+          "responseShape": "{ exportUrl }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return access token.",
+          "requestShape": "{ email, password }",
+          "responseShape": "{ token, userId, roles }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Scheduled Data Backup",
+          "trigger": "Daily at configured time",
+          "purpose": "Backup all persistent data stores securely to prevent data loss."
+        }
+      ],
+      "edgeCases": [
+        "Handling simultaneous edits to the same translation version by multiple users (conflict resolution).",
+        "Incomplete or missing metadata for translation versions or approvals.",
+        "Users with multiple roles needing different access levels within the same project.",
+        "Large instruments with many questions causing performance issues in UI or reports.",
+        "Revoking approvals when underlying translation versions are updated.",
+        "Ensuring export packages exclude confidential or unpublished data when requested.",
+        "Handling deleted or archived instruments and translations while preserving audit trails."
+      ],
+      "nonGoals": [
+        "Providing automated machine translation or suggestions for instrument text.",
+        "Replacing expert human translation or cultural consultation.",
+        "Hosting or distributing survey instruments for data collection.",
+        "Real-time collaborative editing of instrument texts.",
+        "Integration with external survey platforms beyond basic export formats in initial phases."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User logs in via /login page, authenticates through /api/auth/login, receives token and roles.",
+        "Authenticated user accesses /instruments page; frontend calls GET /api/instruments with filters and pagination; API returns instrument metadata and status summaries.",
+        "User selects an instrument on /instruments/:id; frontend calls GET /api/instruments/:id; API returns instrument details including original text, translations, and version metadata.",
+        "User creates a new instrument via form on /instruments; frontend POSTs to /api/instruments with title, description, and originalText; API validates, stores in data_instrument, returns instrumentId and createdDate.",
+        "User adds a translation version via form; frontend POSTs to /api/translations with instrumentId, language, translatedText, optional backTranslationText, adaptationNotes, and translator; API validates, assigns versionNumber, stores in data_instrument, returns translationVersionId, versionNumber, createdDate.",
+        "User accesses collaboration page /translations/:translationId/collaboration; frontend fetches comments (GET /api/comments filtered by translationVersionId), checklist progress (GET /api/checklists/progress), approval status (GET /api/approvals filtered by translationVersionId), and user roles from auth context.",
+        "User posts comments or replies via POST /api/comments with relatedTranslationId, content, optional parentCommentId; API validates and stores in data_collaboration.",
+        "User updates approval status via POST /api/approvals with translationVersionId, status, optional comments; API validates role permissions, updates approval workflow in data_collaboration.",
+        "User retrieves checklist templates via GET /api/checklists/templates; API returns checklist templates from data_collaboration.",
+        "User updates checklist progress via POST /api/checklists/progress with translationVersionId and completedItems; API updates data_collaboration.",
+        "User generates reports on /reports page; frontend POSTs to /api/reports/comparison with instrumentId, language and version pairs; API generates side-by-side diff report and returns reportUrl.",
+        "User exports documentation via POST /api/export/documentation with instrumentId, optional languages, versions, and format; API generates export package ensuring privacy compliance, returns exportUrl.",
+        "Scheduled Data Backup job runs daily, backing up data_instrument, data_collaboration, and data_users to secure offsite storage, verifying integrity and alerting on failure."
+      ],
+      "validationRules": [
+        "All API requests require authentication except /api/auth/login.",
+        "Instrument creation requires non-empty title and originalText; description optional.",
+        "Translation version creation requires existing instrumentId, non-empty language, translatedText, translator; backTranslationText and adaptationNotes optional.",
+        "VersionNumber auto-incremented per instrumentId and language; must be unique.",
+        "Comments require existing relatedTranslationId, non-empty content; parentCommentId must refer to existing comment or be null.",
+        "Approval updates require valid translationVersionId, status from predefined set (e.g., Pending, Approved, Rejected); comments optional.",
+        "Checklist progress updates require valid translationVersionId and completedItems matching checklist template items.",
+        "Report generation requires valid instrumentId and language/version combinations existing in data store.",
+        "Export requests require valid instrumentId; optional languages and versions must exist; format must be one of supported types (PDF, DOCX, JSON).",
+        "User login requires valid email format and non-empty password.",
+        "Role-based access enforced on all endpoints; e.g., only translators can create translations, reviewers can approve, researchers can manage instruments."
+      ],
+      "errorHandling": [
+        "Return 401 Unauthorized for unauthenticated requests to protected endpoints.",
+        "Return 403 Forbidden for authenticated users lacking required roles or permissions.",
+        "Return 400 Bad Request for validation failures with detailed error messages specifying invalid fields.",
+        "Return 404 Not Found when requested resources (instrument, translation, comment, checklist) do not exist.",
+        "Return 409 Conflict when versionNumber conflicts or simultaneous edits detected; provide conflict details for resolution.",
+        "Return 500 Internal Server Error for unexpected failures with logging for diagnostics.",
+        "API responses include error codes and messages in consistent JSON format.",
+        "Frontend displays user-friendly error notifications and guides corrective actions.",
+        "Backup job alerts administrators on failure via configured notification channels."
+      ],
+      "securityNotes": [
+        "Passwords stored hashed and salted using strong algorithms (e.g., bcrypt).",
+        "All API routes except login require JWT or session-based authentication.",
+        "Role-based access control enforced at API and UI levels to restrict data and actions.",
+        "Sensitive data fields (e.g., originalText, translations) encrypted at rest in database.",
+        "Exported documentation packages exclude confidential or unpublished data based on user roles and export parameters.",
+        "API rate limiting and input sanitization to prevent abuse and injection attacks.",
+        "Audit trails maintained for edits, approvals, and comments to ensure accountability.",
+        "Backup data encrypted and stored securely offsite; access restricted to authorized personnel.",
+        "Session management includes secure cookies, expiration, and CSRF protections."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user with researcher role",
+          "when": "They create a new instrument with valid title and originalText",
+          "then": "The instrument is stored, and the API returns instrumentId and createdDate"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated translator user and an existing instrument",
+          "when": "They add a new translation version with valid data",
+          "then": "The translation version is stored with incremented versionNumber and returned with translationVersionId"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user accesses an instrument detail page",
+          "when": "They request instrument details via API",
+          "then": "The API returns original text, all translation versions, and version metadata"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with reviewer role",
+          "when": "They update approval status to 'Approved' with optional comments",
+          "then": "The approval workflow is updated, and approvalDate is recorded"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user attempts to post a comment with missing content",
+          "when": "They submit the comment via API",
+          "then": "The API returns 400 Bad Request with validation error message"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthenticated user tries to access /api/instruments",
+          "when": "They send a GET request",
+          "then": "The API returns 401 Unauthorized"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user requests a report comparing two translation versions",
+          "when": "They submit valid instrumentId, languages, and versions",
+          "then": "The API returns a reportUrl for the generated side-by-side comparison"
+        },
+        {
+          "id": "AT-008",
+          "given": "An authenticated user requests export documentation with confidential data excluded",
+          "when": "They specify export parameters and format",
+          "then": "The API returns exportUrl with package excluding confidential/unpublished data"
+        },
+        {
+          "id": "AT-009",
+          "given": "Multiple users attempt simultaneous edits on the same translation version",
+          "when": "Conflicting updates are submitted",
+          "then": "The API detects conflict and returns 409 Conflict with resolution instructions"
+        },
+        {
+          "id": "AT-010",
+          "given": "Scheduled data backup job runs",
+          "when": "Backup completes successfully",
+          "then": "Backup integrity is verified and no alerts are raised"
+        }
+      ],
+      "buildOrder": [
+        "data_users model and data store setup",
+        "api_userAuth implementation with secure login and role management",
+        "data_instrument and data_collaboration data stores with Prisma models",
+        "api_instrument CRUD endpoints with validation and version control",
+        "api_collaboration endpoints for comments, approvals, and checklists",
+        "ui_instrumentManagement pages and components with API integration",
+        "ui_collaboration pages and components with role-based UI and API calls",
+        "api_reportingExport endpoints for reports and exports",
+        "ui_reportingExport pages with export and report generation UI",
+        "background job for scheduled data backup",
+        "Implement error handling and security hardening across all layers",
+        "Acceptance testing and edge case handling"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/instruments",
+          "/instruments/[id]",
+          "/translations/[translationId]/collaboration",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.js",
+          "api/instruments/index.js",
+          "api/instruments/[id].js",
+          "api/translations/index.js",
+          "api/comments/index.js",
+          "api/approvals/index.js",
+          "api/checklists/templates.js",
+          "api/checklists/progress.js",
+          "api/reports/comparison.js",
+          "api/export/documentation.js"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Instrument",
+          "TranslationVersion",
+          "Comment",
+          "ApprovalWorkflow",
+          "ChecklistTemplate",
+          "ChecklistProgress"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Gather missing constraints, clarify edge cases, and refine requirements for the translation and adaptation tracker.",
+        "promptTemplate": "You are a planner refining the Academic Research Instrument Translation & Adaptation Tracker requirements. Given the current blueprint and expanded specs:\n\n{{BLUEPRINT}}\n\n{{EXPANDED}}\n\nPlease ask specific questions to clarify missing constraints, edge cases, or user needs based on user input:\n\n{{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the pages, API routes, and data models needed for the full multi-page app implementation.",
+        "promptTemplate": "You are an architect designing the Academic Research Instrument Translation & Adaptation Tracker. Using the idea and blueprint:\n\n{{IDEA}}\n\n{{BLUEPRINT}}\n\nPlease finalize a detailed list of pages, API endpoints, and data models with fields and relationships, accommodating all core workflows and security needs. Consider the expanded specs for data flow, validation, and edge cases.\n\nUser input:\n\n{{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code stubs or detailed descriptions for the pages and API endpoints defined by the architect.",
+        "promptTemplate": "You are a builder generating front-end and back-end code stubs for the Academic Research Instrument Translation & Adaptation Tracker. Based on the finalized pages and APIs:\n\n{{ARCHITECT_OUTPUT}}\n\nPlease provide starter code snippets or detailed page/component outlines, including input forms, data display, and API integration points.\n\nUser input:\n\n{{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Create integration code and instructions to connect front-end pages to API endpoints and underlying database models.",
+        "promptTemplate": "You are an integrator wiring the Academic Research Instrument Translation & Adaptation Tracker. Using the builder's page stubs and architect's API and data models:\n\n{{BUILDER_OUTPUT}}\n\n{{ARCHITECT_OUTPUT}}\n\nPlease provide integration code, API call examples, authentication handling, and data flow wiring instructions.\n\nUser input:\n\n{{USER_INPUT}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,742 @@
+{
+  "slug": "academic-grant-budget-scenario-simulator",
+  "title": "Academic Research Grant Collaborative Budget Scenario Simulator",
+  "description": "A lightweight single-page web tool for academic research grant finance coordinators to upload budget drafts and funder conditional funding rules, simulate multi-institutional budget scenarios dynamically, and receive compliance and conflict forecasts.",
+  "inputLabel": "Upload budget drafts and funder conditional funding rules (CSV, Excel, or text files)",
+  "outputLabel": "Simulated budget scenario results with compliance and conflict flags",
+  "systemPrompt": "You are a secure, single-page web app assistant for academic research grant finance coordinators. Accept uploads of budget drafts and conditional funding rule documents in CSV, Excel, or text formats. Validate file formats and contents strictly. Refuse any disallowed file types or unsafe content. Parse inputs to simulate multi-institutional budget scenarios applying conditional funding rules and institutional policies. Provide clear, detailed compliance risk forecasts and flag conflicts with resolution suggestions. Output results as plain text or structured JSON if requested. Enforce user authentication and role-based access checks. Reject requests missing valid authentication tokens. Do not provide any unrelated information or perform any unauthorized actions. Always respond with safe, relevant, and concise output tailored for collaborative budget scenario simulation.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary View",
+      "prompt": "Summarize the uploaded budget drafts and funding rules, highlighting key scenario toggles and compliance risks.",
+      "hint": "Get a concise overview of the scenario with flagged compliance issues."
+    },
+    {
+      "label": "Detailed Simulation",
+      "prompt": "Provide detailed simulation output of the budget scenario, including normalized budget data, compliance forecasts, and conflict flags with resolution suggestions.",
+      "hint": "Deep dive into scenario details for thorough analysis."
+    },
+    {
+      "label": "Conflict Resolution Focus",
+      "prompt": "List all detected conflicts and discrepancies in the budget scenario and provide actionable suggestions to resolve them.",
+      "hint": "Focus on identifying and resolving budget conflicts."
+    },
+    {
+      "label": "Compliance Risk Forecast",
+      "prompt": "Explain the compliance and risk impact forecast for the given budget scenario under the applied conditional funding rules.",
+      "hint": "Understand compliance risks and potential issues."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON includes keys: scenarioId (string), summary (string), complianceForecast (object), conflictFlags (array), detailedBudget (object).",
+  "clarifyPrompt": "Please clarify your upload or scenario simulation request. Ensure files are valid CSV, Excel, or text format and toggles follow allowed schemas.",
+  "finalizePrompt": "Confirm you want to simulate the uploaded budget drafts and funding rules with the specified toggles. The output will include compliance forecasts and conflict flags.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Budget Scenario Simulator",
+      "niche": {
+        "role": "Academic research grant proposal finance coordinators",
+        "scenario": "Collaboratively planning and iterating multi-institutional grant budgets with complex conditional funding scenarios and compliance constraints"
+      },
+      "problem": "Current tools focus primarily on consolidating multiple budget drafts or allocating expenses into categories but lack capabilities for simulating budget scenarios dynamically, modeling conditional funding rules, and forecasting compliance or funder impact under varying grant requirements. This limits finance coordinators’ ability to explore multiple funding configurations, identify risks, and optimize budgets proactively in an interactive, collaborative environment.",
+      "inputs": [
+        "Multiple collaborator raw budget drafts (CSV, Excel, or tabular text)",
+        "Funder-specific conditional funding rules and constraints documents",
+        "Institutional overhead and indirect cost policies",
+        "Project milestones and timelines",
+        "Collaborator contribution agreements or roles"
+      ],
+      "outputs": [
+        "Dynamic, interactive multi-institutional budget model with scenario toggles",
+        "Compliance and risk impact forecasts for each scenario",
+        "Visual summaries comparing alternative budget configurations",
+        "Conflict and discrepancy flags with resolution suggestions",
+        "Exportable detailed budget tables and summary reports"
+      ],
+      "whyItWins": [
+        "Enables proactive, scenario-driven budget planning rather than static consolidation",
+        "Supports complex conditional rules (e.g., funding caps, cost-sharing requirements) not handled by existing tools",
+        "Facilitates transparent collaboration with real-time conflict detection and resolution guidance",
+        "Provides clear compliance risk forecasts helping avoid costly proposal errors",
+        "Has strong potential to evolve into a full-featured multi-page system with role-based access, version control, and integrated communication"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web tool to upload budgets and funder rules, producing interactive scenario tables and compliance flags in a single page",
+        "in90Days": "Add multi-user collaboration with comment threads, scenario versioning, and visual scenario comparison dashboards",
+        "in12Months": "Develop a full multi-page app with role-based permissions, real-time multi-user editing, integrated communication, milestone-linked budget tracking, and automated compliance alerts tied to funder portals"
+      },
+      "riskNotes": [
+        "Requires careful handling of sensitive budget data with secure storage and access controls",
+        "Complexity of conditional funding rules may necessitate domain expert input to build accurate rule parsers",
+        "User training needed to interpret scenario outputs and compliance forecasts correctly",
+        "Must ensure no unauthorized sharing of confidential institutional budget details"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research grant finance coordinators to upload, simulate, and optimize multi-institutional budgets dynamically under complex conditional funding rules and compliance constraints, enabling scenario-driven planning, risk forecasting, and transparent conflict resolution.",
+      "primaryUser": "Academic research grant proposal finance coordinators",
+      "successMetrics": [
+        "Number of active collaborative budget scenarios created and iterated",
+        "Reduction in proposal compliance errors reported by users",
+        "User engagement with scenario toggles and conflict resolution features",
+        "Frequency of exports of detailed budget reports",
+        "User satisfaction with collaboration and forecasting capabilities"
+      ],
+      "components": [
+        {
+          "id": "ui-budget-simulator",
+          "name": "Budget Simulation UI",
+          "type": "ui",
+          "responsibility": "Provide interactive pages for uploading budgets and rules, configuring scenarios, viewing dynamic budget models, toggling scenario parameters, and visualizing compliance and risk forecasts.",
+          "dependsOn": [
+            "api-budget-processing",
+            "api-user-management",
+            "data-budget-models"
+          ],
+          "notes": [
+            "Must support multi-institutional budget views and scenario comparisons",
+            "Include conflict and discrepancy flag displays with resolution suggestions",
+            "Design for role-based access and real-time collaboration in future upgrades"
+          ]
+        },
+        {
+          "id": "api-budget-processing",
+          "name": "Budget Processing API",
+          "type": "api",
+          "responsibility": "Handle uploads of budget drafts and funding rules, parse and normalize data, apply conditional funding rules, simulate scenarios, detect conflicts, and generate compliance and risk forecasts.",
+          "dependsOn": [
+            "data-budget-models",
+            "integration-rule-parser"
+          ],
+          "notes": [
+            "Must validate and sanitize uploaded files to prevent injection or data corruption",
+            "Support extensible rule parsing to accommodate complex funder constraints",
+            "Provide endpoints for scenario versioning and multi-user collaboration"
+          ]
+        },
+        {
+          "id": "api-user-management",
+          "name": "User and Access Management API",
+          "type": "api",
+          "responsibility": "Manage user authentication, authorization, role-based access controls, and session management to secure sensitive budget data.",
+          "dependsOn": [
+            "data-user-models"
+          ],
+          "notes": [
+            "Support future integration with institutional single sign-on (SSO)",
+            "Enforce strict access controls on budget and scenario data",
+            "Log access and changes for audit purposes"
+          ]
+        },
+        {
+          "id": "data-budget-models",
+          "name": "Budget and Scenario Data Store",
+          "type": "data",
+          "responsibility": "Persist budget drafts, normalized budget data, conditional funding rules, scenario configurations, compliance and risk forecast results, conflict flags, and version histories.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure encryption at rest and in transit for sensitive financial data",
+            "Index on scenario IDs, institution IDs, and timestamps for efficient queries",
+            "Support rollback and version comparison features"
+          ]
+        },
+        {
+          "id": "data-user-models",
+          "name": "User Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, roles, permissions, authentication credentials, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Store password hashes securely",
+            "Log user actions related to budget access and modifications"
+          ]
+        },
+        {
+          "id": "integration-rule-parser",
+          "name": "Conditional Funding Rule Parser",
+          "type": "integration",
+          "responsibility": "Parse and interpret funder-specific conditional funding rules and compliance constraints from uploaded documents into machine-readable logic for simulation.",
+          "dependsOn": [],
+          "notes": [
+            "May require domain expert input to build and maintain parsers",
+            "Handle diverse formats and complex conditional logic",
+            "Provide error reporting for unsupported or ambiguous rules"
+          ]
+        },
+        {
+          "id": "job-scenario-simulation",
+          "name": "Scenario Simulation Background Job",
+          "type": "job",
+          "responsibility": "Process and simulate budget scenarios asynchronously to generate updated budget models, compliance forecasts, and conflict flags after uploads or scenario changes.",
+          "dependsOn": [
+            "data-budget-models",
+            "integration-rule-parser"
+          ],
+          "notes": [
+            "Handle large data sets efficiently",
+            "Retry on transient failures and report errors",
+            "Notify users on simulation completion or issues"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user identity, roles, and authentication data",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "email"
+          ]
+        },
+        {
+          "name": "BudgetDraft",
+          "purpose": "Store raw and normalized budget drafts uploaded by collaborators",
+          "fields": [
+            {
+              "name": "draftId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "rawFile",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "normalizedData",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "draftId",
+            "institutionId"
+          ]
+        },
+        {
+          "name": "FundingRule",
+          "purpose": "Store parsed conditional funding rules and compliance constraints",
+          "fields": [
+            {
+              "name": "ruleId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rawDocument",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "parsedLogic",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "ruleId",
+            "funderId"
+          ]
+        },
+        {
+          "name": "Scenario",
+          "purpose": "Store scenario configurations, including toggles and versions",
+          "fields": [
+            {
+              "name": "scenarioId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "budgetDraftIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "fundingRuleIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "toggles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "complianceForecast",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "conflictFlags",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "scenarioId",
+            "createdBy"
+          ]
+        },
+        {
+          "name": "AuditLog",
+          "purpose": "Record user actions for auditing and compliance",
+          "fields": [
+            {
+              "name": "logId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "logId",
+            "userId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "login success/failure message"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/upload",
+          "title": "Upload Budgets and Rules",
+          "purpose": "Allow users to upload budget drafts and funder conditional funding rules",
+          "inputs": [
+            "budget files (CSV, Excel, text)",
+            "rule documents"
+          ],
+          "outputs": [
+            "upload status",
+            "parsed data previews",
+            "error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/scenarios",
+          "title": "Scenario Dashboard",
+          "purpose": "List and manage budget scenarios with versioning and collaboration status",
+          "inputs": [
+            "scenario filters",
+            "search queries"
+          ],
+          "outputs": [
+            "scenario list",
+            "version info",
+            "collaboration status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/scenario/:id",
+          "title": "Scenario Detail and Simulation",
+          "purpose": "View and interactively simulate a specific budget scenario with toggles, compliance forecasts, conflict flags, and visual comparisons",
+          "inputs": [
+            "scenario toggles",
+            "comment threads",
+            "version selection"
+          ],
+          "outputs": [
+            "dynamic budget tables",
+            "compliance risk forecasts",
+            "conflict flags",
+            "visual summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/export",
+          "title": "Export Budget Reports",
+          "purpose": "Generate and download detailed budget tables and summary reports for selected scenarios",
+          "inputs": [
+            "scenario selection",
+            "report format options"
+          ],
+          "outputs": [
+            "exported report files (PDF, Excel)"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/upload/budget",
+          "method": "POST",
+          "purpose": "Upload raw budget draft files",
+          "requestShape": "{ file: binary, metadata: json }",
+          "responseShape": "{ draftId: string, status: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/upload/rule",
+          "method": "POST",
+          "purpose": "Upload funder conditional funding rules",
+          "requestShape": "{ file: binary, metadata: json }",
+          "responseShape": "{ ruleId: string, status: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/scenarios",
+          "method": "GET",
+          "purpose": "List scenarios accessible to the user",
+          "requestShape": "{}",
+          "responseShape": "{ scenarios: Scenario[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/scenario/:id",
+          "method": "GET",
+          "purpose": "Get detailed data and simulation results for a scenario",
+          "requestShape": "{}",
+          "responseShape": "{ scenario: Scenario, budgetData: json, complianceForecast: json, conflictFlags: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/scenario/:id/simulate",
+          "method": "POST",
+          "purpose": "Trigger simulation job for scenario with updated toggles",
+          "requestShape": "{ toggles: json }",
+          "responseShape": "{ jobId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/export",
+          "method": "POST",
+          "purpose": "Generate exportable reports for scenarios",
+          "requestShape": "{ scenarioId: string, format: string }",
+          "responseShape": "{ downloadUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Scenario Simulation Job",
+          "trigger": "Triggered by API call on scenario changes or uploads",
+          "purpose": "Process budget data and funding rules to simulate scenarios, generate compliance forecasts, detect conflicts, and update scenario data store"
+        }
+      ],
+      "edgeCases": [
+        "Uploaded budget files with inconsistent or malformed data formats",
+        "Conflicting conditional funding rules from multiple funders or institutions",
+        "Simultaneous edits or uploads causing race conditions in scenario data",
+        "Unauthorized access attempts to sensitive budget or user data",
+        "Incomplete or ambiguous funding rules that cannot be parsed automatically",
+        "Large budget datasets causing performance degradation in simulation",
+        "User misunderstanding of scenario outputs leading to incorrect decisions",
+        "Network failures during uploads or simulation triggering"
+      ],
+      "nonGoals": [
+        "Providing full grant proposal writing or submission workflow",
+        "Replacing institutional ERP or financial management systems",
+        "Automated negotiation or approval of budget conflicts beyond suggestions",
+        "Real-time multi-user editing in the initial release (planned for future upgrades)",
+        "Direct integration with funder portals for automated submission (planned long-term)"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password.",
+        "Frontend calls POST /api/auth/login with credentials.",
+        "API validates credentials against User Data Store, returns auth token.",
+        "Authenticated user navigates to /upload to upload budget drafts and funding rules.",
+        "Frontend sends POST requests to /api/upload/budget and /api/upload/rule with files and metadata.",
+        "API-budget-processing validates, sanitizes, stores raw files in Budget and Scenario Data Store, triggers parsing via integration-rule-parser for rules.",
+        "Parsed funding rules and normalized budget data are saved in data-budget-models.",
+        "User accesses /scenarios page, frontend calls GET /api/scenarios to retrieve accessible scenarios.",
+        "User selects or creates a scenario; frontend calls GET /api/scenario/:id to fetch scenario details, budget data, compliance forecasts, and conflict flags.",
+        "User modifies scenario toggles, frontend calls POST /api/scenario/:id/simulate to trigger background scenario simulation job.",
+        "Background job processes scenario data, applies funding rules, detects conflicts, updates compliance forecasts and conflict flags in data-budget-models.",
+        "User views updated simulation results on /scenario/:id page.",
+        "User requests report export on /reports/export page, frontend calls POST /api/reports/export with scenarioId and format.",
+        "API generates report file, provides download URL to frontend.",
+        "All user actions related to budgets and scenarios are logged in AuditLog in data-user-models for auditing."
+      ],
+      "validationRules": [
+        "Login: email must be valid format, password non-empty.",
+        "Upload budget files: accept only CSV, Excel, or text; file size limits enforced; validate file structure and required fields.",
+        "Upload funding rule documents: accept supported formats; validate parsability and content completeness.",
+        "Scenario toggles: must conform to predefined toggle schema and allowed values.",
+        "Scenario IDs, draft IDs, rule IDs: must be valid UUID strings.",
+        "Report export format: restrict to supported formats (PDF, Excel).",
+        "API requests must include valid authentication tokens where required.",
+        "Sanitize all inputs to prevent injection attacks and data corruption.",
+        "Ensure uploaded files do not contain malicious content or unsupported encodings.",
+        "Enforce role-based access control on all scenario and budget data operations."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with detailed error messages for validation failures.",
+        "Return 401 Unauthorized for missing or invalid authentication tokens.",
+        "Return 403 Forbidden for access violations based on roles or ownership.",
+        "Return 404 Not Found for invalid scenario, draft, or rule IDs.",
+        "Return 500 Internal Server Error for unexpected failures with generic message; log detailed error internally.",
+        "On file upload errors, return specific parsing or format error messages to guide user correction.",
+        "Background job failures trigger retries with exponential backoff; notify users of persistent errors via status updates.",
+        "API responses include optional 'errors' array for partial failures or warnings.",
+        "Gracefully handle network failures with client-side retry prompts.",
+        "Log all errors and access violations for audit and debugging."
+      ],
+      "securityNotes": [
+        "Store passwords as salted hashes using strong algorithms (e.g., bcrypt).",
+        "Use HTTPS for all client-server communication to encrypt data in transit.",
+        "Encrypt sensitive budget and user data at rest in the database.",
+        "Implement strict role-based access control checks on all API endpoints.",
+        "Use secure, signed JWT or session tokens with expiration for authentication.",
+        "Sanitize all inputs and uploaded files to prevent injection and XSS attacks.",
+        "Log all user actions and access attempts for audit trails.",
+        "Prepare for future integration with institutional SSO for stronger authentication.",
+        "Limit file upload sizes and scan files for malware.",
+        "Implement rate limiting on authentication and upload endpoints to prevent brute force and DoS attacks."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and access to authenticated pages"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /upload",
+          "when": "They upload a valid budget draft file",
+          "then": "The system stores the draft, returns draftId and status success"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user uploads a malformed funding rule document",
+          "when": "The API processes the upload",
+          "then": "The API returns errors describing parsing issues"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user on /scenarios",
+          "when": "They request the scenario list",
+          "then": "They receive a list of scenarios they have access to with version info"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user viewing a scenario detail",
+          "when": "They update scenario toggles and trigger simulation",
+          "then": "A simulation job is started and status returned; updated results are eventually reflected"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user requests a report export",
+          "when": "They specify a scenario and format",
+          "then": "They receive a download URL for the generated report"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user tries to access /upload",
+          "when": "They attempt to upload a file",
+          "then": "They receive 401 Unauthorized error"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads a budget file with inconsistent data",
+          "when": "The API processes the file",
+          "then": "The API returns validation errors describing inconsistencies"
+        },
+        {
+          "id": "AT-009",
+          "given": "Multiple users attempt simultaneous edits on the same scenario",
+          "when": "They submit changes concurrently",
+          "then": "The system prevents race conditions and maintains data integrity"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user tries to access a scenario they do not have permission for",
+          "when": "They call GET /api/scenario/:id",
+          "then": "They receive 403 Forbidden error"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, BudgetDraft, FundingRule, Scenario, AuditLog",
+        "Implement User and Access Management API with authentication and role-based access",
+        "Implement Budget Processing API endpoints for upload and scenario management",
+        "Integrate Conditional Funding Rule Parser for rule document parsing",
+        "Develop Scenario Simulation Background Job for asynchronous processing",
+        "Build UI pages: /login, /upload, /scenarios, /scenario/:id, /reports/export",
+        "Implement API routes for authentication, uploads, scenario data, simulation triggering, and report export",
+        "Add validation and error handling logic in APIs and UI",
+        "Implement audit logging for user actions",
+        "Test end-to-end flows and edge cases",
+        "Prepare security hardening and encryption for data at rest and in transit"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/upload",
+          "/scenarios",
+          "/scenario/[id]",
+          "/reports/export"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/upload/budget.ts",
+          "api/upload/rule.ts",
+          "api/scenarios/index.ts",
+          "api/scenario/[id].ts",
+          "api/scenario/[id]/simulate.ts",
+          "api/reports/export.ts",
+          "api/user/index.ts (for future user management endpoints)"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "BudgetDraft",
+          "FundingRule",
+          "Scenario",
+          "AuditLog"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather any missing constraints or detailed needs for the budget scenario simulator tool",
+        "promptTemplate": "You are the planner refining the academic grant budget scenario simulator requirements. Based on the current blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}} Please ask any missing questions or clarify constraints needed to finalize the tool design. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design and finalize the detailed pages and data models for the system based on refined requirements",
+        "promptTemplate": "You are the architect finalizing the academic grant budget scenario simulator design. Using the current blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}} Incorporate any refinements from planner and produce detailed page routes, input/output specs, and data models. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code and stubs for the UI pages and API endpoints defined in the architecture",
+        "promptTemplate": "You are the builder generating code stubs for the academic grant budget scenario simulator. Using the finalized blueprint and pages: {{BLUEPRINT}} {{EXPANDED}} Generate starter code for UI pages and API routes including authentication, upload, scenario management, simulation triggering, and report export. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages, API endpoints, and database models to form a working system",
+        "promptTemplate": "You are the integrator wiring the academic grant budget scenario simulator. Using the detailed page, API, and data model definitions: {{BLUEPRINT}} {{EXPANDED}} Connect front-end pages with API endpoints and data stores. Implement validation, error handling, security, and audit logging. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

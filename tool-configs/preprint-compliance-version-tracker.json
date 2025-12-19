@@ -1,0 +1,765 @@
+{
+  "slug": "preprint-compliance-version-tracker",
+  "title": "Academic Preprint Version & Compliance Tracker",
+  "description": "Upload your preprint manuscript versions with metadata and funder/institutional policy documents to generate a consolidated version history timeline and a basic compliance checklist. Helps track metadata consistency and identify potential policy adherence gaps across repositories.",
+  "inputLabel": "Upload manuscript file(s), enter metadata, and optionally paste policy text or notes",
+  "outputLabel": "Version timeline summary and compliance checklist report",
+  "systemPrompt": "You are an assistant helping academic researchers manage preprint manuscript versions and compliance with funder and institutional preprint policies. Accept input of manuscript metadata and files (PDF/DOCX), policy documents, and optional change notes. Validate inputs carefully and refuse unsupported file formats or disallowed requests. Generate a clear, structured plain-text summary of preprint version timelines, metadata consistency, and a conservative compliance checklist highlighting policy adherence or gaps. Do not provide legal or official compliance certification. Respect data privacy and security rules. Output only plain text unless structured-output enabled, then output valid JSON with version timeline and compliance summary. Always enforce user ownership and security constraints in your reasoning.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets"
+  ],
+  "presets": [
+    {
+      "label": "Summary View",
+      "prompt": "Provide a concise summary of all uploaded preprint versions including version numbers, submission dates, repository URLs, and highlight any metadata inconsistencies or missing fields."
+    },
+    {
+      "label": "Compliance Checklist",
+      "prompt": "Evaluate the uploaded preprint versions against the provided funder and institutional preprint policies. Generate a checklist highlighting adherence and any identified gaps or warnings. Emphasize advisory nature only."
+    },
+    {
+      "label": "Full Detailed Report",
+      "prompt": "Generate a comprehensive report combining the version timeline, metadata consistency details, and a compliance evaluation summary. Include change summaries and any collaboration notes if provided."
+    }
+  ],
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Preprint Compliance & Version Tracking Manager",
+      "niche": {
+        "role": "Academic Researcher & Preprint Manager",
+        "scenario": "Managing multiple versions of preprint manuscripts across different platforms while ensuring compliance with funder and institutional preprint policies"
+      },
+      "problem": "Academic researchers often upload multiple versions of preprints to various repositories but lack a streamlined system to track version histories, compliance with funder/institutional preprint policies, and metadata consistency across platforms. This creates risks of non-compliance, citation confusion, and fragmented version control.",
+      "inputs": [
+        "Multiple preprint manuscript files (PDF, DOCX)",
+        "Metadata for each preprint version (title, authors, submission date, repository URL)",
+        "Funder and institutional preprint policy documents",
+        "Optional collaboration notes or version change summaries"
+      ],
+      "outputs": [
+        "Structured, interactive version history timeline for all uploaded preprints",
+        "Compliance report highlighting policy adherence or gaps per version and repository",
+        "Metadata consistency checklist with flagged discrepancies across versions",
+        "Exportable version summary reports for funders, institutions, or collaborators",
+        "Automated reminders for updates, policy changes, or repository deadlines"
+      ],
+      "whyItWins": [
+        "Fills a gap not addressed by existing manuscript version or grant compliance tools by focusing specifically on preprint lifecycle and multi-platform tracking",
+        "Supports repeated use as researchers update preprints or add new versions over the research lifecycle",
+        "Reduces compliance risks by proactively flagging policy issues across diverse funder and institutional mandates",
+        "Improves transparency and reproducibility by consolidating version metadata and change logs in one place",
+        "Scalable from a lightweight version tracking dashboard to a full-featured multi-repository compliance management system"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app to upload preprint files and metadata to generate a simple version timeline and basic policy compliance checklist",
+        "in90Days": "Add integration with major preprint repositories’ APIs for automatic version imports and metadata synchronization; implement collaboration notes and change log input",
+        "in12Months": "Develop a multi-page system with user accounts, funder policy database updates, automated compliance alerts, multi-user collaboration features, exportable reports, and repository submission workflow tracking"
+      },
+      "riskNotes": [
+        "Must avoid providing legal or official compliance certifications—reports are advisory summaries only",
+        "Data privacy must be ensured especially for unpublished manuscript versions and collaborator notes",
+        "Must handle uploaded manuscript files securely to prevent unauthorized access or distribution",
+        "Policy documents must be interpreted conservatively to avoid misleading compliance assessments"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page web application for academic researchers to manage multiple versions of preprint manuscripts across various repositories, track compliance with funder and institutional preprint policies, and maintain metadata consistency. The system evolves from a simple version timeline and compliance checklist tool into a comprehensive multi-user collaboration and repository integration platform.",
+      "primaryUser": "Academic researchers managing preprint manuscripts and compliance",
+      "successMetrics": [
+        "Number of preprint versions tracked per user",
+        "User engagement with compliance reports and version timelines",
+        "Reduction in reported compliance issues or flagged discrepancies",
+        "Frequency of automated reminders acted upon",
+        "User retention and growth of multi-user collaboration features"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide an overview of all preprint projects, version timelines, compliance summaries, and notifications for the user.",
+          "dependsOn": [
+            "api-preprint",
+            "api-policy",
+            "data-preprint",
+            "data-policy"
+          ],
+          "notes": [
+            "Displays interactive version timelines and compliance status",
+            "Shows alerts and reminders",
+            "Accessible only to authenticated users"
+          ]
+        },
+        {
+          "id": "ui-preprint-management",
+          "name": "Preprint Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload manuscript files, input and edit metadata, add collaboration notes, and view detailed version histories.",
+          "dependsOn": [
+            "api-preprint",
+            "data-preprint"
+          ],
+          "notes": [
+            "Supports file uploads with secure handling",
+            "Supports editing and version linking",
+            "Includes metadata consistency views"
+          ]
+        },
+        {
+          "id": "api-preprint",
+          "name": "Preprint API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for preprint versions, metadata, manuscript files, and collaboration notes; serve data for UI components.",
+          "dependsOn": [
+            "data-preprint",
+            "integration-repositories"
+          ],
+          "notes": [
+            "Validates metadata and file formats",
+            "Enforces access control and privacy",
+            "Supports version linking and retrieval"
+          ]
+        },
+        {
+          "id": "api-policy",
+          "name": "Policy Compliance API",
+          "type": "api",
+          "responsibility": "Evaluate uploaded preprint versions against funder and institutional policies, generate compliance reports, and flag discrepancies.",
+          "dependsOn": [
+            "data-policy",
+            "data-preprint"
+          ],
+          "notes": [
+            "Performs conservative policy interpretation",
+            "Returns advisory compliance summaries only",
+            "Supports policy updates and versioning"
+          ]
+        },
+        {
+          "id": "data-preprint",
+          "name": "Preprint Data Store",
+          "type": "data",
+          "responsibility": "Persist preprint metadata, version histories, manuscript files metadata (not files themselves), collaboration notes, and user associations.",
+          "dependsOn": [],
+          "notes": [
+            "Stores references to securely stored manuscript files",
+            "Indexes on userId, preprintId, version number",
+            "Ensures data privacy and access controls"
+          ]
+        },
+        {
+          "id": "data-policy",
+          "name": "Policy Data Store",
+          "type": "data",
+          "responsibility": "Store funder and institutional preprint policy documents, parsed policy rules, and versioned policy metadata for compliance evaluation.",
+          "dependsOn": [],
+          "notes": [
+            "Supports updates to policies",
+            "Indexed by funder/institution and effective dates"
+          ]
+        },
+        {
+          "id": "integration-repositories",
+          "name": "Preprint Repository Integrations",
+          "type": "integration",
+          "responsibility": "Connect with major preprint repository APIs to import manuscript versions and metadata automatically, and synchronize updates.",
+          "dependsOn": [
+            "api-preprint"
+          ],
+          "notes": [
+            "Handles API rate limits and failures gracefully",
+            "Supports manual sync triggers and automated periodic syncs"
+          ]
+        },
+        {
+          "id": "job-compliance-alerts",
+          "name": "Compliance Alert Background Job",
+          "type": "job",
+          "responsibility": "Periodically scan preprint versions and policies to generate and send automated reminders and alerts for policy changes or update deadlines.",
+          "dependsOn": [
+            "data-preprint",
+            "data-policy",
+            "api-policy"
+          ],
+          "notes": [
+            "Ensures alerts respect user notification preferences",
+            "Retries on transient failures"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents an authenticated user of the system.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notificationPreferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Preprint",
+          "purpose": "Represents a preprint project with multiple versions uploaded by a user.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "title"
+          ]
+        },
+        {
+          "name": "PreprintVersion",
+          "purpose": "Stores metadata and references for each version of a preprint.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preprintId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "authors",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "submissionDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "repositoryUrl",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "fileReference",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "changeSummary",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "preprintId",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "CollaborationNote",
+          "purpose": "Notes or comments related to a specific preprint version for collaboration purposes.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preprintVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "preprintVersionId",
+            "authorUserId"
+          ]
+        },
+        {
+          "name": "PolicyDocument",
+          "purpose": "Stores funder or institutional preprint policy documents and parsed rules.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderOrInstitution",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "policyText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parsedRules",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderOrInstitution",
+            "effectiveDate"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access their preprint management dashboard.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Dashboard",
+          "purpose": "Show overview of preprints, version timelines, compliance summaries, and notifications.",
+          "inputs": [],
+          "outputs": [
+            "preprint list",
+            "version timelines",
+            "compliance alerts",
+            "reminders"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/preprints/new",
+          "title": "Add New Preprint",
+          "purpose": "Allow users to create a new preprint project and upload initial version files and metadata.",
+          "inputs": [
+            "title",
+            "authors",
+            "manuscript file",
+            "repository URL",
+            "submission date"
+          ],
+          "outputs": [
+            "confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/preprints/:id",
+          "title": "Preprint Detail",
+          "purpose": "Display detailed version history, metadata consistency checks, compliance reports, and collaboration notes for a specific preprint.",
+          "inputs": [
+            "preprint id"
+          ],
+          "outputs": [
+            "version timeline",
+            "compliance report",
+            "metadata checklist",
+            "collaboration notes"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/preprints/:id/versions/new",
+          "title": "Add New Version",
+          "purpose": "Upload a new manuscript version, input metadata, and add change summaries or collaboration notes.",
+          "inputs": [
+            "manuscript file",
+            "version metadata",
+            "change summary"
+          ],
+          "outputs": [
+            "confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/export",
+          "title": "Export Reports",
+          "purpose": "Generate and download exportable version summary and compliance reports for funders, institutions, or collaborators.",
+          "inputs": [
+            "preprint id",
+            "report type",
+            "format"
+          ],
+          "outputs": [
+            "download link",
+            "error messages"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/preprints",
+          "method": "GET",
+          "purpose": "Retrieve list of preprints for authenticated user.",
+          "requestShape": "none",
+          "responseShape": "array of Preprint objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/preprints",
+          "method": "POST",
+          "purpose": "Create a new preprint project with initial version.",
+          "requestShape": "{ title, authors, manuscriptFile, repositoryUrl, submissionDate }",
+          "responseShape": "{ preprintId, success, errors }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/preprints/:id",
+          "method": "GET",
+          "purpose": "Get detailed preprint data including versions and compliance summaries.",
+          "requestShape": "none",
+          "responseShape": "{ preprint, versions, complianceReport, collaborationNotes }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/preprints/:id/versions",
+          "method": "POST",
+          "purpose": "Add a new version to an existing preprint.",
+          "requestShape": "{ manuscriptFile, versionMetadata, changeSummary }",
+          "responseShape": "{ versionId, success, errors }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/policies",
+          "method": "GET",
+          "purpose": "Retrieve current funder and institutional policies for compliance evaluation.",
+          "requestShape": "none",
+          "responseShape": "array of PolicyDocument objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/export",
+          "method": "POST",
+          "purpose": "Generate exportable reports for selected preprints and compliance data.",
+          "requestShape": "{ preprintId, reportType, format }",
+          "responseShape": "{ downloadUrl, success, errors }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Compliance Alert Job",
+          "trigger": "Scheduled (e.g., daily or weekly)",
+          "purpose": "Scan preprint versions and policies to send automated reminders and alerts for compliance gaps, policy changes, and repository deadlines."
+        },
+        {
+          "name": "Repository Sync Job",
+          "trigger": "Scheduled and manual triggers",
+          "purpose": "Synchronize preprint versions and metadata from integrated repositories via their APIs."
+        }
+      ],
+      "edgeCases": [
+        "Handling manuscript file uploads with unsupported formats or corrupted files",
+        "Conflicting metadata entries across versions or repositories",
+        "Policy documents with ambiguous or conflicting rules requiring conservative interpretation",
+        "Partial or failed synchronization with external repository APIs due to rate limits or downtime",
+        "User attempts to access or modify preprints they do not own",
+        "Data loss or corruption during background job failures",
+        "Simultaneous edits or uploads causing race conditions in version numbering",
+        "User opting out of notifications but requiring critical compliance alerts"
+      ],
+      "nonGoals": [
+        "Providing legally binding compliance certifications or official approvals",
+        "Serving as a manuscript repository or public preprint hosting platform",
+        "Replacing institutional or funder official compliance management systems",
+        "Handling peer review or journal submission workflows",
+        "Supporting full-text content analysis or plagiarism detection"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving an authentication token.",
+        "Authenticated user accesses /dashboard page; frontend calls GET /api/preprints to fetch user's preprint list, version timelines, compliance alerts, and reminders.",
+        "User creates a new preprint via /preprints/new page; submits title, authors, manuscript file, repository URL, and submission date to POST /api/preprints.",
+        "API validates input, stores preprint metadata and initial version in data-preprint, stores manuscript file reference securely, returns confirmation or validation errors.",
+        "User views detailed preprint info at /preprints/:id; frontend calls GET /api/preprints/:id to retrieve preprint details, versions, compliance reports from api-preprint and api-policy.",
+        "User adds new version at /preprints/:id/versions/new; submits manuscript file, version metadata, and change summary to POST /api/preprints/:id/versions.",
+        "API validates and stores new version, updates version timeline, links versions, and returns confirmation or errors.",
+        "User requests export report at /reports/export; frontend calls POST /api/reports/export with preprintId, reportType, and format.",
+        "API generates report from data-preprint and data-policy, returns download URL or errors.",
+        "Background jobs periodically run: Compliance Alert Job scans preprint versions and policies to generate alerts and reminders, respecting user notification preferences.",
+        "Repository Sync Job synchronizes preprint versions and metadata from external repository APIs, handling rate limits and failures gracefully.",
+        "UI components (Dashboard UI, Preprint Management UI) consume API endpoints to display interactive timelines, compliance summaries, metadata consistency, and collaboration notes.",
+        "All data accesses enforce access control to ensure users only see or modify their own preprints and data."
+      ],
+      "validationRules": [
+        "Email must be valid format and unique in User model.",
+        "Password must meet minimum security requirements (length, complexity) before hashing.",
+        "Preprint title is required, non-empty, and unique per user.",
+        "Authors field must be a non-empty JSON array with valid author objects (name, affiliation).",
+        "Manuscript file uploads must be of supported formats (e.g., PDF, DOCX), non-corrupted, and size limits enforced.",
+        "Submission date must be a valid date not in the future.",
+        "Version number must be sequential and unique per preprint.",
+        "Repository URL, if provided, must be a valid URL format.",
+        "Change summary is optional but if provided must be a string with max length limits.",
+        "Collaboration note content is required and non-empty.",
+        "Policy documents must have valid funder/institution identifiers, non-empty policy text, and valid effective dates.",
+        "Report export inputs must include valid preprintId owned by user, supported reportType, and supported format.",
+        "All API requests requiring authentication must validate token and user ownership of requested resources.",
+        "Prevent race conditions on version numbering by transactional checks or locking mechanisms."
+      ],
+      "errorHandling": [
+        "Return 401 Unauthorized for unauthenticated API requests requiring auth.",
+        "Return 403 Forbidden if user attempts to access or modify preprints they do not own.",
+        "Return 400 Bad Request with detailed validation error messages for invalid inputs.",
+        "Return 413 Payload Too Large or 415 Unsupported Media Type for invalid manuscript file uploads.",
+        "Gracefully handle external repository API failures with retries and exponential backoff; log errors and notify users of sync issues.",
+        "Background jobs retry transient failures with capped retries; log persistent errors for manual intervention.",
+        "Return 500 Internal Server Error for unexpected exceptions with generic error messages; log detailed errors internally.",
+        "API responses include success flags and error arrays to allow frontend to display appropriate messages.",
+        "Handle simultaneous edits by rejecting conflicting requests with clear error messages advising user to refresh data.",
+        "For users opting out of notifications, critical compliance alerts override opt-out with explicit messaging."
+      ],
+      "securityNotes": [
+        "All API routes requiring authentication must verify JWT or session tokens securely.",
+        "Manuscript files are stored securely with access restricted to owning user; file references stored in database only.",
+        "Input validation prevents injection attacks and ensures data integrity.",
+        "Access control enforced at API layer to prevent unauthorized data access or modification.",
+        "Sensitive data such as password hashes stored securely with strong hashing algorithms (e.g., bcrypt).",
+        "Notification preferences respected but critical compliance alerts bypass opt-out to ensure user safety.",
+        "Rate limiting and throttling applied on API endpoints to prevent abuse.",
+        "Background jobs and integrations handle credentials securely and do not expose them in logs.",
+        "Use HTTPS for all client-server communications.",
+        "Ensure CORS policies restrict API access to trusted origins."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct login credentials on /login",
+          "then": "They receive an authentication token and are redirected to /dashboard"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /dashboard",
+          "when": "They load the page",
+          "then": "They see a list of their preprints with version timelines, compliance alerts, and reminders"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /preprints/new",
+          "when": "They submit valid preprint data and a supported manuscript file",
+          "then": "A new preprint is created, initial version stored, and confirmation displayed"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user viewing /preprints/:id",
+          "when": "They access a preprint they own",
+          "then": "They see detailed version history, compliance reports, metadata checklist, and collaboration notes"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on /preprints/:id/versions/new",
+          "when": "They upload a new version with valid metadata and file",
+          "then": "The version is added sequentially, stored securely, and confirmation is shown"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user requests /api/preprints",
+          "when": "They call GET /api/preprints",
+          "then": "They receive only their preprints in the response"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user",
+          "when": "They attempt to access /dashboard or any authenticated API",
+          "then": "They receive 401 Unauthorized and are redirected to /login"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to upload an unsupported manuscript file",
+          "when": "They submit the file",
+          "then": "They receive a validation error indicating unsupported file format"
+        },
+        {
+          "id": "AT-009",
+          "given": "Background Compliance Alert Job runs",
+          "when": "It detects compliance gaps or policy changes",
+          "then": "It sends alerts respecting user notification preferences and retries on failures"
+        },
+        {
+          "id": "AT-010",
+          "given": "Repository Sync Job runs",
+          "when": "External API rate limits or failures occur",
+          "then": "The job retries with backoff and logs errors without crashing"
+        },
+        {
+          "id": "AT-011",
+          "given": "A user tries to access a preprint they do not own",
+          "when": "They request preprint details",
+          "then": "They receive 403 Forbidden error"
+        },
+        {
+          "id": "AT-012",
+          "given": "User requests export report with valid inputs",
+          "when": "They submit the export request",
+          "then": "They receive a download link for the requested report format"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for User, Preprint, PreprintVersion, CollaborationNote, PolicyDocument.",
+        "Implement authentication system with login API and token/session management.",
+        "Develop data-preprint and data-policy stores with access control.",
+        "Create API routes for preprint CRUD operations and policy retrieval.",
+        "Implement manuscript file upload handling with validation and secure storage.",
+        "Build UI pages: /login, /dashboard, /preprints/new, /preprints/:id, /preprints/:id/versions/new, /reports/export.",
+        "Integrate policy compliance evaluation logic in api-policy.",
+        "Develop repository integration module with sync job and API rate limit handling.",
+        "Implement background jobs: Compliance Alert Job and Repository Sync Job with retry logic.",
+        "Add validation and error handling across all APIs and UI forms.",
+        "Implement security measures: access control, input sanitization, secure storage.",
+        "Write acceptance tests and perform end-to-end testing.",
+        "Deploy and monitor system with logging and alerting."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/preprints/new",
+          "/preprints/[id]",
+          "/preprints/[id]/versions/new",
+          "/reports/export"
+        ],
+        "apiFilesToCreate": [
+          "/api/preprints/index.ts",
+          "/api/preprints/[id].ts",
+          "/api/preprints/[id]/versions.ts",
+          "/api/policies/index.ts",
+          "/api/reports/export.ts",
+          "/api/auth/login.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Preprint",
+          "PreprintVersion",
+          "CollaborationNote",
+          "PolicyDocument"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask user for any missing constraints, clarify ambiguous inputs or outputs, and refine the core requirements for the preprint compliance and version tracking tool.",
+        "promptTemplate": "You are the Planner refining the requirements for the Academic Preprint Version & Compliance Tracker. Given the current blueprint and idea: {{BLUEPRINT}} and {{IDEA}}, ask the user {{USER_INPUT}} any clarifying questions about inputs, outputs, user roles, or constraints to ensure a complete and precise specification."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final set of UI pages, API endpoints, and data models needed to implement the tool based on refined requirements.",
+        "promptTemplate": "You are the Architect finalizing the design. Using the refined requirements: {{REFINED_REQUIREMENTS}}, blueprint: {{BLUEPRINT}}, and idea: {{IDEA}}, produce a detailed specification of pages, APIs, and data models necessary to implement the preprint compliance and version tracking tool."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create starter code or templates for the UI pages based on the finalized design to accelerate development.",
+        "promptTemplate": "You are the Builder generating page stubs. Given the architect's finalized design: {{ARCHITECT_DESIGN}}, generate code templates or stub files for each UI page including input forms and output display placeholders."
+      },
+      {
+        "id": "integrator-wireup",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages with API endpoints and the database models, ensuring data flows correctly and access controls are enforced.",
+        "promptTemplate": "You are the Integrator wiring the system. Using the builder's page stubs: {{BUILDER_STUBS}}, API definitions: {{API_DEFINITIONS}}, and data models: {{DATA_MODELS}}, produce integration code or instructions to connect UI, API, and database layers securely and efficiently."
+      }
+    ]
+  }
+}

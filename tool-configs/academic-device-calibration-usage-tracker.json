@@ -1,0 +1,867 @@
+{
+  "slug": "academic-device-calibration-usage-tracker",
+  "title": "Academic Device Calibration & Usage Tracker",
+  "description": "Enter and view device metadata, calibration records, maintenance logs, and usage logs for academic field research devices in a unified single-page workflow. Supports manual updates and export-ready summaries to improve data quality and compliance.",
+  "inputLabel": "Enter device, calibration, maintenance, or usage data (JSON or plain text). Optional: Upload compliance standards document.",
+  "outputLabel": "Summary report, calibration and usage timeline, compliance status, or validation feedback.",
+  "systemPrompt": "You are an assistant for an academic research data collection device calibration and usage tracking tool. Accept only inputs related to device metadata, calibration records, maintenance logs, usage logs, or compliance documents. Validate inputs strictly: dates must not be in the future, serial numbers unique, calibration results valid ('Pass' or 'Fail'), and usage start before usage end if provided. Refuse any request with medical, legal, or unrelated content. Output plain text summaries or JSON if requested. Enforce data security and compliance. Provide clear validation error messages when inputs are incorrect or incomplete. Do not perform any authentication or external calls. Do not generate UI code. Focus on safe, accurate data processing and reporting for a single-page manual data entry tool.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Add New Device Metadata",
+      "prompt": "Add a new device record with the following details:\n- Make: {{make}}\n- Model: {{model}}\n- Serial Number: {{serialNumber}}\n- Site: {{site}}\n- Notes (optional): {{notes}}",
+      "hint": "Provide device make, model, unique serial number, site location, and optional notes."
+    },
+    {
+      "label": "Log Calibration Event",
+      "prompt": "Log a calibration record for device serial number {{serialNumber}}:\n- Calibration Date (YYYY-MM-DD): {{calibrationDate}}\n- Result (Pass/Fail): {{result}}\n- Technician (optional): {{technician}}\n- Notes (optional): {{notes}}",
+      "hint": "Enter past calibration date, result must be 'Pass' or 'Fail'."
+    },
+    {
+      "label": "Log Maintenance Activity",
+      "prompt": "Log a maintenance activity for device serial number {{serialNumber}}:\n- Maintenance Date (YYYY-MM-DD): {{maintenanceDate}}\n- Description: {{description}}\n- Performed By (optional): {{performedBy}}\n- Notes (optional): {{notes}}",
+      "hint": "Enter maintenance date not in the future and a description."
+    },
+    {
+      "label": "Log Device Usage",
+      "prompt": "Log a usage event for device serial number {{serialNumber}}:\n- Usage Start (YYYY-MM-DD HH:mm): {{usageStart}}\n- Usage End (optional, YYYY-MM-DD HH:mm): {{usageEnd}}\n- Operator: {{operator}}\n- Site: {{site}}\n- Notes (optional): {{notes}}",
+      "hint": "Ensure usage start is before usage end if provided."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Use JSON for structured data input or output with fields for device, calibration, maintenance, usage, or compliance document data as described in the prompts.",
+  "clarifyPrompt": "Please clarify your input or specify which record type (device, calibration, maintenance, usage, compliance document) you want to add or query, including relevant fields.",
+  "finalizePrompt": "Confirm all data entries are correct and comply with validation rules before saving. Specify if you want a summary report, timeline, or compliance status output.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Device Calibration & Usage Tracker",
+      "niche": {
+        "role": "Academic Field Research Technician",
+        "scenario": "Managing multiple data collection devices across diverse field sites to ensure accurate calibration, usage logging, and maintenance compliance during longitudinal academic research projects."
+      },
+      "problem": "Field research technicians often struggle to track calibration status, usage logs, maintenance schedules, and metadata for multiple devices across sites, risking data quality issues and compliance lapses. Existing tools mostly handle manual calibration records or maintenance scheduling separately without integrated, repeatable workflow support for ongoing device lifecycle management.",
+      "inputs": [
+        "Device metadata (make, model, serial number)",
+        "Calibration dates and results",
+        "Maintenance logs and manuals",
+        "Usage logs (date, time, operator, site)",
+        "Compliance and calibration standards documents"
+      ],
+      "outputs": [
+        "Integrated calibration and usage timeline per device",
+        "Automated maintenance and calibration scheduling alerts",
+        "Compliance and calibration status dashboard",
+        "Exportable device usage and calibration reports for audits",
+        "Flagged risk alerts for overdue calibrations or maintenance"
+      ],
+      "whyItWins": [
+        "Combines device calibration records, usage logs, and maintenance tracking in a unified system tailored for field research workflows.",
+        "Enables repeated, longitudinal tracking with easy updates and audit-ready reporting to improve data quality and compliance.",
+        "Supports multiple devices and sites with scalable metadata management beyond single calibration entries.",
+        "Offers actionable alerts and dashboards to prevent overlooked calibrations or maintenance, reducing costly data errors.",
+        "Fills a niche not covered by existing single-page record entry or maintenance scheduler tools by integrating all lifecycle stages."
+      ],
+      "upgradePath": {
+        "today": "Launch a lightweight web tool for entering and viewing device calibration records and usage logs with manual update capability and basic report export.",
+        "in90Days": "Add automated scheduling of calibration/maintenance tasks with reminder notifications, compliance checklist integration, and multi-device overview dashboards.",
+        "in12Months": "Develop a multi-page system including mobile data entry apps for field use, collaborative team management features, detailed audit trail tracking, analytics on device performance across sites, and integration with research data management platforms."
+      },
+      "riskNotes": [
+        "Ensure data security for device and usage records, especially in sensitive research contexts.",
+        "Avoid medical or legal advice implications by focusing strictly on device calibration and usage metadata.",
+        "Design for usability in low-connectivity field environments with offline data entry and sync capabilities planned."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A unified system for academic field research technicians to manage device calibration, usage logging, and maintenance tracking across multiple sites, ensuring data quality and compliance through integrated workflows, alerts, and audit-ready reporting.",
+      "primaryUser": "Academic Field Research Technician",
+      "successMetrics": [
+        "Percentage reduction in overdue calibrations and maintenance tasks",
+        "User adoption rate among field technicians across sites",
+        "Accuracy and completeness of device usage and calibration logs",
+        "Frequency of generated audit-ready reports",
+        "User satisfaction with alert and dashboard features"
+      ],
+      "components": [
+        {
+          "id": "ui-web",
+          "name": "Web User Interface",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for device metadata management, calibration and maintenance record entry, usage logging, dashboards, and report exports.",
+          "dependsOn": [
+            "api-core"
+          ],
+          "notes": [
+            "Supports authenticated user sessions",
+            "Responsive design for desktop and tablet",
+            "Initial version focuses on manual data entry and viewing"
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core REST API",
+          "type": "api",
+          "responsibility": "Expose endpoints for CRUD operations on devices, calibrations, maintenance logs, usage logs, user authentication, and report generation.",
+          "dependsOn": [
+            "data-db"
+          ],
+          "notes": [
+            "Implements business logic for validation and compliance status",
+            "Handles user authorization and data access control"
+          ]
+        },
+        {
+          "id": "data-db",
+          "name": "Relational Database",
+          "type": "data",
+          "responsibility": "Persist device metadata, calibration records, maintenance logs, usage logs, user accounts, and audit trails.",
+          "dependsOn": [],
+          "notes": [
+            "Schema designed for scalability across multiple devices and sites",
+            "Indexes to optimize queries on device status and alerts"
+          ]
+        },
+        {
+          "id": "job-alerts",
+          "name": "Background Alert Scheduler",
+          "type": "job",
+          "responsibility": "Periodically evaluate calibration and maintenance schedules to generate alerts and notifications for overdue or upcoming tasks.",
+          "dependsOn": [
+            "data-db",
+            "api-core"
+          ],
+          "notes": [
+            "Supports configurable alert thresholds",
+            "Prepares data for dashboard risk indicators"
+          ]
+        },
+        {
+          "id": "integration-docs",
+          "name": "Compliance & Standards Integration",
+          "type": "integration",
+          "responsibility": "Manage and update calibration and compliance standards documents to validate records and support checklists.",
+          "dependsOn": [
+            "data-db"
+          ],
+          "notes": [
+            "Allows upload and versioning of standards documents",
+            "Feeds compliance rules into API validation logic"
+          ]
+        },
+        {
+          "id": "ui-mobile",
+          "name": "Mobile Data Entry Interface",
+          "type": "ui",
+          "responsibility": "Provide offline-capable mobile app interface for field technicians to enter calibration and usage data on-site with sync support.",
+          "dependsOn": [
+            "api-core",
+            "data-db"
+          ],
+          "notes": [
+            "Planned for future upgrade path",
+            "Handles intermittent connectivity and data synchronization"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Device",
+          "purpose": "Store metadata for each data collection device managed across sites.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "make",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "model",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "serialNumber",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "site",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "serialNumber",
+            "site"
+          ]
+        },
+        {
+          "name": "CalibrationRecord",
+          "purpose": "Record calibration events, dates, results, and associated device.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "calibrationDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "result",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "technician",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "calibrationDate"
+          ]
+        },
+        {
+          "name": "MaintenanceLog",
+          "purpose": "Track maintenance activities, dates, and compliance for devices.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "maintenanceDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "performedBy",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "maintenanceDate"
+          ]
+        },
+        {
+          "name": "UsageLog",
+          "purpose": "Log device usage events with timestamps, operators, and site info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "usageStart",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "usageEnd",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "operator",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "site",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "usageStart",
+            "site"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user credentials and roles for authentication and authorization.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "username",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "username"
+          ]
+        },
+        {
+          "name": "AuditTrail",
+          "purpose": "Record changes and access events for compliance and traceability.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "performedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "entityType",
+            "entityId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "ComplianceDocument",
+          "purpose": "Store calibration and compliance standards documents with versioning.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileUrl",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "title",
+            "version"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "username",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/devices",
+          "title": "Device Management",
+          "purpose": "View, add, and edit device metadata and overview of calibration and maintenance status.",
+          "inputs": [
+            "device metadata fields",
+            "search filters"
+          ],
+          "outputs": [
+            "device list",
+            "device status indicators"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/devices/:deviceId/calibration",
+          "title": "Calibration Records",
+          "purpose": "Enter and view calibration records for a specific device.",
+          "inputs": [
+            "calibration date",
+            "result",
+            "technician",
+            "notes"
+          ],
+          "outputs": [
+            "calibration history timeline"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/devices/:deviceId/maintenance",
+          "title": "Maintenance Logs",
+          "purpose": "Enter and view maintenance logs for a specific device.",
+          "inputs": [
+            "maintenance date",
+            "description",
+            "performed by",
+            "notes"
+          ],
+          "outputs": [
+            "maintenance history timeline"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/devices/:deviceId/usage",
+          "title": "Usage Logs",
+          "purpose": "Log and review usage events for a device.",
+          "inputs": [
+            "usage start",
+            "usage end",
+            "operator",
+            "site",
+            "notes"
+          ],
+          "outputs": [
+            "usage timeline"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Compliance & Calibration Dashboard",
+          "purpose": "Display compliance status, upcoming and overdue calibrations and maintenance, and risk alerts across devices and sites.",
+          "inputs": [
+            "filter by site/device/status"
+          ],
+          "outputs": [
+            "dashboard widgets",
+            "alert lists"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reports & Exports",
+          "purpose": "Generate and export audit-ready reports on device usage, calibration, and maintenance history.",
+          "inputs": [
+            "date range",
+            "device/site filters",
+            "report type"
+          ],
+          "outputs": [
+            "downloadable reports",
+            "summary views"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and provide access token.",
+          "requestShape": "{ username: string, password: string }",
+          "responseShape": "{ token: string, user: { id: string, username: string, role: string } }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/devices",
+          "method": "GET",
+          "purpose": "Retrieve list of devices with optional filters.",
+          "requestShape": "{ site?: string, search?: string }",
+          "responseShape": "Array<Device>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/devices",
+          "method": "POST",
+          "purpose": "Add a new device metadata record.",
+          "requestShape": "Device (without id)",
+          "responseShape": "Device (with id)",
+          "auth": "user"
+        },
+        {
+          "route": "/api/devices/:deviceId/calibrations",
+          "method": "GET",
+          "purpose": "Get calibration records for a device.",
+          "requestShape": "None",
+          "responseShape": "Array<CalibrationRecord>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/devices/:deviceId/calibrations",
+          "method": "POST",
+          "purpose": "Add a calibration record for a device.",
+          "requestShape": "CalibrationRecord (without id)",
+          "responseShape": "CalibrationRecord (with id)",
+          "auth": "user"
+        },
+        {
+          "route": "/api/devices/:deviceId/maintenance",
+          "method": "GET",
+          "purpose": "Get maintenance logs for a device.",
+          "requestShape": "None",
+          "responseShape": "Array<MaintenanceLog>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/devices/:deviceId/maintenance",
+          "method": "POST",
+          "purpose": "Add a maintenance log for a device.",
+          "requestShape": "MaintenanceLog (without id)",
+          "responseShape": "MaintenanceLog (with id)",
+          "auth": "user"
+        },
+        {
+          "route": "/api/devices/:deviceId/usage",
+          "method": "GET",
+          "purpose": "Get usage logs for a device.",
+          "requestShape": "None",
+          "responseShape": "Array<UsageLog>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/devices/:deviceId/usage",
+          "method": "POST",
+          "purpose": "Add a usage log entry for a device.",
+          "requestShape": "UsageLog (without id)",
+          "responseShape": "UsageLog (with id)",
+          "auth": "user"
+        },
+        {
+          "route": "/api/dashboard/status",
+          "method": "GET",
+          "purpose": "Retrieve aggregated compliance and calibration status data and alerts.",
+          "requestShape": "{ site?: string, deviceId?: string }",
+          "responseShape": "{ complianceSummary: json, alerts: Array<{ type: string, message: string, deviceId: string }> }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports",
+          "method": "POST",
+          "purpose": "Generate and retrieve audit-ready reports based on filters.",
+          "requestShape": "{ dateRange: { start: date, end: date }, devices?: string[], sites?: string[], reportType: string }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "CalibrationAndMaintenanceAlertJob",
+          "trigger": "Scheduled (e.g., daily at midnight)",
+          "purpose": "Evaluate devices for upcoming or overdue calibrations and maintenance, generate alerts, and update dashboard data."
+        }
+      ],
+      "edgeCases": [
+        "Handling devices with missing or incomplete calibration or maintenance history.",
+        "Managing concurrent updates to device records and logs by multiple users.",
+        "Offline data entry scenarios leading to sync conflicts and data reconciliation.",
+        "Users entering invalid or out-of-range calibration results or dates.",
+        "Devices relocated between sites requiring metadata updates and historical continuity.",
+        "Expired or superseded compliance documents affecting validation rules.",
+        "Authentication failures and session expiration during critical data entry."
+      ],
+      "nonGoals": [
+        "Providing medical or legal advice related to device usage or calibration.",
+        "Direct integration with hardware devices or automatic calibration tools.",
+        "Real-time data streaming or sensor data ingestion from devices.",
+        "Full research data management platform beyond device lifecycle tracking.",
+        "Complex team management or role-based access beyond basic user roles in initial versions."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI pages (e.g., /login, /devices, /dashboard) via browser.",
+        "UI sends authenticated API requests to /api endpoints for CRUD operations on devices, calibration records, maintenance logs, usage logs, and user authentication.",
+        "API routes validate input, enforce authorization, and interact with the Prisma ORM to query or update the relational database.",
+        "Database persists device metadata, logs, user accounts, compliance documents, and audit trails with indexed queries for performance.",
+        "Background job CalibrationAndMaintenanceAlertJob runs daily, querying the database for calibration and maintenance schedules, generating alerts, and updating alert data accessible via /api/dashboard/status.",
+        "Compliance documents are uploaded and versioned, feeding validation rules into API logic to ensure calibration and maintenance records comply with current standards.",
+        "UI pages consume API responses to display device lists, timelines, dashboards, and reports, providing feedback and error messages to users.",
+        "AuditTrail records are created on all data modifications and accesses for compliance and traceability.",
+        "Reports are generated on demand via /api/reports, producing downloadable audit-ready files based on filtered data."
+      ],
+      "validationRules": [
+        "All POST and PUT API requests must validate required fields are present and of correct type (e.g., dates, strings).",
+        "Device serialNumber must be unique across all devices.",
+        "CalibrationRecord calibrationDate cannot be in the future; result must match allowed result strings (e.g., 'Pass', 'Fail').",
+        "MaintenanceLog maintenanceDate cannot be in the future; description is mandatory.",
+        "UsageLog usageStart must be before usageEnd if usageEnd is provided; operator and site must match existing records or be valid strings.",
+        "User registration and login require username and password with minimum length and complexity rules.",
+        "ComplianceDocument uploads must include title, version, and valid fileUrl; versioning must prevent duplicate versions for same title.",
+        "API endpoints must verify user authorization and role permissions before allowing data access or modification.",
+        "Calibration and maintenance records must be validated against active ComplianceDocument rules for compliance.",
+        "Input sanitization to prevent injection attacks and ensure data integrity.",
+        "Date filters in reports and dashboard APIs must be valid date ranges with start <= end."
+      ],
+      "errorHandling": [
+        "API returns HTTP 400 with descriptive error messages for validation failures.",
+        "API returns HTTP 401 Unauthorized for unauthenticated requests to protected endpoints.",
+        "API returns HTTP 403 Forbidden for authenticated users lacking required permissions.",
+        "API returns HTTP 404 Not Found when requested device or record does not exist.",
+        "API returns HTTP 409 Conflict for duplicate resource creation attempts (e.g., device serialNumber).",
+        "API returns HTTP 500 Internal Server Error for unexpected failures with logged error details.",
+        "UI displays user-friendly error messages based on API error responses.",
+        "Background job logs errors and retries failed alert generation without blocking subsequent runs.",
+        "Session expiration triggers redirect to /login with notification.",
+        "Concurrent update conflicts detected via optimistic locking or timestamps, returning 409 with conflict details."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/login require JWT-based authentication with token validation.",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt) and never returned in API responses.",
+        "Role-based access control enforced on API routes to restrict sensitive operations.",
+        "Input validation and sanitization to prevent injection and XSS attacks.",
+        "HTTPS enforced for all client-server communication.",
+        "AuditTrail records all data changes and access events with user identity and timestamps for compliance.",
+        "Rate limiting on login endpoint to mitigate brute force attacks.",
+        "Secure file storage and access control for ComplianceDocument files.",
+        "CSRF protection on state-changing API requests.",
+        "Session tokens have expiration and refresh mechanisms."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct username and password on /login",
+          "then": "They receive an authentication token and user info, and can access protected pages"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /devices page",
+          "when": "They add a new device with valid metadata",
+          "then": "The device is saved, appears in the device list, and no validation errors occur"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user viewing a device's calibration page",
+          "when": "They add a calibration record with a past date and valid result",
+          "then": "The record is saved, appears in the calibration timeline, and passes compliance validation"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user attempts to add a device with an existing serialNumber",
+          "when": "They submit the device creation form",
+          "then": "They receive a validation error indicating duplicate serialNumber"
+        },
+        {
+          "id": "AT-005",
+          "given": "The background job runs at scheduled time",
+          "when": "It evaluates calibration and maintenance schedules",
+          "then": "Alerts for overdue and upcoming tasks are generated and available via /api/dashboard/status"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthenticated user tries to access /devices",
+          "when": "They navigate to the page",
+          "then": "They are redirected to /login"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user submits a calibration record with a future calibrationDate",
+          "when": "They submit the form",
+          "then": "They receive a validation error preventing submission"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user requests a report with valid date range and filters",
+          "when": "They submit the report generation form",
+          "then": "They receive a downloadable report URL and summary view"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user session expires during data entry",
+          "when": "They attempt to submit data",
+          "then": "They are prompted to re-authenticate and data is not lost"
+        },
+        {
+          "id": "AT-010",
+          "given": "A device is relocated to a new site",
+          "when": "User updates device site metadata",
+          "then": "Historical calibration and maintenance records remain linked and continuity is preserved"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma schema models and indexes for all data models",
+        "Implement user authentication API (/api/auth/login) with JWT and password hashing",
+        "Implement core CRUD API endpoints for devices, calibration, maintenance, usage logs with validation and authorization",
+        "Implement AuditTrail creation on data changes",
+        "Develop /login page with authentication flow",
+        "Develop /devices page with device list, search, add, and edit functionality",
+        "Develop device-specific pages for calibration, maintenance, and usage logs with timelines and data entry forms",
+        "Implement compliance document upload, versioning, and integration into validation logic",
+        "Implement background job CalibrationAndMaintenanceAlertJob with alert generation and dashboard data updates",
+        "Develop /dashboard page showing compliance status, alerts, and filters",
+        "Develop /reports page with report generation and export functionality",
+        "Add error handling and user-friendly messages across UI and API",
+        "Add security features: role-based access, input sanitization, HTTPS enforcement, CSRF protection",
+        "Implement session management and token expiration handling",
+        "Write acceptance tests and perform end-to-end testing",
+        "Plan and scaffold mobile data entry interface for future offline sync support"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/devices",
+          "/devices/[deviceId]/calibration",
+          "/devices/[deviceId]/maintenance",
+          "/devices/[deviceId]/usage",
+          "/dashboard",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/devices/index.ts",
+          "api/devices/[deviceId]/calibrations.ts",
+          "api/devices/[deviceId]/maintenance.ts",
+          "api/devices/[deviceId]/usage.ts",
+          "api/dashboard/status.ts",
+          "api/reports/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Device",
+          "CalibrationRecord",
+          "MaintenanceLog",
+          "UsageLog",
+          "User",
+          "AuditTrail",
+          "ComplianceDocument"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the client to clarify missing constraints, priorities, or edge cases for the device calibration and usage tracker.",
+        "promptTemplate": "Given the current blueprint:\n{{BLUEPRINT}}\nPlease provide any missing constraints, specific requirements, or edge cases for the device calibration and usage tracking tool. Include details about data input formats, validation strictness, user roles, or usage scenarios. Your input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed page layouts and finalize data models based on refined requirements.",
+        "promptTemplate": "Based on the refined requirements:\n{{REFINED_REQUIREMENTS}}\nAnd the existing blueprint:\n{{BLUEPRINT}}\nPlease finalize the page definitions and data models including fields, validation rules, and relationships for the device calibration and usage tracker."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial code scaffolding for UI pages and API endpoints.",
+        "promptTemplate": "Using the finalized pages and API definitions:\n{{FINAL_PAGES}}\n{{API_DEFINITIONS}}\nGenerate code stubs and folder structure for the device calibration and usage tracker web application."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to API endpoints and database models to enable full data flow.",
+        "promptTemplate": "Given the page stubs and backend API:\n{{PAGE_STUBS}}\n{{API_IMPLEMENTATION}}\nIntegrate frontend pages with backend API routes and database models to enable CRUD operations and workflows for device calibration and usage tracking."
+      }
+    ]
+  }
+}

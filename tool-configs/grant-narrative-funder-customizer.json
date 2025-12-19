@@ -1,0 +1,607 @@
+{
+  "slug": "grant-narrative-funder-customizer",
+  "title": "Academic Research Grant Narrative Customizer",
+  "description": "Customize your master research grant narrative to align with a specific funder's priorities and guidelines. Upload your master narrative and a single funder priority document to receive a tailored grant narrative draft highlighting adaptations for that funder.",
+  "inputLabel": "Master Grant Narrative Text or File and Funder Priority Document",
+  "outputLabel": "Customized Funder-Specific Grant Narrative with Highlighted Adaptations",
+  "systemPrompt": "You are an expert assistant specialized in adapting academic research grant narratives to specific funder priorities. Given a master grant proposal narrative and one funder priority document or guidelines, generate a customized narrative draft that aligns clearly with the funder's priorities and application language. Highlight all adaptations made from the master narrative, ensuring no inaccurate or misleading claims are introduced. Respect confidentiality and ethical guidelines. If inputs are invalid, disallowed, or incomplete, respond with a clear refusal and explanation. Output only the customized narrative text followed by a JSON object detailing the highlighted changes. Do not generate unrelated content or new research claims. Refuse multi-funder or batch requests in this version.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Focus on Funders' Priorities",
+      "prompt": "When customizing, emphasize and align with the funder's stated priorities and language preferences, ensuring the narrative clearly addresses these elements."
+    },
+    {
+      "label": "Highlight All Adaptations",
+      "prompt": "Provide detailed highlights of all changes made from the master narrative to the funder-specific draft to aid user review."
+    },
+    {
+      "label": "Maintain Ethical Integrity",
+      "prompt": "Ensure that no inaccurate, misleading, or overpromising statements are introduced in the customized narrative."
+    },
+    {
+      "label": "Concise and Clear Customization",
+      "prompt": "Focus on clear and concise adaptations, avoiding unnecessary expansions or unrelated content."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output must be a JSON object with keys 'customizedNarrative' (string) and 'highlightedChanges' (array of objects with 'section', 'originalText', 'adaptedText').",
+  "clarifyPrompt": "Please provide your master grant narrative (text or file upload) followed by the funder priority document or guidelines (file upload). Ensure the files comply with size and format limits. If you want to refine how the customization should prioritize funder elements, specify now.",
+  "finalizePrompt": "Review the customized narrative and highlighted adaptations carefully. Confirm you are satisfied or provide feedback for further refinement or manual adjustments.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Funder-Specific Narrative Customizer",
+      "niche": {
+        "role": "Academic Research Grant Writer",
+        "scenario": "Preparing multiple versions of a research grant narrative tailored to different specific funder priorities and application guidelines"
+      },
+      "problem": "Grant writers often submit similar projects to multiple funding agencies that have differing priorities, language preferences, and formatting expectations. Manually customizing narratives for each funder is time-consuming, error-prone, and risks inconsistencies or missing key funder-specific elements, reducing competitiveness.",
+      "inputs": [
+        "Master grant proposal narrative draft",
+        "Multiple funder-specific priority documents or guideline texts",
+        "Funder application question prompts or section headers"
+      ],
+      "outputs": [
+        "Multiple funder-tailored grant narrative drafts",
+        "Highlighting of narrative sections adapted per funder",
+        "A comparison report of differences and gaps across versions"
+      ],
+      "whyItWins": [
+        "Automates the complex, repetitive task of adapting grant narratives to diverse funder requirements",
+        "Improves proposal quality by ensuring each version aligns clearly with funder priorities and language",
+        "Reduces time and cognitive load for grant writers juggling multiple submissions",
+        "Supports consistency tracking and auditability across multiple proposal versions",
+        "Distinct from existing tools focused only on consistency checking or compliance; this proactively customizes content"
+      ],
+      "upgradePath": {
+        "today": "Provide a simple tool that takes a single narrative and a funder priority document to output one customized draft with highlights of changes",
+        "in90Days": "Add support for multiple funders at once, batch processing, and side-by-side narrative comparison reports",
+        "in12Months": "Develop a full multi-page system integrating grant narrative version management, collaboration features, funder database of priorities and templates, and advanced AI-driven narrative adaptation controls"
+      },
+      "riskNotes": [
+        "Must avoid generating inaccurate or misleading claims about funder priorities",
+        "Ensure outputs do not violate ethical guidelines by overpromising impacts or misrepresenting research scope",
+        "Protect confidentiality of sensitive grant proposal content",
+        "Clarify that final editing and compliance review remain with the grant writer"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized platform that helps academic research grant writers efficiently customize a master grant narrative to multiple funders' specific priorities and guidelines, providing tailored drafts, highlighting adaptations, and comparison reports to improve quality, consistency, and reduce manual effort.",
+      "primaryUser": "Academic Research Grant Writer",
+      "successMetrics": [
+        "Reduction in time spent customizing narratives per funder",
+        "Increase in number of funder-specific tailored drafts produced",
+        "User satisfaction with accuracy and relevance of customized narratives",
+        "Frequency of use of comparison reports to identify gaps or inconsistencies",
+        "Adoption rate of batch processing and multi-funder workflows"
+      ],
+      "components": [
+        {
+          "id": "ui-landing",
+          "name": "Landing and Narrative Input UI",
+          "type": "ui",
+          "responsibility": "Provide the initial interface for users to input master narratives, upload funder priority documents, and start customization jobs.",
+          "dependsOn": [],
+          "notes": [
+            "Must support secure file upload and text input",
+            "Validate input formats and sizes",
+            "Provide clear guidance on input requirements"
+          ]
+        },
+        {
+          "id": "ui-customization",
+          "name": "Customization and Comparison UI",
+          "type": "ui",
+          "responsibility": "Display customized funder-specific narratives with highlighted adaptations, enable side-by-side comparison reports, and allow download/export of outputs.",
+          "dependsOn": [
+            "api-customize",
+            "api-compare"
+          ],
+          "notes": [
+            "Highlight changes clearly and intuitively",
+            "Support multiple funders side-by-side",
+            "Allow user feedback or manual override annotations"
+          ]
+        },
+        {
+          "id": "api-customize",
+          "name": "Narrative Customization API",
+          "type": "api",
+          "responsibility": "Process inputs (master narrative + funder priorities/guidelines) to generate a tailored narrative draft with highlighted adaptations per funder.",
+          "dependsOn": [
+            "data-funder",
+            "data-narrative"
+          ],
+          "notes": [
+            "Must include validation to avoid inaccurate or misleading claims",
+            "Use AI or rule-based logic for adaptation",
+            "Ensure confidentiality and secure processing"
+          ]
+        },
+        {
+          "id": "api-compare",
+          "name": "Comparison Report API",
+          "type": "api",
+          "responsibility": "Generate reports comparing multiple funder-specific narrative versions to identify differences, gaps, and consistency issues.",
+          "dependsOn": [
+            "data-narrative"
+          ],
+          "notes": [
+            "Support batch processing for multiple funders",
+            "Highlight missing or inconsistent sections",
+            "Provide exportable report formats"
+          ]
+        },
+        {
+          "id": "data-narrative",
+          "name": "Narrative and Version Data Store",
+          "type": "data",
+          "responsibility": "Persist master narratives, funder-specific customized drafts, and metadata about versions and adaptations.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure encryption and access controls for sensitive content",
+            "Track version history and audit trails"
+          ]
+        },
+        {
+          "id": "data-funder",
+          "name": "Funder Priority and Guideline Data Store",
+          "type": "data",
+          "responsibility": "Store funder-specific priority documents, application question prompts, and formatting guidelines.",
+          "dependsOn": [],
+          "notes": [
+            "Allow updates and additions of funder data",
+            "Support structured and unstructured data formats"
+          ]
+        },
+        {
+          "id": "job-batchProcessing",
+          "name": "Batch Customization Background Job",
+          "type": "job",
+          "responsibility": "Process multiple funders' customization requests asynchronously to generate tailored drafts and comparison data.",
+          "dependsOn": [
+            "api-customize",
+            "api-compare"
+          ],
+          "notes": [
+            "Handle job failures and retries gracefully",
+            "Notify users on job completion or errors"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "MasterNarrative",
+          "purpose": "Stores the original grant proposal narrative draft input by the user.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "FunderProfile",
+          "purpose": "Contains funder-specific priorities, guidelines, application prompts, and formatting rules.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "priorityDocument",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "applicationPrompts",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "formattingGuidelines",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "CustomizedNarrative",
+          "purpose": "Stores a funder-specific customized narrative version derived from a master narrative.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "masterNarrativeId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderProfileId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "highlightedChanges",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "masterNarrativeId",
+            "funderProfileId"
+          ]
+        },
+        {
+          "name": "ComparisonReport",
+          "purpose": "Captures differences, gaps, and consistency checks across multiple customized narratives.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "masterNarrativeId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderProfileIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "reportData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "masterNarrativeId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Home / Upload Narrative",
+          "purpose": "Landing page for users to input or upload the master narrative and funder documents to start customization.",
+          "inputs": [
+            "Master narrative text or file",
+            "Funder priority document(s) upload"
+          ],
+          "outputs": [
+            "Confirmation of upload",
+            "Navigation to customization page"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/customize",
+          "title": "Customize Narrative",
+          "purpose": "Interface to view and edit the customized narrative for one or multiple funders with highlights.",
+          "inputs": [
+            "Selected master narrative",
+            "Selected funder(s)"
+          ],
+          "outputs": [
+            "Customized narrative drafts with highlights",
+            "Option to download/export"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/compare",
+          "title": "Comparison Report",
+          "purpose": "Display side-by-side comparison reports of multiple funder-specific narratives highlighting differences and gaps.",
+          "inputs": [
+            "Multiple customized narrative versions"
+          ],
+          "outputs": [
+            "Comparison report visualization",
+            "Exportable report"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/funder-library",
+          "title": "Funder Profiles Library",
+          "purpose": "Manage funder profiles including priorities, prompts, and guidelines for reuse.",
+          "inputs": [
+            "Add/edit funder profile data"
+          ],
+          "outputs": [
+            "List of funder profiles"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/customize",
+          "method": "POST",
+          "purpose": "Generate a customized narrative draft for a given master narrative and funder profile.",
+          "requestShape": "{ masterNarrativeId: string, funderProfileId: string }",
+          "responseShape": "{ customizedNarrativeId: string, content: string, highlightedChanges: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compare",
+          "method": "POST",
+          "purpose": "Generate a comparison report for multiple customized narratives.",
+          "requestShape": "{ masterNarrativeId: string, funderProfileIds: string[] }",
+          "responseShape": "{ comparisonReportId: string, reportData: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funders",
+          "method": "GET",
+          "purpose": "Retrieve list of funder profiles available to the user.",
+          "requestShape": "{}",
+          "responseShape": "{ funders: FunderProfile[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funders",
+          "method": "POST",
+          "purpose": "Create or update a funder profile.",
+          "requestShape": "{ name: string, priorityDocument: string, applicationPrompts?: json, formattingGuidelines?: string }",
+          "responseShape": "{ funderProfileId: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "BatchCustomizationJob",
+          "trigger": "User submits multiple funders for customization",
+          "purpose": "Asynchronously generate customized narratives and comparison reports for multiple funders to improve responsiveness and scalability."
+        }
+      ],
+      "edgeCases": [
+        "Input narrative or funder documents contain ambiguous or conflicting priority statements leading to unclear adaptations.",
+        "Funder guidelines change after customization, requiring version reconciliation or reprocessing.",
+        "Large narratives or multiple funder documents cause processing timeouts or memory issues.",
+        "User uploads sensitive or proprietary content requiring strict confidentiality and encryption.",
+        "AI-driven customization produces inaccurate or ethically questionable claims needing manual review.",
+        "Partial failures in batch jobs where some funder customizations succeed and others fail.",
+        "Users attempt to customize narratives without proper authentication or authorization."
+      ],
+      "nonGoals": [
+        "Automatically submitting grant applications to funders.",
+        "Replacing the grant writer's final editing, compliance, or ethical review responsibilities.",
+        "Providing a comprehensive funder database beyond user-uploaded or curated profiles.",
+        "Full collaboration or multi-user editing features in the initial versions.",
+        "Deep AI generation of new narrative content beyond adaptation and highlighting."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses the landing page to input or upload a master narrative and funder priority documents.",
+        "Landing UI validates inputs and uploads master narrative text/file and funder documents to backend via secure API calls.",
+        "Uploaded master narrative and funder profiles are stored securely in the Narrative and Funder data stores with encryption and access controls.",
+        "User navigates to the customization page, selects a master narrative and one or more funders from the funder library fetched via API.",
+        "Customization UI sends requests to the Narrative Customization API with masterNarrativeId and funderProfileId to generate tailored drafts.",
+        "Narrative Customization API processes inputs using AI or rule-based logic, validates output, stores CustomizedNarrative with highlighted changes, and returns results to UI.",
+        "User views customized narratives with clear highlights and can provide manual override annotations or feedback.",
+        "User may trigger batch customization jobs for multiple funders; the Batch Customization Background Job asynchronously calls customization and comparison APIs.",
+        "Comparison API receives masterNarrativeId and multiple funderProfileIds, fetches customized narratives, generates comparison reports highlighting differences and gaps, stores ComparisonReport, and returns report data.",
+        "Comparison UI displays side-by-side reports with export/download options.",
+        "Funder library UI allows users to add/edit funder profiles via API calls, updating the FunderProfile data store.",
+        "Throughout, audit trails and version histories are maintained for narratives and funder profiles."
+      ],
+      "validationRules": [
+        "Master narrative input must be non-empty text or valid file format (e.g., .txt, .docx) with size limits (e.g., max 5MB).",
+        "Funder priority documents must be valid file types (e.g., .pdf, .docx) and within size limits (e.g., max 10MB).",
+        "API requests must include authenticated user context; reject unauthorized requests with 401.",
+        "masterNarrativeId and funderProfileId must exist and belong to the authenticated user or be accessible to them.",
+        "Customized narrative generation must validate that adaptations do not introduce unsupported or misleading claims; flag or reject if detected.",
+        "Comparison API requires at least two funderProfileIds and a valid masterNarrativeId.",
+        "Funder profile creation/update requires unique funder name, non-empty priority document, and optional valid JSON for applicationPrompts.",
+        "Batch job inputs must be validated for size and funder count limits to prevent overload.",
+        "Manual override annotations must be sanitized to prevent injection attacks.",
+        "File uploads must be scanned for malware and validated for content type."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request for invalid input formats or missing required fields with descriptive error messages.",
+        "Return 401 Unauthorized for unauthenticated or unauthorized access attempts.",
+        "Return 404 Not Found if requested master narrative, funder profile, or customized narrative does not exist or is inaccessible.",
+        "Return 422 Unprocessable Entity if AI customization detects inaccurate or conflicting adaptations.",
+        "For batch jobs, log partial failures and continue processing other funders; notify user of success and failures separately.",
+        "Timeouts or resource exhaustion during processing should return 503 Service Unavailable with retry guidance.",
+        "File upload errors (e.g., size limits exceeded) should return 413 Payload Too Large with instructions.",
+        "API errors must include error codes and user-friendly messages; internal errors logged with stack traces but not exposed to users.",
+        "Background job failures trigger retry mechanisms with exponential backoff; notify users on persistent failures.",
+        "Validation errors on funder profile updates return detailed messages for correction."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication and authorization checks to ensure data privacy.",
+        "Encrypt sensitive data at rest in the database, including narrative contents and funder documents.",
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Implement role-based access control if multi-user roles are introduced in future.",
+        "Sanitize all user inputs and uploaded files to prevent injection and malware.",
+        "Store audit logs securely to track data access and modifications for compliance.",
+        "Limit file upload sizes and scan for viruses/malware before processing or storage.",
+        "Ensure AI processing components do not leak user data or funder documents externally.",
+        "Use secure temporary storage for files during processing and delete after use.",
+        "Implement CSRF protection on all state-changing API endpoints."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the landing page with a valid master narrative text and funder priority document uploaded",
+          "when": "The user submits the inputs",
+          "then": "The system stores the master narrative and funder profile securely and confirms upload with navigation option to customization page"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the customization page with selected master narrative and funder profile",
+          "when": "The user requests customization",
+          "then": "The system returns a customized narrative draft with highlighted adaptations matching the funder's priorities"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user requests a comparison report for multiple customized narratives",
+          "when": "The user submits the request with valid masterNarrativeId and funderProfileIds",
+          "then": "The system generates and returns a comparison report highlighting differences, gaps, and consistency issues"
+        },
+        {
+          "id": "AT-004",
+          "given": "An unauthenticated user attempts to access any protected API or page",
+          "when": "The user makes a request",
+          "then": "The system returns 401 Unauthorized and denies access"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user uploads a file exceeding size limits or invalid format",
+          "when": "The user submits the upload",
+          "then": "The system rejects the upload with a clear error message indicating the issue"
+        },
+        {
+          "id": "AT-006",
+          "given": "A batch customization job is triggered with multiple funders, where some customizations fail",
+          "when": "The job completes",
+          "then": "The system processes successful customizations, logs failures, retries if applicable, and notifies the user of partial success and errors"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user edits a funder profile with invalid JSON in applicationPrompts",
+          "when": "The user submits the update",
+          "then": "The system rejects the update with a validation error message"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user views customized narratives with manual override annotations",
+          "when": "The user submits annotations",
+          "then": "The system sanitizes inputs, stores annotations, and displays them without security issues"
+        }
+      ],
+      "buildOrder": [
+        "Set up authentication and user management",
+        "Implement Prisma models for MasterNarrative, FunderProfile, CustomizedNarrative, ComparisonReport",
+        "Create secure file upload handling and storage with validation and scanning",
+        "Develop Landing and Narrative Input UI with API endpoints for narrative and funder uploads",
+        "Build Funder Profiles Library UI and API endpoints for funder profile CRUD",
+        "Implement Narrative Customization API with AI/rule-based adaptation logic and validation",
+        "Develop Customization and Comparison UI to display customized narratives with highlights",
+        "Implement Comparison Report API to generate and store comparison reports",
+        "Create Batch Customization Background Job to process multiple funders asynchronously",
+        "Add error handling, logging, and notification mechanisms",
+        "Implement security measures including encryption, input sanitization, and access controls",
+        "Write acceptance tests and perform end-to-end testing",
+        "Deploy and monitor system with audit trails and usage metrics"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/customize",
+          "/compare",
+          "/funder-library"
+        ],
+        "apiFilesToCreate": [
+          "/api/customize.ts",
+          "/api/compare.ts",
+          "/api/funders.ts"
+        ],
+        "prismaModelsToAdd": [
+          "MasterNarrative",
+          "FunderProfile",
+          "CustomizedNarrative",
+          "ComparisonReport"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask missing constraints, clarify edge cases and acceptance criteria for the grant narrative customizer tool.",
+        "promptTemplate": "Given the current blueprint:\n{{BLUEPRINT}}\nAnd the expanded specs:\n{{EXPANDED}}\nUser input:\n{{USER_INPUT}}\nPlease list any missing constraints, clarify ambiguous requirements, and specify additional acceptance criteria needed before design."
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed page flows and data model schemas for the grant narrative customizer platform.",
+        "promptTemplate": "Considering the idea:\n{{IDEA}}\nThe blueprint:\n{{BLUEPRINT}}\nAnd prior expansions:\n{{EXPANDED}}\nUser input:\n{{USER_INPUT}}\nProduce a finalized set of pages with routes, purposes, inputs, outputs, and a complete data model schema with fields and indexes."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code stubs for the UI pages based on finalized page design for the grant narrative customizer.",
+        "promptTemplate": "Given the finalized pages design:\n{{PAGES}}\nUser input:\n{{USER_INPUT}}\nGenerate basic page stubs in React (or chosen framework) with placeholders for inputs, outputs, and navigation."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages with API endpoints and database models for full functionality of the grant narrative customizer.",
+        "promptTemplate": "Given the pages, APIs, and data models:\nPages: {{PAGES}}\nAPIs: {{API_ROUTES}}\nData Models: {{DATA_MODELS}}\nUser input:\n{{USER_INPUT}}\nCreate integration code snippets and wiring instructions to connect frontend, backend APIs, and database."
+      }
+    ]
+  }
+}

@@ -1,0 +1,667 @@
+{
+  "slug": "academic-research-pre-study-risk-assessment",
+  "title": "Academic Research Pre-Study Risk Assessment & Mitigation Planner",
+  "description": "A lightweight single-page web tool for academic research principal investigators to input preliminary study plans and generate structured risk assessments with prioritized mitigation recommendations. Supports text input and document uploads, producing a clear risk report to aid early-phase study planning.",
+  "inputLabel": "Enter your preliminary study information and upload related documents",
+  "outputLabel": "Generated Structured Risk Assessment and Mitigation Plan",
+  "systemPrompt": "You are an expert assistant helping academic research principal investigators identify potential risks early in the study planning phase. Given preliminary study objectives, study design summaries, collaborator roles, compliance guidelines, and resource plans (text input or uploaded documents), analyze the inputs to produce a structured risk assessment report. Categorize risks into scientific, operational, ethical, and compliance domains. Prioritize risks and suggest actionable mitigation plans linked to collaborator roles. Output a clear, concise, and structured text report. Do not provide legal or compliance advice. Refuse unsafe or disallowed requests. Validate inputs and request clarifications if needed.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Scientific Risk Focus",
+      "prompt": "Prioritize identifying scientific and methodological risks in the study plan. Emphasize study design and hypothesis robustness."
+    },
+    {
+      "label": "Operational Risk Focus",
+      "prompt": "Focus on operational risks including collaborator roles, resource allocation, and timeline feasibility."
+    },
+    {
+      "label": "Ethical & Compliance Risk Focus",
+      "prompt": "Highlight potential ethical concerns and compliance guideline risks based on provided documents."
+    },
+    {
+      "label": "Comprehensive Risk Assessment",
+      "prompt": "Perform a balanced risk assessment across all domains: scientific, operational, ethical, and compliance."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output a JSON object with keys: 'risks' (array of risks with category, description, priority), and 'mitigationPlans' (array of actions linked to risks and collaborators).",
+  "clarifyPrompt": "Please provide missing or unclear information such as study title, objectives, collaborator roles, or compliance guidelines.",
+  "finalizePrompt": "Generate the final structured risk assessment report with prioritized mitigation recommendations based on the inputs provided.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Pre-Study Risk Assessment & Mitigation Planner",
+      "niche": {
+        "role": "Academic Research Principal Investigator",
+        "scenario": "Planning a new research study involving complex methodologies and multiple collaborators before protocol writing"
+      },
+      "problem": "Principal Investigators face challenges in systematically identifying potential scientific, operational, ethical, and compliance risks early in the study design phase, which can lead to costly protocol amendments, delays, and funding risks.",
+      "inputs": [
+        "Preliminary study objectives and hypotheses (text input or uploaded draft notes)",
+        "Planned study design and methodology summaries",
+        "Collaborator roles and expertise descriptions",
+        "Institutional and funder compliance guidelines (uploaded or pasted)",
+        "Preliminary resource and timeline plans"
+      ],
+      "outputs": [
+        "Structured risk assessment report categorizing risks by scientific, operational, ethical, and compliance domains",
+        "Prioritized risk mitigation action plans with suggested responsible collaborators",
+        "Visual timeline integration highlighting risk points and mitigation checkpoints",
+        "Summary dashboard for team review and iterative planning"
+      ],
+      "whyItWins": [
+        "Addresses an unmet need for early-phase, integrated risk identification beyond protocol drafting",
+        "Supports repeated iterative use as study plans evolve, improving proactive management",
+        "Facilitates collaboration by linking risks to specific roles and responsibilities",
+        "Combines multiple input types (text, documents, roles) into a unified structured output",
+        "Lowers risk of costly downstream changes and compliance failures, increasing funding success likelihood"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web form tool that accepts text inputs and uploaded documents, producing a downloadable structured risk assessment report with prioritized mitigation recommendations.",
+        "in90Days": "Add collaborative multi-user access with role-based input sections, interactive risk dashboards, and integration with calendar/timeline tools for tracking mitigation progress.",
+        "in12Months": "Develop a full multi-page platform supporting risk monitoring, automated alerts, version control of study plans, integration with protocol writing tools, and funder compliance audit modules."
+      },
+      "riskNotes": [
+        "Does not provide legal or ethical compliance advice but highlights potential risks for user consideration",
+        "Relies on user-provided preliminary information, so accuracy depends on input quality",
+        "Clear disclaimers needed that tool supports planning assistance only and final decisions rest with investigators and compliance officers"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A platform to help academic research principal investigators systematically identify, assess, and mitigate risks early in study planning by integrating multiple input types into structured risk reports, collaborative dashboards, and timeline tracking.",
+      "primaryUser": "Academic Research Principal Investigator",
+      "successMetrics": [
+        "Number of risk assessments completed per study",
+        "User engagement with iterative risk updates and collaboration features",
+        "Reduction in protocol amendments and compliance issues reported by users",
+        "User satisfaction with risk prioritization and mitigation planning",
+        "Adoption rate of timeline and mitigation tracking features"
+      ],
+      "components": [
+        {
+          "id": "ui-input",
+          "name": "Input Collection UI",
+          "type": "ui",
+          "responsibility": "Collect preliminary study information including text inputs and document uploads for objectives, design, collaborators, compliance guidelines, and resource plans.",
+          "dependsOn": [],
+          "notes": [
+            "Supports file upload and text areas",
+            "Validates required fields and file types",
+            "Handles large document uploads gracefully"
+          ]
+        },
+        {
+          "id": "api-risk-assessment",
+          "name": "Risk Assessment API",
+          "type": "api",
+          "responsibility": "Process inputs to identify and categorize risks into scientific, operational, ethical, and compliance domains and generate prioritized mitigation plans.",
+          "dependsOn": [
+            "data-studyPlan",
+            "data-riskReport"
+          ],
+          "notes": [
+            "Implements risk identification logic based on input text and documents",
+            "Supports iterative updates and re-assessments",
+            "Returns structured risk data for UI consumption"
+          ]
+        },
+        {
+          "id": "data-models",
+          "name": "Data Models & Persistence",
+          "type": "data",
+          "responsibility": "Persist study plans, collaborator roles, compliance guidelines, risk assessments, mitigation actions, and timeline data.",
+          "dependsOn": [],
+          "notes": [
+            "Stores versioned study plans for audit and iteration",
+            "Links risks to collaborators and timelines",
+            "Enables querying for dashboards and reports"
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Risk Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display structured risk reports, prioritized mitigation plans, and interactive visual timelines for team review and iterative planning.",
+          "dependsOn": [
+            "api-risk-assessment",
+            "data-models"
+          ],
+          "notes": [
+            "Supports filtering by risk domain and collaborator",
+            "Integrates timeline visualization highlighting risk points and mitigation checkpoints",
+            "Allows annotation and status updates on mitigation actions"
+          ]
+        },
+        {
+          "id": "api-collaboration",
+          "name": "Collaboration & User Management API",
+          "type": "api",
+          "responsibility": "Manage multi-user access, roles, permissions, and collaborative editing of study plans and risk assessments.",
+          "dependsOn": [
+            "data-models"
+          ],
+          "notes": [
+            "Implements role-based access control",
+            "Supports notifications and comments",
+            "Handles concurrent edits and version control"
+          ]
+        },
+        {
+          "id": "integration-calendar",
+          "name": "Calendar & Timeline Integration",
+          "type": "integration",
+          "responsibility": "Integrate with external calendar and timeline tools to track mitigation progress and send alerts.",
+          "dependsOn": [
+            "data-models",
+            "api-collaboration"
+          ],
+          "notes": [
+            "Supports syncing mitigation deadlines and checkpoints",
+            "Enables automated reminders and alerts",
+            "Handles failures in external API calls gracefully"
+          ]
+        },
+        {
+          "id": "job-risk-monitoring",
+          "name": "Risk Monitoring Background Job",
+          "type": "job",
+          "responsibility": "Periodically review risk statuses and mitigation progress to trigger alerts and flag overdue actions.",
+          "dependsOn": [
+            "data-models",
+            "integration-calendar"
+          ],
+          "notes": [
+            "Runs on schedule with configurable frequency",
+            "Generates notifications for users",
+            "Handles job failures with retries and logging"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "StudyPlan",
+          "purpose": "Stores preliminary study information including objectives, design, collaborators, compliance guidelines, and resource plans.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "objectivesText",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "designSummary",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "collaborators",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "complianceGuidelines",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "resourceTimeline",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "title"
+          ]
+        },
+        {
+          "name": "RiskAssessment",
+          "purpose": "Captures identified risks, their categorization, prioritization, and mitigation plans linked to a study plan.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyPlanId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "risks",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "mitigationPlans",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "studyPlanId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents users including principal investigators and collaborators with roles and permissions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        },
+        {
+          "name": "MitigationAction",
+          "purpose": "Tracks individual mitigation tasks linked to risks, assigned collaborators, status, and deadlines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "riskId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedToUserId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "riskId",
+            "assignedToUserId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/input",
+          "title": "Study Plan Input",
+          "purpose": "Collect preliminary study information including objectives, design, collaborators, compliance guidelines, and resource plans.",
+          "inputs": [
+            "Text fields for objectives and hypotheses",
+            "File uploads for draft notes and compliance documents",
+            "Forms for collaborator roles and expertise",
+            "Resource and timeline plan inputs"
+          ],
+          "outputs": [
+            "Confirmation of saved inputs",
+            "Validation error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Risk Assessment Dashboard",
+          "purpose": "Display structured risk reports, prioritized mitigation plans, and interactive timelines for team review and planning.",
+          "inputs": [
+            "Selected study plan",
+            "Filter criteria"
+          ],
+          "outputs": [
+            "Risk categorization",
+            "Mitigation action lists",
+            "Visual timeline"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/collaboration",
+          "title": "Collaboration & User Management",
+          "purpose": "Manage user roles, permissions, comments, and notifications for collaborative risk assessment and planning.",
+          "inputs": [
+            "User invitations",
+            "Role assignments",
+            "Comments and annotations"
+          ],
+          "outputs": [
+            "User lists",
+            "Notification status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/download",
+          "title": "Download Risk Assessment Report",
+          "purpose": "Allow users to download structured risk assessment reports with prioritized mitigation recommendations.",
+          "inputs": [
+            "Selected study plan and risk assessment"
+          ],
+          "outputs": [
+            "Downloadable report (PDF/JSON)"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/study-plans",
+          "method": "POST",
+          "purpose": "Create or update a study plan with preliminary inputs.",
+          "requestShape": "JSON with study plan fields and uploaded document references",
+          "responseShape": "JSON confirmation with study plan ID and version",
+          "auth": "user"
+        },
+        {
+          "route": "/api/risk-assessments/generate",
+          "method": "POST",
+          "purpose": "Generate or update risk assessment based on provided study plan data.",
+          "requestShape": "JSON with study plan ID",
+          "responseShape": "JSON with structured risks and mitigation plans",
+          "auth": "user"
+        },
+        {
+          "route": "/api/mitigation-actions",
+          "method": "POST",
+          "purpose": "Create or update mitigation actions linked to risks.",
+          "requestShape": "JSON with mitigation action details",
+          "responseShape": "JSON confirmation with mitigation action ID",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users/invite",
+          "method": "POST",
+          "purpose": "Invite collaborators and assign roles for study plan collaboration.",
+          "requestShape": "JSON with email and role",
+          "responseShape": "JSON confirmation of invitation status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/download",
+          "method": "GET",
+          "purpose": "Download risk assessment report for a study plan.",
+          "requestShape": "Query parameter with study plan ID",
+          "responseShape": "File stream (PDF or JSON)",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "RiskStatusMonitor",
+          "trigger": "Scheduled (e.g., daily)",
+          "purpose": "Review mitigation action statuses and send alerts for overdue or high-priority risks."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or inconsistent input data leading to partial risk assessments",
+        "Large or unsupported file uploads causing processing delays or failures",
+        "Concurrent edits causing version conflicts in study plans or mitigation actions",
+        "Users assigning mitigation actions to collaborators who have not accepted invitations",
+        "Failures in external calendar integrations causing missed alerts",
+        "Users misunderstanding the tool as providing legal or compliance advice"
+      ],
+      "nonGoals": [
+        "Providing legal, ethical, or compliance advice or guarantees",
+        "Automated protocol writing or amendment generation",
+        "Replacing institutional compliance review processes",
+        "Handling finalized or post-approval study monitoring",
+        "Supporting non-academic or non-research study types"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses /input page to submit preliminary study information including text inputs and document uploads.",
+        "Input Collection UI validates inputs and sends POST request to /api/study-plans to create or update a StudyPlan record with versioning.",
+        "Upon successful study plan creation/update, user can trigger risk assessment generation via POST to /api/risk-assessments/generate with studyPlanId.",
+        "Risk Assessment API processes study plan data, applies risk identification logic, and returns structured risks and mitigation plans stored in RiskAssessment model.",
+        "Dashboard UI fetches risk assessment data and related mitigation actions via API calls, supporting filtering and timeline visualization.",
+        "Users manage collaborators and roles via Collaboration API endpoints, which update User and related permission data.",
+        "Mitigation actions are created or updated via /api/mitigation-actions, linking tasks to risks and assigned users.",
+        "Integration with external calendar systems syncs mitigation deadlines and checkpoints, sending alerts and reminders.",
+        "Background job RiskStatusMonitor runs on schedule to review mitigation statuses, trigger alerts for overdue/high-priority risks, and logs job outcomes.",
+        "Users can download risk assessment reports via GET /api/reports/download, receiving PDF or JSON files."
+      ],
+      "validationRules": [
+        "StudyPlan inputs: title is required and non-empty string; objectivesText, designSummary optional but if present must be strings.",
+        "Collaborators and complianceGuidelines JSON fields must conform to defined schema (e.g., collaborator roles must include valid role strings).",
+        "File uploads must be validated for allowed types (e.g., PDF, DOCX) and size limits (e.g., max 10MB per file).",
+        "RiskAssessment generation requires valid existing studyPlanId; reject if study plan not found or incomplete.",
+        "MitigationAction requires riskId and description; status must be one of predefined enums (e.g., 'pending', 'in-progress', 'completed').",
+        "User invitations require valid email format and role from allowed roles (e.g., 'PI', 'Collaborator', 'Reviewer').",
+        "API endpoints require authenticated user context; reject unauthorized requests with 401.",
+        "Concurrent updates to StudyPlan or MitigationAction must include version checks to prevent overwrites (optimistic concurrency control)."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with detailed validation error messages for invalid inputs.",
+        "Return 401 Unauthorized for unauthenticated or unauthorized access attempts.",
+        "Return 404 Not Found if requested resources (e.g., study plan, risk assessment) do not exist.",
+        "Handle file upload errors gracefully with user-friendly messages (e.g., file too large, unsupported format).",
+        "On concurrency conflicts, return 409 Conflict with message to reload data and retry.",
+        "Log all server-side errors with context for debugging; return 500 Internal Server Error with generic message to client.",
+        "For external calendar integration failures, log errors and notify users of sync issues without blocking core functionality.",
+        "Background job failures trigger retries with exponential backoff and error logging; alert admins if persistent failures occur."
+      ],
+      "securityNotes": [
+        "All API routes require authentication; enforce role-based access control to restrict actions (e.g., only PIs can invite users).",
+        "Validate and sanitize all user inputs to prevent injection attacks.",
+        "Store uploaded files securely with access controls; scan for malware if possible.",
+        "Use HTTPS for all client-server communication.",
+        "Implement rate limiting on APIs to prevent abuse.",
+        "Ensure sensitive data (e.g., user emails, study details) is not exposed in logs or error messages.",
+        "Use secure cookies or tokens for session management.",
+        "Audit logs for critical actions such as user invitations, role changes, and risk assessment updates."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user accesses the /input page",
+          "when": "They submit a study plan with all required fields and valid file uploads",
+          "then": "The system saves the study plan, returns confirmation with studyPlanId and version, and no validation errors are shown"
+        },
+        {
+          "id": "AT-002",
+          "given": "A study plan exists with valid data",
+          "when": "The user triggers risk assessment generation via /api/risk-assessments/generate",
+          "then": "The system returns structured risk data categorized by domain with prioritized mitigation plans"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user attempts to upload an unsupported file type or oversized file",
+          "when": "They submit the input form",
+          "then": "The system rejects the upload and displays a clear validation error message"
+        },
+        {
+          "id": "AT-004",
+          "given": "Multiple users edit the same study plan concurrently",
+          "when": "One user submits an update with an outdated version number",
+          "then": "The system returns a 409 Conflict error prompting the user to reload and retry"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user invites a collaborator with a valid email and role",
+          "when": "The invitation is sent via /api/users/invite",
+          "then": "The system confirms the invitation status and the collaborator appears in the user list with correct role"
+        },
+        {
+          "id": "AT-006",
+          "given": "A mitigation action is created with valid details linked to a risk",
+          "when": "The user submits the mitigation action via /api/mitigation-actions",
+          "then": "The system saves the action and returns confirmation with mitigationActionId"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user requests to download a risk assessment report for a valid study plan",
+          "when": "They access /api/reports/download with studyPlanId",
+          "then": "The system streams a downloadable PDF or JSON report file"
+        },
+        {
+          "id": "AT-008",
+          "given": "The background job RiskStatusMonitor runs",
+          "when": "There are overdue mitigation actions or high-priority risks",
+          "then": "The system sends notifications to assigned users and logs job execution results"
+        },
+        {
+          "id": "AT-009",
+          "given": "External calendar API is unavailable during sync",
+          "when": "The system attempts to sync mitigation deadlines",
+          "then": "The failure is logged, users are notified of sync issues, but core app functionality continues uninterrupted"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models for StudyPlan, RiskAssessment, User, MitigationAction",
+        "Implement authentication and role-based access control middleware",
+        "Build /api/study-plans POST endpoint with validation, versioning, and file upload handling",
+        "Develop Input Collection UI (/input) with form validation and file upload support",
+        "Implement /api/risk-assessments/generate POST endpoint with risk identification logic",
+        "Build Risk Dashboard UI (/dashboard) to display risk reports, mitigation plans, and timelines",
+        "Implement /api/mitigation-actions POST endpoint for creating/updating mitigation tasks",
+        "Develop Collaboration & User Management API (/api/users/invite) and UI (/collaboration)",
+        "Integrate external calendar APIs for syncing mitigation deadlines and alerts",
+        "Implement background job RiskStatusMonitor with scheduling, retries, and notifications",
+        "Build report download API (/api/reports/download) and UI (/reports/download)",
+        "Add concurrency control and conflict resolution mechanisms",
+        "Implement comprehensive error handling and logging",
+        "Perform security hardening and testing",
+        "Write and run acceptance tests"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/input",
+          "/dashboard",
+          "/collaboration",
+          "/reports/download"
+        ],
+        "apiFilesToCreate": [
+          "api/study-plans.ts",
+          "api/risk-assessments/generate.ts",
+          "api/mitigation-actions.ts",
+          "api/users/invite.ts",
+          "api/reports/download.ts"
+        ],
+        "prismaModelsToAdd": [
+          "StudyPlan",
+          "RiskAssessment",
+          "User",
+          "MitigationAction"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to resolve missing constraints and details in the study risk assessment planning tool requirements.",
+        "promptTemplate": "Given the current blueprint and expanded specs:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nPlease ask detailed questions to clarify any missing or ambiguous requirements for the Academic Research Pre-Study Risk Assessment & Mitigation Planner."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Finalize the page designs, data models, and API contract definitions based on refined requirements.",
+        "promptTemplate": "With the refined requirements and current blueprint:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nProduce a detailed specification of pages, data models, and API endpoints for the Academic Research Pre-Study Risk Assessment & Mitigation Planner."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code or stubs for the UI pages and components for early development.",
+        "promptTemplate": "Given the finalized pages and data models:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nGenerate code stubs or component outlines for the input forms, dashboard, collaboration, and report download pages."
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Define how to wire UI pages to API endpoints and database models to create a working integrated system.",
+        "promptTemplate": "Given the page stubs and API definitions:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nDescribe the integration plan and code outlines to connect UI inputs, API calls, and database persistence for the Academic Research Pre-Study Risk Assessment & Mitigation Planner."
+      }
+    ]
+  }
+}

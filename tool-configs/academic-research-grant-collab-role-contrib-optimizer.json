@@ -1,0 +1,633 @@
+{
+  "slug": "academic-research-grant-collab-role-contrib-optimizer",
+  "title": "Academic Research Grant Collaboration Role & Contribution Optimizer",
+  "description": "Input collaborator profiles, project tasks, and contribution estimates to generate a structured collaboration plan with suggested authorship order, conflict detection, and negotiation summaries for multi-institutional academic research grant proposals.",
+  "inputLabel": "Enter project scope, collaborator details, tasks, and contribution estimates (JSON or text). Optionally upload collaborator profiles or task lists as JSON files.",
+  "outputLabel": "Generated collaboration plan including role assignments, suggested authorship order, conflict flags, and negotiation summary.",
+  "systemPrompt": "You are an assistant specialized in optimizing collaboration roles and contributions for academic research grant proposals. Given input describing project scope, collaborator profiles, tasks, and contribution estimates, generate a structured collaboration plan with clear role assignments, suggested authorship order based on contributions, flags for conflicts or overlaps, and a negotiation summary. Ensure that all collaborator and task references are consistent and valid. Do not provide legal or ethical advice. Refuse any requests that include disallowed or unsafe content. Output the collaboration plan as plain text or valid JSON when requested. Enforce strict validation of inputs and handle errors gracefully. Always advise that recommendations are advisory, not prescriptive.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summarize Inputs",
+      "prompt": "Summarize the key points from the provided project scope, collaborator details, tasks, and contribution estimates."
+    },
+    {
+      "label": "Generate Collaboration Plan",
+      "prompt": "Generate a detailed collaboration plan including role assignments, suggested authorship order based on contributions, conflict flags, and a negotiation summary from the provided inputs."
+    },
+    {
+      "label": "Detect Conflicts",
+      "prompt": "Analyze the inputs for conflicting role assignments or overlapping contributions and list all detected conflicts with recommendations for resolution."
+    },
+    {
+      "label": "Create Negotiation Summary",
+      "prompt": "Create a negotiation summary report highlighting key collaboration points, unresolved conflicts, and suggested next steps."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output JSON must include: { roleAssignments: object, authorshipOrder: array, conflictFlags: array, negotiationSummary: string }",
+  "clarifyPrompt": "Please provide any missing or unclear information regarding collaborators, tasks, or contribution estimates to generate an accurate collaboration plan.",
+  "finalizePrompt": "Review the generated collaboration plan and confirm if it meets your needs or if you require refinements or further analysis.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaboration Role & Contribution Optimizer",
+      "niche": {
+        "role": "Academic Research Project Lead",
+        "scenario": "planning and negotiating multi-institutional research grant proposals with complex collaborator roles and contributions"
+      },
+      "problem": "Academic research project leads struggle to clearly define, allocate, and negotiate collaborator roles, responsibilities, and contribution levels in multi-institutional grant proposals, leading to ambiguity in authorship order, effort distribution, and potential conflicts during proposal development.",
+      "inputs": [
+        "Project scope and objectives document",
+        "Collaborator profiles and CV snippets",
+        "Preliminary task lists or work packages",
+        "Draft contribution or effort estimates",
+        "Institutional policies on authorship and contribution"
+      ],
+      "outputs": [
+        "Structured, role-based collaboration plan mapping tasks to collaborators",
+        "Suggested authorship order based on contribution metrics",
+        "Contribution statements aligned with funder and institutional expectations",
+        "Conflict or overlap flags with recommendations for resolution",
+        "Negotiation summary report with customizable scenarios"
+      ],
+      "whyItWins": [
+        "Fills a unique gap between high-level project planning and detailed grant writing by focusing on collaboration roles and contributions",
+        "Supports repeated iterative negotiation cycles with collaborators and institutions",
+        "Goes beyond existing collaboration network visualizers by producing actionable, funder-compliant contribution documentation",
+        "Lightweight start with simple inputs and outputs but natural upgrade path to comprehensive collaboration management system",
+        "Reduces conflict risk and increases clarity in multi-institutional grant applications, which is a known pain point"
+      ],
+      "upgradePath": {
+        "today": "Single-page tool to input collaborator info, project tasks, and generate role allocation and contribution summaries with basic conflict detection",
+        "in90Days": "Multi-user collaboration platform with version control, comment threads, and integration of institutional authorship policies to refine role assignments and authorship order interactively",
+        "in12Months": "Full-featured multi-page grant collaboration management system including timeline tracking, effort reporting, automated funder compliance checks, and exportable customizable contribution statements for all collaborators"
+      },
+      "riskNotes": [
+        "Sensitive data about collaborator contributions requires secure handling and access controls",
+        "Must carefully respect institutional and funder policies to avoid misattribution or conflicts",
+        "Recommendations should be advisory, not prescriptive, to avoid enforcing disputed authorship decisions",
+        "Avoid legal or ethical advice; focus on structured documentation and clarity facilitation"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaboration role and contribution optimizer tool for academic research project leads to plan, negotiate, and document multi-institutional grant proposal roles, responsibilities, and authorship order with conflict detection and funder-compliant outputs.",
+      "primaryUser": "Academic research project leads managing multi-institutional grant proposals",
+      "successMetrics": [
+        "Reduction in collaborator role ambiguity and conflicts during grant proposal development",
+        "User adoption rate and frequency of iterative negotiation cycles",
+        "Accuracy and completeness of generated contribution statements and authorship orders",
+        "User satisfaction with clarity and usability of collaboration plans",
+        "Number of exported funder-compliant documentation reports"
+      ],
+      "components": [
+        {
+          "id": "ui-collaboratorInput",
+          "name": "Collaborator Input UI",
+          "type": "ui",
+          "responsibility": "Allow users to input and edit collaborator profiles, CV snippets, and institutional policies relevant to authorship and contributions.",
+          "dependsOn": [
+            "api-collaborator",
+            "data-collaborator"
+          ],
+          "notes": [
+            "Must support secure handling of sensitive collaborator data",
+            "Input validation to ensure completeness and consistency"
+          ]
+        },
+        {
+          "id": "ui-taskInput",
+          "name": "Project Task Input UI",
+          "type": "ui",
+          "responsibility": "Enable input and editing of project scope, objectives, preliminary task lists, and draft contribution estimates.",
+          "dependsOn": [
+            "api-task",
+            "data-task"
+          ],
+          "notes": [
+            "Support bulk import (e.g., from documents) as future enhancement",
+            "Allow linking tasks to collaborators"
+          ]
+        },
+        {
+          "id": "ui-collaborationPlan",
+          "name": "Collaboration Plan & Summary UI",
+          "type": "ui",
+          "responsibility": "Display structured role-based collaboration plans, suggested authorship orders, contribution statements, conflict flags, and negotiation summaries.",
+          "dependsOn": [
+            "api-collaboration",
+            "data-collaborationPlan"
+          ],
+          "notes": [
+            "Interactive visualization for role allocation and conflict resolution",
+            "Export options for funder-compliant reports"
+          ]
+        },
+        {
+          "id": "api-collaborator",
+          "name": "Collaborator Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for collaborator profiles, CV snippets, and institutional authorship policies.",
+          "dependsOn": [
+            "data-collaborator"
+          ],
+          "notes": [
+            "Enforce access control and data privacy",
+            "Validate institutional policies format"
+          ]
+        },
+        {
+          "id": "api-task",
+          "name": "Project Task Management API",
+          "type": "api",
+          "responsibility": "Manage project scope, objectives, task lists, and contribution estimates CRUD operations.",
+          "dependsOn": [
+            "data-task"
+          ],
+          "notes": [
+            "Support linking tasks to collaborators",
+            "Validate contribution estimates for consistency"
+          ]
+        },
+        {
+          "id": "api-collaboration",
+          "name": "Collaboration Plan & Analysis API",
+          "type": "api",
+          "responsibility": "Generate and update structured collaboration plans, calculate suggested authorship order, detect conflicts/overlaps, and produce negotiation summaries.",
+          "dependsOn": [
+            "data-collaborationPlan",
+            "data-collaborator",
+            "data-task"
+          ],
+          "notes": [
+            "Algorithms must be advisory, not prescriptive",
+            "Handle multiple iterative negotiation versions",
+            "Detect and flag conflicting role assignments or contribution overlaps"
+          ]
+        },
+        {
+          "id": "data-collaborator",
+          "name": "Collaborator Data Store",
+          "type": "data",
+          "responsibility": "Persist collaborator profiles, CV snippets, and institutional authorship policies securely.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive data requires encryption at rest and access controls",
+            "Support versioning for collaborator profile updates"
+          ]
+        },
+        {
+          "id": "data-task",
+          "name": "Project Task Data Store",
+          "type": "data",
+          "responsibility": "Persist project scope, objectives, task lists, and contribution estimates.",
+          "dependsOn": [],
+          "notes": [
+            "Support linking tasks to collaborators",
+            "Maintain history of task and estimate changes"
+          ]
+        },
+        {
+          "id": "data-collaborationPlan",
+          "name": "Collaboration Plan Data Store",
+          "type": "data",
+          "responsibility": "Store structured collaboration plans, authorship orders, conflict flags, and negotiation summaries.",
+          "dependsOn": [
+            "data-collaborator",
+            "data-task"
+          ],
+          "notes": [
+            "Support multiple versions for iterative negotiation cycles",
+            "Track conflict resolution status"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Collaborator",
+          "purpose": "Store detailed information about each collaborator including profile, CV snippets, and institutional policies.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "cvSnippets",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "authorshipPolicies",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "contactInfo",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "institution"
+          ]
+        },
+        {
+          "name": "ProjectTask",
+          "purpose": "Represent tasks or work packages within the project scope with assigned collaborators and contribution estimates.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedCollaborators",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "contributionEstimate",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "relatedObjectives",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "title"
+          ]
+        },
+        {
+          "name": "CollaborationPlan",
+          "purpose": "Capture structured role assignments, authorship order, conflict flags, and negotiation summaries for a grant proposal iteration.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "roleAssignments",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "authorshipOrder",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "conflictFlags",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "negotiationSummary",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "version"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/collaborators",
+          "title": "Collaborator Profiles",
+          "purpose": "Input, edit, and review collaborator profiles, CV snippets, and institutional authorship policies.",
+          "inputs": [
+            "Collaborator details",
+            "CV snippets",
+            "Authorship policies"
+          ],
+          "outputs": [
+            "Saved collaborator profiles"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/tasks",
+          "title": "Project Tasks & Contributions",
+          "purpose": "Input and manage project scope, objectives, task lists, and draft contribution estimates linked to collaborators.",
+          "inputs": [
+            "Project scope",
+            "Tasks",
+            "Contribution estimates"
+          ],
+          "outputs": [
+            "Saved tasks and linked collaborators"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/collaboration-plan",
+          "title": "Collaboration Plan & Negotiation Summary",
+          "purpose": "View structured role assignments, suggested authorship order, conflict flags, and negotiation summaries; export funder-compliant reports.",
+          "inputs": [
+            "Selected collaboration plan version"
+          ],
+          "outputs": [
+            "Collaboration plan visualization",
+            "Conflict flags",
+            "Negotiation summary",
+            "Exported reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Authentication",
+          "purpose": "Authenticate users to secure sensitive collaborator and project data.",
+          "inputs": [
+            "Username",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token/session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/collaborators",
+          "method": "GET",
+          "purpose": "Retrieve list of collaborator profiles.",
+          "requestShape": "None",
+          "responseShape": "Array of Collaborator objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaborators",
+          "method": "POST",
+          "purpose": "Create or update a collaborator profile.",
+          "requestShape": "Collaborator object",
+          "responseShape": "Saved Collaborator object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "GET",
+          "purpose": "Retrieve project tasks and contribution estimates.",
+          "requestShape": "None",
+          "responseShape": "Array of ProjectTask objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Create or update a project task.",
+          "requestShape": "ProjectTask object",
+          "responseShape": "Saved ProjectTask object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaboration-plan/generate",
+          "method": "POST",
+          "purpose": "Generate or update a collaboration plan with role assignments, authorship order, and conflict detection.",
+          "requestShape": "{ collaboratorIds: string[], taskIds: string[], institutionalPolicies: json }",
+          "responseShape": "CollaborationPlan object with conflict flags and negotiation summary",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaboration-plan/:id",
+          "method": "GET",
+          "purpose": "Retrieve a specific collaboration plan version.",
+          "requestShape": "None",
+          "responseShape": "CollaborationPlan object",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ConflictDetectionJob",
+          "trigger": "On collaboration plan generation or update",
+          "purpose": "Analyze role assignments and contribution estimates to detect conflicts or overlaps and flag them for user review."
+        }
+      ],
+      "edgeCases": [
+        "Collaborators with incomplete or missing CV snippets or institutional policies",
+        "Tasks assigned to multiple collaborators with overlapping or conflicting contribution estimates",
+        "Multiple iterative negotiation versions with conflicting role assignments",
+        "Institutional policies that conflict between collaborators from different institutions",
+        "Users attempting unauthorized access to sensitive collaborator or project data",
+        "Exporting reports when data is incomplete or conflicts remain unresolved",
+        "Handling simultaneous edits by multiple users in future multi-user versions"
+      ],
+      "nonGoals": [
+        "Providing legal or ethical advice on authorship disputes",
+        "Automatically enforcing authorship order or contribution decisions",
+        "Replacing full grant writing or project management tools",
+        "Handling detailed timeline tracking, effort reporting, or funder compliance beyond contribution statements in the initial version",
+        "Supporting anonymous or public user access without authentication"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receives session token for authorized API access.",
+        "On /collaborators page, user inputs or edits collaborator profiles, CV snippets, and institutional authorship policies.",
+        "Collaborator Input UI sends POST requests to /api/collaborators to create or update collaborator data.",
+        "Collaborator Management API validates and persists collaborator data in the Collaborator Data Store with encryption and versioning.",
+        "On /tasks page, user inputs project scope, objectives, tasks, and contribution estimates linked to collaborators.",
+        "Project Task Input UI sends POST requests to /api/tasks to create or update project tasks.",
+        "Project Task Management API validates tasks and contribution estimates, persists data in Project Task Data Store with history tracking.",
+        "On /collaboration-plan page, user selects collaboration plan version or triggers generation.",
+        "Collaboration Plan & Analysis API receives collaborator IDs, task IDs, and institutional policies, generates structured collaboration plan with role assignments, authorship order, conflict flags, and negotiation summaries.",
+        "ConflictDetectionJob runs during plan generation to detect conflicts or overlaps and flags them.",
+        "Collaboration Plan API persists collaboration plan versions in Collaboration Plan Data Store, tracking conflict resolution status.",
+        "UI displays collaboration plan visualization, conflict flags, negotiation summaries, and allows export of funder-compliant reports.",
+        "All API routes enforce user authentication and authorization to protect sensitive data."
+      ],
+      "validationRules": [
+        "Collaborator 'id', 'name', and 'institution' are required and non-empty strings.",
+        "CV snippets and authorship policies, if provided, must be valid JSON objects conforming to predefined schema.",
+        "Institutional policies must follow a validated format to ensure consistency across collaborators.",
+        "ProjectTask 'id' and 'title' are required; 'contributionEstimate' must be a non-negative number if provided.",
+        "Assigned collaborators in tasks must reference existing collaborator IDs.",
+        "Contribution estimates linked to tasks must sum logically without exceeding 100% or predefined total contribution limits.",
+        "CollaborationPlan 'version' must be a positive integer and increment sequentially for each new plan.",
+        "Role assignments and authorship orders must reference valid collaborator IDs.",
+        "Conflict flags must be structured JSON indicating type, involved collaborators, and resolution status.",
+        "API requests must include valid authentication tokens; unauthorized requests are rejected.",
+        "Input forms enforce required fields and provide user-friendly error messages for invalid or missing data."
+      ],
+      "errorHandling": [
+        "API routes return HTTP 401 Unauthorized for unauthenticated or unauthorized access attempts.",
+        "Validation failures return HTTP 400 Bad Request with detailed error messages indicating invalid fields.",
+        "Server errors return HTTP 500 Internal Server Error with generic messages; sensitive details are logged internally.",
+        "Conflict detection flags are included in collaboration plan responses to inform users of issues rather than blocking operations.",
+        "UI components display validation errors inline and prevent submission until resolved.",
+        "Export operations check for unresolved conflicts or incomplete data and warn users before proceeding.",
+        "Concurrent modification conflicts (future multi-user support) return HTTP 409 Conflict with instructions to refresh data.",
+        "All error responses follow a consistent JSON structure with 'errorCode', 'message', and optional 'details' fields."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication; sessions or tokens must be securely stored and transmitted over HTTPS.",
+        "Collaborator data, especially sensitive CV snippets and contact info, must be encrypted at rest in the database.",
+        "Access controls restrict data visibility and modification to authorized users only.",
+        "Institutional policies and collaborator profiles are versioned to maintain audit trails and rollback capability.",
+        "Input validation prevents injection attacks and ensures data integrity.",
+        "Exported reports sanitize all data to prevent leakage of sensitive information.",
+        "Rate limiting and monitoring should be implemented on API routes to prevent abuse.",
+        "Future multi-user concurrency controls must include optimistic locking or similar mechanisms to prevent data races."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /collaborators page",
+          "when": "They input valid collaborator details including name, institution, and optional CV snippets and policies, then submit",
+          "then": "The collaborator profile is saved successfully and retrievable via GET /api/collaborators"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the /tasks page",
+          "when": "They create a new project task with title, description, assigned collaborators, and contribution estimate, then submit",
+          "then": "The task is saved and linked collaborators are validated; task is retrievable via GET /api/tasks"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user with existing collaborators and tasks",
+          "when": "They request generation of a collaboration plan via POST /api/collaboration-plan/generate with valid collaborator and task IDs",
+          "then": "A collaboration plan version is created with role assignments, authorship order, conflict flags if any, and negotiation summary"
+        },
+        {
+          "id": "AT-004",
+          "given": "A collaboration plan with detected conflicts",
+          "when": "The user views the plan on /collaboration-plan page",
+          "then": "Conflict flags are clearly displayed, and the user is warned before exporting reports"
+        },
+        {
+          "id": "AT-005",
+          "given": "An unauthenticated user attempts to access /collaborators or /tasks pages or API routes",
+          "when": "They navigate to these pages or call the APIs",
+          "then": "Access is denied with redirect to /login or HTTP 401 Unauthorized response"
+        },
+        {
+          "id": "AT-006",
+          "given": "User submits collaborator data with invalid JSON in authorship policies",
+          "when": "They submit the form",
+          "then": "The UI shows validation errors and the API returns HTTP 400 with descriptive error message"
+        },
+        {
+          "id": "AT-007",
+          "given": "User attempts to export a collaboration plan report with unresolved conflicts",
+          "when": "They trigger export",
+          "then": "The system warns about unresolved conflicts and requires user confirmation before proceeding"
+        }
+      ],
+      "buildOrder": [
+        "Implement authentication system and /login page with session/token management.",
+        "Define Prisma models for Collaborator, ProjectTask, and CollaborationPlan with required fields and indexes.",
+        "Develop Collaborator Data Store with encryption and versioning support.",
+        "Build Collaborator Management API (/api/collaborators) with validation and access control.",
+        "Create Collaborator Input UI (/collaborators) with form validation and API integration.",
+        "Develop Project Task Data Store with history tracking.",
+        "Build Project Task Management API (/api/tasks) with validation and collaborator linking.",
+        "Create Project Task Input UI (/tasks) with form validation and API integration.",
+        "Develop Collaboration Plan Data Store supporting multiple versions and conflict tracking.",
+        "Implement ConflictDetectionJob triggered on collaboration plan generation or update.",
+        "Build Collaboration Plan & Analysis API (/api/collaboration-plan/generate and /api/collaboration-plan/:id) with advisory algorithms and conflict detection.",
+        "Create Collaboration Plan & Summary UI (/collaboration-plan) with visualization, conflict flag display, negotiation summaries, and export functionality.",
+        "Implement consistent error handling and validation feedback across all APIs and UIs.",
+        "Conduct acceptance testing and security review."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/collaborators",
+          "/tasks",
+          "/collaboration-plan"
+        ],
+        "apiFilesToCreate": [
+          "/api/collaborators/index.ts",
+          "/api/tasks/index.ts",
+          "/api/collaboration-plan/generate.ts",
+          "/api/collaboration-plan/[id].ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Collaborator { id String @id name String institution String cvSnippets Json? authorshipPolicies Json? contactInfo Json? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }",
+          "model ProjectTask { id String @id title String description String? assignedCollaborators Json? contributionEstimate Float? relatedObjectives String? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }",
+          "model CollaborationPlan { id String @id version Int roleAssignments Json authorshipOrder Json conflictFlags Json? negotiationSummary String? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints, clarify ambiguous inputs, and gather further details to refine the tool requirements.",
+        "promptTemplate": "Given the current blueprint: {{BLUEPRINT}}\nAnd the expanded specs: {{EXPANDED}}\nPlease list any missing constraints, unclear requirements, or additional information needed from the user: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-models-pages",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Establish final page designs, routes, and data models based on refined requirements.",
+        "promptTemplate": "Using the refined requirements: {{REFINED_REQUIREMENTS}}\nAnd the current blueprint: {{BLUEPRINT}}\nProduce a finalized list of pages, routes, and data models needed for implementation.\nInclude any changes or additions: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial page stubs and UI components for the finalized pages with placeholders.",
+        "promptTemplate": "Given the finalized pages and routes: {{FINAL_PAGES}}\nGenerate starter code snippets or descriptions for each page stub.\nUser notes: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Plan integration of UI pages with API endpoints and database models ensuring data flow and security.",
+        "promptTemplate": "With pages: {{FINAL_PAGES}}\nAPI routes: {{API_ROUTES}}\nData models: {{DATA_MODELS}}\nCreate an integration plan describing how to connect UI, API, and DB layers including authentication and validation.\nAdditional user input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

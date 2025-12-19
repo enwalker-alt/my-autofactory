@@ -1,0 +1,653 @@
+{
+  "slug": "academic-data-harmonization-assistant",
+  "title": "Academic Research Data Harmonization & Schema Mapping Assistant",
+  "description": "Upload multiple dataset files and metadata to receive automated schema mapping suggestions and combined harmonized datasets with validation and mapping reports. Supports CSV, Excel, and JSON files with optional target schema and mapping constraints uploads. Outputs detailed mapping correspondences, harmonized data previews, and validation summaries for reproducible academic data integration.",
+  "inputLabel": "Upload your dataset files, metadata, and optional target schema or mapping constraints (CSV, Excel, JSON)",
+  "outputLabel": "Schema mapping suggestions, harmonized dataset preview, and validation report",
+  "systemPrompt": "You are a helpful assistant specialized in academic research data harmonization. Given multiple uploaded dataset files and their metadata, plus an optional target standardized schema and mapping constraints, generate structured and clear schema mapping suggestions aligning variables from source datasets to the target schema. Identify conflicts, missing mappings, and recommend transformations. Validate inputs strictly, reject unsupported file types or corrupted files. Provide outputs as plain text reports summarizing mappings, harmonized dataset previews, and validation issues. Ensure no sensitive data is exposed. Refuse requests missing required inputs or unauthorized access.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Initial Mapping Suggestion",
+      "prompt": "Analyze the uploaded datasets and metadata to generate automated schema mapping suggestions aligned to the provided target schema. Summarize variable correspondences, highlight mapping conflicts or missing variables, and recommend transformations. Provide a harmonized dataset preview and data validation report. Format output as structured JSON with mapping details and issues.",
+      "hint": "Use this to get a first draft of schema mappings and harmonization results."
+    },
+    {
+      "label": "Validate and Refine Mappings",
+      "prompt": "Review the current schema mapping suggestions for inconsistencies or conflicts. Suggest corrections or highlight unresolved issues. Provide updated mapping reports and validation summaries. Output as plain text explaining detected problems and recommendations.",
+      "hint": "Use this to improve or fix schema mapping before harmonization."
+    },
+    {
+      "label": "Generate Harmonized Dataset",
+      "prompt": "Apply the approved schema mappings to the uploaded datasets to produce a combined harmonized dataset. Provide a summary of the harmonized data and data validation results highlighting any remaining issues or recommendations. Output as JSON including harmonized data preview and validation report.",
+      "hint": "Use this to generate the integrated dataset ready for analysis."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Outputs JSON objects with keys: mappings (array of variable correspondences), harmonizedData (array of records), validationReport (issues and recommendations).",
+  "clarifyPrompt": "Please upload your dataset files (CSV, Excel, JSON), metadata files, and optionally a target schema or mapping constraints to proceed with schema mapping and data harmonization. Ensure files are valid and under size limits.",
+  "finalizePrompt": "Confirm your uploaded files and mapping preferences. Proceed to receive automated schema mapping suggestions and harmonized dataset preview with validation reports.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Harmonization & Schema Mapping Assistant",
+      "niche": {
+        "role": "Academic Research Data Manager",
+        "scenario": "Integrating heterogeneous datasets from multiple collaborators or sources to create a unified, standardized dataset for analysis and sharing."
+      },
+      "problem": "Academic research projects often involve collecting data from multiple sources or collaborators, each with different data schemas, formats, and variable naming conventions. Harmonizing these heterogeneous datasets into a consistent, standardized format is tedious, error-prone, and time-consuming. Existing tools focus on data cleaning or version control but do not provide structured assistance for aligning and mapping diverse dataset schemas to a unified research data model, which is essential for integrated analysis, reproducibility, and compliant data sharing.",
+      "inputs": [
+        "Multiple dataset files (CSV, Excel, JSON) from collaborators or sources",
+        "Metadata or data dictionaries describing each dataset's variables and formats",
+        "Target standardized data schema or template (optional upload or definition)",
+        "Mapping constraints or rules (optional)"
+      ],
+      "outputs": [
+        "Structured data schema mapping report showing variable correspondences and transformations",
+        "Harmonized dataset combining input files into the unified schema with resolved conflicts and documented transformations",
+        "Data validation and consistency report highlighting issues and recommendations",
+        "Exportable mapping templates and harmonization protocol documents"
+      ],
+      "whyItWins": [
+        "Directly addresses a critical bottleneck in multi-source academic data integration overlooked by existing cleaning or versioning tools",
+        "Reduces manual effort and errors in schema alignment through semi-automated mapping suggestions and validation",
+        "Supports reproducibility and compliance by generating documentation and protocol summaries",
+        "Facilitates collaboration by enabling shared mapping templates and iterative refinement",
+        "Lightweight initial version can scale into a multi-page system for ongoing data integration, versioning, and audit trails"
+      ],
+      "upgradePath": {
+        "today": "A single-page tool where users upload datasets and metadata files to receive automated schema mapping suggestions and a combined harmonized dataset with reports.",
+        "in90Days": "Add interactive multi-dataset mapping editor, user collaboration features for mapping review, and export/import of mapping templates; integrate basic version control and conflict resolution workflows.",
+        "in12Months": "Develop full multi-page app with project management dashboards, detailed provenance tracking, integration with data repositories, automated compliance checks, support for complex data transformations, and API integrations for automated updates from collaborators."
+      },
+      "riskNotes": [
+        "Data privacy must be ensured by secure upload and storage; sensitive data should be anonymized before use.",
+        "Automated schema suggestions may occasionally produce incorrect mappings; user review and override is essential.",
+        "Complex domain-specific data may require custom extension or manual mapping beyond automated capabilities.",
+        "Initial focus on tabular data formats; support for unstructured or semi-structured data would require significant enhancements."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An academic research data harmonization assistant that helps data managers integrate heterogeneous datasets from multiple collaborators by semi-automatically mapping diverse schemas to a unified target schema, generating harmonized datasets, validation reports, and exportable documentation to support reproducibility and collaboration.",
+      "primaryUser": "Academic Research Data Manager",
+      "successMetrics": [
+        "Reduction in manual effort/time spent on schema alignment and data harmonization",
+        "Accuracy and usability of automated schema mapping suggestions",
+        "User adoption and collaboration frequency on mapping templates",
+        "Number of harmonized datasets successfully generated and exported",
+        "User satisfaction with validation reports and documentation completeness"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Dataset and Metadata Upload UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload multiple dataset files (CSV, Excel, JSON), metadata/data dictionaries, target schemas, and optional mapping constraints.",
+          "dependsOn": [],
+          "notes": [
+            "Validate file formats and sizes on upload",
+            "Provide clear error messages for unsupported or corrupted files",
+            "Support drag-and-drop and batch uploads"
+          ]
+        },
+        {
+          "id": "ui-mapping-editor",
+          "name": "Interactive Schema Mapping Editor UI",
+          "type": "ui",
+          "responsibility": "Enable users to review, adjust, and refine automated schema mapping suggestions across multiple datasets and the target schema; support manual overrides and mapping rule editing.",
+          "dependsOn": [
+            "api-schema-mapping"
+          ],
+          "notes": [
+            "Visualize variable correspondences and transformations clearly",
+            "Support collaborative editing and versioning in future upgrades",
+            "Allow saving and exporting mapping templates"
+          ]
+        },
+        {
+          "id": "ui-reports",
+          "name": "Harmonization and Validation Reports UI",
+          "type": "ui",
+          "responsibility": "Display structured mapping reports, data validation and consistency results, and harmonized dataset previews; allow export of reports and protocol documents.",
+          "dependsOn": [
+            "api-reports"
+          ],
+          "notes": [
+            "Highlight conflicts, inconsistencies, and recommendations clearly",
+            "Support export in common formats (PDF, DOCX, JSON)",
+            "Provide links to mapping templates and harmonized data downloads"
+          ]
+        },
+        {
+          "id": "api-schema-mapping",
+          "name": "Schema Mapping and Harmonization API",
+          "type": "api",
+          "responsibility": "Process uploaded datasets and metadata to generate automated schema mapping suggestions; apply mapping rules to produce harmonized datasets; store and serve mapping templates.",
+          "dependsOn": [
+            "data-datasets",
+            "data-mappings"
+          ],
+          "notes": [
+            "Use heuristics and metadata analysis for automated suggestions",
+            "Support manual overrides and incremental updates",
+            "Handle conflicting mappings and report errors"
+          ]
+        },
+        {
+          "id": "api-reports",
+          "name": "Validation and Reporting API",
+          "type": "api",
+          "responsibility": "Generate data validation and consistency reports based on harmonized datasets; produce mapping reports and exportable protocol documents.",
+          "dependsOn": [
+            "data-harmonized",
+            "data-mappings"
+          ],
+          "notes": [
+            "Detect missing values, type mismatches, and data conflicts",
+            "Provide actionable recommendations",
+            "Support export formats for sharing and compliance"
+          ]
+        },
+        {
+          "id": "data-datasets",
+          "name": "Datasets and Metadata Storage",
+          "type": "data",
+          "responsibility": "Persist uploaded raw datasets, metadata files, and target schemas securely with versioning and access controls.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive data at rest",
+            "Support anonymization flags and data privacy compliance",
+            "Track upload timestamps and source information"
+          ]
+        },
+        {
+          "id": "data-mappings",
+          "name": "Schema Mappings and Templates Storage",
+          "type": "data",
+          "responsibility": "Store schema mapping definitions, user edits, mapping templates, and mapping version history.",
+          "dependsOn": [
+            "data-datasets"
+          ],
+          "notes": [
+            "Support incremental updates and rollback",
+            "Enable sharing and collaboration features in future versions",
+            "Maintain audit trails for mapping changes"
+          ]
+        },
+        {
+          "id": "data-harmonized",
+          "name": "Harmonized Datasets Storage",
+          "type": "data",
+          "responsibility": "Persist harmonized datasets generated from applying mappings to input data, along with associated validation reports.",
+          "dependsOn": [
+            "data-datasets",
+            "data-mappings"
+          ],
+          "notes": [
+            "Store in standardized formats for easy export",
+            "Track provenance metadata for reproducibility",
+            "Support deletion or archiving policies for data lifecycle"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Dataset",
+          "purpose": "Represents an uploaded dataset file along with its metadata and provenance information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filetype",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "uploaderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "isAnonymized",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "uploaderId"
+          ]
+        },
+        {
+          "name": "SchemaMapping",
+          "purpose": "Defines correspondences and transformation rules between source dataset variables and target schema variables.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetSchemaId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "mappings",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "datasetId",
+            "targetSchemaId"
+          ]
+        },
+        {
+          "name": "HarmonizedDataset",
+          "purpose": "Stores the combined dataset after applying schema mappings, along with validation results.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "mappingId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "data",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "validationReport",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "mappingId"
+          ]
+        },
+        {
+          "name": "TargetSchema",
+          "purpose": "Represents the standardized data schema or template to which datasets are mapped.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Datasets and Metadata",
+          "purpose": "Page for users to upload dataset files, metadata, target schemas, and optional mapping constraints.",
+          "inputs": [
+            "Dataset files",
+            "Metadata files",
+            "Target schema files",
+            "Mapping constraints"
+          ],
+          "outputs": [
+            "Upload status",
+            "File validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/mapping-editor",
+          "title": "Schema Mapping Editor",
+          "purpose": "Interactive editor for reviewing and refining automated schema mapping suggestions across datasets.",
+          "inputs": [
+            "Selected datasets",
+            "Target schema",
+            "Automated mapping suggestions",
+            "User edits"
+          ],
+          "outputs": [
+            "Updated mapping templates",
+            "Mapping validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Harmonization and Validation Reports",
+          "purpose": "Display harmonized dataset previews, mapping reports, and validation results with export options.",
+          "inputs": [
+            "Harmonized dataset ID",
+            "Mapping ID"
+          ],
+          "outputs": [
+            "Mapping report",
+            "Validation report",
+            "Downloadable exports"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Accept dataset, metadata, target schema, and mapping constraint uploads.",
+          "requestShape": "{ files: File[], metadata: JSON?, targetSchema: JSON?, mappingConstraints: JSON? }",
+          "responseShape": "{ success: boolean, errors: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/schema-mapping/suggest",
+          "method": "POST",
+          "purpose": "Generate automated schema mapping suggestions based on uploaded datasets and target schema.",
+          "requestShape": "{ datasetIds: string[], targetSchemaId: string }",
+          "responseShape": "{ mappings: JSON, warnings: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/schema-mapping/save",
+          "method": "POST",
+          "purpose": "Save user-edited schema mappings and mapping templates.",
+          "requestShape": "{ mapping: JSON }",
+          "responseShape": "{ success: boolean, mappingId: string, errors: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/harmonize",
+          "method": "POST",
+          "purpose": "Apply schema mappings to datasets to produce harmonized dataset and validation reports.",
+          "requestShape": "{ mappingId: string }",
+          "responseShape": "{ harmonizedDatasetId: string, validationReport: JSON, errors: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/download",
+          "method": "GET",
+          "purpose": "Download mapping templates, harmonization protocols, or validation reports in exportable formats.",
+          "requestShape": "{ reportType: string, id: string }",
+          "responseShape": "{ fileUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Data Anonymization Job",
+          "trigger": "On dataset upload flagged for anonymization",
+          "purpose": "Automatically anonymize sensitive data fields before storage and processing to ensure privacy compliance."
+        },
+        {
+          "name": "Mapping Consistency Checker",
+          "trigger": "On mapping save or update",
+          "purpose": "Validate schema mappings for conflicts, missing correspondences, and logical errors; notify users of issues."
+        },
+        {
+          "name": "Harmonization Batch Processor",
+          "trigger": "On harmonization request",
+          "purpose": "Process large datasets applying mappings asynchronously to generate harmonized datasets and validation reports."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded datasets with missing or incomplete metadata making automated mapping difficult",
+        "Conflicting variable mappings across multiple datasets requiring manual resolution",
+        "Datasets containing sensitive or personally identifiable information requiring anonymization",
+        "Unsupported or corrupted file formats causing upload failures",
+        "Large datasets causing performance bottlenecks in harmonization processing",
+        "User overrides that produce invalid or inconsistent mappings",
+        "Partial uploads or network interruptions during file upload",
+        "Target schema changes invalidating existing mappings"
+      ],
+      "nonGoals": [
+        "Comprehensive data cleaning or error correction beyond schema harmonization",
+        "Support for unstructured or semi-structured data formats (e.g., text, images)",
+        "Full-fledged version control system for datasets (only basic versioning of mappings initially)",
+        "Automated domain-specific semantic interpretation or ontology integration",
+        "Real-time collaborative editing in initial versions",
+        "Direct integration with external data repositories or APIs (planned for future upgrades)"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses /upload page to submit dataset files, metadata, target schemas, and optional mapping constraints.",
+        "Files and metadata are validated client-side for format, size, and integrity before submission to /api/upload.",
+        "/api/upload validates inputs server-side, stores datasets and metadata in data-datasets with versioning and encryption, triggers Data Anonymization Job if flagged.",
+        "User navigates to /mapping-editor, selects datasets and target schema; frontend requests automated mapping suggestions from /api/schema-mapping/suggest.",
+        "/api/schema-mapping/suggest analyzes stored datasets and target schema, applies heuristics to generate mapping suggestions, returns mappings and warnings.",
+        "User reviews and edits mappings in UI; changes are saved via /api/schema-mapping/save, which validates and stores mappings in data-mappings, triggers Mapping Consistency Checker job.",
+        "Upon user request, /api/harmonize applies saved mappings to datasets asynchronously via Harmonization Batch Processor, generates harmonized datasets and validation reports stored in data-harmonized.",
+        "User accesses /reports page, inputs harmonized dataset ID and mapping ID; frontend fetches mapping reports and validation results from /api-reports endpoints.",
+        "User can download mapping templates, harmonization protocols, or validation reports via /api/reports/download in requested formats.",
+        "Background jobs ensure data anonymization, mapping consistency, and batch harmonization processing to maintain data integrity and performance."
+      ],
+      "validationRules": [
+        "File uploads must be CSV, Excel, or JSON formats only; reject unsupported or corrupted files with descriptive errors.",
+        "Maximum file size limits enforced both client and server side to prevent performance issues.",
+        "Metadata and target schema JSON must conform to predefined JSON schema structures; invalid JSON rejected with error details.",
+        "Mapping JSON must include required fields: datasetId, targetSchemaId, mappings object, createdBy, createdAt, version; reject incomplete or malformed mappings.",
+        "Mapping consistency checks to detect conflicting variable mappings, missing correspondences, and logical errors before saving.",
+        "Harmonization requests must reference existing valid mapping IDs; reject requests with invalid or outdated mappings.",
+        "Report download requests must specify valid reportType and existing resource ID; reject unauthorized or invalid requests.",
+        "User authentication required for all API routes; reject unauthorized requests with 401 errors.",
+        "Input data fields validated for type correctness, required presence, and constraints (e.g., dates, strings, booleans)."
+      ],
+      "errorHandling": [
+        "API responses include success boolean and detailed error messages array for client display.",
+        "File upload errors specify file name and issue (format, size, corruption) for user correction.",
+        "Mapping suggestion warnings returned separately to inform users without blocking operation.",
+        "Mapping save errors include validation failures and conflict descriptions to guide user fixes.",
+        "Harmonization errors report processing failures, data inconsistencies, or missing dependencies.",
+        "Report download errors return 404 for missing files and 403 for unauthorized access.",
+        "Network or partial upload failures trigger client-side retry mechanisms with user notifications.",
+        "Background job failures logged with alerts for admin review; user-facing errors returned gracefully.",
+        "All errors logged server-side with context for debugging and audit trails."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication and authorization checks to prevent unauthorized data access.",
+        "Sensitive dataset files and metadata encrypted at rest in storage to ensure data privacy.",
+        "Data anonymization job enforces privacy compliance by removing or masking PII before storage and processing.",
+        "Access controls enforced on dataset, mapping, and harmonized data retrieval based on uploader or user permissions.",
+        "Input validation prevents injection attacks and malformed data storage.",
+        "Audit trails maintained for mapping changes and data uploads for accountability.",
+        "File uploads scanned for malware or harmful content before processing.",
+        "Rate limiting and size limits applied to prevent denial-of-service attacks.",
+        "Secure transport (HTTPS) enforced for all client-server communications."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A logged-in user on the /upload page with valid dataset files and metadata prepared",
+          "when": "The user uploads multiple files including datasets, metadata, and target schemas",
+          "then": "The system validates all files, stores them securely, returns success status, and triggers anonymization if flagged"
+        },
+        {
+          "id": "AT-002",
+          "given": "A logged-in user on /mapping-editor with selected datasets and target schema",
+          "when": "The user requests automated schema mapping suggestions",
+          "then": "The system returns mapping suggestions with any warnings, which are displayed clearly in the UI"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user edits schema mappings with manual overrides introducing conflicts",
+          "when": "The user attempts to save the mapping template",
+          "then": "The system detects conflicts, returns validation errors, and prevents saving until resolved"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user requests harmonization with a valid mapping ID",
+          "when": "The harmonization process completes successfully",
+          "then": "A harmonized dataset and validation report are stored and the user receives IDs for access"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user on the /reports page with a harmonized dataset ID and mapping ID",
+          "when": "The user views reports and requests exports in PDF and JSON formats",
+          "then": "The system provides accurate reports with highlighted issues and downloadable export files"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthorized user attempts to access any API route",
+          "when": "The request is made without valid authentication",
+          "then": "The system rejects the request with a 401 Unauthorized error"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user uploads a corrupted or unsupported file",
+          "when": "The upload is submitted",
+          "then": "The system rejects the file with a clear error message indicating the problem"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user saves a mapping template successfully",
+          "when": "The Mapping Consistency Checker job runs",
+          "then": "Any detected issues are reported back to the user for correction"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Dataset, SchemaMapping, HarmonizedDataset, TargetSchema",
+        "Implement /api/upload route with file validation, storage, and anonymization job trigger",
+        "Implement data storage layer with encryption and versioning for datasets and metadata",
+        "Implement /api/schema-mapping/suggest route with heuristic mapping generation",
+        "Build /mapping-editor UI to display suggestions and allow manual edits",
+        "Implement /api/schema-mapping/save route with validation and consistency checking job trigger",
+        "Implement /api/harmonize route with batch processing job for harmonization and validation",
+        "Implement /api/reports/download route supporting multiple export formats",
+        "Build /upload, /mapping-editor, and /reports pages with authentication and API integration",
+        "Implement background jobs: Data Anonymization, Mapping Consistency Checker, Harmonization Batch Processor",
+        "Add error handling, logging, and security checks across API and UI",
+        "Write acceptance tests and perform end-to-end validation"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/mapping-editor",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload.ts",
+          "/api/schema-mapping/suggest.ts",
+          "/api/schema-mapping/save.ts",
+          "/api/harmonize.ts",
+          "/api/reports/download.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Dataset",
+          "SchemaMapping",
+          "HarmonizedDataset",
+          "TargetSchema"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to identify missing constraints and details for the academic data harmonization tool.",
+        "promptTemplate": "You are a planner refining the requirements for the Academic Research Data Harmonization Assistant. Given the current blueprint and idea: {{BLUEPRINT}} and {{IDEA}}, ask detailed questions to uncover missing constraints, edge cases, and user needs before design."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define detailed page layouts, data models, and API routes based on refined requirements for the harmonization assistant.",
+        "promptTemplate": "You are an architect finalizing the multi-page app design for the Academic Research Data Harmonization Assistant. Using the refined requirements {{REFINED_REQUIREMENTS}}, produce comprehensive page definitions, data models, and API specifications for implementation."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial UI page stubs and components for upload, mapping editor, and reports pages.",
+        "promptTemplate": "You are a builder creating code stubs for the Academic Research Data Harmonization Assistant. Based on the finalized architecture {{ARCHITECTURE}}, generate UI page skeletons and component outlines for upload, mapping editor, and reports pages."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate UI pages with backend API routes and database models to enable end-to-end functionality.",
+        "promptTemplate": "You are an integrator connecting the frontend and backend for the Academic Research Data Harmonization Assistant. Using the code stubs and API specs {{BUILDER_OUTPUT}}, wire the UI pages to API endpoints and database models to implement full data flow."
+      }
+    ]
+  }
+}

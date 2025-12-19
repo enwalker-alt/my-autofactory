@@ -1,0 +1,777 @@
+{
+  "slug": "academic-seminar-scheduler",
+  "title": "Academic Research Seminar Scheduling & Attendance Optimizer",
+  "description": "Upload availability and room data CSV files to generate an optimized multi-week seminar schedule that minimizes conflicts and maximizes attendance. Receive conflict alerts and summary scheduling reports.",
+  "inputLabel": "Upload your CSV files containing availability and room data (multiple files allowed). Optionally, paste JSON data for seminar proposals and faculty availability.",
+  "outputLabel": "Optimized seminar schedule summary, conflict alerts, and recommendations.",
+  "systemPrompt": "You are an assistant for academic department administrators planning recurring research seminar series. Accept CSV file uploads or JSON text input describing seminar proposals, faculty and room availability, and preferences. Validate all inputs strictly for format and completeness. Refuse any request containing disallowed or unsafe content. Generate a plain text summary of an optimized seminar schedule minimizing conflicts and maximizing attendance based on the provided data. Report detected conflicts explicitly. Output only plain text unless structured-output mode is enabled. When structured-output is enabled, output a JSON object with keys: optimizedSchedule, conflictAlerts, and summaryReport. Enforce privacy by never exposing personal calendar details. Disallow any content unrelated to academic seminar scheduling. Keep responses professional and concise.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Basic Optimization",
+      "prompt": "Use the uploaded availability and room data to generate an optimized seminar schedule minimizing conflicts and matching room sizes to expected attendance."
+    },
+    {
+      "label": "Conflict Focused",
+      "prompt": "Analyze the input data to identify and list all scheduling conflicts including overlapping seminars, room double-bookings, and unavailable presenters."
+    },
+    {
+      "label": "Attendance Projection",
+      "prompt": "Based on historical attendance data and preferences, generate attendance projections and recommend schedule adjustments to improve participation."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output a JSON object with { optimizedSchedule: Seminar[], conflictAlerts: string[], summaryReport: string }.",
+  "clarifyPrompt": "Please provide your availability, seminar proposals, and room data in CSV or JSON format. If any input is missing or unclear, specify what data you can provide.",
+  "finalizePrompt": "Confirm you want to generate the optimized seminar schedule and conflict report based on the provided inputs. Reply 'yes' to proceed or specify changes.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Seminar Scheduling & Attendance Optimizer",
+      "niche": {
+        "role": "Academic Department Administrator",
+        "scenario": "Planning and managing recurring research seminar series across multiple research groups within a university department"
+      },
+      "problem": "Department administrators struggle to coordinate seminar schedules that avoid conflicts with research group meetings, faculty availability, room bookings, and attendee preferences, leading to low attendance and inefficient resource use.",
+      "inputs": [
+        "List of preferred seminar dates and times from each research group",
+        "Faculty and speaker availability calendars",
+        "Room availability and capacity data",
+        "Historical attendance records or preferences (if available)",
+        "Seminar topics and target audience groups"
+      ],
+      "outputs": [
+        "Optimized multi-week seminar schedule minimizing conflicts and maximizing expected attendance",
+        "Room assignments aligned with expected audience size and equipment needs",
+        "Conflict alerts for overlapping events or unavailable resources",
+        "Personalized calendar invites and reminders for faculty and attendees",
+        "Summary reports on scheduling efficiency and attendance projections"
+      ],
+      "whyItWins": [
+        "Addresses complex, recurring coordination challenges specific to academic seminar series not tackled by general calendar apps or event planners",
+        "Leverages multiple heterogeneous inputs to generate conflict-free, resource-optimized schedules improving attendance and departmental collaboration",
+        "Automates tedious manual coordination, saving administrator time and reducing errors",
+        "Supports iterative updates and scenario testing, adapting to changing availability or seminar proposals",
+        "Can be expanded to integrate with institutional calendar systems and attendance tracking for continuous improvement"
+      ],
+      "upgradePath": {
+        "today": "Provide a single-page app for admins to upload CSVs of availability and room data to generate an optimized seminar schedule and downloadable calendar files",
+        "in90Days": "Add user accounts, interactive schedule editing, conflict resolution suggestions, and automated email/calendar invite generation",
+        "in12Months": "Develop a multi-page system with integration to institutional calendars (Outlook/Google), attendance tracking dashboards, seminar feedback collection, and AI-driven attendance prediction based on historical data"
+      },
+      "riskNotes": [
+        "Requires careful handling of privacy when integrating personal availability calendars",
+        "Dependent on accuracy and completeness of input availability data",
+        "May face institutional IT integration challenges with calendar systems",
+        "Needs to ensure user-friendly UI to accommodate administrators with varying technical skills"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page application to help academic department administrators optimize recurring research seminar scheduling by integrating availability, room data, and attendance preferences to generate conflict-free, resource-efficient seminar schedules with personalized invites and reporting.",
+      "primaryUser": "Academic Department Administrator",
+      "successMetrics": [
+        "Reduction in scheduling conflicts and overlaps",
+        "Increase in seminar attendance rates",
+        "Time saved in manual scheduling tasks",
+        "User satisfaction and adoption by departmental admins",
+        "Accuracy and usefulness of attendance projections and reports"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Admin Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for data upload, schedule visualization, conflict alerts, interactive editing, and report viewing.",
+          "dependsOn": [
+            "api-schedule",
+            "api-user",
+            "api-report"
+          ],
+          "notes": [
+            "Needs to be user-friendly for varying technical skill levels",
+            "Supports iterative schedule adjustments and scenario testing"
+          ]
+        },
+        {
+          "id": "api-user",
+          "name": "User & Auth API",
+          "type": "api",
+          "responsibility": "Manage user authentication, authorization, and profile data including calendar integrations and preferences.",
+          "dependsOn": [
+            "data-user"
+          ],
+          "notes": [
+            "Supports future integration with institutional SSO",
+            "Handles privacy and consent for calendar data access"
+          ]
+        },
+        {
+          "id": "api-schedule",
+          "name": "Scheduling Engine API",
+          "type": "api",
+          "responsibility": "Process input data, run optimization algorithms to generate seminar schedules, detect conflicts, and provide editable schedule data.",
+          "dependsOn": [
+            "data-seminar",
+            "data-availability",
+            "data-room",
+            "job-optimization"
+          ],
+          "notes": [
+            "Handles complex constraint satisfaction and optimization",
+            "Supports scenario testing and iterative updates"
+          ]
+        },
+        {
+          "id": "api-report",
+          "name": "Reporting & Notification API",
+          "type": "api",
+          "responsibility": "Generate summary reports, attendance projections, send calendar invites and reminders via email or calendar integrations.",
+          "dependsOn": [
+            "data-seminar",
+            "data-attendance",
+            "integration-email",
+            "integration-calendar"
+          ],
+          "notes": [
+            "Supports personalized notifications",
+            "Handles failure/retry of email/calendar sends"
+          ]
+        },
+        {
+          "id": "data-user",
+          "name": "User & Calendar Data Store",
+          "type": "data",
+          "responsibility": "Persist user accounts, roles, calendar integration tokens, and preferences.",
+          "dependsOn": [],
+          "notes": [
+            "Stores sensitive tokens securely",
+            "Supports audit logs for privacy compliance"
+          ]
+        },
+        {
+          "id": "data-seminar",
+          "name": "Seminar Scheduling Data Store",
+          "type": "data",
+          "responsibility": "Store seminar proposals, finalized schedules, room assignments, and conflict metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Tracks version history for iterative edits",
+            "Supports exporting schedules"
+          ]
+        },
+        {
+          "id": "data-availability",
+          "name": "Availability & Preferences Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded availability calendars, room availability, faculty/speaker preferences, and historical attendance data.",
+          "dependsOn": [],
+          "notes": [
+            "Supports CSV imports and calendar sync data",
+            "Handles incomplete or conflicting availability gracefully"
+          ]
+        },
+        {
+          "id": "data-room",
+          "name": "Room & Resource Data Store",
+          "type": "data",
+          "responsibility": "Store room details including capacity, equipment, and booking constraints.",
+          "dependsOn": [],
+          "notes": [
+            "Supports room conflict detection",
+            "Allows updates for room resource changes"
+          ]
+        },
+        {
+          "id": "data-attendance",
+          "name": "Attendance & Feedback Data Store",
+          "type": "data",
+          "responsibility": "Persist historical attendance records and seminar feedback for AI-driven predictions and reporting.",
+          "dependsOn": [],
+          "notes": [
+            "Optional at launch, grows over time",
+            "Supports privacy and anonymization"
+          ]
+        },
+        {
+          "id": "job-optimization",
+          "name": "Schedule Optimization Job",
+          "type": "job",
+          "responsibility": "Run optimization algorithms asynchronously to generate conflict-free seminar schedules based on inputs and constraints.",
+          "dependsOn": [
+            "data-availability",
+            "data-room",
+            "data-seminar"
+          ],
+          "notes": [
+            "Handles large input sets efficiently",
+            "Retries on failure, logs errors"
+          ]
+        },
+        {
+          "id": "integration-email",
+          "name": "Email Notification Integration",
+          "type": "integration",
+          "responsibility": "Send personalized calendar invites, reminders, and conflict alerts via email.",
+          "dependsOn": [],
+          "notes": [
+            "Handles email delivery failures and retries",
+            "Supports templates and localization"
+          ]
+        },
+        {
+          "id": "integration-calendar",
+          "name": "Calendar System Integration",
+          "type": "integration",
+          "responsibility": "Sync seminar schedules and invites with institutional calendar systems (e.g. Outlook, Google Calendar).",
+          "dependsOn": [
+            "api-user"
+          ],
+          "notes": [
+            "Requires OAuth and privacy compliance",
+            "Handles API rate limits and errors"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents department administrators and faculty users with authentication and calendar integration info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "calendarIntegrationTokens",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Seminar",
+          "purpose": "Stores seminar proposals, scheduled times, assigned rooms, topics, and audience groups.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "presenterId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scheduledStart",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "scheduledEnd",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "roomId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "targetAudience",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "scheduledStart",
+            "presenterId",
+            "roomId"
+          ]
+        },
+        {
+          "name": "AvailabilityEntry",
+          "purpose": "Represents availability windows for faculty, speakers, rooms, and research groups.",
+          "fields": [
+            {
+              "name": "entityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "start",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "end",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "entityId",
+            "start",
+            "end"
+          ]
+        },
+        {
+          "name": "Room",
+          "purpose": "Stores room details including capacity and equipment for seminar assignments.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "capacity",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "equipment",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "availability",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "AttendanceRecord",
+          "purpose": "Historical attendance data linked to seminars for prediction and reporting.",
+          "fields": [
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "attendeeId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "attended",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "seminarId",
+            "attendeeId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Dashboard",
+          "purpose": "Landing page showing summary of upcoming seminars, conflicts, and quick actions.",
+          "inputs": [],
+          "outputs": [
+            "seminarScheduleSummary",
+            "conflictAlerts",
+            "notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/upload-data",
+          "title": "Upload Availability & Room Data",
+          "purpose": "Page for admins to upload CSV files or sync calendars with availability and room info.",
+          "inputs": [
+            "CSV files",
+            "calendar sync authorization"
+          ],
+          "outputs": [
+            "parsedAvailabilityData",
+            "parsedRoomData",
+            "uploadStatus"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/schedule",
+          "title": "Schedule Optimization & Editing",
+          "purpose": "Interactive schedule visualization and editing interface with conflict detection and scenario testing.",
+          "inputs": [
+            "availabilityData",
+            "seminarProposals",
+            "roomData"
+          ],
+          "outputs": [
+            "optimizedSchedule",
+            "conflictAlerts",
+            "editHistory"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reports & Attendance Projections",
+          "purpose": "View summary reports on scheduling efficiency, attendance projections, and seminar feedback.",
+          "inputs": [
+            "scheduleData",
+            "attendanceData",
+            "feedbackData"
+          ],
+          "outputs": [
+            "reports",
+            "charts",
+            "exportableFiles"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings & Integrations",
+          "purpose": "Manage user profile, calendar integrations, notification preferences, and privacy settings.",
+          "inputs": [
+            "userProfile",
+            "integrationTokens",
+            "preferences"
+          ],
+          "outputs": [
+            "updateStatus"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/data/upload",
+          "method": "POST",
+          "purpose": "Upload availability and room data CSVs or calendar sync tokens.",
+          "requestShape": "{ type: string, data: file | json }",
+          "responseShape": "{ status: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/schedule/optimize",
+          "method": "POST",
+          "purpose": "Trigger schedule optimization job with current inputs and return job status.",
+          "requestShape": "{ seminarProposals: Seminar[], availabilityData: AvailabilityEntry[], roomData: Room[] }",
+          "responseShape": "{ jobId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/schedule/result",
+          "method": "GET",
+          "purpose": "Retrieve the latest optimized seminar schedule and conflict alerts.",
+          "requestShape": "{}",
+          "responseShape": "{ schedule: Seminar[], conflicts: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/notifications/send",
+          "method": "POST",
+          "purpose": "Send calendar invites and reminders to attendees and faculty.",
+          "requestShape": "{ seminarId: string, recipients: string[] }",
+          "responseShape": "{ status: string, failedRecipients?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Generate scheduling efficiency and attendance projection reports.",
+          "requestShape": "{ scheduleId: string }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Schedule Optimization",
+          "trigger": "Manual trigger via API or UI; runs asynchronously",
+          "purpose": "Run constraint-based optimization to produce conflict-free seminar schedules maximizing attendance and resource use."
+        },
+        {
+          "name": "Notification Dispatch",
+          "trigger": "Triggered after schedule finalization or at scheduled reminder times",
+          "purpose": "Send personalized calendar invites, reminders, and conflict alerts to users."
+        },
+        {
+          "name": "Data Sync & Cleanup",
+          "trigger": "Scheduled periodic job",
+          "purpose": "Sync calendar integrations, clean outdated availability data, and archive old seminar records."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or conflicting availability data from multiple sources",
+        "Room double-booking due to last-minute changes or data sync delays",
+        "User revokes calendar integration permissions causing sync failures",
+        "Network or API failures during email or calendar invite dispatch",
+        "Simultaneous edits causing schedule version conflicts",
+        "Privacy concerns when handling personal calendar data",
+        "Handling seminars with multiple presenters or cross-department audiences",
+        "Unexpected seminar cancellations or rescheduling after invites sent"
+      ],
+      "nonGoals": [
+        "Providing a general-purpose calendar or event management system",
+        "Handling non-academic or non-seminar event types",
+        "Replacing institutional calendar systems entirely",
+        "Automated attendance tracking via hardware or sensors",
+        "Full AI-driven autonomous scheduling without admin oversight"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User logs in via /api/auth/login, receives session token and user profile.",
+        "Authenticated user accesses Dashboard (/) which fetches seminarScheduleSummary, conflictAlerts, and notifications from /api/schedule/result and /api/notifications/send status.",
+        "Admin uploads availability and room data via /upload-data page, sending CSV files or calendar sync tokens to /api/data/upload; server parses and stores data in data-availability and data-room stores.",
+        "Admin triggers schedule optimization from /schedule page, sending current seminar proposals, availability, and room data to /api/schedule/optimize; job-optimization runs asynchronously and updates data-seminar with optimized schedules.",
+        "Dashboard and schedule pages poll /api/schedule/result to get latest optimized schedules and conflict alerts.",
+        "Reports page (/reports) requests report generation via /api/reports/generate, which uses data from data-seminar, data-attendance, and data-feedback to produce reports and exportable files.",
+        "Notification dispatch job sends invites and reminders via integration-email and integration-calendar triggered by schedule finalization or scheduled times.",
+        "User manages profile, calendar integrations, and preferences on /settings page, updating data-user via secured API endpoints.",
+        "Background jobs periodically sync calendar integrations, clean outdated data, and archive old seminar records."
+      ],
+      "validationRules": [
+        "Login API: Validate email format and password presence; reject invalid credentials with generic error.",
+        "Upload API: Validate file type (CSV) and JSON structure for calendar sync tokens; reject malformed or unsupported data with detailed error messages.",
+        "Schedule Optimization API: Validate seminar proposals have required fields (id, title, presenterId, status), availability entries have valid date ranges, and room data includes capacity and name.",
+        "Schedule Result API: Ensure user is authenticated; validate response data structure matches Seminar[] and conflict alerts JSON format.",
+        "Notifications API: Validate seminarId exists and recipients are valid user emails; reject if seminar not found or recipients invalid.",
+        "Reports API: Validate scheduleId exists and user has access rights; reject invalid or unauthorized requests.",
+        "User Settings API: Validate email format, preferences JSON schema, and calendar integration tokens for OAuth compliance.",
+        "General: Enforce date fields are valid ISO 8601 dates; numeric fields non-negative; JSON fields conform to expected schemas.",
+        "Conflict detection: Validate no overlapping seminar times for same room or presenter before schedule finalization."
+      ],
+      "errorHandling": [
+        "API endpoints return HTTP status codes: 400 for validation errors with error details, 401 for unauthorized access, 404 for not found resources, 500 for server errors with generic message.",
+        "Upload API collects and returns array of errors per file or data chunk to allow partial success reporting.",
+        "Schedule optimization job retries on failure with exponential backoff; logs errors with jobId for diagnostics.",
+        "Notification dispatch logs failed recipients and retries sending; reports failedRecipients in API response.",
+        "Calendar integration errors (OAuth failures, rate limits) trigger user notifications and require re-authentication flows.",
+        "Simultaneous edits detected via schedule versioning; API rejects outdated versions with conflict error and suggests refresh.",
+        "Privacy-related errors (e.g., revoked calendar permissions) result in disabling sync features and informing user.",
+        "UI displays user-friendly error messages and guidance for corrective actions; logs detailed errors server-side."
+      ],
+      "securityNotes": [
+        "All API routes except login require authentication via session tokens or JWT.",
+        "Sensitive tokens (calendarIntegrationTokens) stored encrypted in data-user store.",
+        "Access control enforced: users can only access and modify data related to their department or permissions.",
+        "OAuth flows for calendar integrations comply with institutional privacy policies and consent requirements.",
+        "Audit logs maintained for data access and changes to support privacy compliance.",
+        "Input validation and sanitization prevent injection attacks and malformed data storage.",
+        "Rate limiting and monitoring on API endpoints to prevent abuse.",
+        "Error messages avoid leaking sensitive information.",
+        "Background jobs run with least privilege principle and secure environment variables."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A valid user with correct credentials",
+          "when": "They submit login request to /api/auth/login",
+          "then": "They receive a session token and user profile with role"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated admin user on /upload-data page",
+          "when": "They upload valid CSV files for availability and room data",
+          "then": "The system parses, stores data, and returns success status with no errors"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user with seminar proposals, availability, and room data",
+          "when": "They trigger schedule optimization via /api/schedule/optimize",
+          "then": "The system starts optimization job and returns jobId and status 'queued' or 'running'"
+        },
+        {
+          "id": "AT-004",
+          "given": "An optimization job completed successfully",
+          "when": "User requests /api/schedule/result",
+          "then": "They receive the latest optimized seminar schedule and any conflict alerts"
+        },
+        {
+          "id": "AT-005",
+          "given": "A finalized seminar schedule",
+          "when": "User triggers notifications send via /api/notifications/send",
+          "then": "Calendar invites and reminders are sent; response includes status and any failed recipients"
+        },
+        {
+          "id": "AT-006",
+          "given": "User updates profile and calendar integration tokens on /settings",
+          "when": "They submit changes",
+          "then": "The system validates input, updates data-user store, and returns updateStatus success"
+        },
+        {
+          "id": "AT-007",
+          "given": "Conflicting seminar times or room double-booking detected",
+          "when": "User views schedule or attempts to finalize",
+          "then": "System displays conflict alerts and prevents finalization until resolved"
+        },
+        {
+          "id": "AT-008",
+          "given": "User revokes calendar integration permissions externally",
+          "when": "System attempts calendar sync",
+          "then": "Sync fails gracefully, user is notified, and tokens are invalidated"
+        },
+        {
+          "id": "AT-009",
+          "given": "User submits invalid data formats to APIs",
+          "when": "API receives request",
+          "then": "API returns 400 with detailed validation errors"
+        },
+        {
+          "id": "AT-010",
+          "given": "Multiple users edit schedule simultaneously",
+          "when": "A user submits outdated schedule version",
+          "then": "API rejects update with conflict error and prompts user to refresh"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, Seminar, AvailabilityEntry, Room, AttendanceRecord",
+        "Implement User & Auth API (/api/auth/login) with authentication and session management",
+        "Implement data-user persistence with secure token storage and audit logging",
+        "Implement APIs for data upload (/api/data/upload) with CSV parsing and validation",
+        "Implement data stores for availability, room, seminar, attendance data",
+        "Implement Scheduling Engine API (/api/schedule/optimize and /api/schedule/result) with job triggering and result retrieval",
+        "Implement Schedule Optimization background job with constraint satisfaction and conflict detection",
+        "Implement Reporting & Notification API (/api/reports/generate, /api/notifications/send)",
+        "Implement integrations for email and calendar systems with OAuth and error handling",
+        "Build Next.js pages: / (Dashboard), /upload-data, /schedule, /reports, /settings with required inputs and outputs",
+        "Implement client-side validation and error handling on UI",
+        "Implement background jobs for notification dispatch and data sync/cleanup",
+        "Add concurrency control and versioning for schedule edits",
+        "Add security hardening, rate limiting, and audit logging",
+        "Write acceptance tests and perform end-to-end testing"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/upload-data",
+          "/schedule",
+          "/reports",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/data/upload.ts",
+          "api/schedule/optimize.ts",
+          "api/schedule/result.ts",
+          "api/notifications/send.ts",
+          "api/reports/generate.ts",
+          "api/user/settings.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Seminar",
+          "AvailabilityEntry",
+          "Room",
+          "AttendanceRecord"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, preferences, or input data details needed for scheduling optimization.",
+        "promptTemplate": "You are a planning assistant. Given the current blueprint:\n{{BLUEPRINT}}\nAnd the initial idea:\n{{IDEA}}\nPlease ask the user: {{USER_INPUT}}\nWhat additional constraints, availability details, or preferences should we consider to improve the seminar scheduling quality?"
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Refine and finalize the web app pages, data models, and API contracts based on updated requirements.",
+        "promptTemplate": "As the system architect, review the blueprint:\n{{BLUEPRINT}}\nand the expanded specs:\n{{EXPANDED}}\nGiven the user input:\n{{USER_INPUT}}\nPlease finalize the page routes, data models, and API specifications for the seminar scheduler app."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate Next.js page stubs and initial UI components for the defined pages.",
+        "promptTemplate": "You are a frontend builder. Based on the finalized blueprint:\n{{BLUEPRINT}}\nand the user's inputs:\n{{USER_INPUT}}\nGenerate code stubs for the Next.js pages: {{PAGES}} with placeholders for inputs and outputs."
+      },
+      {
+        "id": "integrator-wireup",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Create API endpoints and connect UI pages to backend data models and business logic.",
+        "promptTemplate": "You are a system integrator. Given the blueprint:\n{{BLUEPRINT}}\nexpanded specs:\n{{EXPANDED}}\nand current user input:\n{{USER_INPUT}}\nGenerate the API routes, data persistence logic, and connect the frontend pages to backend services."
+      }
+    ]
+  }
+}

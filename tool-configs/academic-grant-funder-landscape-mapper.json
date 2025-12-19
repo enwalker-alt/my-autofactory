@@ -1,0 +1,688 @@
+{
+  "slug": "academic-grant-funder-landscape-mapper",
+  "title": "Academic Research Grant Funder Landscape Mapper",
+  "description": "Identify and rank relevant academic research funders aligned with your project topic and objectives by submitting your research details and optional funder database files. Receive a structured list and summary of funders to support your grant proposal planning.",
+  "inputLabel": "Enter your research project details and optionally upload funder program documents",
+  "outputLabel": "Ranked funder list and alignment summary",
+  "systemPrompt": "You are an expert assistant for academic researchers seeking to identify and align appropriate grant funders with their research projects. Accept input consisting of project title, abstract, objectives, keywords, institutional affiliation, eligibility constraints, optional past funded grants, and an optional uploaded funder database file in JSON format. Validate all inputs carefully. Reject any unsafe or disallowed requests, including attempts to submit malicious files or unauthorized data. Parse the uploaded funder database file if provided, ensuring it is well-formed JSON containing funderId, name, and programs fields. Generate a structured ranked list of relevant funders with alignment scores, including summaries of priorities, eligibility, and deadlines tailored to the research topic. Highlight any eligibility conflicts or missing data. Output the results as plain text with clear formatting. Do not generate actual grant proposals or budgeting details. Always include disclaimers that final funder eligibility must be verified with official sources. Refuse requests lacking required project inputs or containing malformed data. Enforce data privacy and do not retain user inputs beyond the session. Use a formal, concise, and helpful tone.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Alignment",
+      "prompt": "Analyze the following research project details for alignment with the provided funder database and generate a ranked list of relevant funders with summaries.",
+      "hint": "Use for straightforward funder mapping with minimal input."
+    },
+    {
+      "label": "Detailed Analysis",
+      "prompt": "Given the research project information and uploaded funder data, perform a comprehensive alignment, highlighting priorities, eligibility conflicts, and deadlines. Provide a structured summary and gap notes.",
+      "hint": "Use for deeper insights including warnings and eligibility checks."
+    },
+    {
+      "label": "Summary Only",
+      "prompt": "Provide a concise summary of funders relevant to the given research project without detailed alignment scores or gap analysis.",
+      "hint": "Use when a brief overview is sufficient."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output may include JSON with fields: rankedFunders (array of {funderId, name, alignmentScore, summary}), warnings (array of strings), and disclaimers (string).",
+  "clarifyPrompt": "Please provide your research project title, abstract, objectives, keywords, institutional affiliation, eligibility constraints, and optionally upload a funder database JSON file. If any input is missing or unclear, I will ask for clarification.",
+  "finalizePrompt": "Confirm that all project details and funder database inputs are correct and complete before generating the funder alignment report.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Funder Landscape Mapper",
+      "niche": {
+        "role": "Academic Research Grant Writers",
+        "scenario": "Preliminary grant proposal planning phase where researchers seek to identify and map appropriate funding agencies and programs aligned with their research topic and objectives"
+      },
+      "problem": "Academic researchers often struggle to efficiently identify suitable funding opportunities across diverse funders, each with distinct priorities, eligibility criteria, and application requirements. Existing tools focus on single grant applications or budget preparation but lack comprehensive, structured mapping of the funding landscape tailored to nuanced research topics and multi-disciplinary projects, resulting in missed opportunities or misaligned proposals.",
+      "inputs": [
+        "Research project title and abstract",
+        "Detailed research objectives and keywords",
+        "Researcher institutional affiliation and eligibility constraints",
+        "Funder database or uploaded funder program documents (e.g., calls for proposals, guidelines)",
+        "Optional: past funded grant abstracts or keywords"
+      ],
+      "outputs": [
+        "Structured map/list of relevant funders and funding programs ranked by alignment score",
+        "Summary of each funder's priorities, eligibility, and deadlines tailored to the research topic",
+        "Gap analysis highlighting under-addressed funding themes or interdisciplinary opportunities",
+        "Customizable funding strategy planner with timelines and suggested actions"
+      ],
+      "whyItWins": [
+        "Addresses the critical early-stage challenge of funder discovery and strategic alignment, not covered by existing grant writing or budgeting tools",
+        "Enables researchers to save substantial time and reduce frustration by consolidating scattered funder information into actionable insights",
+        "Supports more targeted, competitive grant proposals through data-driven prioritization and alignment analysis",
+        "Facilitates strategic planning for multi-year or multi-funder research programs beyond single proposal focus"
+      ],
+      "upgradePath": {
+        "today": "Simple single-page app that accepts research topic inputs and a curated funder database file to produce a ranked list and summary report of aligned funders",
+        "in90Days": "Multi-page app with user accounts, integration of public funder databases, interactive funder profile exploration, and exportable strategic funding plans",
+        "in12Months": "Comprehensive funding landscape management system allowing collaboration among research teams, automated alerts for new calls, historical success analytics, proposal progress tracking, and integration with institutional grant offices"
+      },
+      "riskNotes": [
+        "Must regularly update funder database to maintain accuracy and relevance",
+        "Ensure privacy and secure handling of researcher project inputs and profiles",
+        "Avoid generating overly prescriptive recommendations that could bias diverse funding strategies",
+        "Careful to provide disclaimers that final funder eligibility and requirements must be verified with official sources"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An academic research grant funder landscape mapper that helps researchers identify, analyze, and strategically plan funding opportunities aligned with their research projects by consolidating funder data and providing actionable insights.",
+      "primaryUser": "Academic Research Grant Writers",
+      "successMetrics": [
+        "User engagement measured by number of research projects mapped",
+        "Accuracy and relevance of funder alignment scores as rated by users",
+        "Reduction in time spent by researchers identifying suitable funders",
+        "Number of strategic funding plans created and exported",
+        "User retention and growth of registered accounts"
+      ],
+      "components": [
+        {
+          "id": "ui_researcher_portal",
+          "name": "Researcher Portal UI",
+          "type": "ui",
+          "responsibility": "Provide multi-page user interface for inputting research project data, exploring funder profiles, viewing alignment results, and managing funding strategy plans.",
+          "dependsOn": [
+            "api_funder_analysis",
+            "data_user_profiles",
+            "data_funder_db"
+          ],
+          "notes": [
+            "Includes authentication and user account management pages",
+            "Supports file uploads for funder documents and past grant abstracts",
+            "Interactive visualizations for funder landscape mapping and gap analysis"
+          ]
+        },
+        {
+          "id": "api_funder_analysis",
+          "name": "Funder Analysis API",
+          "type": "api",
+          "responsibility": "Process research project inputs and funder data to compute alignment scores, generate summaries, gap analyses, and strategic funding plans.",
+          "dependsOn": [
+            "data_funder_db",
+            "data_user_projects",
+            "data_user_profiles"
+          ],
+          "notes": [
+            "Handles input validation and error reporting",
+            "Implements alignment algorithms and ranking logic",
+            "Provides export functionality for strategic plans"
+          ]
+        },
+        {
+          "id": "data_funder_db",
+          "name": "Funder Database",
+          "type": "data",
+          "responsibility": "Store structured funder and funding program information including priorities, eligibility, deadlines, and program documents.",
+          "dependsOn": [],
+          "notes": [
+            "Supports regular updates and versioning to maintain accuracy",
+            "Stores uploaded funder program documents and metadata"
+          ]
+        },
+        {
+          "id": "data_user_profiles",
+          "name": "User Profiles and Authentication",
+          "type": "data",
+          "responsibility": "Persist user account information, authentication credentials, and researcher institutional affiliations and eligibility constraints.",
+          "dependsOn": [],
+          "notes": [
+            "Ensures secure storage and privacy compliance",
+            "Supports user preferences and notification settings"
+          ]
+        },
+        {
+          "id": "data_user_projects",
+          "name": "Research Project Data Store",
+          "type": "data",
+          "responsibility": "Persist research project inputs including titles, abstracts, objectives, keywords, past funded grant data, and generated funding strategy plans.",
+          "dependsOn": [
+            "data_user_profiles"
+          ],
+          "notes": [
+            "Supports versioning and history for project updates",
+            "Enables collaboration features in future upgrades"
+          ]
+        },
+        {
+          "id": "job_funder_db_update",
+          "name": "Funder Database Update Job",
+          "type": "job",
+          "responsibility": "Periodically update and validate the funder database from public sources and uploaded documents to maintain data accuracy and relevance.",
+          "dependsOn": [
+            "data_funder_db"
+          ],
+          "notes": [
+            "Includes error handling for data inconsistencies",
+            "Triggers notifications if updates fail or data is outdated"
+          ]
+        },
+        {
+          "id": "integration_public_funder_sources",
+          "name": "Public Funder Database Integration",
+          "type": "integration",
+          "responsibility": "Integrate external public funder databases and APIs to enrich and automate funder data ingestion.",
+          "dependsOn": [
+            "data_funder_db"
+          ],
+          "notes": [
+            "Handles API rate limits and data format variations",
+            "Supports manual override and data curation"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "UserProfile",
+          "purpose": "Store user authentication and profile details including institutional affiliation and eligibility constraints.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "eligibilityConstraints",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "email"
+          ]
+        },
+        {
+          "name": "ResearchProject",
+          "purpose": "Store research project inputs and outputs including titles, abstracts, objectives, keywords, past grants, and generated funding plans.",
+          "fields": [
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "abstract",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "objectives",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "keywords",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "pastFundedGrants",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "alignmentResults",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "fundingStrategyPlan",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "userId"
+          ]
+        },
+        {
+          "name": "Funder",
+          "purpose": "Store detailed information about funders and their funding programs.",
+          "fields": [
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "programs",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "priorities",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "eligibilityCriteria",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "deadlines",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "documents",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "funderId",
+            "name"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Research Project Input",
+          "purpose": "Allow users to input research project details and upload relevant documents for funder mapping.",
+          "inputs": [
+            "Project title",
+            "Abstract",
+            "Objectives",
+            "Keywords",
+            "Institutional affiliation",
+            "Eligibility constraints",
+            "Past funded grant abstracts or keywords (optional)",
+            "Funder database file upload (optional)"
+          ],
+          "outputs": [
+            "Confirmation of input receipt",
+            "Preliminary alignment results (if available)"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/funders",
+          "title": "Funder Landscape and Alignment Results",
+          "purpose": "Display ranked list and detailed summaries of relevant funders and funding programs aligned with the research project.",
+          "inputs": [
+            "Selected research project ID"
+          ],
+          "outputs": [
+            "Ranked funder list with alignment scores",
+            "Funder priorities, eligibility, deadlines summaries",
+            "Interactive funder profile exploration"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/gap-analysis",
+          "title": "Gap Analysis and Interdisciplinary Opportunities",
+          "purpose": "Highlight under-addressed funding themes and suggest interdisciplinary funding opportunities based on project inputs and funder data.",
+          "inputs": [
+            "Selected research project ID"
+          ],
+          "outputs": [
+            "Gap analysis report",
+            "Suggested funding themes and opportunities"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/strategy-planner",
+          "title": "Funding Strategy Planner",
+          "purpose": "Enable users to create, customize, and export multi-year funding strategies with timelines and suggested actions.",
+          "inputs": [
+            "Selected research project ID",
+            "User modifications to suggested plan"
+          ],
+          "outputs": [
+            "Customizable funding strategy plan",
+            "Exportable reports (PDF, CSV)"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access personalized features and saved projects.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token or session"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/register",
+          "title": "User Registration",
+          "purpose": "Allow new users to create accounts with institutional affiliation and eligibility details.",
+          "inputs": [
+            "Email",
+            "Password",
+            "Institution",
+            "Eligibility constraints"
+          ],
+          "outputs": [
+            "Account creation confirmation"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/register",
+          "method": "POST",
+          "purpose": "Register new user account.",
+          "requestShape": "{ email: string, password: string, institution?: string, eligibilityConstraints?: json }",
+          "responseShape": "{ userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create or update research project data and trigger funder alignment analysis.",
+          "requestShape": "{ userId: string, title: string, abstract: string, objectives: string, keywords: string[], pastFundedGrants?: json, funderDbFile?: file }",
+          "responseShape": "{ projectId: string, alignmentResults?: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/{projectId}/alignment",
+          "method": "GET",
+          "purpose": "Retrieve funder alignment results and summaries for a research project.",
+          "requestShape": "projectId as URL param",
+          "responseShape": "{ alignmentResults: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/{projectId}/gap-analysis",
+          "method": "GET",
+          "purpose": "Retrieve gap analysis and interdisciplinary opportunities for a research project.",
+          "requestShape": "projectId as URL param",
+          "responseShape": "{ gapAnalysisReport: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/{projectId}/strategy-plan",
+          "method": "POST",
+          "purpose": "Create or update a customized funding strategy plan for a research project.",
+          "requestShape": "{ modifications: json }",
+          "responseShape": "{ fundingStrategyPlan: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funders",
+          "method": "GET",
+          "purpose": "Retrieve funder profiles and program details.",
+          "requestShape": "{ filter?: json }",
+          "responseShape": "{ funders: json[] }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Funder Database Update Job",
+          "trigger": "Scheduled (e.g., weekly)",
+          "purpose": "Automatically update funder database from public sources and validate uploaded funder program documents."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded funder database files with inconsistent or malformed data formats",
+        "Research project inputs with ambiguous or minimal keywords reducing alignment accuracy",
+        "Conflicting eligibility constraints between user profile and funder criteria",
+        "Network or API failures during public funder database integration",
+        "User attempts to access or modify projects without proper authorization",
+        "Expired or outdated funder deadlines and program information",
+        "Overlapping or duplicate funder programs causing ranking ambiguities",
+        "Handling of incomplete user registration or profile data"
+      ],
+      "nonGoals": [
+        "Automated grant proposal writing or budgeting tools",
+        "Verification or guarantee of funder eligibility beyond data provided",
+        "Direct submission of grant proposals to funders",
+        "Real-time collaboration features in initial phases",
+        "Institutional grant office integration in initial release"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User registers or logs in via /login or /register pages, interacting with /api/auth endpoints to create or authenticate user profiles stored in UserProfile model.",
+        "Authenticated user inputs research project data on '/' route, submitting to /api/projects POST endpoint, which validates and stores data in ResearchProject model linked to userId.",
+        "If funder database file uploaded, /api/projects endpoint triggers parsing and updates funder data in Funder model accordingly.",
+        "Upon project creation or update, /api/projects endpoint triggers funder alignment analysis using data from Funder and ResearchProject models, storing alignmentResults in ResearchProject.",
+        "User navigates to /funders, /gap-analysis, or /strategy-planner pages, which call respective GET or POST API endpoints (/api/projects/{projectId}/alignment, /gap-analysis, /strategy-plan) to retrieve or update analysis, gap reports, and strategy plans.",
+        "Funder data is periodically updated by background job 'Funder Database Update Job' which fetches from public sources via integration_public_funder_sources, validates, and updates Funder model.",
+        "All API routes enforce authentication and authorization, ensuring users can only access their own projects and data.",
+        "Interactive visualizations in UI consume alignmentResults, gapAnalysisReport, and fundingStrategyPlan JSON data to render insights and allow user modifications."
+      ],
+      "validationRules": [
+        "User registration requires valid email format, password minimum length and complexity, optional institution and eligibilityConstraints JSON validation.",
+        "Login requires existing email and correct password matching hashedPassword.",
+        "Research project creation requires non-empty title, abstract, objectives, and keywords array with at least one keyword.",
+        "Uploaded funder database files must be validated for JSON structure, required fields (funderId, name, programs), and reject malformed or inconsistent data.",
+        "API endpoints validate userId matches authenticated user session.",
+        "Modifications to funding strategy plans must conform to expected JSON schema (e.g., timeline dates, action items).",
+        "Eligibility constraints in user profile and project inputs must be JSON objects; conflicts between user and funder eligibility criteria should be flagged.",
+        "All inputs sanitized to prevent injection attacks and ensure data integrity."
+      ],
+      "errorHandling": [
+        "API endpoints return standardized error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 404 for not found, 500 for server errors).",
+        "File upload errors return descriptive messages for malformed or unsupported formats.",
+        "Alignment and analysis failures return partial results with warnings; errors logged for investigation.",
+        "Background job failures trigger notifications to admin and log detailed error reports.",
+        "Unauthorized access attempts return 401 with message prompting login or insufficient permissions.",
+        "Network or integration API failures handled with retries and fallback to last known good data.",
+        "Conflicting eligibility constraints result in user-facing warnings with suggestions to resolve."
+      ],
+      "securityNotes": [
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt) and never returned in API responses.",
+        "Authentication tokens issued securely with expiration and stored in HttpOnly cookies or secure storage.",
+        "All API routes except login and register require authentication and verify user ownership of resources.",
+        "File uploads scanned for malware and size-limited to prevent denial of service.",
+        "Sensitive user data (eligibility constraints, institutional affiliation) access restricted and encrypted at rest.",
+        "Rate limiting on public-facing endpoints to prevent brute force and abuse.",
+        "Use HTTPS for all client-server communications."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A new user with valid email and password",
+          "when": "They register via /register endpoint",
+          "then": "Their UserProfile is created with hashed password and they receive a userId confirmation"
+        },
+        {
+          "id": "AT-002",
+          "given": "An existing user with valid credentials",
+          "when": "They login via /login endpoint",
+          "then": "They receive a valid authentication token and userId"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on the Research Project Input page",
+          "when": "They submit valid project data with optional funder database file",
+          "then": "The project is saved, funder data updated if file uploaded, and preliminary alignment results returned"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with existing projects",
+          "when": "They request alignment results via /api/projects/{projectId}/alignment",
+          "then": "They receive accurate alignmentResults JSON matching stored data"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user with a project",
+          "when": "They request gap analysis via /api/projects/{projectId}/gap-analysis",
+          "then": "They receive a gapAnalysisReport JSON highlighting under-addressed funding themes"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user with a project",
+          "when": "They submit modifications to funding strategy plan via /api/projects/{projectId}/strategy-plan",
+          "then": "The fundingStrategyPlan is updated and returned, reflecting user changes"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to access a project they do not own",
+          "when": "They call any project-specific API endpoint",
+          "then": "They receive a 401 Unauthorized error"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads a malformed funder database file",
+          "when": "They submit the file via project creation endpoint",
+          "then": "They receive a descriptive error message and the file is rejected"
+        },
+        {
+          "id": "AT-009",
+          "given": "Background job runs to update funder database",
+          "when": "Public source data is inconsistent or API fails",
+          "then": "Errors are logged, notifications sent, and existing data remains unchanged"
+        },
+        {
+          "id": "AT-010",
+          "given": "User inputs eligibility constraints conflicting with funder criteria",
+          "when": "Alignment analysis is performed",
+          "then": "User receives warnings about conflicts in eligibility"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for UserProfile, ResearchProject, and Funder with indexes and relations",
+        "Implement authentication API routes (/api/auth/login, /api/auth/register) with password hashing and token issuance",
+        "Build user registration and login pages with validation and error handling",
+        "Create research project input page and /api/projects POST endpoint with file upload handling and validation",
+        "Implement funder database storage and update logic including file parsing and integration with public funder sources",
+        "Develop funder analysis API (/api/projects/{projectId}/alignment) with alignment scoring algorithms",
+        "Build funder landscape UI page (/funders) consuming funder profiles and alignment results",
+        "Implement gap analysis API and page (/api/projects/{projectId}/gap-analysis and /gap-analysis route)",
+        "Develop funding strategy planner API and UI (/api/projects/{projectId}/strategy-plan and /strategy-planner route) with export features",
+        "Set up background job for scheduled funder database updates with error handling and notifications",
+        "Add authorization checks on all user-specific API routes",
+        "Implement comprehensive validation and error handling across all inputs and API endpoints",
+        "Add interactive visualizations in UI for funder landscape and gap analysis",
+        "Conduct acceptance testing and fix edge cases including malformed inputs and unauthorized access"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/funders",
+          "/gap-analysis",
+          "/strategy-planner",
+          "/login",
+          "/register"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/auth/register.ts",
+          "api/projects/index.ts",
+          "api/projects/[projectId]/alignment.ts",
+          "api/projects/[projectId]/gap-analysis.ts",
+          "api/projects/[projectId]/strategy-plan.ts",
+          "api/funders/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "UserProfile",
+          "ResearchProject",
+          "Funder"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints or clarifications about their research project and eligibility to improve funder alignment accuracy.",
+        "promptTemplate": "Given the current project inputs: {{USER_INPUT}}, and the blueprint overview: {{BLUEPRINT}}, what additional details or constraints should be clarified or requested from the user to enhance funder mapping relevance and safety?"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and confirm the full set of UI pages, API endpoints, and data models necessary to support the funder landscape mapping workflow.",
+        "promptTemplate": "Using the idea spec: {{IDEA}}, blueprint: {{BLUEPRINT}}, and expanded specs: {{EXPANDED}}, outline the finalized page routes with inputs and outputs, along with detailed data model schemas needed for the application."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate boilerplate code stubs for the UI pages and API routes to accelerate development.",
+        "promptTemplate": "Based on the finalized pages and API routes in: {{BLUEPRINT}}, produce starter code stubs and component outlines for each page and endpoint, including placeholders for input forms and output displays."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages to backend APIs and database models to enable full data flow and functionality.",
+        "promptTemplate": "Given the scaffolds and data models: {{EXPANDED.scaffolds}}, and API definitions: {{BLUEPRINT.apiRoutes}}, describe the integration plan and provide sample code to link UI input forms with API calls and database persistence."
+      }
+    ]
+  }
+}

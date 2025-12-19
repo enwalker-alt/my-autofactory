@@ -1,0 +1,775 @@
+{
+  "slug": "research-experiment-protocol-harmonizer",
+  "title": "Academic Research Protocol Harmonizer",
+  "description": "Upload and harmonize multi-lab experimental protocols by detecting conflicts and suggesting resolutions to improve reproducibility and coordination.",
+  "inputLabel": "Upload draft experimental protocols and enter project summary or annotations",
+  "outputLabel": "Harmonization suggestions, conflict report, and consolidated protocol summary",
+  "systemPrompt": "You are an expert assistant specialized in academic multi-lab experimental protocol harmonization. When given draft protocols, equipment specs, and project objectives, analyze inputs to detect conflicts, inconsistencies, and provide clear advisory harmonization suggestions. Do NOT modify protocols automatically. Enforce strict privacy and security: refuse unsupported file types or disallowed content. Output plain text summaries highlighting conflicts and recommended resolutions with clear disclaimers that final decisions are by human researchers. Reject requests missing required metadata or with invalid files. Always produce safe, precise, and actionable responses tailored for academic research team leads coordinating multi-lab experiments.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Conflict Detection Focus",
+      "prompt": "Analyze the uploaded protocols and project summary to identify conflicts, inconsistencies, and deviations between labs' methods and measurement standards. Provide a detailed conflict report highlighting areas requiring harmonization."
+    },
+    {
+      "label": "Harmonization Suggestions",
+      "prompt": "Based on the detected conflicts and equipment calibration data, generate advisory suggestions for harmonizing protocols and measurement standards. Emphasize advisory nature and avoid automatic changes."
+    },
+    {
+      "label": "Consolidated Protocol Summary",
+      "prompt": "Summarize the combined experimental protocols and project objectives into a harmonized overview document that can serve as a reference for all collaborating labs."
+    },
+    {
+      "label": "Collaborative Task Planning",
+      "prompt": "Outline a collaborative task and timeline plan assigning responsibilities per lab for experiment phases, based on the harmonized protocol and project goals."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Use JSON output format with keys: conflictReport (list), harmonizationSuggestions (list), consolidatedSummary (string), taskPlan (string).",
+  "clarifyPrompt": "Please provide all relevant draft protocols, equipment specs, project objectives, and any collaborator comments or constraints. Ensure uploaded files are PDF, DOCX, or structured JSON and include metadata with title and lab identification.",
+  "finalizePrompt": "Review the harmonization suggestions carefully. Confirm that all conflicts are addressed or annotated. Remember, final protocol approvals and decisions must be made by the research team leads and institutional review boards.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Collaborative Experiment Design Harmonizer",
+      "niche": {
+        "role": "Academic Research Team Lead",
+        "scenario": "Designing multi-lab collaborative experiments involving diverse protocols, equipment, and measurement standards"
+      },
+      "problem": "Academic research teams collaborating across multiple labs often face challenges harmonizing experimental designs, protocols, and measurement standards to ensure data comparability and reproducibility. Manual coordination leads to inconsistencies, delays, and increased risk of protocol deviations.",
+      "inputs": [
+        "Draft experimental protocols from each collaborating lab (text or document upload)",
+        "Equipment specifications and calibration data for instruments used in each lab",
+        "Measurement and data collection standards or templates",
+        "Project objectives and hypotheses summary",
+        "User comments or annotations from collaborators on design preferences or constraints"
+      ],
+      "outputs": [
+        "Consolidated, harmonized experimental protocol document incorporating all labs’ inputs",
+        "Standardized measurement and data collection templates tailored to shared equipment and methods",
+        "Conflict and inconsistency report highlighting protocol differences and suggested resolutions",
+        "Collaborative task and timeline plan outlining responsibilities per lab for experiment phases",
+        "Version-controlled change log tracking protocol updates and collaborator comments"
+      ],
+      "whyItWins": [
+        "Addresses a critical gap in multi-site academic experimental design coordination, reducing manual communication overhead",
+        "Supports repeated iterative refinement and reconciliation of complex, multi-lab protocols in a structured, transparent workflow",
+        "Facilitates standardized data collection practices improving data quality and reproducibility across sites",
+        "Lays groundwork for scalable collaboration management beyond simple document sharing",
+        "Unique focus on harmonizing protocols and measurement standards distinguishes it from existing tools that handle budgeting, compliance, or data management"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app allowing upload and side-by-side comparison of draft protocols with basic conflict detection and harmonization suggestions",
+        "in90Days": "Add interactive collaborative editing, comment threads, equipment calibration integration, and exportable harmonized protocol templates",
+        "in12Months": "Develop a full multi-page system with role-based access control, automated compliance verification, dynamic experiment timeline and task management dashboards, and integration with lab information management systems (LIMS) for real-time data standard enforcement"
+      },
+      "riskNotes": [
+        "Must ensure data privacy and intellectual property protections for uploaded unpublished protocols",
+        "Avoid automating protocol harmonization beyond advisory suggestions to prevent unsafe experimental designs",
+        "Require clear disclaimers that final experimental decisions rest with human researchers and institutional review"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research teams to harmonize multi-lab experimental protocols, equipment standards, and measurement templates, enabling transparent iterative refinement, conflict detection, and coordinated task planning to improve reproducibility and data comparability.",
+      "primaryUser": "Academic Research Team Lead coordinating multi-lab collaborative experiments",
+      "successMetrics": [
+        "Reduction in manual coordination time between labs during protocol design",
+        "Number of harmonized protocols successfully completed and versioned",
+        "User engagement in collaborative editing and commenting features",
+        "Decrease in protocol conflicts reported post-harmonization",
+        "Adoption rate of standardized measurement templates across labs"
+      ],
+      "components": [
+        {
+          "id": "ui-protocol-editor",
+          "name": "Protocol Upload and Harmonization UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload draft protocols, view side-by-side comparisons, annotate conflicts, and receive harmonization suggestions.",
+          "dependsOn": [
+            "api-protocol-management",
+            "data-protocols",
+            "api-conflict-detection"
+          ],
+          "notes": [
+            "Supports text and document uploads (PDF, DOCX).",
+            "Displays conflict highlights with inline suggestions.",
+            "Handles version history visualization."
+          ]
+        },
+        {
+          "id": "ui-collaboration-dashboard",
+          "name": "Collaboration and Task Management UI",
+          "type": "ui",
+          "responsibility": "Provide interactive collaborative editing, comment threads, task assignments, and timeline visualization for experiment phases.",
+          "dependsOn": [
+            "api-comments",
+            "api-task-management",
+            "data-tasks",
+            "data-comments"
+          ],
+          "notes": [
+            "Supports real-time updates and notifications.",
+            "Role-based access controls for editing and commenting.",
+            "Integrates with protocol versions."
+          ]
+        },
+        {
+          "id": "api-protocol-management",
+          "name": "Protocol Management API",
+          "type": "api",
+          "responsibility": "Handle protocol uploads, storage, versioning, retrieval, and export of harmonized protocols and measurement templates.",
+          "dependsOn": [
+            "data-protocols",
+            "api-conflict-detection"
+          ],
+          "notes": [
+            "Implements document parsing and metadata extraction.",
+            "Supports export formats (PDF, DOCX).",
+            "Enforces access control and data privacy."
+          ]
+        },
+        {
+          "id": "api-conflict-detection",
+          "name": "Conflict Detection and Harmonization Suggestion API",
+          "type": "api",
+          "responsibility": "Analyze uploaded protocols and equipment data to detect conflicts, inconsistencies, and generate advisory harmonization suggestions.",
+          "dependsOn": [
+            "data-protocols",
+            "data-equipment"
+          ],
+          "notes": [
+            "Advisory only; no automatic protocol changes.",
+            "Supports incremental re-analysis on protocol updates.",
+            "Logs suggestions for audit and review."
+          ]
+        },
+        {
+          "id": "api-comments",
+          "name": "Collaborator Comments API",
+          "type": "api",
+          "responsibility": "Manage user comments, annotations, and discussion threads linked to protocols and tasks.",
+          "dependsOn": [
+            "data-comments"
+          ],
+          "notes": [
+            "Supports threading and mentions.",
+            "Maintains comment versioning and edit history."
+          ]
+        },
+        {
+          "id": "api-task-management",
+          "name": "Task and Timeline Management API",
+          "type": "api",
+          "responsibility": "Manage collaborative task assignments, deadlines, and timeline visualization data for experiment phases.",
+          "dependsOn": [
+            "data-tasks"
+          ],
+          "notes": [
+            "Supports per-lab responsibility assignments.",
+            "Integrates with protocol versions for task context."
+          ]
+        },
+        {
+          "id": "data-protocols",
+          "name": "Protocol Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded protocols, harmonized versions, version history, and metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Stores original and processed document data securely.",
+            "Implements encryption for unpublished protocols."
+          ]
+        },
+        {
+          "id": "data-equipment",
+          "name": "Equipment and Calibration Data Store",
+          "type": "data",
+          "responsibility": "Persist equipment specifications, calibration records, and measurement standards per lab.",
+          "dependsOn": [],
+          "notes": [
+            "Supports structured data and document attachments.",
+            "Enables linking equipment data to protocols."
+          ]
+        },
+        {
+          "id": "data-comments",
+          "name": "Comments Data Store",
+          "type": "data",
+          "responsibility": "Persist user comments, annotations, and discussion threads with versioning.",
+          "dependsOn": [],
+          "notes": [
+            "Supports audit trails and edit histories."
+          ]
+        },
+        {
+          "id": "data-tasks",
+          "name": "Tasks and Timeline Data Store",
+          "type": "data",
+          "responsibility": "Persist collaborative task assignments, deadlines, and timeline data for experiment management.",
+          "dependsOn": [],
+          "notes": [
+            "Supports status tracking and notifications."
+          ]
+        },
+        {
+          "id": "job-protocol-analysis",
+          "name": "Background Protocol Analysis Job",
+          "type": "job",
+          "responsibility": "Periodically analyze protocol versions for conflicts and generate/update harmonization suggestions asynchronously.",
+          "dependsOn": [
+            "data-protocols",
+            "data-equipment",
+            "api-conflict-detection"
+          ],
+          "notes": [
+            "Triggers on protocol upload or update events.",
+            "Handles heavy processing off the main request thread."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Protocol",
+          "purpose": "Store experimental protocols including original drafts, harmonized versions, metadata, and version history.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "labId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "isHarmonized",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "accessControl",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "labId",
+            "version"
+          ]
+        },
+        {
+          "name": "Equipment",
+          "purpose": "Store equipment specifications and calibration data per lab.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "labId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "specifications",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "calibrationData",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastCalibrationDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "labId"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Store user comments and annotations linked to protocols and tasks.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "protocolId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "taskId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "editedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "parentCommentId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "protocolId",
+            "taskId",
+            "authorId"
+          ]
+        },
+        {
+          "name": "Task",
+          "purpose": "Store collaborative task assignments, deadlines, and status for experiment phases.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedLabId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedProtocolVersion",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "assignedLabId",
+            "status"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Dashboard",
+          "purpose": "Overview of ongoing projects, recent protocol uploads, conflict reports, and task timelines.",
+          "inputs": [],
+          "outputs": [
+            "Project summaries",
+            "Recent activity feed",
+            "Conflict alerts",
+            "Upcoming tasks"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/protocols/upload",
+          "title": "Upload Protocol",
+          "purpose": "Allow users to upload new draft protocols and equipment data.",
+          "inputs": [
+            "Protocol document file",
+            "Metadata fields",
+            "Equipment specs upload"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Initial conflict detection results"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/protocols/:protocolId",
+          "title": "Protocol Detail and Harmonization",
+          "purpose": "View side-by-side protocol comparisons, harmonization suggestions, comments, and version history.",
+          "inputs": [
+            "Protocol selection",
+            "User annotations",
+            "Comment submissions"
+          ],
+          "outputs": [
+            "Harmonized protocol view",
+            "Conflict highlights",
+            "Comment threads",
+            "Version log"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/tasks",
+          "title": "Task and Timeline Management",
+          "purpose": "Manage collaborative tasks, assign responsibilities, and visualize experiment timelines.",
+          "inputs": [
+            "Task creation and edits",
+            "Assignment changes",
+            "Deadline updates"
+          ],
+          "outputs": [
+            "Task lists",
+            "Timeline charts",
+            "Status updates"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "Project Settings and Access Control",
+          "purpose": "Manage project metadata, user roles, and access permissions.",
+          "inputs": [
+            "User role assignments",
+            "Project metadata edits"
+          ],
+          "outputs": [
+            "Access control confirmation",
+            "Project configuration"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/protocols",
+          "method": "POST",
+          "purpose": "Upload a new protocol or update an existing one.",
+          "requestShape": "{ protocolFile: file, metadata: json }",
+          "responseShape": "{ protocolId: string, version: number, conflictReport: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/protocols/:protocolId",
+          "method": "GET",
+          "purpose": "Retrieve protocol details including versions and harmonization suggestions.",
+          "requestShape": "{ protocolId: string }",
+          "responseShape": "{ protocolData: json, conflictReport: json, versions: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/conflicts/:protocolId",
+          "method": "GET",
+          "purpose": "Get conflict and inconsistency report for a given protocol.",
+          "requestShape": "{ protocolId: string }",
+          "responseShape": "{ conflicts: json, suggestions: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "POST",
+          "purpose": "Add a comment or annotation to a protocol or task.",
+          "requestShape": "{ protocolId?: string, taskId?: string, content: string, parentCommentId?: string }",
+          "responseShape": "{ commentId: string, createdAt: date }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Create or update a collaborative task.",
+          "requestShape": "{ title: string, description?: string, assignedLabId: string, dueDate?: date, status: string, relatedProtocolVersion?: number }",
+          "responseShape": "{ taskId: string, createdAt: date }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/equipment/:labId",
+          "method": "GET",
+          "purpose": "Retrieve equipment specifications and calibration data for a given lab.",
+          "requestShape": "{ labId: string }",
+          "responseShape": "{ equipmentList: json }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ProtocolConflictAnalysis",
+          "trigger": "On protocol upload or update",
+          "purpose": "Analyze protocols asynchronously to detect conflicts and generate harmonization suggestions."
+        },
+        {
+          "name": "NotificationDispatcher",
+          "trigger": "On comment creation, task updates, or protocol version changes",
+          "purpose": "Send notifications to relevant collaborators about updates and required actions."
+        }
+      ],
+      "edgeCases": [
+        "Handling conflicting protocol versions uploaded simultaneously by different labs.",
+        "Managing access control when collaborators leave or join mid-project.",
+        "Ensuring data privacy and encryption for unpublished or sensitive protocols.",
+        "Partial or corrupted document uploads requiring re-upload or manual intervention.",
+        "Protocols with incompatible formats or unsupported document types.",
+        "Equipment calibration data missing or outdated affecting harmonization accuracy.",
+        "Users overriding harmonization suggestions leading to potential protocol conflicts.",
+        "Network failures during large document uploads or collaborative editing sessions."
+      ],
+      "nonGoals": [
+        "Automating protocol harmonization beyond advisory suggestions to avoid unsafe experimental designs.",
+        "Managing budgeting, compliance approvals, or detailed data management workflows.",
+        "Replacing institutional review boards or human decision-making in experimental design.",
+        "Real-time lab instrument data collection or experiment execution monitoring.",
+        "Full-featured document editing comparable to dedicated word processors."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses the Dashboard page to view project summaries, recent activities, conflict alerts, and upcoming tasks.",
+        "On /protocols/upload, user submits a protocol document file and metadata; the UI sends a POST request to /api/protocols with the file and metadata.",
+        "/api/protocols endpoint validates, parses, stores the protocol in data-protocols with versioning, triggers ProtocolConflictAnalysis job asynchronously.",
+        "ProtocolConflictAnalysis job fetches protocol and equipment data, calls api-conflict-detection to analyze conflicts and generate harmonization suggestions, stores results linked to protocol versions.",
+        "User navigates to /protocols/:protocolId, UI fetches protocol details via GET /api/protocols/:protocolId, including versions and conflict reports.",
+        "UI-protocol-editor displays side-by-side comparisons, conflict highlights, annotations, and harmonization suggestions.",
+        "Users add comments or annotations via POST /api/comments with protocolId or taskId; comments are stored in data-comments with threading and versioning.",
+        "Collaboration dashboard at /tasks fetches tasks via GET /api/tasks (not explicitly listed but implied), allows task creation/updates via POST /api/tasks, storing in data-tasks.",
+        "Task updates and comment creations trigger NotificationDispatcher job to notify relevant collaborators.",
+        "Equipment data is fetched by UI via GET /api/equipment/:labId to support harmonization and protocol context.",
+        "Access control is enforced at all API endpoints based on user roles and protocol/project permissions stored in protocol.accessControl metadata.",
+        "Background jobs handle heavy processing asynchronously to keep UI responsive and maintain data consistency."
+      ],
+      "validationRules": [
+        "Protocol upload: protocolFile must be a supported document type (PDF, DOCX, or structured JSON), non-empty, and metadata must include required fields (title, labId).",
+        "Protocol versioning: new uploads for existing protocols must have incremented version numbers; reject simultaneous conflicting uploads with proper error.",
+        "Conflict detection API requires valid protocolId existing in data-protocols; reject if protocol is unpublished and user lacks access.",
+        "Comments must have non-empty content; either protocolId or taskId must be provided but not both null; parentCommentId if provided must reference an existing comment.",
+        "Task creation/update requires title, assignedLabId, and status; dueDate if provided must be a valid future date; relatedProtocolVersion if provided must exist.",
+        "Equipment retrieval requires valid labId; reject requests for labs user is unauthorized to access.",
+        "Access control JSON in protocols must define roles and permissions clearly; enforce on all read/write operations.",
+        "File uploads must be scanned for corruption and size limits; reject partial or corrupted uploads with clear error messages.",
+        "User inputs for comments, tasks, and protocol metadata must be sanitized to prevent injection attacks."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with detailed validation error messages for malformed inputs or missing required fields.",
+        "Return 401 Unauthorized if user is unauthenticated or lacks permission for the requested resource.",
+        "Return 404 Not Found if requested protocol, comment, task, or equipment data does not exist or is inaccessible.",
+        "Return 409 Conflict if simultaneous protocol uploads cause version conflicts; provide instructions to resolve.",
+        "Return 415 Unsupported Media Type if uploaded protocol document format is unsupported.",
+        "Gracefully handle background job failures by logging errors, retrying jobs, and notifying admins if persistent.",
+        "For network failures during uploads, support resumable uploads or instruct users to retry; provide user-friendly error messages.",
+        "On partial or corrupted document uploads, reject and prompt user to re-upload with error details.",
+        "API responses include error codes and human-readable messages; UI displays these prominently to users.",
+        "Log all errors with context for audit and debugging; do not expose sensitive details in client responses."
+      ],
+      "securityNotes": [
+        "Enforce authentication on all pages and API routes; reject unauthenticated requests.",
+        "Implement role-based access control using protocol.accessControl metadata and project settings to restrict read/write operations.",
+        "Encrypt unpublished protocols at rest in data-protocols to protect sensitive data.",
+        "Sanitize all user inputs to prevent XSS, SQL injection, and other injection attacks.",
+        "Use secure file upload handling to prevent malicious file uploads and scanning for viruses.",
+        "Limit file upload sizes and types to reduce attack surface.",
+        "Ensure API endpoints validate user permissions before returning any data.",
+        "Audit trails for comments and protocol edits to track changes and user actions.",
+        "Use HTTPS for all client-server communications.",
+        "Background jobs run with least privileges and isolate sensitive data processing."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the Dashboard page",
+          "when": "They view the page",
+          "then": "They see project summaries, recent activity feed, conflict alerts, and upcoming tasks relevant to their labs"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /protocols/upload",
+          "when": "They upload a valid PDF protocol document with required metadata",
+          "then": "The protocol is stored with version 1, a conflict detection job is triggered, and the user receives upload confirmation with initial conflict report"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user attempts to upload an unsupported file type",
+          "when": "They submit the upload form",
+          "then": "The API rejects the upload with a 415 Unsupported Media Type error and a clear message"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user views /protocols/:protocolId",
+          "when": "They load the page",
+          "then": "They see the protocol details, version history, conflict highlights, harmonization suggestions, and comment threads"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user adds a comment linked to a protocol",
+          "when": "They submit the comment form with valid content",
+          "then": "The comment is stored with correct threading, timestamped, and visible in the protocol detail page"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user creates a new task with required fields",
+          "when": "They submit the task form",
+          "then": "The task is stored, assigned to the specified lab, and appears in the task list and timeline"
+        },
+        {
+          "id": "AT-007",
+          "given": "Two users simultaneously upload new versions of the same protocol",
+          "when": "Both uploads are processed",
+          "then": "One upload succeeds with incremented version; the other receives a 409 Conflict error with instructions"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user without permission tries to access a protocol",
+          "when": "They request protocol details",
+          "then": "The API returns 401 Unauthorized and no protocol data is exposed"
+        },
+        {
+          "id": "AT-009",
+          "given": "A protocol is uploaded",
+          "when": "The ProtocolConflictAnalysis job runs",
+          "then": "Conflicts and harmonization suggestions are generated and stored linked to the protocol version"
+        },
+        {
+          "id": "AT-010",
+          "given": "A comment or task update occurs",
+          "when": "The NotificationDispatcher job runs",
+          "then": "Relevant collaborators receive notifications about the update"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Protocol, Equipment, Comment, Task with fields and indexes",
+        "Implement authentication and role-based access control middleware",
+        "Build API routes for protocols (POST /api/protocols, GET /api/protocols/:protocolId) with validation and storage logic",
+        "Build API route for conflict detection GET /api/conflicts/:protocolId",
+        "Build API routes for comments POST /api/comments and tasks POST /api/tasks with validation and storage",
+        "Build API route for equipment GET /api/equipment/:labId",
+        "Implement background jobs: ProtocolConflictAnalysis and NotificationDispatcher",
+        "Develop UI pages: Dashboard (/), Protocol Upload (/protocols/upload), Protocol Detail (/protocols/:protocolId), Tasks (/tasks), Settings (/settings)",
+        "Integrate UI with APIs, handle data fetching, display conflict highlights, version history, comments, tasks, and notifications",
+        "Implement file upload handling with validation and error handling",
+        "Implement encryption for unpublished protocols in data store",
+        "Implement error handling and user-friendly messages in UI",
+        "Write and run acceptance tests to validate functionality and edge cases"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/index.tsx",
+          "/protocols/upload.tsx",
+          "/protocols/[protocolId].tsx",
+          "/tasks.tsx",
+          "/settings.tsx"
+        ],
+        "apiFilesToCreate": [
+          "/api/protocols/index.ts",
+          "/api/protocols/[protocolId].ts",
+          "/api/conflicts/[protocolId].ts",
+          "/api/comments/index.ts",
+          "/api/tasks/index.ts",
+          "/api/equipment/[labId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Protocol { id String @id; title String; labId String; content Json; uploadDate DateTime; version Int; isHarmonized Boolean; metadata Json?; accessControl Json }",
+          "model Equipment { id String @id; labId String; equipmentType String; specifications Json; calibrationData Json?; lastCalibrationDate DateTime? }",
+          "model Comment { id String @id; authorId String; protocolId String?; taskId String?; content String; createdAt DateTime; editedAt DateTime?; parentCommentId String? }",
+          "model Task { id String @id; title String; description String?; assignedLabId String; dueDate DateTime?; status String; relatedProtocolVersion Int?; createdAt DateTime }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to identify missing constraints and detailed user needs for the protocol harmonization tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}}\n{{EXPANDED}}\nUser input: {{USER_INPUT}}\nWhat additional constraints, edge cases, or requirements should be considered to ensure the tool meets academic research team lead needs for multi-lab protocol harmonization?"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages, data models, and API routes necessary to implement the full multi-page app blueprint.",
+        "promptTemplate": "Based on the idea, blueprint, and expanded specs:\n{{IDEA}}\n{{BLUEPRINT}}\n{{EXPANDED}}\nPlease specify the complete set of UI pages, data models with fields, API routes with request/response shapes, and background jobs to implement the Academic Research Protocol Harmonizer."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create stub code files for the main UI pages and API endpoints to scaffold development.",
+        "promptTemplate": "Using the finalized pages and API specs:\n{{BLUEPRINT}}\n{{EXPANDED}}\nGenerate starter code stubs for each UI page route and API endpoint file needed for the project, including comments on purpose and expected inputs/outputs."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring between UI pages, API endpoints, and the database models ensuring data flows correctly and securely.",
+        "promptTemplate": "Given the page stubs, API routes, and Prisma data models:\n{{BLUEPRINT}}\n{{EXPANDED}}\nDescribe how to connect UI inputs to API calls, validate inputs, persist data to the database, enforce access control, and return structured outputs for the Academic Research Protocol Harmonizer."
+      }
+    ]
+  }
+}

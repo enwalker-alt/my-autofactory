@@ -1,0 +1,834 @@
+{
+  "slug": "academic-research-participant-scheduling-comm-coord",
+  "title": "Academic Research Participant Scheduling & Communication Coordinator",
+  "description": "A lightweight single-page web app for academic research study coordinators to input study session details, participant availability, and staff availability to generate optimized multi-session participant schedules and prepare personalized email reminders. Supports file upload for participant lists and outputs plain text schedule summaries and reminder messages. Enforces input validation and privacy compliance guidance.",
+  "inputLabel": "Enter study protocol details, participant availability, staff availability, and communication preferences (JSON or upload file):",
+  "outputLabel": "Generated multi-session participant schedule and personalized reminder message previews:",
+  "systemPrompt": "You are an assistant for academic research study coordinators managing participant scheduling and communication. Only process inputs related to study session counts, participant availability windows, staff availability, and communication templates. Validate that session numbers and timing rules conform to study protocols. Refuse any requests seeking medical advice or unrelated scheduling. Output plain text summaries of optimized multi-session schedules balancing availabilities, and generate personalized email reminder drafts based on provided templates and timing preferences. Enforce data privacy and ethical compliance notices. If input is invalid or incomplete, respond with clear error messages. Do not send actual messages or access external systems. Use only the input data provided. Output must be safe and suitable for academic research coordination. Use ISO 8601 for all date/time references.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Scheduling Summary",
+      "prompt": "Generate a clear, plain text summary of the multi-session participant scheduling based on the provided study protocol, participant availability, and staff availability. Include session numbers, scheduled times, assigned staff, and any conflicts or scheduling notes."
+    },
+    {
+      "label": "Personalized Email Reminder Preview",
+      "prompt": "Using the communication templates and timing preferences provided, generate personalized email reminder drafts for each scheduled participant session. Include placeholders replaced with participant and session details. Indicate timing relative to session start."
+    },
+    {
+      "label": "Compliance and Privacy Check",
+      "prompt": "Review the input data and scheduling plan for compliance with typical academic research privacy and ethical guidelines. Highlight any potential risks or missing compliance considerations. Provide recommendations."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with keys: 'scheduleSummary' (string), 'reminderPreviews' (array of objects with participantId, sessionNumber, messageBody), and optional 'complianceNotes' (string).",
+  "clarifyPrompt": "Please provide or clarify missing details such as study session counts, participant availability windows, staff availability, or communication templates to proceed with scheduling and message generation.",
+  "finalizePrompt": "Confirm that the scheduling summary and reminder previews meet your study coordination needs and comply with privacy standards. If you require additional refinements or data inputs, please specify.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Participant Scheduling & Communication Coordinator",
+      "niche": {
+        "role": "Academic Research Study Coordinator",
+        "scenario": "Managing participant scheduling, reminders, and communications for multi-session behavioral or clinical research studies with repeated participant visits."
+      },
+      "problem": "Research coordinators face complex challenges organizing participant appointments across multiple sessions, managing cancellations and reschedules, and maintaining compliant, timely communications to maximize retention and data quality. Existing tools lack integrated, study-tailored scheduling combined with automated, personalized communication workflows that support repeated use and compliance with privacy and ethical guidelines.",
+      "inputs": [
+        "Study protocol details including number and timing of participant sessions",
+        "Participant contact information and availability windows",
+        "Staff availability and location resources",
+        "Communication templates and timing preferences",
+        "Study-specific compliance and privacy guidelines"
+      ],
+      "outputs": [
+        "Optimized multi-session participant scheduling calendar balancing participant and staff availability",
+        "Automated personalized reminders and follow-up messages (email/SMS) for participants",
+        "Reschedule and cancellation management interface with waitlist and slot reallocation",
+        "Compliance audit logs for communications and scheduling changes",
+        "Summary reports on attendance, retention rates, and scheduling efficiency"
+      ],
+      "whyItWins": [
+        "Specifically tailored for multi-session academic study workflows, addressing complex scheduling plus communication in one system",
+        "Reduces manual coordination effort and errors, improving participant retention and study data completeness",
+        "Supports compliance with ethical and privacy standards through integrated audit trails and message templates",
+        "Enables coordinators to manage hundreds of participants and sessions with scalable automation",
+        "Bridges gap between calendar management and participant communication, unlike generic scheduling or messaging tools"
+      ],
+      "upgradePath": {
+        "today": "Lightweight web app offering session schedule input, basic participant calendar generation, and email reminder dispatch",
+        "in90Days": "Add SMS message support, automated rescheduling workflows, waitlist management, and compliance log exports",
+        "in12Months": "Develop full multi-user cloud platform with role-based access, participant self-service portals, integration with institutional calendar systems, data analytics dashboards, and adaptive communication scheduling based on participant responsiveness"
+      },
+      "riskNotes": [
+        "Must ensure compliance with data privacy regulations (e.g., GDPR, HIPAA) for participant contact data and communications",
+        "Avoid medical or diagnostic advice; strictly scheduling and communication coordination",
+        "Require institutional approval or IRB oversight for use in sensitive clinical or behavioral studies",
+        "Prevent misuse for non-research scheduling purposes by clear user role gating"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized scheduling and communication coordination platform tailored for academic research study coordinators managing multi-session participant visits. It integrates optimized multi-session scheduling, automated personalized reminders via email/SMS, reschedule and cancellation workflows, compliance audit logging, and reporting to improve retention and data quality while ensuring privacy and ethical compliance.",
+      "primaryUser": "Academic Research Study Coordinator",
+      "successMetrics": [
+        "Reduction in manual scheduling effort measured by coordinator time saved",
+        "Improved participant retention rates across multi-session studies",
+        "Decrease in no-show and late cancellation rates",
+        "Compliance audit completeness and accuracy",
+        "User adoption rate and satisfaction among study coordinators"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Coordinator Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide study coordinators with interfaces for scheduling management, participant communication setup, reschedule/cancellation handling, and reporting visualization.",
+          "dependsOn": [
+            "api-scheduling",
+            "api-communication",
+            "api-reports",
+            "data-study",
+            "data-participant",
+            "data-communicationLog"
+          ],
+          "notes": [
+            "Includes calendar views with multi-session participant appointments",
+            "Interactive reschedule and waitlist management tools",
+            "Compliance audit log viewer",
+            "Role-based access control UI elements"
+          ]
+        },
+        {
+          "id": "api-scheduling",
+          "name": "Scheduling API",
+          "type": "api",
+          "responsibility": "Handle all scheduling logic including session templates, participant availability matching, staff availability, slot allocation, reschedules, cancellations, and waitlist management.",
+          "dependsOn": [
+            "data-study",
+            "data-participant",
+            "data-staff",
+            "data-availability",
+            "data-scheduleSlot",
+            "data-waitlist"
+          ],
+          "notes": [
+            "Implements optimization algorithms for balancing participant and staff availability",
+            "Enforces study protocol constraints on session timing and sequence",
+            "Supports atomic reschedule and cancellation operations with slot reallocation"
+          ]
+        },
+        {
+          "id": "api-communication",
+          "name": "Communication API",
+          "type": "api",
+          "responsibility": "Manage personalized automated communication workflows including email and SMS reminders, follow-ups, message templating, scheduling, and compliance logging.",
+          "dependsOn": [
+            "data-participant",
+            "data-communicationTemplate",
+            "data-communicationLog",
+            "integration-email",
+            "integration-sms"
+          ],
+          "notes": [
+            "Supports configurable timing and channel preferences per study and participant",
+            "Logs all sent communications for audit and compliance",
+            "Handles retries and failure notifications"
+          ]
+        },
+        {
+          "id": "data-store",
+          "name": "Core Data Store",
+          "type": "data",
+          "responsibility": "Persist all study, participant, staff, scheduling, communication, and audit log data required for system operation and compliance.",
+          "dependsOn": [],
+          "notes": [
+            "Designed for secure storage with encryption and access controls",
+            "Supports indexing for efficient scheduling queries and reporting"
+          ]
+        },
+        {
+          "id": "background-job-communicationDispatcher",
+          "name": "Communication Dispatcher Job",
+          "type": "job",
+          "responsibility": "Periodically process scheduled communications, dispatch reminders and follow-ups via email/SMS, and update communication logs.",
+          "dependsOn": [
+            "api-communication",
+            "integration-email",
+            "integration-sms"
+          ],
+          "notes": [
+            "Handles message queueing, rate limiting, and error recovery",
+            "Ensures messages comply with timing preferences and study protocols"
+          ]
+        },
+        {
+          "id": "integration-email",
+          "name": "Email Service Integration",
+          "type": "integration",
+          "responsibility": "Interface with external email providers to send personalized email reminders and notifications.",
+          "dependsOn": [],
+          "notes": [
+            "Supports templated emails with variable substitution",
+            "Includes delivery status tracking and bounce handling"
+          ]
+        },
+        {
+          "id": "integration-sms",
+          "name": "SMS Service Integration",
+          "type": "integration",
+          "responsibility": "Interface with SMS gateway providers to send personalized SMS reminders and notifications.",
+          "dependsOn": [],
+          "notes": [
+            "Supports opt-in/opt-out compliance and message personalization",
+            "Handles delivery receipts and error reporting"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Study",
+          "purpose": "Stores academic study protocols, session definitions, compliance guidelines, and communication preferences.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sessionCount",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "sessionTimingRules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "communicationPreferences",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "complianceGuidelines",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "title"
+          ]
+        },
+        {
+          "name": "Participant",
+          "purpose": "Stores participant contact info, availability, session attendance, and communication opt-in status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "phone",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "availabilityWindows",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "optInCommunication",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "sessionAttendance",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "studyId",
+            "email"
+          ]
+        },
+        {
+          "name": "Staff",
+          "purpose": "Stores staff member info, availability, and assigned locations for scheduling.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "availabilityWindows",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "location"
+          ]
+        },
+        {
+          "name": "ScheduleSlot",
+          "purpose": "Represents individual scheduled participant sessions with assigned staff, time, and location.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "participantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "staffId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sessionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "startTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "participantId",
+            "staffId",
+            "startTime"
+          ]
+        },
+        {
+          "name": "WaitlistEntry",
+          "purpose": "Tracks participants waiting for open slots due to cancellations or reschedules.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "participantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "requestedSessionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "studyId",
+            "participantId"
+          ]
+        },
+        {
+          "name": "CommunicationTemplate",
+          "purpose": "Stores message templates for emails and SMS with placeholders and timing rules.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "channel",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "templateBody",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timingOffsetMinutes",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "studyId",
+            "channel"
+          ]
+        },
+        {
+          "name": "CommunicationLog",
+          "purpose": "Audit log of all communications sent for compliance and troubleshooting.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "participantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "channel",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "messageBody",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sentTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "deliveryStatus",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "participantId",
+            "studyId",
+            "sentTimestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Coordinator Dashboard",
+          "purpose": "Main interface for managing studies, viewing schedules, communications, and reports.",
+          "inputs": [
+            "study selection",
+            "filter criteria",
+            "date range"
+          ],
+          "outputs": [
+            "calendar views",
+            "communication status",
+            "summary reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/study/:id/schedule",
+          "title": "Study Scheduling",
+          "purpose": "Manage multi-session participant scheduling, reschedules, cancellations, and waitlists.",
+          "inputs": [
+            "participant availability",
+            "staff availability",
+            "session templates"
+          ],
+          "outputs": [
+            "scheduled slots",
+            "waitlist status",
+            "conflict alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/study/:id/communications",
+          "title": "Communication Management",
+          "purpose": "Configure communication templates, timing preferences, and view communication logs.",
+          "inputs": [
+            "message templates",
+            "timing settings",
+            "participant communication preferences"
+          ],
+          "outputs": [
+            "preview messages",
+            "audit logs",
+            "delivery statuses"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reports & Analytics",
+          "purpose": "View attendance, retention, scheduling efficiency, and compliance audit reports.",
+          "inputs": [
+            "study selection",
+            "date range"
+          ],
+          "outputs": [
+            "charts",
+            "tables",
+            "exportable reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate study coordinators and staff with role-based access control.",
+          "inputs": [
+            "username",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/studies",
+          "method": "GET",
+          "purpose": "Retrieve list of studies accessible to the authenticated user.",
+          "requestShape": "none",
+          "responseShape": "array of Study objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/studies/:id/schedule",
+          "method": "POST",
+          "purpose": "Create or update participant session schedules for a study.",
+          "requestShape": "ScheduleSlot objects with participantId, sessionNumber, timing",
+          "responseShape": "confirmation status and updated schedule data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/studies/:id/communications/send",
+          "method": "POST",
+          "purpose": "Trigger immediate sending of scheduled communications for a study or participant.",
+          "requestShape": "{ participantId?: string, sessionNumber?: number }",
+          "responseShape": "dispatch status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/waitlist",
+          "method": "POST",
+          "purpose": "Add participant to waitlist for a session or remove them upon slot allocation.",
+          "requestShape": "{ studyId, participantId, requestedSessionNumber }",
+          "responseShape": "waitlist status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/attendance",
+          "method": "GET",
+          "purpose": "Retrieve attendance and retention reports for a study over a date range.",
+          "requestShape": "{ studyId, startDate, endDate }",
+          "responseShape": "report data with attendance metrics",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and provide access token.",
+          "requestShape": "{ username, password }",
+          "responseShape": "{ token, userRole }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ScheduledCommunicationDispatcher",
+          "trigger": "Runs every 5 minutes",
+          "purpose": "Dispatch scheduled email and SMS reminders/follow-ups according to configured timing rules and update logs."
+        },
+        {
+          "name": "WaitlistSlotAllocator",
+          "trigger": "Triggered on slot cancellation or reschedule",
+          "purpose": "Automatically allocate freed slots to participants on waitlist based on priority and notify them."
+        },
+        {
+          "name": "ComplianceAuditExporter",
+          "trigger": "Runs nightly",
+          "purpose": "Generate and archive compliance audit reports for communications and scheduling changes."
+        }
+      ],
+      "edgeCases": [
+        "Participant cancels last-minute causing cascading rescheduling and waitlist allocation",
+        "Participant contact info changes or communication preferences updated mid-study",
+        "Staff availability changes unexpectedly requiring rapid reschedule",
+        "Communication delivery failures due to invalid contact info or service outages",
+        "Simultaneous conflicting reschedule requests for the same slot",
+        "Ensuring data privacy and access controls prevent unauthorized data exposure",
+        "Handling participants who opt out of SMS or email communications",
+        "System downtime during critical scheduling windows"
+      ],
+      "nonGoals": [
+        "Providing medical or diagnostic advice or clinical decision support",
+        "Serving as a general-purpose calendar or messaging platform outside academic research context",
+        "Managing participant consent forms or IRB approvals",
+        "Direct integration with external institutional calendar systems in initial versions",
+        "Participant self-service portals for scheduling or communication in early phases"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving a token with role-based access.",
+        "Coordinator accesses /dashboard, which fetches studies via GET /api/studies.",
+        "Coordinator selects a study, navigates to /study/:id/schedule to view and manage participant session schedules.",
+        "Schedule page fetches current ScheduleSlot data and participant/staff availability from Scheduling API.",
+        "Coordinator creates or updates schedules via POST /api/studies/:id/schedule, triggering scheduling logic and slot allocation.",
+        "Waitlist management via POST /api/waitlist to add/remove participants based on slot availability.",
+        "Communication templates and preferences configured on /study/:id/communications, interfacing with Communication API.",
+        "Communication API schedules messages based on templates and timing rules, storing logs in CommunicationLog.",
+        "Background job ScheduledCommunicationDispatcher runs every 5 minutes to send due communications via integration-email and integration-sms, updating logs.",
+        "WaitlistSlotAllocator triggers on cancellations/reschedules to allocate freed slots and notify participants.",
+        "ComplianceAuditExporter runs nightly to generate audit reports from scheduling and communication logs.",
+        "Reports page (/reports) fetches attendance and retention metrics via GET /api/reports/attendance.",
+        "All UI pages enforce role-based access control and fetch data only for authorized studies and participants."
+      ],
+      "validationRules": [
+        "Authentication tokens must be valid and checked on all protected API routes.",
+        "Study IDs must exist and belong to the authenticated user's accessible studies.",
+        "ScheduleSlot creation/update must validate sessionNumber within study.sessionCount and timing against study.sessionTimingRules.",
+        "Participant availability windows must be valid JSON arrays with proper date ranges.",
+        "Staff availability windows must be valid and non-overlapping.",
+        "Waitlist entries must not duplicate existing entries for the same participant/session.",
+        "Communication templates must include required placeholders for participant and session variables.",
+        "Communication opt-in status must be respected before sending any messages.",
+        "Reschedule and cancellation requests must be atomic and prevent double-booking or conflicts.",
+        "Input data must be sanitized to prevent injection attacks.",
+        "Date and time fields must be ISO 8601 compliant and timezone-aware.",
+        "API request bodies must conform to defined shapes with required fields present and correctly typed."
+      ],
+      "errorHandling": [
+        "Return 401 Unauthorized for requests with invalid or missing authentication.",
+        "Return 403 Forbidden if user lacks permission for requested study or action.",
+        "Return 400 Bad Request for validation failures with descriptive error messages.",
+        "Return 409 Conflict for scheduling conflicts or simultaneous reschedule attempts.",
+        "Gracefully handle integration-email and integration-sms failures with retries and log errors.",
+        "Log all errors server-side with context for troubleshooting and compliance.",
+        "API responses include error codes and messages standardized across endpoints.",
+        "Background jobs log failures and alert administrators if critical thresholds exceeded.",
+        "UI displays user-friendly error notifications with guidance for corrective action.",
+        "Fallback to safe state on partial failures during atomic operations (e.g., rollback schedule updates)."
+      ],
+      "securityNotes": [
+        "Enforce HTTPS for all client-server communications.",
+        "Use JWT or similar tokens for stateless authentication with expiration.",
+        "Implement role-based access control restricting data access to authorized users only.",
+        "Encrypt sensitive data at rest, including participant contact info and communication logs.",
+        "Sanitize all inputs to prevent injection and cross-site scripting attacks.",
+        "Audit all access and changes to scheduling and communication data for compliance.",
+        "Implement rate limiting on API endpoints to prevent abuse.",
+        "Ensure opt-in/out preferences are strictly enforced before sending communications.",
+        "Secure integration credentials for email and SMS providers in environment variables.",
+        "Regularly update dependencies and monitor for security vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated coordinator with access to multiple studies",
+          "when": "They navigate to /dashboard and select a study",
+          "then": "They see the calendar view with scheduled participant sessions and communication statuses for that study"
+        },
+        {
+          "id": "AT-002",
+          "given": "A participant with availability windows and opt-in communication status",
+          "when": "The coordinator schedules multi-session appointments via /study/:id/schedule",
+          "then": "The system allocates slots respecting availability and session timing rules, and updates the schedule without conflicts"
+        },
+        {
+          "id": "AT-003",
+          "given": "A participant on the waitlist for a session",
+          "when": "A slot is freed by a cancellation",
+          "then": "WaitlistSlotAllocator allocates the slot to the highest priority participant and triggers notification via Communication API"
+        },
+        {
+          "id": "AT-004",
+          "given": "Communication templates configured with timing offsets",
+          "when": "ScheduledCommunicationDispatcher runs",
+          "then": "It sends reminders/follow-ups via email/SMS according to preferences and logs all communications"
+        },
+        {
+          "id": "AT-005",
+          "given": "A coordinator attempts to schedule overlapping sessions for the same participant",
+          "when": "They submit the schedule update",
+          "then": "The API returns a 409 Conflict error preventing double-booking"
+        },
+        {
+          "id": "AT-006",
+          "given": "A participant opts out of SMS communications mid-study",
+          "when": "The system attempts to send an SMS reminder",
+          "then": "The message is not sent and the event is logged respecting opt-out preferences"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user tries to access /dashboard",
+          "when": "They navigate to the route",
+          "then": "They are redirected to /login and denied access"
+        },
+        {
+          "id": "AT-008",
+          "given": "A coordinator requests attendance reports for a study and date range",
+          "when": "They call GET /api/reports/attendance with valid parameters",
+          "then": "They receive accurate attendance and retention metrics in the response"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for all data entities (Study, Participant, Staff, ScheduleSlot, WaitlistEntry, CommunicationTemplate, CommunicationLog).",
+        "Implement authentication API (/api/auth/login) with role-based access control.",
+        "Develop core Scheduling API endpoints (/api/studies, /api/studies/:id/schedule, /api/waitlist) with validation and conflict handling.",
+        "Build Communication API with message templating, scheduling, and logging.",
+        "Integrate email and SMS providers with retry and error handling.",
+        "Create Next.js pages with protected routes: /login, /dashboard, /study/:id/schedule, /study/:id/communications, /reports.",
+        "Implement UI components for calendar views, scheduling forms, communication template management, and reports visualization.",
+        "Develop background jobs for ScheduledCommunicationDispatcher, WaitlistSlotAllocator, and ComplianceAuditExporter.",
+        "Add comprehensive validation and error handling across APIs and UI.",
+        "Implement audit logging and compliance reporting features.",
+        "Conduct acceptance testing and edge case validations.",
+        "Deploy with environment-based configuration and secure credentials."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/study/[id]/schedule",
+          "/study/[id]/communications",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/studies/index.ts",
+          "/api/studies/[id]/schedule.ts",
+          "/api/studies/[id]/communications/send.ts",
+          "/api/waitlist.ts",
+          "/api/reports/attendance.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Study",
+          "Participant",
+          "Staff",
+          "ScheduleSlot",
+          "WaitlistEntry",
+          "CommunicationTemplate",
+          "CommunicationLog"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints, clarify inputs, outputs, and compliance needs for the academic research scheduling coordinator tool.",
+        "promptTemplate": "You are the Planner refining requirements for the Academic Research Participant Scheduling & Communication Coordinator. Based on current blueprint: {{BLUEPRINT}} and expanded spec: {{EXPANDED}}, please ask the user to provide or clarify any missing constraints, data inputs, or compliance requirements. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define detailed page designs, data models, and API routes for the multi-page scheduling and communication platform.",
+        "promptTemplate": "You are the Architect designing the Academic Research Participant Scheduling & Communication Coordinator app. Using the idea: {{IDEA}}, blueprint: {{BLUEPRINT}}, and expanded details: {{EXPANDED}}, finalize the list of UI pages, data models, and API routes needed. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate Next.js page stubs with placeholders for key routes and basic UI components for study coordination.",
+        "promptTemplate": "You are the Builder implementing the Academic Research Participant Scheduling & Communication Coordinator. Based on the finalized architecture: {{ARCHITECTURE}}, generate Next.js page stubs for routes including /login, /dashboard, /study/[id]/schedule, /study/[id]/communications, and /reports. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect front-end pages with API endpoints and database models, implementing authentication and data flow.",
+        "promptTemplate": "You are the Integrator wiring the Academic Research Participant Scheduling & Communication Coordinator app. Using the page stubs: {{PAGE_STUBS}}, API specs: {{API_SPECS}}, and data models: {{DATA_MODELS}}, implement authentication, data fetching, and form submissions. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

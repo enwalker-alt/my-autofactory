@@ -1,0 +1,789 @@
+{
+  "slug": "post-award-compliance-checklist-generator",
+  "title": "Post-Award Compliance Checklist Generator",
+  "description": "A lightweight web tool for academic research grant managers to upload award documents and institutional policies to generate and update a dynamic post-award compliance checklist with manual status updates and document uploads.",
+  "inputLabel": "Paste or upload grant award documents and post-award requirements JSON",
+  "outputLabel": "Generated Compliance Checklist and Status Summary",
+  "systemPrompt": "You are an assistant helping an academic research grant manager generate and update a post-award compliance checklist. The user will input grant award documents and funder requirements in text or JSON format, optionally upload related files. Your output must be a clear, structured checklist of compliance tasks with due dates, statuses (pending, completed, overdue), and guidance on required documents. Reject any request that tries to provide personal data unrelated to grant compliance or requests legal/financial advice. Output plain text summary with optional JSON structured checklist. Enforce that all compliance items relate only to post-award reporting requirements. Do not generate any content outside compliance tracking. If input is unclear or incomplete, ask clarifying questions before proceeding.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Initial Checklist Generation",
+      "prompt": "Generate a comprehensive post-award compliance checklist based on the following grant award documents and funder requirements: {{USER_INPUT}}. Include task descriptions, due dates if specified, and status initialized to 'pending'.",
+      "hint": "Use this preset to create the initial compliance checklist from award documents."
+    },
+    {
+      "label": "Update Checklist Status",
+      "prompt": "Update the status of the following compliance checklist items based on this input: {{USER_INPUT}}. Reflect changes in due dates, completion status, and related documents. Provide updated checklist summary.",
+      "hint": "Use this to manually update checklist item statuses and add document references."
+    },
+    {
+      "label": "Summarize Compliance Overview",
+      "prompt": "Provide a summary overview of the current compliance checklist, highlighting any overdue tasks, upcoming deadlines within 30 days, and items pending completion.",
+      "hint": "Use this to get a quick status report of compliance progress."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output a JSON array of checklist items, each with id (string), description (string), dueDate (ISO 8601 date string or null), status (pending|completed|overdue), and relatedDocuments (array of file metadata or empty).",
+  "clarifyPrompt": "Please provide the grant award documents, funder post-award requirements, or any relevant institutional policies you want to use to generate or update the compliance checklist. Upload files if available.",
+  "finalizePrompt": "Review the generated compliance checklist carefully. Confirm all tasks reflect the specific post-award reporting obligations and deadlines. Update statuses or upload supporting documents as needed. This checklist will be used to track compliance and reporting across institutions.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Post-Award Compliance & Reporting Tracker",
+      "niche": {
+        "role": "Academic Research Grant Manager",
+        "scenario": "Managing and tracking compliance and reporting requirements throughout the post-award phase of multi-institutional academic research grants"
+      },
+      "problem": "Academic research grant managers struggle to coordinate, track, and ensure timely compliance with diverse and complex post-award reporting requirements (financial, progress, ethical compliance, personnel changes, and deliverables) across multiple collaborating institutions and funders. Existing tools focus on proposal preparation or pre-award compliance but do not address the integrated, ongoing post-award obligations that require repeated, coordinated updates and documentation.",
+      "inputs": [
+        "Grant award documents and funder post-award requirements",
+        "Institutional compliance policies and deadlines",
+        "Periodic progress reports, financial expenditure data, and personnel updates",
+        "Uploaded supporting documents (e.g., IRB renewals, financial statements)",
+        "Collaborator contact and role information"
+      ],
+      "outputs": [
+        "Centralized, dynamic compliance checklist tailored to specific award conditions",
+        "Automated deadline reminders and escalation alerts for upcoming or missed reporting",
+        "Structured status dashboards summarizing compliance across institutions and report types",
+        "Pre-populated, funder-compliant reporting templates with integrated collaborator inputs",
+        "Audit-ready documentation bundles consolidating submitted reports and correspondence"
+      ],
+      "whyItWins": [
+        "Fills a critical gap by focusing on the complex, multi-party post-award compliance workflow rather than proposal or pre-award tasks",
+        "Reduces risk of non-compliance penalties, funding delays, or audit failures through proactive, centralized tracking",
+        "Enables collaboration and transparency among multi-institutional teams with role-based access and input tracking",
+        "Saves time by automating report generation and consolidating diverse compliance data",
+        "Supports continuous updates and iterative report submissions typical in long-term funded projects"
+      ],
+      "upgradePath": {
+        "today": "Launch a lightweight web tool where grant managers upload award documents and key institutional policies to generate an initial post-award compliance checklist with manual update and report upload capabilities.",
+        "in90Days": "Add automated deadline tracking with email reminders, role-based collaborator access for inputting progress and financial data, and integration with common institutional reporting systems for data import/export.",
+        "in12Months": "Develop a full multi-page web platform including dynamic dashboards, AI-assisted report drafting from uploaded data, version control for reports, audit trail generation, and multi-funder database support enabling reuse across diverse grant types and institutions."
+      },
+      "riskNotes": [
+        "Must ensure secure handling of sensitive financial and personnel data with appropriate access controls",
+        "Compliance recommendations and generated reports should not replace professional legal or financial advice; disclaimers required",
+        "Complex multi-institutional workflows may require adaptable configurations to fit diverse policies",
+        "Requires ongoing updates to keep pace with changing funder and institutional compliance requirements"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive web platform for academic research grant managers to track, coordinate, and ensure compliance with post-award reporting requirements across multiple institutions and funders. It centralizes compliance checklists, automates deadline reminders, supports collaborative inputs, and generates audit-ready documentation.",
+      "primaryUser": "Academic Research Grant Manager",
+      "successMetrics": [
+        "Reduction in missed or late compliance deadlines",
+        "Increased user adoption and active collaboration across institutions",
+        "Time saved in report preparation and submission",
+        "Number of audit-ready documentation bundles generated",
+        "User satisfaction with dashboard clarity and automation features"
+      ],
+      "components": [
+        {
+          "id": "ui-webapp",
+          "name": "Web Application UI",
+          "type": "ui",
+          "responsibility": "Provide multi-page user interface for grant managers and collaborators to upload documents, view compliance checklists, input data, access dashboards, and generate reports.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Includes role-based access control for collaborators",
+            "Supports file uploads and downloads",
+            "Responsive design for desktop and tablets"
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API Server",
+          "type": "api",
+          "responsibility": "Handle business logic, data validation, user authentication, authorization, compliance checklist generation, report templating, and communication with data storage and background jobs.",
+          "dependsOn": [
+            "data-storage",
+            "integration-email"
+          ],
+          "notes": [
+            "Exposes REST endpoints for UI and integrations",
+            "Implements security best practices for sensitive data",
+            "Supports audit trails and versioning"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Database & File Storage",
+          "type": "data",
+          "responsibility": "Persist user accounts, grant award data, compliance checklists, uploaded documents, collaborator info, reports, deadlines, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Structured database for relational data",
+            "Secure file storage with access controls for documents",
+            "Indexes on grant IDs, user roles, and deadlines for performance"
+          ]
+        },
+        {
+          "id": "job-deadline-tracker",
+          "name": "Deadline Tracking & Notification Job",
+          "type": "job",
+          "responsibility": "Periodically scan upcoming and missed deadlines, send automated email reminders and escalation alerts to relevant users and collaborators.",
+          "dependsOn": [
+            "data-storage",
+            "integration-email"
+          ],
+          "notes": [
+            "Configurable reminder schedules",
+            "Handles retries and failure notifications"
+          ]
+        },
+        {
+          "id": "integration-email",
+          "name": "Email Notification Integration",
+          "type": "integration",
+          "responsibility": "Interface with email service providers to send reminders, alerts, and system notifications securely and reliably.",
+          "dependsOn": [],
+          "notes": [
+            "Supports templated emails with dynamic content",
+            "Logs email delivery status"
+          ]
+        },
+        {
+          "id": "integration-institutional-systems",
+          "name": "Institutional Reporting Systems Integration",
+          "type": "integration",
+          "responsibility": "Import/export data from common institutional reporting systems to reduce manual data entry and maintain data consistency.",
+          "dependsOn": [
+            "api-core"
+          ],
+          "notes": [
+            "Supports common data formats and APIs",
+            "Handles authentication and data mapping"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents system users including grant managers and collaborators with role-based permissions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "role"
+          ]
+        },
+        {
+          "name": "GrantAward",
+          "purpose": "Stores details about the grant award, funder requirements, and institutional policies.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funder",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "awardDocuments",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "postAwardRequirements",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "institutionalPolicies",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "collaborators",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "funder",
+            "title"
+          ]
+        },
+        {
+          "name": "ComplianceChecklistItem",
+          "purpose": "Represents individual compliance tasks or reporting requirements linked to a grant.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedTo",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "relatedDocuments",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "dueDate",
+            "status"
+          ]
+        },
+        {
+          "name": "Report",
+          "purpose": "Stores submitted reports, versions, and metadata for audit and tracking.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "submittedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "submissionDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "attachedFiles",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "type",
+            "submissionDate"
+          ]
+        },
+        {
+          "name": "DeadlineReminder",
+          "purpose": "Tracks reminders sent for compliance deadlines to prevent duplicates and manage escalation.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "checklistItemId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sentToUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sentAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "reminderType",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "checklistItemId",
+            "sentToUserId"
+          ]
+        },
+        {
+          "name": "AuditLog",
+          "purpose": "Records changes and actions for compliance tracking and audit readiness.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "performedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "entityType",
+            "entityId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Compliance Dashboard",
+          "purpose": "Summarize compliance status, upcoming deadlines, and alerts across grants and institutions.",
+          "inputs": [],
+          "outputs": [
+            "compliance summary",
+            "deadline alerts",
+            "status charts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grants/:grantId/checklist",
+          "title": "Grant Compliance Checklist",
+          "purpose": "View and update the dynamic compliance checklist tailored to a specific grant award.",
+          "inputs": [
+            "checklist item updates",
+            "document uploads"
+          ],
+          "outputs": [
+            "updated checklist",
+            "status indicators"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grants/:grantId/reports",
+          "title": "Reports Management",
+          "purpose": "Create, view, edit, and submit funder-compliant reports with collaborator inputs and version control.",
+          "inputs": [
+            "report data",
+            "file uploads"
+          ],
+          "outputs": [
+            "report previews",
+            "submission status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grants/:grantId/collaborators",
+          "title": "Collaborator Management",
+          "purpose": "Manage collaborator roles, contact information, and access permissions for a grant.",
+          "inputs": [
+            "collaborator info updates"
+          ],
+          "outputs": [
+            "collaborator list",
+            "role assignments"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User & System Settings",
+          "purpose": "Configure user preferences, notification settings, and institutional compliance templates.",
+          "inputs": [
+            "settings changes"
+          ],
+          "outputs": [
+            "confirmation messages"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue access token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/grants",
+          "method": "GET",
+          "purpose": "Retrieve list of grants accessible to the user.",
+          "requestShape": "none",
+          "responseShape": "GrantAward[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/checklist",
+          "method": "GET",
+          "purpose": "Get compliance checklist items for a specific grant.",
+          "requestShape": "none",
+          "responseShape": "ComplianceChecklistItem[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/checklist",
+          "method": "POST",
+          "purpose": "Update compliance checklist item status or add related documents.",
+          "requestShape": "{ itemId: string, status?: string, relatedDocuments?: json }",
+          "responseShape": "ComplianceChecklistItem",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/reports",
+          "method": "GET",
+          "purpose": "List submitted reports for a grant.",
+          "requestShape": "none",
+          "responseShape": "Report[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/reports",
+          "method": "POST",
+          "purpose": "Create or update a report submission.",
+          "requestShape": "{ type: string, content: json, attachedFiles?: json }",
+          "responseShape": "Report",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/collaborators",
+          "method": "GET",
+          "purpose": "Retrieve collaborator list for a grant.",
+          "requestShape": "none",
+          "responseShape": "User[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/collaborators",
+          "method": "POST",
+          "purpose": "Add or update collaborator roles and permissions.",
+          "requestShape": "{ userId: string, role: string }",
+          "responseShape": "User",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Deadline Reminder Dispatcher",
+          "trigger": "Scheduled (e.g., daily at midnight)",
+          "purpose": "Scan for upcoming or missed compliance deadlines and send email reminders and escalation alerts to assigned users."
+        },
+        {
+          "name": "Data Sync with Institutional Systems",
+          "trigger": "Scheduled or event-driven",
+          "purpose": "Import and export compliance and reporting data to/from institutional reporting systems to keep data current and reduce manual entry."
+        }
+      ],
+      "edgeCases": [
+        "Handling grants with multiple funders having conflicting or overlapping compliance requirements",
+        "Late or missing collaborator inputs delaying report generation",
+        "Changes in institutional policies or funder requirements mid-award requiring checklist updates",
+        "User role changes during active compliance cycles affecting access and notifications",
+        "File upload failures or corrupted documents impacting audit readiness",
+        "Network or email service outages causing missed reminders",
+        "Data privacy breaches or unauthorized access attempts",
+        "Version conflicts when multiple collaborators edit reports simultaneously"
+      ],
+      "nonGoals": [
+        "Replacing professional legal, financial, or ethical compliance advice",
+        "Managing pre-award grant proposal development",
+        "Handling grant budgeting or financial transactions beyond reporting",
+        "Providing AI-generated legal or financial compliance recommendations",
+        "Supporting non-academic or non-research grant types",
+        "Mobile app development in initial phases"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses the web application UI and authenticates via /login, receiving an authentication token.",
+        "Authenticated users request data such as grants list (/api/grants), compliance checklists (/api/grants/:grantId/checklist), reports (/api/grants/:grantId/reports), and collaborators (/api/grants/:grantId/collaborators) via REST API endpoints.",
+        "Users submit updates to checklist items, reports, and collaborator roles through POST API endpoints, which validate input, update the database, and create audit logs.",
+        "File uploads for documents and reports are handled via the UI, sent to API endpoints, stored securely in file storage, and linked in database records.",
+        "Background jobs periodically scan deadlines in the database, generate reminders, and send emails via the email integration service.",
+        "Institutional reporting systems integration synchronizes data imports and exports through API-core endpoints, updating the database accordingly.",
+        "Audit logs capture all significant user actions and data changes for compliance and traceability.",
+        "UI pages consume API data and reflect real-time status, compliance summaries, and alerts, supporting role-based access control and collaboration."
+      ],
+      "validationRules": [
+        "Login: Validate email format and password presence; reject invalid credentials with generic error.",
+        "Grant access: Verify user authentication token and authorization for requested grantId; deny unauthorized access.",
+        "Checklist item updates: Validate itemId exists and belongs to grantId; status must be one of predefined statuses (e.g., 'pending', 'completed', 'overdue'); relatedDocuments must be valid JSON with required metadata.",
+        "Report submissions: Validate report type against allowed types; content must be valid JSON and conform to report schema; attachedFiles must be valid JSON with file metadata; enforce version incrementing.",
+        "Collaborator updates: Validate userId exists; role must be within allowed roles; user must have permission to modify collaborators.",
+        "File uploads: Validate file size, type, and integrity; reject corrupted or unsupported files.",
+        "Settings changes: Validate input fields according to user preferences schema.",
+        "Background jobs: Validate deadlines and reminders data integrity before processing.",
+        "All API inputs: Sanitize inputs to prevent injection attacks and ensure data consistency."
+      ],
+      "errorHandling": [
+        "API endpoints return structured error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors).",
+        "UI displays user-friendly error messages based on API error responses, with guidance for corrective actions.",
+        "Authentication failures do not reveal whether email or password was incorrect to prevent enumeration.",
+        "File upload failures provide clear feedback and allow retry.",
+        "Background jobs log errors and retry failed operations with exponential backoff; escalate persistent failures via alert emails.",
+        "Audit logs record error events related to data changes and access violations.",
+        "Network or email service outages are detected and logged; retries and fallback mechanisms are implemented.",
+        "Concurrent report edits detect version conflicts and prompt users to resolve merges."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Implement JWT or similar token-based authentication with secure storage and expiration.",
+        "Enforce role-based access control on all API endpoints and UI pages.",
+        "Sanitize and validate all inputs to prevent injection attacks (SQL, XSS).",
+        "Store sensitive data encrypted at rest, including files and audit logs.",
+        "Implement rate limiting and monitoring to detect and prevent brute force or abuse.",
+        "Log all access and changes for audit trail and compliance.",
+        "Secure file storage with access controls restricting document downloads to authorized users.",
+        "Regularly update dependencies and monitor for vulnerabilities.",
+        "Handle user role changes carefully to update permissions and notification subscriptions immediately."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct login details on /login",
+          "then": "They receive an authentication token and access to the dashboard"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user with access to a grant",
+          "when": "They request the compliance checklist for that grant",
+          "then": "They receive the full checklist with current statuses"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user updates a checklist item status with valid data",
+          "when": "They submit the update via POST /api/grants/:grantId/checklist",
+          "then": "The checklist item is updated in the database and reflected in subsequent GET requests"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user uploads a valid report with attached files",
+          "when": "They submit the report via POST /api/grants/:grantId/reports",
+          "then": "The report is saved with incremented version, files stored securely, and audit log created"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user attempts to access a grant they do not have permission for",
+          "when": "They request data for that grant",
+          "then": "They receive a 403 Forbidden error"
+        },
+        {
+          "id": "AT-006",
+          "given": "A background job runs the deadline reminder dispatcher",
+          "when": "There are upcoming deadlines within configured reminder windows",
+          "then": "Reminder emails are sent to assigned users and reminders logged in the database"
+        },
+        {
+          "id": "AT-007",
+          "given": "Multiple collaborators edit the same report simultaneously",
+          "when": "They submit conflicting updates",
+          "then": "The system detects version conflicts and prompts users to resolve them"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads a corrupted or unsupported file",
+          "when": "They attempt to submit the file",
+          "then": "The system rejects the upload with a clear error message"
+        },
+        {
+          "id": "AT-009",
+          "given": "An unauthenticated user tries to access a protected page",
+          "when": "They navigate to /dashboard or any grant-specific page",
+          "then": "They are redirected to /login"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user updates collaborator roles",
+          "when": "They submit valid collaborator info changes",
+          "then": "The collaborator list updates accordingly and permissions are enforced"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database schema",
+        "Implement authentication API (/api/auth/login) and token management",
+        "Build user role and permission middleware for API and UI",
+        "Develop core API endpoints for grants, checklist, reports, and collaborators with validation and error handling",
+        "Implement file upload handling and secure storage integration",
+        "Create UI pages: login, dashboard, grant checklist, reports, collaborators, and settings with API integration",
+        "Develop audit logging mechanism for data changes and user actions",
+        "Implement background jobs: deadline reminder dispatcher and data sync with institutional systems",
+        "Integrate email notification service with templated emails and delivery logging",
+        "Add concurrency control for report editing and version conflict resolution",
+        "Implement comprehensive testing including acceptance tests and edge case scenarios",
+        "Perform security hardening, input sanitization, and role-based access enforcement",
+        "Deploy and monitor system with logging, error tracking, and alerting"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/grants/[grantId]/checklist",
+          "/grants/[grantId]/reports",
+          "/grants/[grantId]/collaborators",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/grants/index.ts",
+          "/api/grants/[grantId]/checklist.ts",
+          "/api/grants/[grantId]/reports.ts",
+          "/api/grants/[grantId]/collaborators.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "GrantAward",
+          "ComplianceChecklistItem",
+          "Report",
+          "DeadlineReminder",
+          "AuditLog"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Gather missing constraints, clarify edge cases, and confirm scope for the post-award compliance tracker.",
+        "promptTemplate": "You are a planner refining the academic research grant post-award compliance tracker requirements. Given the current blueprint: {{BLUEPRINT}}, and expanded specs: {{EXPANDED}}, ask the user for any missing constraints, special scenarios, or detailed compliance rules needed to ensure the tool meets all needs. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed UI pages, data models, and API routes for the compliance tracker app.",
+        "promptTemplate": "You are an architect finalizing the multi-page web app design. Using the idea: {{IDEA}}, blueprint: {{BLUEPRINT}}, and expansions: {{EXPANDED}}, define detailed page layouts, data models, API endpoints, and security rules. Include notes on validation and error handling. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create scaffolded code files and UI page stubs based on the finalized blueprint.",
+        "promptTemplate": "You are a builder generating code stubs for the compliance tracker. Given the finalized blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, generate starter code for the next routes and API files: {{SCAFFOLDS.apiFilesToCreate}} and {{SCAFFOLDS.nextRoutesToCreate}}. Include basic UI skeletons and API handler placeholders. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to API endpoints and database models ensuring data flow and security.",
+        "promptTemplate": "You are an integrator wiring the compliance tracker system. Using the blueprint: {{BLUEPRINT}}, expanded specs: {{EXPANDED}}, and code scaffolds, detail how to connect UI pages with API routes and database models including authentication, authorization, input validation, and error handling. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

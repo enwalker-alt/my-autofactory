@@ -1,0 +1,842 @@
+{
+  "slug": "academic-research-data-quality-control",
+  "title": "Academic Research Data Collection Quality Control",
+  "description": "Upload your multi-site academic research data snapshots to receive a detailed report summarizing data quality metrics including completeness, error rates, and anomalies detected. This tool helps research data managers monitor and improve data quality during active data collection phases.",
+  "inputLabel": "Upload CSV or Excel data file and provide site identifier",
+  "outputLabel": "Data Quality Summary Report",
+  "systemPrompt": "You are a data quality analyst assistant specialized in academic research data collection. When given a CSV or Excel data file and the site identifier, analyze the data for completeness, error rates, and consistency against known academic data collection protocols. Reject any files containing personally identifiable information or medical diagnostic content. Produce a clear textual summary report highlighting key data quality metrics, detected anomalies, and recommendations for quality control actions. If the input is invalid or disallowed, respond with a clear refusal message. Output only plain text unless structured-output is explicitly requested. Ensure all output is safe and professional.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Report",
+      "prompt": "Please analyze the uploaded data file for data completeness, error rates, and inconsistencies. Provide a clear summary report highlighting any anomalies and suggested quality control actions.",
+      "hint": "Use this to get a high-level quality summary from your data upload."
+    },
+    {
+      "label": "Detailed Metrics",
+      "prompt": "Provide detailed metrics on data completeness, error distributions, and inconsistency counts by variable and site from the uploaded data file.",
+      "hint": "Use for a more granular breakdown of data quality statistics."
+    },
+    {
+      "label": "Anomaly Detection Report",
+      "prompt": "Detect and describe any anomalies or outliers in the uploaded data. Highlight potential data quality issues requiring human review.",
+      "hint": "Use this to identify unusual data points or errors."
+    },
+    {
+      "label": "Quality Control Task Suggestions",
+      "prompt": "Based on the uploaded data quality findings, suggest prioritized actionable tasks for site teams to address data quality issues, including deadlines and responsibilities.",
+      "hint": "Use to generate tasks for improving data quality."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, produce a JSON object with fields: completenessMetrics, errorRates, inconsistencies, anomalies, and recommendedActions, each containing relevant data summaries or lists.",
+  "clarifyPrompt": "Please confirm the site identifier and data collection protocol version. Also specify if you want a summary, detailed metrics, anomaly detection, or task suggestions.",
+  "finalizePrompt": "Generate the final data quality report based on the uploaded data, confirmed site ID, and requested output type. Include actionable insights and avoid any sensitive information.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Quality Control Dashboard",
+      "niche": {
+        "role": "Academic Research Data Manager",
+        "scenario": "Overseeing ongoing data collection across multiple sites or studies to ensure consistent data quality and completeness in real time"
+      },
+      "problem": "Academic research data managers often struggle to monitor and maintain high data quality and completeness during ongoing multi-site or multi-study data collection efforts, lacking an integrated tool to track real-time quality metrics, identify recurring data issues, and coordinate corrective actions efficiently.",
+      "inputs": [
+        "Periodic raw data snapshots or incremental data uploads from multiple collection sites in CSV or Excel format",
+        "Data collection protocol documents and expected variable schemas",
+        "Historical data quality reports or issue logs (optional)",
+        "Site metadata and contact information"
+      ],
+      "outputs": [
+        "Interactive dashboard visualizing data completeness, error rates, and inconsistency metrics by site and variable",
+        "Automated anomaly and outlier detection reports highlighting potential data quality issues",
+        "Prioritized, actionable quality control task lists assigned to site teams with deadlines",
+        "Trend reports showing quality metric improvements or regressions over time",
+        "Exportable compliance-ready quality summaries for stakeholders and funders"
+      ],
+      "whyItWins": [
+        "Fills a gap for continuous, integrated data quality monitoring during active collection phases rather than post-hoc analysis",
+        "Streamlines communication and accountability by linking data issues directly to responsible sites and tasks",
+        "Supports iterative quality improvement through tracking trends and corrective actions dynamically",
+        "Enables data managers to proactively identify and resolve common data errors and completeness gaps",
+        "Offers scalability from small studies to large multi-site projects with configurable quality metrics"
+      ],
+      "upgradePath": {
+        "today": "Lightweight single-page app that imports periodic data uploads and generates static quality summary reports and simple dashboards",
+        "in90Days": "Add interactive dashboards with drill-down filtering by site, variable, and time; integrate automated anomaly detection and email notifications for data managers and site contacts",
+        "in12Months": "Develop a multi-page system with user management, role-based task assignment, real-time data streaming support, customizable quality metric configurations, collaborative issue tracking, and audit trail reporting for regulatory compliance"
+      },
+      "riskNotes": [
+        "Ensure data privacy and security by avoiding storage of personally identifiable information or applying strong anonymization before upload",
+        "Avoid medical or sensitive diagnostic interpretations; focus strictly on data quality metrics",
+        "Require clear data ownership and consent for multi-site data uploads to prevent unauthorized data sharing",
+        "Mitigate risk of over-automation by providing human-in-the-loop review steps for flagged data issues"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A scalable Academic Research Data Collection Quality Control Dashboard enabling research data managers to monitor, analyze, and improve data quality across multiple sites and studies in real time through interactive dashboards, automated anomaly detection, and coordinated corrective task management.",
+      "primaryUser": "Academic Research Data Manager",
+      "successMetrics": [
+        "Reduction in data completeness and consistency issues over time",
+        "User engagement with dashboards and task management features",
+        "Timely resolution of flagged data quality issues by site teams",
+        "Accuracy and relevance of automated anomaly detection reports",
+        "Stakeholder satisfaction with exportable quality summaries"
+      ],
+      "components": [
+        {
+          "id": "ui_dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide interactive visualizations of data quality metrics, trend reports, anomaly detection results, and drill-down filtering by site, variable, and time.",
+          "dependsOn": [
+            "api_dataQualityMetrics",
+            "api_anomalyReports",
+            "api_taskManagement"
+          ],
+          "notes": [
+            "Supports real-time updates and filtering",
+            "Accessible only to authenticated users with appropriate roles"
+          ]
+        },
+        {
+          "id": "ui_taskManagement",
+          "name": "Task Management UI",
+          "type": "ui",
+          "responsibility": "Enable creation, assignment, tracking, and resolution of quality control tasks linked to specific data issues and sites.",
+          "dependsOn": [
+            "api_taskManagement",
+            "api_userManagement"
+          ],
+          "notes": [
+            "Supports role-based access and notifications",
+            "Includes task deadlines and status updates"
+          ]
+        },
+        {
+          "id": "api_dataQualityMetrics",
+          "name": "Data Quality Metrics API",
+          "type": "api",
+          "responsibility": "Process uploaded data snapshots, compute completeness, error rates, inconsistency metrics, and provide aggregated data for dashboards and reports.",
+          "dependsOn": [
+            "data_rawData",
+            "data_protocolSchemas",
+            "job_anomalyDetection"
+          ],
+          "notes": [
+            "Handles incremental and full data uploads",
+            "Validates data against protocol schemas"
+          ]
+        },
+        {
+          "id": "api_taskManagement",
+          "name": "Task Management API",
+          "type": "api",
+          "responsibility": "Manage lifecycle of quality control tasks including creation, assignment, updates, and completion tracking.",
+          "dependsOn": [
+            "data_tasks",
+            "data_sites",
+            "api_userManagement"
+          ],
+          "notes": [
+            "Supports prioritization and deadline enforcement",
+            "Integrates with notification system"
+          ]
+        },
+        {
+          "id": "api_userManagement",
+          "name": "User & Role Management API",
+          "type": "api",
+          "responsibility": "Authenticate users, manage roles and permissions, and control access to system features and data.",
+          "dependsOn": [
+            "data_users"
+          ],
+          "notes": [
+            "Supports role-based access control (e.g., data manager, site contact)",
+            "Enforces data privacy and security policies"
+          ]
+        },
+        {
+          "id": "data_rawData",
+          "name": "Raw Data Storage",
+          "type": "data",
+          "responsibility": "Persist uploaded raw data snapshots and incremental updates from multiple sites, ensuring anonymization and compliance with privacy requirements.",
+          "dependsOn": [],
+          "notes": [
+            "Stores data in structured format for efficient querying",
+            "Includes metadata about upload time, site, and version"
+          ]
+        },
+        {
+          "id": "data_protocolSchemas",
+          "name": "Protocol & Schema Repository",
+          "type": "data",
+          "responsibility": "Store data collection protocols and expected variable schemas used for validation and metric computation.",
+          "dependsOn": [],
+          "notes": [
+            "Supports versioning to handle protocol updates",
+            "Used by data quality metrics API for validation"
+          ]
+        },
+        {
+          "id": "data_tasks",
+          "name": "Quality Control Tasks",
+          "type": "data",
+          "responsibility": "Persist task details including linked data issues, assigned sites or users, priority, status, and deadlines.",
+          "dependsOn": [
+            "data_sites",
+            "data_users"
+          ],
+          "notes": [
+            "Enables audit trail of task changes",
+            "Supports filtering and reporting"
+          ]
+        },
+        {
+          "id": "data_sites",
+          "name": "Site Metadata",
+          "type": "data",
+          "responsibility": "Store metadata and contact information for participating data collection sites.",
+          "dependsOn": [],
+          "notes": [
+            "Used for task assignment and communication",
+            "Includes site identifiers and permissions"
+          ]
+        },
+        {
+          "id": "data_users",
+          "name": "User Accounts & Roles",
+          "type": "data",
+          "responsibility": "Persist user credentials, roles, and permissions for access control.",
+          "dependsOn": [],
+          "notes": [
+            "Supports secure password storage and authentication tokens",
+            "Includes role definitions for data managers and site contacts"
+          ]
+        },
+        {
+          "id": "job_anomalyDetection",
+          "name": "Anomaly Detection Job",
+          "type": "job",
+          "responsibility": "Periodically analyze uploaded data to detect anomalies, outliers, and inconsistencies, generating reports and triggering notifications.",
+          "dependsOn": [
+            "data_rawData",
+            "data_protocolSchemas",
+            "api_taskManagement"
+          ],
+          "notes": [
+            "Configurable detection thresholds",
+            "Supports human-in-the-loop review before task creation"
+          ]
+        },
+        {
+          "id": "integration_notifications",
+          "name": "Notification & Email Integration",
+          "type": "integration",
+          "responsibility": "Send email alerts and notifications to data managers and site contacts for new tasks, approaching deadlines, and critical data quality issues.",
+          "dependsOn": [
+            "api_taskManagement",
+            "data_users",
+            "data_sites"
+          ],
+          "notes": [
+            "Supports opt-in/out preferences",
+            "Ensures secure communication respecting privacy"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "RawDataSnapshot",
+          "purpose": "Store uploaded raw data snapshots or incremental data uploads from sites with anonymization metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "dataContent",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "anonymized",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "uploadTimestamp"
+          ]
+        },
+        {
+          "name": "ProtocolSchema",
+          "purpose": "Define expected variables, types, and validation rules for data collection protocols.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "protocolName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "schemaDefinition",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "protocolName",
+            "version"
+          ]
+        },
+        {
+          "name": "QualityControlTask",
+          "purpose": "Represent actionable quality control tasks linked to data issues and assigned to sites or users.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "linkedDataIssue",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedToUserId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedToSiteId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "priority",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deadline",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "assignedToUserId",
+            "assignedToSiteId",
+            "status",
+            "priority"
+          ]
+        },
+        {
+          "name": "Site",
+          "purpose": "Store metadata and contact information for each data collection site.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contactEmail",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contactPhone",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "address",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "permissions",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteName"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Manage user credentials, roles, and permissions for system access.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "associatedSiteId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "role"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the dashboard and task management features.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Quality Control Dashboard",
+          "purpose": "Display interactive visualizations of data completeness, error rates, anomalies, and trends with filtering options.",
+          "inputs": [
+            "site filter",
+            "variable filter",
+            "time range"
+          ],
+          "outputs": [
+            "charts",
+            "tables",
+            "anomaly alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/tasks",
+          "title": "Task Management",
+          "purpose": "View, create, assign, and update quality control tasks linked to data issues and sites.",
+          "inputs": [
+            "task filters",
+            "task creation form",
+            "task updates"
+          ],
+          "outputs": [
+            "task lists",
+            "task details",
+            "status updates"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/data-upload",
+          "title": "Data Upload",
+          "purpose": "Allow authorized users to upload raw data snapshots or incremental updates securely.",
+          "inputs": [
+            "file upload (CSV/Excel)",
+            "site selection",
+            "upload metadata"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Exportable Reports",
+          "purpose": "Generate and export compliance-ready quality summaries and trend reports for stakeholders.",
+          "inputs": [
+            "report type",
+            "date range",
+            "site selection"
+          ],
+          "outputs": [
+            "PDF/Excel exports",
+            "summary dashboards"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/admin/users",
+          "title": "User Management",
+          "purpose": "Manage user accounts, roles, and permissions (restricted to administrators).",
+          "inputs": [
+            "user creation/edit forms",
+            "role assignments"
+          ],
+          "outputs": [
+            "user lists",
+            "access controls"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/data-quality-metrics",
+          "method": "POST",
+          "purpose": "Receive and process uploaded data snapshots, validate against protocol schemas, and compute quality metrics.",
+          "requestShape": "Multipart/form-data with file upload, siteId, and metadata",
+          "responseShape": "JSON with validation results and processing status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/data-quality-metrics",
+          "method": "GET",
+          "purpose": "Retrieve aggregated data quality metrics and trend data for dashboards and reports.",
+          "requestShape": "Query parameters for siteId, variables, time range",
+          "responseShape": "JSON with metrics and aggregated statistics",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "GET",
+          "purpose": "Fetch list of quality control tasks filtered by user, site, status, or priority.",
+          "requestShape": "Query parameters for filters",
+          "responseShape": "JSON list of tasks",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Create or update quality control tasks linked to data issues.",
+          "requestShape": "JSON with task details",
+          "responseShape": "JSON with created/updated task info",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue access token.",
+          "requestShape": "JSON with email and password",
+          "responseShape": "JSON with auth token or error",
+          "auth": "public"
+        },
+        {
+          "route": "/api/users",
+          "method": "GET",
+          "purpose": "Retrieve user list and roles (admin only).",
+          "requestShape": "None",
+          "responseShape": "JSON list of users",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users",
+          "method": "POST",
+          "purpose": "Create or update user accounts and roles (admin only).",
+          "requestShape": "JSON with user details",
+          "responseShape": "JSON with created/updated user info",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Anomaly Detection",
+          "trigger": "Scheduled (e.g., nightly) or on new data upload",
+          "purpose": "Analyze recent data uploads to detect anomalies, outliers, and inconsistencies, generate reports, and optionally create review tasks."
+        },
+        {
+          "name": "Notification Dispatcher",
+          "trigger": "On task creation, update, or approaching deadlines",
+          "purpose": "Send email notifications and alerts to assigned users and site contacts regarding quality control tasks and critical data issues."
+        }
+      ],
+      "edgeCases": [
+        "Data uploads with missing or malformed fields that do not match protocol schemas",
+        "Conflicting data versions from the same site requiring reconciliation",
+        "Users attempting unauthorized access to data or task management functions",
+        "Overlapping or duplicate tasks created for the same data issue",
+        "Delayed or failed anomaly detection job runs impacting timely alerts",
+        "Sites with intermittent data uploads causing incomplete trend analyses",
+        "Handling large data uploads that exceed system processing capacity",
+        "Ensuring anonymization of data to prevent exposure of personally identifiable information"
+      ],
+      "nonGoals": [
+        "Performing medical or diagnostic interpretations of data content",
+        "Storing or processing personally identifiable information (PII) without anonymization",
+        "Replacing existing institutional data security or compliance frameworks",
+        "Providing data collection tools or protocols themselves",
+        "Automating corrective actions without human review",
+        "Supporting offline or disconnected data collection workflows"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/users/login POST endpoint.",
+        "API authenticates user, issues JWT token, and returns it to client.",
+        "Authenticated user accesses /dashboard page; client requests aggregated data quality metrics from /api/data-quality-metrics GET with filters.",
+        "Dashboard UI renders charts, tables, and anomaly alerts based on API response.",
+        "User accesses /tasks page; client fetches tasks via /api/tasks GET with filters.",
+        "User creates or updates tasks via /api/tasks POST; API validates, persists, and returns updated task info.",
+        "User uploads raw data via /data-upload page; client sends multipart/form-data to /api/data-quality-metrics POST including file, siteId, and metadata.",
+        "API validates uploaded data against protocol schemas, stores in RawDataSnapshot, computes metrics, and returns validation results.",
+        "Anomaly Detection Job runs periodically or triggered by new data upload; analyzes RawDataSnapshot using ProtocolSchema, detects anomalies, generates reports, and optionally creates tasks via /api/tasks POST.",
+        "Notification Dispatcher job triggers on task creation/update or deadlines; sends emails to assigned users and site contacts using data from data_users and data_sites.",
+        "Admin users manage users and roles via /admin/users page, interacting with /api/users GET and POST endpoints."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "Data upload: file must be CSV or Excel; siteId must exist; dataContent must conform to ProtocolSchema for selected protocol and version.",
+        "Task creation/update: title required; priority must be one of predefined levels (e.g., Low, Medium, High); status must be valid (e.g., Open, In Progress, Closed); assignedToUserId and assignedToSiteId must reference existing users/sites; deadline if provided must be a future date.",
+        "User creation/update: email unique and valid; role must be one of predefined roles (e.g., admin, data manager, site contact); password hashed securely; associatedSiteId must exist if provided.",
+        "API query parameters: siteId, variables, time range must be valid and sanitized.",
+        "Anomaly detection thresholds configurable and validated before job execution.",
+        "All inputs sanitized to prevent injection attacks."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Validation errors return 400 Bad Request with detailed field-level error info.",
+        "Unauthorized access attempts return 403 Forbidden.",
+        "File upload errors (e.g., unsupported format, size limits) return 400 with descriptive messages.",
+        "Server errors return 500 Internal Server Error with generic message; detailed logs kept server-side.",
+        "API responses include success flags and error codes for client-side handling.",
+        "Background jobs log errors and retry according to configured policies; failures notify admins.",
+        "Conflict errors (e.g., duplicate tasks) return 409 Conflict with explanation."
+      ],
+      "securityNotes": [
+        "All authenticated API routes require valid JWT tokens with role-based access control enforced.",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt).",
+        "Data uploads anonymized before storage; no PII stored or transmitted.",
+        "Access to user management restricted to admin roles.",
+        "Sensitive data in API responses minimized and filtered by user permissions.",
+        "Rate limiting and input sanitization applied to prevent abuse.",
+        "Notification emails respect user opt-in/out preferences and use secure transport (TLS).",
+        "Audit trails maintained for task changes and user management actions.",
+        "Sessions expire after inactivity; refresh tokens managed securely."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and can access protected pages"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated data manager on /dashboard",
+          "when": "They apply site and time range filters",
+          "then": "Dashboard updates charts and tables with correct aggregated metrics"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user uploads a CSV file with valid data matching protocol schema",
+          "when": "They submit the upload form on /data-upload",
+          "then": "API validates, stores data, computes metrics, and returns success confirmation"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user attempts to create a task with missing title",
+          "when": "They submit the task creation form",
+          "then": "API returns a validation error indicating the missing required field"
+        },
+        {
+          "id": "AT-005",
+          "given": "An anomaly detection job runs after new data upload",
+          "when": "Anomalies are detected",
+          "then": "Reports are generated and tasks created for human review"
+        },
+        {
+          "id": "AT-006",
+          "given": "A non-admin user tries to access /admin/users page",
+          "when": "They navigate to the page",
+          "then": "Access is denied with a 403 Forbidden response"
+        },
+        {
+          "id": "AT-007",
+          "given": "A task is created and assigned to a user",
+          "when": "Notification dispatcher runs",
+          "then": "Assigned user receives an email alert respecting their preferences"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads data with missing required fields",
+          "when": "The upload is processed",
+          "then": "API returns validation errors specifying missing or malformed fields"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user tries to access tasks not assigned to their site or role",
+          "when": "They request task list",
+          "then": "API filters tasks and returns only authorized tasks"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user requests exportable reports with valid filters",
+          "when": "They submit the report generation request",
+          "then": "System generates and returns PDF or Excel exports with correct data"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma models for all data entities (RawDataSnapshot, ProtocolSchema, QualityControlTask, Site, User).",
+        "Implement User & Role Management API with authentication and authorization.",
+        "Build login page and authentication flow.",
+        "Implement Data Quality Metrics API POST endpoint for data upload and validation.",
+        "Implement Data Quality Metrics API GET endpoint for aggregated metrics retrieval.",
+        "Develop Dashboard UI consuming data quality metrics API.",
+        "Implement Task Management API with CRUD operations and validation.",
+        "Develop Task Management UI with task creation, assignment, and updates.",
+        "Implement Protocol & Schema Repository data management.",
+        "Implement Raw Data Storage with anonymization logic.",
+        "Develop Data Upload page integrating with data quality metrics API POST.",
+        "Implement Anomaly Detection background job with configurable thresholds.",
+        "Implement Notification Dispatcher background job integrating with task management and user/site data.",
+        "Develop Exportable Reports page and API integration.",
+        "Develop Admin User Management page with user CRUD and role assignments.",
+        "Add comprehensive validation, error handling, and security enforcement across APIs and UI.",
+        "Implement audit trails and logging for critical actions.",
+        "Perform end-to-end testing including acceptance tests and edge case scenarios."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/tasks",
+          "/data-upload",
+          "/reports",
+          "/admin/users"
+        ],
+        "apiFilesToCreate": [
+          "/api/users/login.ts",
+          "/api/users/index.ts",
+          "/api/data-quality-metrics/index.ts",
+          "/api/tasks/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "RawDataSnapshot",
+          "ProtocolSchema",
+          "QualityControlTask",
+          "Site",
+          "User"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Interactively clarify missing or ambiguous requirements for the data quality control dashboard.",
+        "promptTemplate": "You are a planner refining the requirements for the Academic Research Data Collection Quality Control Dashboard. Given the current blueprint and expansion: {{BLUEPRINT}} {{EXPANDED}}. Ask the user any missing constraints or use cases they want to include. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final set of pages, data models, and API endpoints for the dashboard application.",
+        "promptTemplate": "You are an architect finalizing the system design for the Academic Research Data Collection Quality Control Dashboard. Based on the idea and blueprint: {{IDEA}} {{BLUEPRINT}}. Use expanded specs {{EXPANDED}}. Produce a definitive list of pages, data models, and API routes with responsibilities and relationships. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code or templates for the frontend pages defined in the blueprint.",
+        "promptTemplate": "You are a builder generating frontend page stubs for the data quality control dashboard. Given the finalized pages and specs: {{PAGES}} and API details {{API_ROUTES}}. Create React/Next.js or equivalent page templates with placeholders for inputs, outputs, and interactions. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Define integration details connecting frontend pages with backend API endpoints and database models.",
+        "promptTemplate": "You are an integrator wiring frontend pages to backend APIs and database models for the Academic Research Data Collection Quality Control Dashboard. Provided are pages: {{PAGES}}, APIs: {{API_ROUTES}}, and data models: {{DATA_MODELS}}. Detail the data flow, API calls, state management, and error handling for seamless integration. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

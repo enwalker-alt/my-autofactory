@@ -1,0 +1,809 @@
+{
+  "slug": "conference-poster-budget-planner",
+  "title": "Academic Conference Poster Budget & Resource Planner",
+  "description": "Plan and manage budgets and resource allocations for academic conference poster presentations. Input key event details, poster specs, cost estimates, and collaborator commitments to generate an itemized budget and logistics summary. Designed for researchers to track spending and deadlines efficiently in a single-page app.",
+  "inputLabel": "Enter conference and poster budget details (text or upload JSON file)",
+  "outputLabel": "Generated itemized budget and resource plan summary",
+  "systemPrompt": "You are a helpful assistant specialized in academic conference poster budget and resource planning. Only process inputs related to conference details, poster specifications, budget items with cost estimates, deadlines, and collaborator commitments. Refuse any requests unrelated to budgeting or logistics of poster presentations. Validate dates, cost values, and email formats. Generate a clear, itemized budget and resource summary highlighting potential budget overruns or missing data. Output plain text summary by default, or structured JSON if requested. Always maintain data privacy and do not expose sensitive information unnecessarily.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Basic Budget Summary",
+      "prompt": "Generate a detailed itemized budget and resource allocation plan for the academic conference poster presentation based on the provided conference details, poster specs, cost estimates, and collaborator commitments. Highlight any budget overruns or missing data.",
+      "hint": "Use this preset for a comprehensive budget and resource plan summary."
+    },
+    {
+      "label": "Budget Overrun Alert",
+      "prompt": "Analyze the provided budget data and highlight any items or categories where the estimated or actual costs exceed the planned budget. Provide recommendations to address overruns.",
+      "hint": "Use to focus on budget issues and cost control."
+    },
+    {
+      "label": "Collaborator Contribution Summary",
+      "prompt": "Summarize the commitments and contributions from co-authors and institutions for the provided conference poster event. Identify any missing or conflicting commitments.",
+      "hint": "Useful for reviewing collaboration and funding status."
+    },
+    {
+      "label": "Deadline and Resource Checklist",
+      "prompt": "Create a resource allocation schedule including deadlines, responsible persons, and logistics tasks for the academic conference poster presentation event based on the input details.",
+      "hint": "Helps track tasks and deadlines clearly."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, respond with JSON containing event details, budget items with cost breakdowns, collaborator contributions, deadlines, and alerts for budget overruns or missing data.",
+  "clarifyPrompt": "Please provide the conference event details, poster size and format, budget items with cost estimates, deadlines, and collaborator commitments. If you have a JSON file with this data, you may upload it.",
+  "finalizePrompt": "Review the generated budget and resource plan summary carefully. Confirm all costs and deadlines are accurate and collaborators' commitments are correctly represented before using for institutional approvals or grant documentation.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Conference Poster Budget & Resource Planner",
+      "niche": {
+        "role": "Academic researcher presenting at conferences",
+        "scenario": "Planning and managing the budget and resource allocation specifically for creating, printing, transporting, and presenting academic conference posters across multiple events"
+      },
+      "problem": "Researchers face complex, repetitive, and error-prone manual tracking of detailed costs and logistics related to academic conference poster production and presentation. This includes budgeting for design services, printing options, shipping or travel logistics, on-site materials (e.g., mounts, handouts), and coordination with co-authors or institutions. Existing tools focus on content creation or presentation but do not address this financial and logistical dimension, which is crucial for managing limited research funds and ensuring smooth conference participation.",
+      "inputs": [
+        "Conference details (dates, location, deadlines)",
+        "Poster size and format specifications",
+        "Design service quotes or self-design plans",
+        "Printing options and cost estimates",
+        "Shipping or transport options with costs",
+        "On-site materials and supplies list with costs",
+        "Co-author and institutional contribution commitments"
+      ],
+      "outputs": [
+        "Detailed, itemized budget plan for each poster presentation event",
+        "Resource allocation schedule with deadlines and responsible persons",
+        "Consolidated cost summary with alerts for budget overruns",
+        "Printable and shareable budget and logistics reports for grant documentation or institutional approval"
+      ],
+      "whyItWins": [
+        "Fills a unique gap by focusing on the financial and logistical planning of conference poster presentations, a common pain point not addressed by existing content or compliance tools",
+        "Supports repeated and multi-event use, enabling researchers to track and optimize poster presentation spending over time",
+        "Facilitates collaboration and transparency among co-authors and institutions regarding contributions and responsibilities",
+        "Helps researchers maximize limited budgets and reduce last-minute logistic failures"
+      ],
+      "upgradePath": {
+        "today": "A simple single-page tool to input key costs, deadlines, and contacts to generate a basic itemized budget and checklist summary",
+        "in90Days": "Add multi-event support, co-author collaboration features, automated alerts on budget limits and deadlines, and exportable reports for grant applications",
+        "in12Months": "Develop into a full multi-page system with integrated vendor quote management, transport logistics tracking, institutional funding integration, calendar syncing, and analytics on cost trends and poster presentation ROI"
+      },
+      "riskNotes": [
+        "Ensure user data privacy for sensitive budget and institutional information",
+        "Avoid scope creep into grant writing or content creation to maintain focus on budget and resource planning",
+        "Careful cost data validation to prevent misleading financial recommendations",
+        "Must comply with institutional data-sharing and financial policies"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized multi-event budget and resource planning system for academic researchers managing conference poster presentations, focusing on detailed cost tracking, collaboration, and logistics to optimize spending and coordination.",
+      "primaryUser": "Academic researchers presenting at conferences who need to plan and manage poster presentation budgets and logistics collaboratively.",
+      "successMetrics": [
+        "Number of active users managing multiple conference events",
+        "User-reported reduction in budget overruns and last-minute logistic issues",
+        "Frequency of collaboration and contribution updates among co-authors",
+        "Volume and usage of generated budget and logistics reports",
+        "User retention and engagement with alerts and multi-event tracking features"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide an overview of all poster presentation events, budget statuses, upcoming deadlines, and alerts for budget overruns or logistic risks.",
+          "dependsOn": [
+            "api-events",
+            "api-budgets",
+            "api-alerts"
+          ],
+          "notes": [
+            "Must support quick insights and navigation to detailed event pages",
+            "Display consolidated cost summaries and collaboration status"
+          ]
+        },
+        {
+          "id": "ui-event-management",
+          "name": "Event Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to create, edit, and view detailed event information including conference details, poster specs, budget line items, resource schedules, and co-author commitments.",
+          "dependsOn": [
+            "api-events",
+            "api-budgets",
+            "api-collaboration"
+          ],
+          "notes": [
+            "Supports multi-event management and detailed input forms",
+            "Includes printable and exportable report generation UI"
+          ]
+        },
+        {
+          "id": "api-events",
+          "name": "Event and Poster API",
+          "type": "api",
+          "responsibility": "Manage CRUD operations for conference events, poster specifications, and related metadata.",
+          "dependsOn": [
+            "data-events",
+            "data-posters"
+          ],
+          "notes": [
+            "Validates event dates and enforces deadline constraints",
+            "Supports multi-user access with permission checks"
+          ]
+        },
+        {
+          "id": "api-budgets",
+          "name": "Budget and Cost API",
+          "type": "api",
+          "responsibility": "Handle budget line items, cost estimates, and consolidated summaries including validation and budget overrun detection.",
+          "dependsOn": [
+            "data-budgets",
+            "data-cost-items"
+          ],
+          "notes": [
+            "Supports different cost categories (design, printing, shipping, materials)",
+            "Calculates totals and triggers alerts on budget thresholds"
+          ]
+        },
+        {
+          "id": "api-collaboration",
+          "name": "Collaboration and Contributions API",
+          "type": "api",
+          "responsibility": "Manage co-author and institutional contribution commitments, responsibilities, and communication status.",
+          "dependsOn": [
+            "data-collaborators",
+            "data-contributions"
+          ],
+          "notes": [
+            "Supports role-based access and update notifications",
+            "Tracks commitments and changes over time"
+          ]
+        },
+        {
+          "id": "api-alerts",
+          "name": "Alerts and Notifications API",
+          "type": "api",
+          "responsibility": "Generate and manage alerts for budget overruns, approaching deadlines, and logistic risks; deliver notifications to users.",
+          "dependsOn": [
+            "data-alerts",
+            "api-events",
+            "api-budgets"
+          ],
+          "notes": [
+            "Supports configurable alert thresholds",
+            "Integrates with email or in-app notification systems"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store all persistent data including events, budgets, cost items, collaborators, contributions, and alerts securely with privacy controls.",
+          "dependsOn": [],
+          "notes": [
+            "Must comply with institutional data-sharing and privacy policies",
+            "Includes indexes on event dates, user IDs, and budget categories for efficient queries"
+          ]
+        },
+        {
+          "id": "job-report-generation",
+          "name": "Report Generation Job",
+          "type": "job",
+          "responsibility": "Generate printable and exportable budget and logistics reports for grant documentation and institutional approvals on demand or scheduled triggers.",
+          "dependsOn": [
+            "data-storage",
+            "api-events",
+            "api-budgets",
+            "api-collaboration"
+          ],
+          "notes": [
+            "Supports PDF and CSV formats",
+            "Handles large multi-event reports efficiently"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Event",
+          "purpose": "Store conference event details and poster specifications.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "conferenceName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "submissionDeadline",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "posterSize",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "posterFormat",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "startDate"
+          ]
+        },
+        {
+          "name": "BudgetItem",
+          "purpose": "Represent individual cost items related to poster production and presentation.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "eventId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "category",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "costEstimate",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "actualCost",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "responsiblePersonId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "eventId",
+            "category"
+          ]
+        },
+        {
+          "name": "Collaborator",
+          "purpose": "Store co-author and institutional contributor information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "eventId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "contributionDetails",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "eventId",
+            "email"
+          ]
+        },
+        {
+          "name": "Contribution",
+          "purpose": "Track commitments and actual contributions from collaborators and institutions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "collaboratorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetItemId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "committedAmount",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "actualAmount",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "collaboratorId",
+            "budgetItemId"
+          ]
+        },
+        {
+          "name": "Alert",
+          "purpose": "Store alert and notification data related to budgets and deadlines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "eventId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "read",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "eventId",
+            "type",
+            "read"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Dashboard",
+          "purpose": "Provide an overview of all events, budget statuses, deadlines, and alerts.",
+          "inputs": [],
+          "outputs": [
+            "Event summaries",
+            "Budget status indicators",
+            "Upcoming deadlines",
+            "Alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/events",
+          "title": "Event List",
+          "purpose": "List all conference poster presentation events with summary info and navigation to details.",
+          "inputs": [],
+          "outputs": [
+            "List of events with key dates and budget status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/events/:eventId",
+          "title": "Event Detail",
+          "purpose": "View and edit detailed event info including budgets, collaborators, and schedules.",
+          "inputs": [
+            "Event ID"
+          ],
+          "outputs": [
+            "Event details",
+            "Budget items",
+            "Collaborator commitments",
+            "Resource schedules"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/events/:eventId/reports",
+          "title": "Reports",
+          "purpose": "Generate and download printable/exportable budget and logistics reports for the event.",
+          "inputs": [
+            "Event ID",
+            "Report format selection"
+          ],
+          "outputs": [
+            "PDF or CSV report files"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/alerts",
+          "title": "Alerts",
+          "purpose": "View all active and past alerts related to budgets and deadlines across events.",
+          "inputs": [],
+          "outputs": [
+            "List of alerts with filters"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/events",
+          "method": "GET",
+          "purpose": "Retrieve list of events for the authenticated user.",
+          "requestShape": "None",
+          "responseShape": "Array of Event objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/events",
+          "method": "POST",
+          "purpose": "Create a new conference event.",
+          "requestShape": "Event creation payload",
+          "responseShape": "Created Event object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/events/:eventId",
+          "method": "GET",
+          "purpose": "Retrieve detailed event information.",
+          "requestShape": "Event ID in URL",
+          "responseShape": "Event object with budgets and collaborators",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets/:eventId",
+          "method": "GET",
+          "purpose": "Get budget items for a specific event.",
+          "requestShape": "Event ID in URL",
+          "responseShape": "Array of BudgetItem objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets",
+          "method": "POST",
+          "purpose": "Add or update a budget item.",
+          "requestShape": "BudgetItem payload",
+          "responseShape": "Updated BudgetItem object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaborators/:eventId",
+          "method": "GET",
+          "purpose": "Retrieve collaborators for an event.",
+          "requestShape": "Event ID in URL",
+          "responseShape": "Array of Collaborator objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/contributions",
+          "method": "POST",
+          "purpose": "Record or update a collaborator's contribution.",
+          "requestShape": "Contribution payload",
+          "responseShape": "Updated Contribution object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts/:eventId",
+          "method": "GET",
+          "purpose": "Retrieve alerts for a specific event.",
+          "requestShape": "Event ID in URL",
+          "responseShape": "Array of Alert objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:eventId",
+          "method": "POST",
+          "purpose": "Trigger generation of a budget and logistics report.",
+          "requestShape": "{ format: 'pdf' | 'csv' }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "BudgetOverrunCheck",
+          "trigger": "Scheduled daily",
+          "purpose": "Scan budgets for overruns and generate alerts."
+        },
+        {
+          "name": "DeadlineReminder",
+          "trigger": "Scheduled daily",
+          "purpose": "Send notifications for upcoming deadlines and logistic milestones."
+        },
+        {
+          "name": "ReportGeneration",
+          "trigger": "On-demand or scheduled",
+          "purpose": "Generate exportable reports asynchronously to avoid UI blocking."
+        }
+      ],
+      "edgeCases": [
+        "Handling partial or missing cost estimates and updating them later without data loss",
+        "Conflicting contributions or commitments from multiple collaborators requiring reconciliation",
+        "Events with overlapping deadlines or multiple posters requiring consolidated scheduling",
+        "Users losing internet connectivity during data entry or report generation",
+        "Data privacy breaches or unauthorized access to sensitive budget and institutional data",
+        "Budget items with zero or negative costs due to refunds or corrections",
+        "Handling collaborators who withdraw or change commitments mid-planning"
+      ],
+      "nonGoals": [
+        "Creating or editing poster content or design beyond budget and logistics metadata",
+        "Grant writing or compliance beyond generating budget and logistics reports",
+        "Direct integration with external vendor ordering or payment systems",
+        "Managing travel bookings or accommodation logistics unrelated to poster transport",
+        "Providing financial advice or audit services"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses /dashboard page.",
+        "Dashboard UI calls /api/events (GET) to fetch all events for the user.",
+        "Dashboard UI calls /api/budgets/:eventId (GET) for budget summaries per event.",
+        "Dashboard UI calls /api/alerts/:eventId (GET) to retrieve alerts related to budgets and deadlines.",
+        "User navigates to /events to view list of events; UI calls /api/events (GET).",
+        "User selects an event and navigates to /events/:eventId; UI calls /api/events/:eventId (GET) to get event details including budgets and collaborators.",
+        "Event Management UI calls /api/budgets/:eventId (GET) and /api/collaborators/:eventId (GET) to display related data.",
+        "User creates or updates event via /api/events (POST) or /api/events/:eventId (PUT if implemented).",
+        "User adds or updates budget items via /api/budgets (POST).",
+        "User adds or updates collaborator contributions via /api/contributions (POST).",
+        "Alerts API monitors budget and deadline data, triggered by background jobs, and updates alert records.",
+        "User views alerts on /alerts page, which calls /api/alerts/:eventId (GET) or aggregates alerts across events.",
+        "User requests report generation via /api/reports/:eventId (POST) specifying format; triggers asynchronous job.",
+        "Report generation job queries data-storage and APIs to compile report, stores report file, and returns report URL.",
+        "Background jobs run daily to check for budget overruns and upcoming deadlines, creating alerts as needed.",
+        "UI components subscribe or poll for alert updates to notify users in real-time or on page load."
+      ],
+      "validationRules": [
+        "Event startDate must be before or equal to endDate.",
+        "submissionDeadline, if provided, must be before startDate.",
+        "Poster size and format must be selected from predefined valid options.",
+        "BudgetItem costEstimate must be a non-negative number; actualCost if provided must be non-negative and not exceed costEstimate unless justified.",
+        "BudgetItem category must be one of the predefined categories (design, printing, shipping, materials).",
+        "DueDate for BudgetItem, if provided, must be a valid date and not after event endDate.",
+        "ResponsiblePersonId for BudgetItem must correspond to a valid collaborator for the event.",
+        "Collaborator email must be a valid email format and unique per event.",
+        "Contribution committedAmount must be non-negative and not exceed associated BudgetItem costEstimate.",
+        "Contribution status must be one of predefined states (e.g., pending, confirmed, declined).",
+        "Alert type must be from predefined alert categories (budgetOverrun, deadlineApproaching, logisticRisk).",
+        "API requests must include authenticated user context; user must have permission to access or modify the referenced event data.",
+        "Report generation format must be either 'pdf' or 'csv'."
+      ],
+      "errorHandling": [
+        "API routes return 401 Unauthorized if user is not authenticated.",
+        "API routes return 403 Forbidden if user lacks permission for requested resource.",
+        "Validation errors return 400 Bad Request with detailed messages specifying invalid fields.",
+        "Not found resources (e.g., eventId not found) return 404 Not Found.",
+        "Server errors return 500 Internal Server Error with generic message; detailed errors logged internally.",
+        "Background jobs log errors and retry failed operations with exponential backoff.",
+        "Partial updates (e.g., budget item updates) validate atomicity to prevent data corruption.",
+        "UI displays user-friendly error messages and allows retry or correction.",
+        "Network failures during data submission prompt user to retry and save data locally if possible.",
+        "Report generation failures notify user with status and allow re-triggering."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication and verify user ownership or access rights to event data.",
+        "Data access is scoped by userId to prevent unauthorized data exposure.",
+        "Sensitive data such as budget amounts and collaborator emails are stored securely with encryption at rest.",
+        "Audit logs record changes to budgets, collaborators, and contributions for accountability.",
+        "Rate limiting applied on API endpoints to prevent abuse.",
+        "Input data is sanitized to prevent injection attacks.",
+        "Alerts and notifications respect user privacy and do not expose sensitive details in messages.",
+        "Report generation files are stored with secure access controls and temporary URLs expire after use.",
+        "Background jobs run in a secure environment with limited privileges.",
+        "Compliance with institutional data-sharing and privacy policies is enforced."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user with no events",
+          "when": "User visits /dashboard",
+          "then": "User sees an empty state with prompt to create new events"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user with multiple events",
+          "when": "User visits /dashboard",
+          "then": "User sees a list of events with budget summaries, upcoming deadlines, and alerts"
+        },
+        {
+          "id": "AT-003",
+          "given": "User submits a new event with invalid dates (startDate after endDate)",
+          "when": "User posts event data to /api/events",
+          "then": "API returns 400 with validation error specifying date inconsistency"
+        },
+        {
+          "id": "AT-004",
+          "given": "User adds a budget item with negative costEstimate",
+          "when": "User posts budget item to /api/budgets",
+          "then": "API returns 400 with validation error about non-negative cost"
+        },
+        {
+          "id": "AT-005",
+          "given": "User requests event details for an event they do not own",
+          "when": "User calls /api/events/:eventId",
+          "then": "API returns 403 Forbidden"
+        },
+        {
+          "id": "AT-006",
+          "given": "User updates a collaborator contribution with committedAmount exceeding budget item costEstimate",
+          "when": "User posts contribution update to /api/contributions",
+          "then": "API returns 400 with validation error about committed amount exceeding budget"
+        },
+        {
+          "id": "AT-007",
+          "given": "Background job runs BudgetOverrunCheck",
+          "when": "Budgets exceed thresholds",
+          "then": "Alerts are created and visible on /alerts page"
+        },
+        {
+          "id": "AT-008",
+          "given": "User triggers report generation for an event",
+          "when": "User posts to /api/reports/:eventId with valid format",
+          "then": "API returns report URL and report is generated asynchronously"
+        },
+        {
+          "id": "AT-009",
+          "given": "User loses internet connectivity during budget item submission",
+          "when": "User retries submission after connectivity restored",
+          "then": "Budget item is saved without data loss or duplication"
+        },
+        {
+          "id": "AT-010",
+          "given": "User views alerts page",
+          "when": "User filters alerts by type and read status",
+          "then": "Filtered alerts are displayed correctly"
+        }
+      ],
+      "buildOrder": [
+        "Set up authentication and user context middleware.",
+        "Define Prisma models for Event, BudgetItem, Collaborator, Contribution, Alert.",
+        "Implement API routes for /api/events with GET and POST including validation and permissions.",
+        "Implement API routes for /api/budgets with GET and POST including validation and budget calculations.",
+        "Implement API routes for /api/collaborators and /api/contributions with validation and access control.",
+        "Implement API routes for /api/alerts with GET and alert filtering.",
+        "Implement API route for /api/reports/:eventId POST to trigger report generation job.",
+        "Develop Dashboard UI page with calls to events, budgets, and alerts APIs.",
+        "Develop Event List UI page with event summaries.",
+        "Develop Event Detail UI page with forms for event, budgets, collaborators, and contributions.",
+        "Develop Alerts UI page with filtering and read/unread status.",
+        "Implement background jobs for BudgetOverrunCheck and DeadlineReminder with alert creation.",
+        "Implement asynchronous report generation job with PDF and CSV export.",
+        "Add error handling and user-friendly messages in UI.",
+        "Add security checks and audit logging.",
+        "Test edge cases including partial data, conflicting contributions, and offline scenarios.",
+        "Perform acceptance testing and iterate."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/events",
+          "/events/[eventId]",
+          "/events/[eventId]/reports",
+          "/alerts"
+        ],
+        "apiFilesToCreate": [
+          "api/events/index.ts",
+          "api/events/[eventId].ts",
+          "api/budgets/index.ts",
+          "api/budgets/[eventId].ts",
+          "api/collaborators/[eventId].ts",
+          "api/contributions/index.ts",
+          "api/alerts/[eventId].ts",
+          "api/reports/[eventId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "Event",
+          "BudgetItem",
+          "Collaborator",
+          "Contribution",
+          "Alert"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, priorities, or edge case details to clarify the budget and resource planner's scope and workflows.",
+        "promptTemplate": "Please provide any additional requirements, constraints, or specific use cases for the Academic Conference Poster Budget & Resource Planner. Include details about budget categories, collaboration needs, event types, or reporting preferences. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and confirm the full set of UI pages, API routes, and data models needed to realize the planner system.",
+        "promptTemplate": "Using the current blueprint and expanded specs, finalize the pages, data models, and API routes for the planner. Highlight any data validation rules and permissions required. Blueprint: {{BLUEPRINT}} Expanded: {{EXPANDED}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code or descriptions for the UI pages and API endpoints to accelerate development.",
+        "promptTemplate": "Generate code or detailed stubs for the planned UI pages and API routes for the Conference Poster Budget Planner. Use the finalized data models and validation rules. Expanded specs: {{EXPANDED}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Describe how to connect UI pages, backend APIs, and database models to implement the planner end-to-end.",
+        "promptTemplate": "Explain the integration approach connecting UI components to APIs and data storage for the planner system. Include authentication, error handling, and background job coordination. Use blueprint and expanded specs. Blueprint: {{BLUEPRINT}} Expanded: {{EXPANDED}}"
+      }
+    ]
+  }
+}

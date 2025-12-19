@@ -1,0 +1,700 @@
+{
+  "slug": "academic-research-site-performance-tracker",
+  "title": "Academic Research Site Performance Tracker",
+  "description": "Upload and analyze multi-site academic research data collection reports to monitor recruitment, protocol adherence, and operational issues with validation and summary feedback.",
+  "inputLabel": "Paste or upload your site data report (CSV or XLSX) or enter JSON metadata/issue log",
+  "outputLabel": "Summary, validation feedback, and insights on site data quality and performance",
+  "systemPrompt": "You are a strict assistant for academic multi-site research data managers. Accept only CSV or XLSX file uploads or JSON text input representing site data reports, site metadata updates, or issue logs. Validate input format and required fields strictly: siteId, studyId, reportDate, recruitmentCount must be present for reports; unique issueId, siteId, reportedDate, description for issue logs; valid siteId for metadata updates. Reject any input with personal or medical data or out-of-scope requests. Return detailed, user-friendly validation errors or a success summary. Output only plain text. Do not generate any confidential or participant-level data. Enforce strict data privacy and do not process unauthorized requests.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Validate Site Data Report",
+      "prompt": "Validate the uploaded CSV or XLSX site data report for required fields and data quality. Provide detailed row-level validation errors or confirm acceptance.",
+      "hint": "Use this when uploading periodic site collection reports."
+    },
+    {
+      "label": "Validate and Store Site Metadata",
+      "prompt": "Validate the JSON input as site metadata update with valid siteId and coordinators/equipment lists. Return validation errors or confirmation of acceptance.",
+      "hint": "Use this for manual metadata updates."
+    },
+    {
+      "label": "Validate Issue Log Submission",
+      "prompt": "Validate the JSON input as an issue log with unique issueId, siteId, reportedDate, and description. Return errors if invalid or confirm acceptance.",
+      "hint": "Use this to submit incident or operational issue reports."
+    },
+    {
+      "label": "Summarize Site Data Upload Outcome",
+      "prompt": "After upload, summarize the site data report quality, highlight missing or inconsistent data, and suggest next steps for correction or follow-up.",
+      "hint": "Use this to get actionable feedback after uploading."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with fields: success (boolean), errors (array of {row: number, field: string, message: string}), summary (string).",
+  "clarifyPrompt": "Please provide the uploaded file or paste the JSON data for site reports, metadata, or issue logs. Specify the data type if possible (e.g., 'site report', 'metadata', 'issue log').",
+  "finalizePrompt": "Confirm that the uploaded data or input is complete and valid for processing. Provide a summary of validation results and next recommended actions.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Site Performance Tracker",
+      "niche": {
+        "role": "Multi-site Academic Research Data Manager",
+        "scenario": "Managing and optimizing data collection performance across multiple geographic data collection sites during large-scale academic studies"
+      },
+      "problem": "Academic research data managers overseeing multi-site studies struggle to monitor, compare, and optimize data collection quality, participant recruitment rates, protocol adherence, and operational issues across sites using fragmented manual reports and spreadsheets. This leads to delays, inconsistencies, and compliance risks.",
+      "inputs": [
+        "Periodic site data collection reports (uploaded as CSV, XLSX, or manually entered data)",
+        "Site metadata (location, responsible coordinators, equipment lists)",
+        "Protocol adherence checklists per site",
+        "Recruitment and retention statistics",
+        "Issue and incident logs submitted by site staff"
+      ],
+      "outputs": [
+        "Interactive dashboard showing site-by-site performance metrics and trends",
+        "Automated alerts on sites falling behind recruitment or with protocol deviations",
+        "Standardized site performance comparison reports",
+        "Prioritized action item lists for follow-up with specific sites",
+        "Exportable compliance status summaries for funders and ethics boards"
+      ],
+      "whyItWins": [
+        "Transforms fragmented, manual site reporting into a centralized, data-driven performance monitoring system",
+        "Enables proactive identification and resolution of data collection bottlenecks and compliance issues",
+        "Supports repeated use throughout study duration with ongoing data input and updated outputs",
+        "Reduces management overhead and risk of costly study delays or data quality problems",
+        "Tailored specifically to academic multi-site research workflows, distinct from single-site compliance or protocol tools"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app to upload periodic site reports and generate summary dashboards and alerts",
+        "in90Days": "Add multi-user collaboration features, manual data entry forms, and customizable metric tracking per study protocol",
+        "in12Months": "Full multi-page system with secure user roles for site coordinators and central managers, real-time data integration from site databases, advanced analytics with predictive risk scoring, and automated compliance documentation exports"
+      },
+      "riskNotes": [
+        "Ensure strict data privacy and access controls due to sensitive participant and site operational data",
+        "Avoid medical or personal diagnosis functions; focus on operational and compliance metrics only",
+        "Require user training for consistent data input to maintain output accuracy",
+        "Address potential variability in data format and quality across sites with robust validation"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A centralized web platform for academic research data managers to upload, monitor, and optimize multi-site data collection performance through dashboards, alerts, and standardized reports.",
+      "primaryUser": "Multi-site Academic Research Data Manager",
+      "successMetrics": [
+        "Reduction in delays caused by data quality or compliance issues",
+        "Increased completeness and timeliness of site data submissions",
+        "User adoption rate among site coordinators and central managers",
+        "Number of proactive alerts generated and resolved",
+        "Accuracy and usefulness of performance comparison reports"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display interactive site performance metrics, trends, alerts, and reports to users.",
+          "dependsOn": [
+            "api-siteData",
+            "api-alerts",
+            "api-reports"
+          ],
+          "notes": [
+            "Supports filtering by study, site, and date range.",
+            "Visualizes recruitment, protocol adherence, and issue logs.",
+            "Handles empty or incomplete data gracefully."
+          ]
+        },
+        {
+          "id": "ui-dataEntry",
+          "name": "Data Entry UI",
+          "type": "ui",
+          "responsibility": "Allow manual input and upload of site reports, metadata, checklists, and issue logs.",
+          "dependsOn": [
+            "api-upload",
+            "api-siteMetadata",
+            "api-issueLogs"
+          ],
+          "notes": [
+            "Supports CSV/XLSX upload with validation feedback.",
+            "Manual forms for incremental data entry.",
+            "Role-based access controls for site coordinators."
+          ]
+        },
+        {
+          "id": "api-siteData",
+          "name": "Site Data API",
+          "type": "api",
+          "responsibility": "Handle ingestion, validation, storage, and retrieval of site data collection reports and metadata.",
+          "dependsOn": [
+            "data-siteReports",
+            "data-siteMetadata"
+          ],
+          "notes": [
+            "Validates data format and completeness on upload.",
+            "Normalizes data from different file formats.",
+            "Supports querying by site, date, and study."
+          ]
+        },
+        {
+          "id": "api-alerts",
+          "name": "Alerts API",
+          "type": "api",
+          "responsibility": "Generate and serve alerts for recruitment shortfalls, protocol deviations, and operational issues.",
+          "dependsOn": [
+            "data-alerts",
+            "job-alertGenerator"
+          ],
+          "notes": [
+            "Supports alert acknowledgement and resolution tracking.",
+            "Configurable alert thresholds per study protocol."
+          ]
+        },
+        {
+          "id": "api-reports",
+          "name": "Reports API",
+          "type": "api",
+          "responsibility": "Generate standardized site performance comparison reports and compliance summaries.",
+          "dependsOn": [
+            "data-siteReports",
+            "data-issueLogs"
+          ],
+          "notes": [
+            "Supports export to PDF and CSV formats.",
+            "Handles report generation on-demand and scheduled."
+          ]
+        },
+        {
+          "id": "data-siteReports",
+          "name": "Site Reports Data Store",
+          "type": "data",
+          "responsibility": "Persist site data collection reports, recruitment stats, and protocol adherence checklists.",
+          "dependsOn": [],
+          "notes": [
+            "Stores raw uploaded data and normalized records.",
+            "Includes metadata linking reports to sites and studies."
+          ]
+        },
+        {
+          "id": "data-siteMetadata",
+          "name": "Site Metadata Store",
+          "type": "data",
+          "responsibility": "Persist site details including location, coordinators, and equipment lists.",
+          "dependsOn": [],
+          "notes": [
+            "Supports updates by authorized users.",
+            "Used for filtering and reporting."
+          ]
+        },
+        {
+          "id": "data-issueLogs",
+          "name": "Issue Logs Store",
+          "type": "data",
+          "responsibility": "Persist operational issues and incident reports submitted by site staff.",
+          "dependsOn": [],
+          "notes": [
+            "Includes timestamps, severity, and resolution status.",
+            "Supports linking to alerts and reports."
+          ]
+        },
+        {
+          "id": "data-alerts",
+          "name": "Alerts Store",
+          "type": "data",
+          "responsibility": "Persist generated alerts with status and history.",
+          "dependsOn": [],
+          "notes": [
+            "Supports querying by site, type, and resolution status."
+          ]
+        },
+        {
+          "id": "job-alertGenerator",
+          "name": "Alert Generation Job",
+          "type": "job",
+          "responsibility": "Periodically analyze site data to identify recruitment shortfalls, protocol deviations, and operational risks, generating alerts.",
+          "dependsOn": [
+            "data-siteReports",
+            "data-issueLogs",
+            "data-alerts"
+          ],
+          "notes": [
+            "Runs daily or on configurable schedule.",
+            "Handles missing or delayed data gracefully."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "SiteReport",
+          "purpose": "Store normalized data collection reports per site and period.",
+          "fields": [
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "recruitmentCount",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "retentionRate",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "protocolAdherenceScore",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "rawData",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "studyId",
+            "reportDate"
+          ]
+        },
+        {
+          "name": "SiteMetadata",
+          "purpose": "Store static and semi-static metadata about each site.",
+          "fields": [
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "coordinators",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "equipmentList",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId"
+          ]
+        },
+        {
+          "name": "IssueLog",
+          "purpose": "Record operational issues and incidents reported by sites.",
+          "fields": [
+            {
+              "name": "issueId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportedDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "severity",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "reportedDate",
+            "status"
+          ]
+        },
+        {
+          "name": "Alert",
+          "purpose": "Store alerts generated for sites regarding performance or compliance issues.",
+          "fields": [
+            {
+              "name": "alertId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alertType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "resolutionDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "alertType",
+            "resolved"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Site Performance Dashboard",
+          "purpose": "Provide an overview of site performance metrics, trends, and active alerts.",
+          "inputs": [
+            "filter by study, site, date range"
+          ],
+          "outputs": [
+            "charts, tables, alert summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/data-entry/upload",
+          "title": "Upload Site Reports",
+          "purpose": "Allow users to upload periodic site data reports in CSV or XLSX formats.",
+          "inputs": [
+            "file upload",
+            "study and site selection"
+          ],
+          "outputs": [
+            "upload validation feedback",
+            "confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/data-entry/manual",
+          "title": "Manual Data Entry",
+          "purpose": "Enable manual input of site metadata, protocol adherence checklists, and issue logs.",
+          "inputs": [
+            "forms for metadata, checklists, issue logs"
+          ],
+          "outputs": [
+            "validation messages",
+            "confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Performance Reports",
+          "purpose": "Generate and download standardized site comparison and compliance reports.",
+          "inputs": [
+            "filter by study, site, date range",
+            "report type selection"
+          ],
+          "outputs": [
+            "PDF/CSV report downloads"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/alerts",
+          "title": "Alerts Management",
+          "purpose": "View, acknowledge, and resolve alerts related to site performance and compliance.",
+          "inputs": [
+            "filter by site, alert type, status"
+          ],
+          "outputs": [
+            "alert list with status and details"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/site-data/upload",
+          "method": "POST",
+          "purpose": "Receive and process uploaded site data reports.",
+          "requestShape": "Multipart form-data with file and metadata fields",
+          "responseShape": "Validation results and upload status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/site-data/query",
+          "method": "GET",
+          "purpose": "Retrieve normalized site data reports for dashboard and reports.",
+          "requestShape": "Query parameters for siteId, studyId, date range",
+          "responseShape": "List of site report records",
+          "auth": "user"
+        },
+        {
+          "route": "/api/site-metadata",
+          "method": "GET",
+          "purpose": "Fetch site metadata for selection and display.",
+          "requestShape": "Optional filters",
+          "responseShape": "List of site metadata records",
+          "auth": "user"
+        },
+        {
+          "route": "/api/issue-logs",
+          "method": "POST",
+          "purpose": "Submit new issue or incident logs from site staff.",
+          "requestShape": "Issue log data JSON",
+          "responseShape": "Confirmation and stored issue ID",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts",
+          "method": "GET",
+          "purpose": "Fetch current alerts for sites.",
+          "requestShape": "Filters for siteId, alertType, status",
+          "responseShape": "List of alert records",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts/acknowledge",
+          "method": "POST",
+          "purpose": "Acknowledge or resolve an alert.",
+          "requestShape": "Alert ID and resolution status",
+          "responseShape": "Updated alert record",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Generate site performance or compliance reports.",
+          "requestShape": "Report parameters including sites, date range, report type",
+          "responseShape": "Report file URL or download stream",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Daily Alert Generation",
+          "trigger": "Scheduled daily job",
+          "purpose": "Analyze site data to generate alerts for recruitment shortfalls, protocol deviations, and operational issues."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded data files with inconsistent or missing fields",
+        "Delayed or missing periodic data submissions from sites",
+        "Conflicting or duplicate issue logs submitted by site staff",
+        "Users uploading data with incorrect site or study identifiers",
+        "Simultaneous edits to site metadata causing race conditions",
+        "Alerts generated from incomplete or partial data leading to false positives",
+        "User attempts to access data or reports without proper authorization"
+      ],
+      "nonGoals": [
+        "Providing medical or personal diagnosis or participant-level health data analysis",
+        "Replacing specialized protocol management or electronic data capture systems",
+        "Real-time integration with site databases in the initial release (planned for long-term upgrade)",
+        "Advanced predictive analytics and AI-driven risk scoring in the initial version",
+        "Handling participant consent management or ethics board approvals"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /dashboard with filters (study, site, date range) → Dashboard UI calls /api/site-data/query, /api-alerts, /api-reports to fetch normalized site reports, active alerts, and reports → UI renders charts, tables, and alert summaries.",
+        "User uploads site reports via /data-entry/upload → Data Entry UI sends multipart form-data to /api/site-data/upload → Site Data API validates, normalizes, and stores data in Site Reports Data Store → Returns validation feedback and confirmation to UI.",
+        "User manually enters metadata, checklists, or issue logs via /data-entry/manual → Data Entry UI sends JSON data to /api/site-metadata (for metadata updates) or /api/issue-logs (for issue logs) → APIs validate and store data in Site Metadata Store or Issue Logs Store → UI receives validation messages and confirmation.",
+        "User views alerts at /alerts → Alerts UI calls /api/alerts with filters → Alerts API queries Alerts Store and returns alert list → UI displays alerts with status and details.",
+        "User acknowledges or resolves alerts → Alerts UI sends alert ID and resolution status to /api/alerts/acknowledge → Alerts API updates Alerts Store and returns updated alert record → UI updates alert status.",
+        "User generates reports at /reports → Reports UI sends report parameters to /api/reports/generate → Reports API queries Site Reports and Issue Logs Stores, generates report (PDF/CSV), returns file URL or stream → UI provides download link.",
+        "Background job runs daily → Alert Generation Job queries Site Reports and Issue Logs Stores → Analyzes data for recruitment shortfalls, protocol deviations, operational risks → Generates alerts in Alerts Store."
+      ],
+      "validationRules": [
+        "Uploaded site data files must be CSV or XLSX format with required fields: siteId, studyId, reportDate, recruitmentCount.",
+        "RecruitmentCount must be a non-negative integer; retentionRate and protocolAdherenceScore if present must be numbers between 0 and 100.",
+        "SiteMetadata updates require valid siteId; coordinators and equipmentList must be valid JSON arrays or objects.",
+        "IssueLog submissions require issueId (unique), siteId, reportedDate, and description; severity if present must be one of predefined levels (e.g., low, medium, high); status if present must be from allowed statuses (e.g., open, in-progress, resolved).",
+        "Alert acknowledgement requires valid alertId and boolean resolved status; resolutionDate must be provided if resolved is true.",
+        "API query parameters for siteId, studyId, and date ranges must be validated for format and existence.",
+        "User authentication and role-based access control enforced on all protected routes and APIs.",
+        "File uploads must be scanned for size limits and basic content validation to prevent malformed or malicious files."
+      ],
+      "errorHandling": [
+        "API endpoints return structured error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 404 for not found, 500 for server errors).",
+        "Upload API returns detailed validation feedback indicating row-level or field-level errors in uploaded files.",
+        "APIs handle missing or incomplete query parameters with clear error messages.",
+        "Background job logs errors and skips problematic data gracefully without halting entire job execution.",
+        "UI displays user-friendly error messages and retry options on API failures.",
+        "Race conditions on metadata edits handled via optimistic concurrency control or last-write-wins with user warnings.",
+        "Duplicate issue logs detected by unique issueId and rejected with informative error.",
+        "Unauthorized access attempts return 401 or 403 with no sensitive data exposure."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication; session or token-based auth enforced.",
+        "Role-based access control restricts data entry and metadata updates to authorized site coordinators and managers.",
+        "File uploads sanitized and validated to prevent injection or upload of malicious files.",
+        "Sensitive data access limited to authorized users; data filtering applied server-side.",
+        "Rate limiting and input sanitization applied to APIs to prevent abuse.",
+        "Audit logging for critical actions like alert acknowledgements and metadata changes.",
+        "Use HTTPS for all client-server communication.",
+        "Ensure proper CORS policies for API endpoints."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A logged-in user with appropriate role",
+          "when": "They upload a valid CSV site report file with required fields",
+          "then": "The system validates, normalizes, stores the data and returns success confirmation with no errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "A logged-in user on the dashboard page",
+          "when": "They apply filters for study, site, and date range",
+          "then": "The dashboard displays updated charts, tables, and alerts matching the filters"
+        },
+        {
+          "id": "AT-003",
+          "given": "A logged-in user submits an issue log with missing required fields",
+          "when": "They send the issue log data to the API",
+          "then": "The API returns validation errors specifying missing fields and the log is not stored"
+        },
+        {
+          "id": "AT-004",
+          "given": "A logged-in user views alerts and acknowledges one",
+          "when": "They mark the alert as resolved",
+          "then": "The alert status updates in the database and UI reflects the resolved state"
+        },
+        {
+          "id": "AT-005",
+          "given": "A scheduled daily alert generation job runs",
+          "when": "Site data and issue logs are available",
+          "then": "Alerts are generated for recruitment shortfalls and protocol deviations and stored in Alerts Store"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user without proper authorization tries to access /data-entry/manual",
+          "when": "They attempt to submit metadata or issue logs",
+          "then": "The system denies access with 403 Forbidden error"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user requests a report generation with valid parameters",
+          "when": "They submit the request to /api/reports/generate",
+          "then": "The system generates the report and provides a downloadable PDF or CSV file"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads a data file with inconsistent or missing fields",
+          "when": "The file is processed by the upload API",
+          "then": "The system returns detailed validation errors and does not store invalid data"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for SiteReport, SiteMetadata, IssueLog, Alert",
+        "Implement API routes for site-data upload and query",
+        "Implement API routes for site-metadata GET and update",
+        "Implement API routes for issue-logs POST",
+        "Implement API routes for alerts GET and acknowledge POST",
+        "Implement API route for reports generation POST",
+        "Build Data Entry UI pages (/data-entry/upload, /data-entry/manual) with forms and file upload",
+        "Build Dashboard UI page (/dashboard) with filtering and visualization components",
+        "Build Alerts UI page (/alerts) with alert list and acknowledgement controls",
+        "Build Reports UI page (/reports) with report parameter selection and download",
+        "Implement background job for daily alert generation",
+        "Add authentication and role-based access control middleware",
+        "Add validation and error handling logic across APIs and UI",
+        "Implement acceptance tests and perform end-to-end testing"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/data-entry/upload",
+          "/data-entry/manual",
+          "/alerts",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "site-data/upload.ts",
+          "site-data/query.ts",
+          "site-metadata/index.ts",
+          "issue-logs/index.ts",
+          "alerts/index.ts",
+          "alerts/acknowledge.ts",
+          "reports/generate.ts"
+        ],
+        "prismaModelsToAdd": [
+          "SiteReport",
+          "SiteMetadata",
+          "IssueLog",
+          "Alert"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather any missing or ambiguous constraints and requirements for the multi-site research data tracker.",
+        "promptTemplate": "You are a planner refining the requirements for the Academic Research Site Performance Tracker. Given the current blueprint and expanded specs:\n\nBlueprint:\n{{BLUEPRINT}}\n\nExpanded Specs:\n{{EXPANDED}}\n\nUser input:\n{{USER_INPUT}}\n\nList any missing constraints, ambiguous requirements, or open questions that must be clarified before design."
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final page routes, UI components, and data models for the tracker based on refined requirements.",
+        "promptTemplate": "You are an architect finalizing the pages and data models for the Academic Research Site Performance Tracker.\n\nCurrent Blueprint:\n{{BLUEPRINT}}\n\nExpanded Specs:\n{{EXPANDED}}\n\nRefined requirements:\n{{USER_INPUT}}\n\nSpecify the final set of pages/routes with purpose, inputs, and outputs, and define the final data models with fields and indexes."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code stubs for the UI pages and basic API routes based on the finalized architecture.",
+        "promptTemplate": "You are a builder generating code stubs for the Academic Research Site Performance Tracker.\n\nFinal pages and APIs:\n{{BLUEPRINT.pages}}, {{BLUEPRINT.apiRoutes}}\n\nUser notes:\n{{USER_INPUT}}\n\nGenerate code skeletons or pseudocode for each page and API endpoint, including input handling and validation placeholders."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages to API endpoints and database models, ensuring data flow and validation are implemented end-to-end.",
+        "promptTemplate": "You are an integrator wiring the Academic Research Site Performance Tracker UI, APIs, and database.\n\nPages:\n{{BLUEPRINT.pages}}\n\nAPIs:\n{{BLUEPRINT.apiRoutes}}\n\nData models:\n{{BLUEPRINT.dataModels}}\n\nUser input:\n{{USER_INPUT}}\n\nDescribe how to link each UI page to its APIs and data models, including validation, error handling, and security considerations."
+      }
+    ]
+  }
+}

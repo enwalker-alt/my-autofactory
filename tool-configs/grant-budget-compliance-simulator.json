@@ -1,0 +1,680 @@
+{
+  "slug": "grant-budget-compliance-simulator",
+  "title": "Academic Research Grant Budget Compliance & Scenario Simulator",
+  "description": "Upload multi-institutional draft budgets and funder/institutional rules to generate detailed compliance reports highlighting violations and risks. Simulate alternative budget allocation scenarios by submitting modifications to see compliance impact dynamically. Designed for academic research grant finance coordinators managing complex budgets.",
+  "inputLabel": "Upload draft budget file (XLSX or CSV) and optionally paste funder rules or institutional policies text",
+  "outputLabel": "Compliance report with flagged violations, risk summary, and scenario simulation feedback",
+  "systemPrompt": "You are a compliance and scenario simulation assistant for academic research grant finance coordinators. Accept only XLSX or CSV budget files up to 10MB and optional funder/institutional rules text. Parse and analyze budgets against provided rules, returning detailed line-item compliance reports with flagged violations and risk assessments. Support user-submitted JSON scenario modifications to simulate alternative budgets and recalculate compliance. Reject unsupported file formats, oversized files, malformed JSON input, or unauthorized requests. Provide clear, actionable, and advisory compliance insights without legal binding statements. Output plain text or valid JSON if structured-output feature is enabled. Enforce strict data privacy and security. Refuse any requests outside the scope of budget compliance and scenario simulation. Use professional and clear language.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Compliance Report",
+      "prompt": "Analyze the uploaded budget file and supplied funder/institutional rules text. Generate a detailed compliance report highlighting all rule violations, flagged risks, and advisory suggestions for corrections."
+    },
+    {
+      "label": "Scenario Simulation",
+      "prompt": "Given the uploaded budget and compliance rules, apply the following JSON scenario modifications to the budget line items: {{USER_SCENARIO_MODIFICATIONS}}. Return the updated budget summary and a compliance report reflecting the impact of these changes."
+    },
+    {
+      "label": "Upload Guidance",
+      "prompt": "You are preparing to upload draft budget spreadsheets and related compliance documents. Provide clear instructions on accepted file formats, size limits, and required metadata to ensure successful upload and parsing."
+    },
+    {
+      "label": "Compliance Summary for Export",
+      "prompt": "Summarize the compliance report suitable for export, including disclaimers, key flagged violations, risk summaries, and version metadata."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, compliance reports must include fields: violations (array with line item and rule references), riskSummary (string), and scenarioImpact (optional). Scenario simulation outputs include updatedBudget (reflecting modifications) and complianceReport.",
+  "clarifyPrompt": "Please upload your draft budget file in XLSX or CSV format (max 10MB). Optionally, provide funder or institutional policy text to apply compliance rules. For scenario simulations, provide JSON describing budget line item modifications. Let me know if you need help preparing these inputs.",
+  "finalizePrompt": "Here is your compliance report and/or scenario simulation result. Review flagged violations carefully and consider adjustments. Remember this tool provides advisory insights and does not replace final human or funder review. Would you like to simulate another scenario or export the results?",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Budget Compliance & Scenario Simulator",
+      "niche": {
+        "role": "academic research grant finance coordinator",
+        "scenario": "multi-institutional grant budget planning and compliance checking"
+      },
+      "problem": "Grant finance coordinators struggle to efficiently ensure that complex, multi-institutional grant budgets comply with varied funder rules and institutional policies while dynamically simulating alternative budget allocation scenarios to optimize funding and resource distribution.",
+      "inputs": [
+        "Uploaded multi-institutional draft budget spreadsheets",
+        "Funder-specific budget compliance rules and constraints documents",
+        "Institutional policy guidelines",
+        "Collaborator and cost share details"
+      ],
+      "outputs": [
+        "Detailed, line-item-level compliance report highlighting rule violations and risks",
+        "Interactive, dynamic budget scenario simulations with constraint adjustments",
+        "Visual budget allocation dashboards per institution and expense category",
+        "Exportable optimized budget proposals and compliance summaries"
+      ],
+      "whyItWins": [
+        "Combines compliance checking and dynamic scenario simulation in one integrated workflow, reducing manual cross-checking and error risk",
+        "Supports complex multi-institutional collaborations with institution-specific policies and cost-sharing considerations",
+        "Provides visual analytics and exportable results facilitating transparent negotiation and decision-making",
+        "Evolves beyond static budget validation tools by enabling interactive what-if analyses to maximize funding efficiency and compliance"
+      ],
+      "upgradePath": {
+        "today": "Lightweight tool to upload draft budgets and funder guidelines to generate basic compliance reports with flagging of violations and conflicts",
+        "in90Days": "Add interactive scenario simulation features allowing finance coordinators to modify budget line items and instantly view compliance impact; include multi-user comment and negotiation threads",
+        "in12Months": "Develop a full-featured multi-page web app integrating real-time collaboration, institutional policy libraries, cost-share tracking, automated reminders, and export-ready consolidated budgets and compliance documentation"
+      },
+      "riskNotes": [
+        "Must ensure strict data security and privacy due to sensitive financial and personnel information",
+        "Avoid unauthorized funder or institutional policy interpretations by providing advisory, not legal or binding, compliance suggestions",
+        "Require clear disclaimers that final budget approval depends on human review and funder decisions",
+        "Ensure usability for non-expert finance staff by focusing on clarity and actionable insights"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web application for academic research grant finance coordinators to upload multi-institutional draft budgets and funder/institutional rules, generate compliance reports, and dynamically simulate budget scenarios to optimize allocations while ensuring adherence to complex policies.",
+      "primaryUser": "Academic research grant finance coordinators managing multi-institutional budgets",
+      "successMetrics": [
+        "Reduction in manual compliance checking time by >50%",
+        "User adoption rate among target finance coordinators",
+        "Number of scenario simulations run per budget",
+        "Decrease in compliance violations in final submitted budgets",
+        "Positive user feedback on usability and clarity of reports"
+      ],
+      "components": [
+        {
+          "id": "ui-budget-upload",
+          "name": "Budget Upload & Parsing UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload draft budget spreadsheets and related documents; provide upload status and parsing feedback",
+          "dependsOn": [],
+          "notes": [
+            "Support common spreadsheet formats (e.g., XLSX, CSV)",
+            "Validate file formats and size limits",
+            "Provide clear error messages on upload failures"
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Budget Visualization & Scenario Simulator UI",
+          "type": "ui",
+          "responsibility": "Display interactive dashboards of budget allocations by institution and category; allow users to modify budget line items and see real-time compliance impact",
+          "dependsOn": [
+            "api-budget-data",
+            "api-compliance-check",
+            "api-scenario-sim"
+          ],
+          "notes": [
+            "Include visual charts and tables",
+            "Enable inline editing of budget items",
+            "Highlight compliance warnings dynamically"
+          ]
+        },
+        {
+          "id": "ui-report-export",
+          "name": "Compliance Report & Export UI",
+          "type": "ui",
+          "responsibility": "Present detailed line-item compliance reports and allow export of optimized budgets and compliance summaries in common formats (PDF, Excel)",
+          "dependsOn": [
+            "api-compliance-check",
+            "api-export"
+          ],
+          "notes": [
+            "Provide filters to focus on specific institutions or rule categories",
+            "Ensure exported documents include disclaimers and version metadata"
+          ]
+        },
+        {
+          "id": "api-budget-data",
+          "name": "Budget Data API",
+          "type": "api",
+          "responsibility": "Parse, store, and serve uploaded budget data and related metadata",
+          "dependsOn": [
+            "data-budget",
+            "data-institution",
+            "data-collaborator"
+          ],
+          "notes": [
+            "Normalize multi-institutional budget data for consistent querying",
+            "Handle partial or malformed uploads gracefully"
+          ]
+        },
+        {
+          "id": "api-compliance-check",
+          "name": "Compliance Checking API",
+          "type": "api",
+          "responsibility": "Evaluate budgets against funder and institutional rules; generate detailed compliance reports with flagged violations and risk assessments",
+          "dependsOn": [
+            "data-rules",
+            "data-budget",
+            "data-institution"
+          ],
+          "notes": [
+            "Rules engine should be extensible to add new funder/institution policies",
+            "Provide advisory (non-binding) compliance suggestions",
+            "Handle conflicting rules with clear prioritization"
+          ]
+        },
+        {
+          "id": "api-scenario-sim",
+          "name": "Scenario Simulation API",
+          "type": "api",
+          "responsibility": "Process user modifications to budget line items and recalculate compliance and budget impact in real-time",
+          "dependsOn": [
+            "api-compliance-check",
+            "data-budget"
+          ],
+          "notes": [
+            "Support rollback and versioning of scenario changes",
+            "Optimize for low latency to enable interactive use"
+          ]
+        },
+        {
+          "id": "api-export",
+          "name": "Export & Reporting API",
+          "type": "api",
+          "responsibility": "Generate exportable documents (PDF, Excel) of budgets, compliance reports, and scenario summaries",
+          "dependsOn": [
+            "data-budget",
+            "api-compliance-check"
+          ],
+          "notes": [
+            "Include disclaimers and metadata in exports",
+            "Support multiple export formats"
+          ]
+        },
+        {
+          "id": "data-budget",
+          "name": "Budget Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded and modified budget data including line items, institutions, collaborators, and cost shares",
+          "dependsOn": [],
+          "notes": [
+            "Ensure data security and encryption at rest",
+            "Support versioning for scenario simulations"
+          ]
+        },
+        {
+          "id": "data-rules",
+          "name": "Compliance Rules Store",
+          "type": "data",
+          "responsibility": "Store funder-specific budget compliance rules and institutional policy guidelines in structured format",
+          "dependsOn": [],
+          "notes": [
+            "Allow updates and additions by admin users",
+            "Version rules for auditability"
+          ]
+        },
+        {
+          "id": "data-institution",
+          "name": "Institution & Collaborator Data Store",
+          "type": "data",
+          "responsibility": "Persist institution-specific policies, collaborator details, and cost-share arrangements",
+          "dependsOn": [],
+          "notes": [
+            "Support multi-institution relationships and cost share tracking"
+          ]
+        },
+        {
+          "id": "job-compliance-scan",
+          "name": "Background Compliance Scan Job",
+          "type": "job",
+          "responsibility": "Periodically re-run compliance checks on stored budgets after rule updates or scenario changes",
+          "dependsOn": [
+            "data-budget",
+            "data-rules"
+          ],
+          "notes": [
+            "Notify users of new compliance issues",
+            "Throttle to avoid resource exhaustion"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Budget",
+          "purpose": "Store multi-institutional grant budget data with line items and metadata",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "institutions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lineItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "ownerUserId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "ownerUserId"
+          ]
+        },
+        {
+          "name": "ComplianceRule",
+          "purpose": "Represent funder or institutional budget compliance rules and constraints",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "ruleText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "structuredConstraints",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "funderId",
+            "institutionId"
+          ]
+        },
+        {
+          "name": "Institution",
+          "purpose": "Store institution-specific policies and collaborator details",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "policyDocuments",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "costShareDetails",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id"
+          ]
+        },
+        {
+          "name": "ComplianceReport",
+          "purpose": "Detailed compliance report with flagged violations and risk assessments per budget",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "violations",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "riskSummary",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "budgetId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Draft Budget & Documents",
+          "purpose": "Allow users to upload draft budget spreadsheets and related funder/institutional documents",
+          "inputs": [
+            "Budget files",
+            "Funder rules documents",
+            "Institutional policies"
+          ],
+          "outputs": [
+            "Upload status",
+            "Parsing errors or warnings"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Budget Dashboard & Scenario Simulator",
+          "purpose": "Visualize budget allocations and interactively simulate alternative budget scenarios with compliance feedback",
+          "inputs": [
+            "Selected budget version",
+            "User modifications to line items"
+          ],
+          "outputs": [
+            "Visual charts",
+            "Compliance warnings",
+            "Scenario impact"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/compliance-report",
+          "title": "Compliance Report & Export",
+          "purpose": "View detailed compliance reports and export optimized budgets and summaries",
+          "inputs": [
+            "Selected budget/scenario"
+          ],
+          "outputs": [
+            "Compliance report",
+            "Export options"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Authentication",
+          "purpose": "Authenticate users to access the system",
+          "inputs": [
+            "Username",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token",
+            "Error messages"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload-budget",
+          "method": "POST",
+          "purpose": "Upload and parse draft budget and related documents",
+          "requestShape": "{ files: [file], metadata: { funderId?, institutionIds? } }",
+          "responseShape": "{ success: boolean, errors?: [string], budgetId?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budget/:id",
+          "method": "GET",
+          "purpose": "Retrieve parsed budget data by ID",
+          "requestShape": "{ }",
+          "responseShape": "{ budget: Budget }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance-check/:budgetId",
+          "method": "POST",
+          "purpose": "Run compliance check on a budget or scenario version",
+          "requestShape": "{ modifications?: json }",
+          "responseShape": "{ report: ComplianceReport }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/scenario-simulate/:budgetId",
+          "method": "POST",
+          "purpose": "Simulate budget scenario changes and return compliance impact",
+          "requestShape": "{ modifications: json }",
+          "responseShape": "{ updatedBudget: Budget, complianceReport: ComplianceReport }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export/:budgetId",
+          "method": "GET",
+          "purpose": "Export budget and compliance reports in requested format",
+          "requestShape": "{ format: \"pdf\" | \"excel\" }",
+          "responseShape": "{ fileUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "PeriodicComplianceRecheck",
+          "trigger": "Scheduled (e.g., nightly) or on rule updates",
+          "purpose": "Re-run compliance checks on stored budgets after rule or policy changes and notify users of new issues"
+        }
+      ],
+      "edgeCases": [
+        "Uploaded budgets with incomplete or inconsistent data fields",
+        "Conflicting compliance rules between funders and institutions",
+        "Large budget files causing parsing or performance issues",
+        "Simultaneous scenario edits by multiple users leading to version conflicts",
+        "Unauthorized access attempts to sensitive budget data",
+        "Export failures due to unsupported file formats or corrupted data"
+      ],
+      "nonGoals": [
+        "Providing legally binding compliance decisions or interpretations",
+        "Automated budget approval or submission to funders",
+        "Full accounting or financial transaction management",
+        "Supporting non-academic or non-grant budgets",
+        "Real-time multi-user collaboration beyond comment threads in initial phases"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receives auth token for subsequent requests.",
+        "User uploads budget files and related documents on /upload page, which sends POST /api/upload-budget with files and metadata.",
+        "API parses uploaded files, validates formats and size, normalizes multi-institutional budget data, stores in data-budget with versioning.",
+        "User navigates to /dashboard page, which fetches budget data via GET /api/budget/:id and displays interactive charts and tables.",
+        "User modifies budget line items inline; changes sent to POST /api/scenario-simulate/:budgetId with modifications JSON.",
+        "Scenario Simulation API applies modifications, recalculates compliance by calling POST /api/compliance-check/:budgetId with modifications, returns updated budget and compliance report.",
+        "Dashboard updates visual compliance warnings and scenario impact dynamically based on API responses.",
+        "User views detailed compliance reports on /compliance-report page, fetching compliance data via POST /api/compliance-check/:budgetId or scenario simulation results.",
+        "User exports reports or optimized budgets by requesting GET /api/export/:budgetId with desired format; API generates documents with disclaimers and metadata, returns file URL.",
+        "Background job PeriodicComplianceRecheck triggers on schedule or rule updates, re-runs compliance checks on stored budgets, updates compliance reports, and notifies users of new issues."
+      ],
+      "validationRules": [
+        "File uploads must be XLSX or CSV format; reject unsupported formats with clear error messages.",
+        "Uploaded files must not exceed configured size limits (e.g., 10MB); reject with size error.",
+        "Budget data must include required fields: id, title, uploadDate, institutions, lineItems, version, ownerUserId.",
+        "Line items JSON must conform to expected schema (e.g., cost categories, amounts, institution references).",
+        "Compliance rules must have valid structuredConstraints JSON and version number.",
+        "API endpoints require authentication; reject unauthorized requests with 401 Unauthorized.",
+        "Scenario simulation modifications must be valid JSON with allowed fields; reject malformed or invalid changes.",
+        "Export format parameter must be either 'pdf' or 'excel'; reject unsupported formats with 400 Bad Request.",
+        "On upload, partial or malformed data should be handled gracefully with warnings; reject only if critical errors.",
+        "Versioning increments on each scenario simulation or upload to maintain history and rollback capability."
+      ],
+      "errorHandling": [
+        "All API routes return consistent JSON error responses with 'success: false' and 'errors' array describing issues.",
+        "File upload errors (format, size, parsing) return detailed messages to UI for user correction.",
+        "Unauthorized access attempts return 401 Unauthorized with message 'Authentication required'.",
+        "Not found budgets or resources return 404 Not Found with descriptive message.",
+        "Conflicting compliance rules detected during compliance check are reported in compliance report with prioritization explanation.",
+        "Scenario simulation conflicts (e.g., version mismatch) return 409 Conflict with instructions to refresh data.",
+        "Export failures return 500 Internal Server Error with user-friendly message and log details for debugging.",
+        "Background job failures are logged and retried with exponential backoff; users notified if compliance data is stale.",
+        "UI displays error banners or inline messages based on API error responses to guide user actions."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication except /login; enforce JWT or session-based auth.",
+        "User authorization checks ensure users can only access budgets they own or are permitted to view.",
+        "Sensitive budget data and compliance reports are encrypted at rest in the database.",
+        "File uploads are scanned and sanitized to prevent injection or malware.",
+        "Rate limiting applied on upload and simulation APIs to prevent abuse or DoS.",
+        "Background job notifications respect user privacy and only notify relevant users.",
+        "Exported documents include disclaimers to avoid legal liability.",
+        "Ensure CORS policies restrict API access to trusted frontend origins.",
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Log authentication failures and suspicious activities for audit and alerting."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated finance coordinator on the /upload page",
+          "when": "They upload a valid XLSX budget file and related documents within size limits",
+          "then": "The system parses and stores the budget, returns success with budgetId, and displays upload status with no errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user on the /dashboard page viewing a budget",
+          "when": "They modify line item amounts inline and submit changes",
+          "then": "The scenario simulation API returns updated budget and compliance report, and the UI updates charts and warnings accordingly"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user requests a compliance report for a budget with known rule violations",
+          "when": "They access /compliance-report page and fetch the report",
+          "then": "The report displays all flagged violations with risk summaries and allows export options"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user attempts to upload a file exceeding size limits or unsupported format",
+          "when": "They submit the upload form",
+          "then": "The system rejects the upload with clear error messages and does not store invalid data"
+        },
+        {
+          "id": "AT-005",
+          "given": "An unauthenticated user tries to access /dashboard or API routes",
+          "when": "They make requests without valid auth token",
+          "then": "The system responds with 401 Unauthorized and prompts for login"
+        },
+        {
+          "id": "AT-006",
+          "given": "Background job runs after compliance rule updates",
+          "when": "It re-runs compliance checks on stored budgets",
+          "then": "Users with affected budgets receive notifications about new compliance issues"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user requests export in PDF format for a budget",
+          "when": "They trigger export via UI",
+          "then": "The system generates and returns a downloadable PDF file including disclaimers and metadata"
+        },
+        {
+          "id": "AT-008",
+          "given": "Two users simultaneously edit the same budget scenario",
+          "when": "Conflicting modifications are submitted",
+          "then": "The system detects version conflicts and returns 409 Conflict with instructions to refresh"
+        }
+      ],
+      "buildOrder": [
+        "Implement authentication system and /login page",
+        "Define Prisma data models for Budget, ComplianceRule, Institution, ComplianceReport",
+        "Create data stores and migration scripts",
+        "Develop /upload page UI and POST /api/upload-budget API with file parsing and validation",
+        "Implement GET /api/budget/:id API to serve budget data",
+        "Build /dashboard page UI with charts, tables, and inline editing",
+        "Develop POST /api/scenario-simulate/:budgetId API with scenario versioning and compliance integration",
+        "Implement POST /api/compliance-check/:budgetId API with rules engine and reporting",
+        "Create /compliance-report page UI and integrate with compliance-check API",
+        "Develop GET /api/export/:budgetId API to generate PDF and Excel exports with disclaimers",
+        "Implement background job PeriodicComplianceRecheck with notification system",
+        "Add error handling, validation, and security layers across all APIs and UI",
+        "Write acceptance tests and conduct user testing for usability and performance"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/upload",
+          "/dashboard",
+          "/compliance-report"
+        ],
+        "apiFilesToCreate": [
+          "upload-budget.ts",
+          "budget/[id].ts",
+          "compliance-check/[budgetId].ts",
+          "scenario-simulate/[budgetId].ts",
+          "export/[budgetId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "Budget",
+          "ComplianceRule",
+          "Institution",
+          "ComplianceReport"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask user to clarify missing constraints, priorities, or details about the budget compliance and simulation needs.",
+        "promptTemplate": "Please specify any additional constraints, rules, or user needs not covered in the current blueprint: {{USER_INPUT}}. Here is the current blueprint for reference: {{BLUEPRINT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define final page routes, UI components, and data models to fully support the application workflow.",
+        "promptTemplate": "Based on the refined requirements {{USER_INPUT}} and existing blueprint {{BLUEPRINT}}, finalize the list of pages, data models, and API routes needed for the app."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial page UI code stubs and basic API endpoint skeletons for the defined routes.",
+        "promptTemplate": "Using the finalized pages and API routes {{BLUEPRINT}}, generate code stubs for the pages and API handlers. Include comments and placeholders for implementation."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages to backend APIs and database models ensuring secure, validated, and versioned data flow.",
+        "promptTemplate": "Integrate the pages and APIs with the database models as per blueprint {{BLUEPRINT}} and expanded specs {{EXPANDED}}. Ensure authentication, validation, and error handling are in place."
+      }
+    ]
+  }
+}

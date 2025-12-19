@@ -1,0 +1,822 @@
+{
+  "slug": "academic-fieldwork-incident-reporting",
+  "title": "Academic Fieldwork Incident Report Generator",
+  "description": "Create standardized, compliant incident reports for academic field research projects by submitting site metadata, incident details, and optional voice notes or attachments. Ensures privacy and basic compliance checks with export-ready text output.",
+  "inputLabel": "Enter or upload incident details and site metadata",
+  "outputLabel": "Generated standardized incident report",
+  "systemPrompt": "You are a specialized assistant for academic field research team leaders to create standardized incident reports for field safety and compliance. Accept input as plain text or JSON describing site metadata, incident type, description, optional voice transcript, and attachments. Validate inputs strictly: require site ID, user ID, incident type, description; refuse any request missing these or containing disallowed content. Do NOT provide medical advice or emergency instructions. Encrypt sensitive data and include basic compliance status in the report. Output a clear, concise, standardized incident report text suitable for institutional submission. If structured-output is enabled, produce JSON matching incident report schema. Refuse any request with disallowed content or insufficient data, responding with an error message. Always prioritize user data privacy and security.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Incident Report",
+      "prompt": "Generate a standardized incident report from the following input data. Include site ID, reporter user ID, incident type, description, and any optional voice transcript or attachments. Provide compliance status if determinable."
+    },
+    {
+      "label": "Compliance Check Focus",
+      "prompt": "Create an incident report emphasizing compliance validation and highlight any missing or non-compliant elements in the report."
+    },
+    {
+      "label": "Brief Summary",
+      "prompt": "Summarize the incident report input data into a concise, clear summary suitable for quick review."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON must conform to IncidentReport schema with required fields: id (string), siteId (string), reportedByUserId (string), timestamp (ISO 8601 string), incidentType (string), description (string), optional voiceTranscript (string), complianceStatus (string: Compliant|Non-Compliant|Pending), attachments (JSON array), and version (number).",
+  "clarifyPrompt": "Please provide complete incident details including site ID, reporting user ID, incident type, description, and any optional voice notes or attachments. Missing required data will prevent report generation.",
+  "finalizePrompt": "Confirm submission of the incident report with all required fields present and compliance checks passed. Output the finalized standardized incident report.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Fieldwork Safety & Incident Reporting System",
+      "niche": {
+        "role": "Academic Field Research Team Leader",
+        "scenario": "Managing safety and incident reporting during multi-site, in-the-field academic research projects in remote or challenging environments"
+      },
+      "problem": "Academic field research teams often face safety risks and need to document and report incidents promptly to comply with institutional and funder safety protocols. Current workflows rely on manual, fragmented reporting methods that are inconsistent, delay incident response, and complicate compliance tracking across sites.",
+      "inputs": [
+        "Field site metadata (location, environmental hazards)",
+        "Team member profiles and emergency contacts",
+        "Incident reports and notes (text or voice-to-text)",
+        "Permits and safety protocol documents",
+        "Equipment checklists and calibration records"
+      ],
+      "outputs": [
+        "Standardized, compliant incident reports ready for institutional and regulatory submission",
+        "Real-time safety alerts and risk assessments based on field conditions and reported incidents",
+        "Integrated safety compliance dashboard tracking incident trends, permit expirations, and equipment status",
+        "Actionable safety recommendations and mitigation plans tailored per site and project phase"
+      ],
+      "whyItWins": [
+        "Addresses a critical, under-served need for structured safety and incident management in academic field research",
+        "Improves timeliness and consistency of incident reporting to reduce risk and ensure compliance",
+        "Consolidates multiple safety-related workflows and documentation into one unified system",
+        "Supports repeated use across multiple field sites and projects, building a valuable institutional safety knowledge base"
+      ],
+      "upgradePath": {
+        "today": "Launch a lightweight web app to create standardized incident reports from uploaded notes and site metadata, with exportable PDFs and automated basic compliance checks",
+        "in90Days": "Add real-time risk assessment and alert features based on incident data and environmental inputs, plus a safety compliance dashboard aggregating multi-site data",
+        "in12Months": "Develop a full multi-page system integrating team scheduling, equipment maintenance, permit tracking, incident analytics, and mobile/offline data capture to support comprehensive fieldwork safety management"
+      },
+      "riskNotes": [
+        "Must ensure strict data privacy and security, especially for sensitive incident and personnel information",
+        "Avoid medical diagnosis or emergency response advice; focus on documentation and procedural compliance",
+        "Require clear disclaimers to not replace institutional safety protocols or emergency services",
+        "Design user interface for low-connectivity or offline use in remote field conditions"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive academic fieldwork safety and incident reporting system that centralizes safety documentation, real-time risk assessment, compliance tracking, and actionable recommendations to improve safety management across multiple remote research sites.",
+      "primaryUser": "Academic Field Research Team Leader",
+      "successMetrics": [
+        "Reduction in incident reporting delays across field sites",
+        "Increase in compliance rate with institutional and regulatory safety protocols",
+        "User adoption rate among field research teams",
+        "Number of incidents documented with complete metadata and standardized reports",
+        "Reduction in repeat safety incidents due to actionable recommendations"
+      ],
+      "components": [
+        {
+          "id": "ui-incident-reporting",
+          "name": "Incident Reporting UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for creating, editing, and submitting standardized incident reports including text and voice-to-text inputs.",
+          "dependsOn": [
+            "api-incident-management",
+            "data-incident-report",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports offline data capture with sync when connectivity is restored.",
+            "Includes form validation and guided compliance checks."
+          ]
+        },
+        {
+          "id": "ui-safety-dashboard",
+          "name": "Safety Compliance Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display aggregated safety metrics, incident trends, permit expirations, equipment status, and actionable recommendations.",
+          "dependsOn": [
+            "api-dashboard-data",
+            "api-auth"
+          ],
+          "notes": [
+            "Visualizes multi-site data with filters by project, site, and time period.",
+            "Supports export of compliance reports."
+          ]
+        },
+        {
+          "id": "api-incident-management",
+          "name": "Incident Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for incident reports, including processing voice-to-text data and generating standardized report exports.",
+          "dependsOn": [
+            "data-incident-report",
+            "data-team-member",
+            "data-site-metadata",
+            "api-auth"
+          ],
+          "notes": [
+            "Implements automated basic compliance checks on submitted reports.",
+            "Ensures data validation and privacy controls."
+          ]
+        },
+        {
+          "id": "api-dashboard-data",
+          "name": "Dashboard Data API",
+          "type": "api",
+          "responsibility": "Aggregate and serve safety metrics, risk assessments, permit statuses, and equipment data for dashboard consumption.",
+          "dependsOn": [
+            "data-incident-report",
+            "data-permit",
+            "data-equipment",
+            "data-site-metadata",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports real-time risk alert generation based on incident and environmental data.",
+            "Caches data for performance and offline access."
+          ]
+        },
+        {
+          "id": "data-incident-report",
+          "name": "Incident Report Data Store",
+          "type": "data",
+          "responsibility": "Persist detailed incident reports, including metadata, notes, voice-to-text transcripts, timestamps, and compliance status.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive fields to ensure privacy.",
+            "Version control for report edits."
+          ]
+        },
+        {
+          "id": "data-team-member",
+          "name": "Team Member Data Store",
+          "type": "data",
+          "responsibility": "Store profiles of team members, emergency contacts, roles, and permissions.",
+          "dependsOn": [],
+          "notes": [
+            "Access control based on roles.",
+            "Sensitive contact info encrypted."
+          ]
+        },
+        {
+          "id": "data-site-metadata",
+          "name": "Field Site Metadata Store",
+          "type": "data",
+          "responsibility": "Persist data about field sites including location, environmental hazards, and project phase.",
+          "dependsOn": [],
+          "notes": [
+            "Supports geospatial indexing for location queries.",
+            "Includes hazard classification for risk assessment."
+          ]
+        },
+        {
+          "id": "data-permit",
+          "name": "Permit and Safety Protocol Data Store",
+          "type": "data",
+          "responsibility": "Manage permits, safety protocol documents, expiration dates, and compliance requirements.",
+          "dependsOn": [],
+          "notes": [
+            "Triggers alerts on permit expiration.",
+            "Stores document versions."
+          ]
+        },
+        {
+          "id": "data-equipment",
+          "name": "Equipment and Calibration Records Store",
+          "type": "data",
+          "responsibility": "Track equipment checklists, calibration records, maintenance status, and usage logs.",
+          "dependsOn": [],
+          "notes": [
+            "Supports reminders for calibration and maintenance.",
+            "Links equipment to specific sites and projects."
+          ]
+        },
+        {
+          "id": "job-risk-assessment",
+          "name": "Real-time Risk Assessment Job",
+          "type": "job",
+          "responsibility": "Continuously analyze incident data and environmental inputs to generate real-time safety alerts and risk scores per site.",
+          "dependsOn": [
+            "data-incident-report",
+            "data-site-metadata",
+            "data-permit"
+          ],
+          "notes": [
+            "Runs periodically and on new incident report submissions.",
+            "Feeds alerts to dashboard and notification system."
+          ]
+        },
+        {
+          "id": "integration-voice-to-text",
+          "name": "Voice-to-Text Integration",
+          "type": "integration",
+          "responsibility": "Convert voice notes captured in the field into text for incident report inclusion.",
+          "dependsOn": [
+            "api-incident-management"
+          ],
+          "notes": [
+            "Handles offline voice capture with deferred processing.",
+            "Supports multiple languages and accents."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Manage user authentication, role-based access control, and session management.",
+          "dependsOn": [
+            "data-team-member"
+          ],
+          "notes": [
+            "Supports offline token caching for low-connectivity environments.",
+            "Enforces strict data privacy and access policies."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "IncidentReport",
+          "purpose": "Store detailed information about safety incidents reported in the field.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportedByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "incidentType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "voiceTranscript",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "complianceStatus",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "attachments",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "reportedByUserId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "TeamMember",
+          "purpose": "Store profiles and emergency contacts for field research team members.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "emergencyContacts",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "contactInfo",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "permissions",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name",
+            "role"
+          ]
+        },
+        {
+          "name": "FieldSite",
+          "purpose": "Store metadata about each field research site including location and hazards.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "environmentalHazards",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "projectPhase",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "name",
+            "location"
+          ]
+        },
+        {
+          "name": "Permit",
+          "purpose": "Manage permits and safety protocol documents related to field sites and projects.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "document",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "expirationDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "complianceRequirements",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "expirationDate"
+          ]
+        },
+        {
+          "name": "Equipment",
+          "purpose": "Track equipment checklists, calibration, and maintenance records for field research.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "calibrationRecords",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "maintenanceStatus",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastUsed",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "name"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/incident-report/new",
+          "title": "New Incident Report",
+          "purpose": "Form page for creating and submitting new incident reports with support for text and voice inputs.",
+          "inputs": [
+            "site selection",
+            "incident type",
+            "description text",
+            "voice note upload",
+            "attachments"
+          ],
+          "outputs": [
+            "incident report submission confirmation",
+            "compliance check feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Safety Compliance Dashboard",
+          "purpose": "Overview page displaying aggregated safety metrics, incident trends, permit statuses, and equipment health across sites.",
+          "inputs": [
+            "date range filter",
+            "site/project filter"
+          ],
+          "outputs": [
+            "charts",
+            "alerts",
+            "compliance summaries",
+            "recommendations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/incident-report/:id",
+          "title": "Incident Report Detail",
+          "purpose": "View and edit detailed information of a specific incident report with version history.",
+          "inputs": [
+            "incident report id"
+          ],
+          "outputs": [
+            "incident details",
+            "edit form",
+            "compliance status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/team",
+          "title": "Team Members",
+          "purpose": "Manage team member profiles, roles, and emergency contacts.",
+          "inputs": [
+            "search",
+            "add/edit member forms"
+          ],
+          "outputs": [
+            "team list",
+            "member details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/permits",
+          "title": "Permits and Protocols",
+          "purpose": "View and manage permits, safety protocols, and expiration alerts.",
+          "inputs": [
+            "site/project filter",
+            "upload documents"
+          ],
+          "outputs": [
+            "permit list",
+            "expiration alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/equipment",
+          "title": "Equipment Management",
+          "purpose": "Track equipment status, calibration, and maintenance records.",
+          "inputs": [
+            "site filter",
+            "add/edit equipment"
+          ],
+          "outputs": [
+            "equipment list",
+            "calibration reminders"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/incidents",
+          "method": "POST",
+          "purpose": "Submit a new incident report.",
+          "requestShape": "JSON with siteId, reportedByUserId, incidentType, description, optional voiceTranscript and attachments",
+          "responseShape": "JSON with incident report id and compliance check results",
+          "auth": "user"
+        },
+        {
+          "route": "/api/incidents/:id",
+          "method": "GET",
+          "purpose": "Retrieve detailed incident report by ID.",
+          "requestShape": "Incident report ID in URL",
+          "responseShape": "JSON with full incident report data including version history",
+          "auth": "user"
+        },
+        {
+          "route": "/api/dashboard",
+          "method": "GET",
+          "purpose": "Fetch aggregated safety metrics and alerts for dashboard.",
+          "requestShape": "Query parameters for site, project, date range",
+          "responseShape": "JSON with metrics, trends, alerts, recommendations",
+          "auth": "user"
+        },
+        {
+          "route": "/api/team-members",
+          "method": "GET",
+          "purpose": "List team members with profiles and emergency contacts.",
+          "requestShape": "Optional filters",
+          "responseShape": "JSON array of team member profiles",
+          "auth": "user"
+        },
+        {
+          "route": "/api/permits",
+          "method": "GET",
+          "purpose": "List permits and safety protocols with expiration info.",
+          "requestShape": "Optional site/project filters",
+          "responseShape": "JSON array of permits with compliance data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/equipment",
+          "method": "GET",
+          "purpose": "Retrieve equipment and calibration records.",
+          "requestShape": "Optional site filter",
+          "responseShape": "JSON array of equipment records",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token.",
+          "requestShape": "JSON with username and password",
+          "responseShape": "JSON with auth token and user info",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "RiskAssessmentJob",
+          "trigger": "Scheduled periodic run and on new incident report submission",
+          "purpose": "Analyze incident and environmental data to update risk scores and generate safety alerts."
+        },
+        {
+          "name": "PermitExpirationAlertJob",
+          "trigger": "Daily scheduled job",
+          "purpose": "Identify permits nearing expiration and notify relevant users."
+        },
+        {
+          "name": "EquipmentMaintenanceReminderJob",
+          "trigger": "Scheduled periodic run",
+          "purpose": "Check equipment calibration and maintenance status and send reminders."
+        }
+      ],
+      "edgeCases": [
+        "Intermittent or no internet connectivity in remote field sites requiring offline data capture and sync.",
+        "Partial or corrupted voice-to-text transcripts requiring manual correction.",
+        "Delayed incident reporting leading to outdated risk assessments.",
+        "Multiple concurrent edits to the same incident report requiring version control and conflict resolution.",
+        "Sensitive personal and incident data breaches requiring encryption and strict access controls.",
+        "Permit expiration alerts missed due to timezone differences or data sync delays.",
+        "Users with varying technical literacy needing intuitive UI and guided workflows.",
+        "Handling incomplete or inconsistent site metadata impacting risk calculations."
+      ],
+      "nonGoals": [
+        "Providing medical diagnosis or emergency response advice.",
+        "Replacing institutional safety protocols or emergency services.",
+        "Real-time GPS tracking or live location sharing of team members.",
+        "Comprehensive project management beyond safety and incident reporting.",
+        "Integration with external institutional compliance systems beyond document export.",
+        "Support for non-academic or commercial fieldwork safety use cases."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /api/auth/login, receives auth token for session management.",
+        "Authenticated user accesses UI pages (e.g., /incident-report/new) which fetch necessary data via API routes (e.g., /api/incidents, /api/team-members).",
+        "Incident Reporting UI collects input data including site selection, incident type, description, voice note upload, and attachments.",
+        "Voice notes captured offline are sent to Voice-to-Text Integration for transcription, which returns text to Incident Management API.",
+        "Incident Management API validates and stores incident reports in IncidentReport data store, encrypting sensitive fields and managing version control.",
+        "Upon incident report submission or edit, RiskAssessmentJob triggers to analyze data and update risk scores and alerts.",
+        "Dashboard UI fetches aggregated safety metrics, incident trends, permit statuses, and equipment health via Dashboard Data API.",
+        "PermitExpirationAlertJob and EquipmentMaintenanceReminderJob run periodically to generate alerts and reminders, updating relevant data stores and notifying users.",
+        "Team management UI interacts with Team Member Data Store via API to manage profiles and permissions with encrypted sensitive info.",
+        "Permit and Equipment UIs interact with respective data stores and APIs to manage documents, statuses, and maintenance records.",
+        "All API routes enforce authentication and role-based access control to ensure data privacy and security."
+      ],
+      "validationRules": [
+        "IncidentReport: siteId, reportedByUserId, timestamp, incidentType, description are required and must be valid (e.g., siteId and userId must exist).",
+        "VoiceTranscript is optional but if provided must be a string; attachments must be valid JSON arrays with allowed file types and size limits.",
+        "ComplianceStatus is optional but if present must be one of predefined statuses (e.g., 'Compliant', 'Non-Compliant', 'Pending').",
+        "TeamMember: name, role, contactInfo, and permissions are required; emergencyContacts optional but if present must be valid JSON with contact details.",
+        "FieldSite: name and location required; location must conform to geojson or defined geospatial format.",
+        "Permit: siteId, document, expirationDate required; expirationDate must be a valid future date.",
+        "Equipment: siteId and name required; calibrationRecords and maintenanceStatus optional but must follow defined JSON schema.",
+        "API inputs must be sanitized to prevent injection attacks and validated for type and format consistency.",
+        "Offline data sync must validate timestamps and version numbers to prevent conflicts and data loss.",
+        "Role-based access control validation on all API endpoints to restrict unauthorized data access or modifications."
+      ],
+      "errorHandling": [
+        "API routes return standardized JSON error responses with HTTP status codes (e.g., 400 for validation errors, 401 for unauthorized, 404 for not found, 500 for server errors).",
+        "Validation errors include field-specific messages to guide UI feedback.",
+        "Conflict errors (e.g., concurrent edits) return 409 with version conflict details for client resolution.",
+        "Offline sync failures queue data locally and retry on connectivity restoration with exponential backoff.",
+        "Voice-to-Text integration failures fallback to manual transcription prompt in UI.",
+        "Background jobs log errors and send alerts to system admins without blocking user operations.",
+        "Sensitive error details are logged server-side but not exposed to clients to prevent information leakage.",
+        "Timeouts and rate limits are handled gracefully with retry suggestions or user notifications.",
+        "API authentication failures prompt re-login or token refresh mechanisms.",
+        "UI displays user-friendly error messages and guidance for corrective actions."
+      ],
+      "securityNotes": [
+        "All sensitive fields (e.g., contactInfo, emergencyContacts, incident descriptions) are encrypted at rest in the database.",
+        "API routes enforce strict role-based access control using permissions stored in TeamMember profiles.",
+        "Authentication tokens support offline caching with expiration and revocation mechanisms.",
+        "Data transmitted between client and server uses HTTPS with TLS encryption.",
+        "Version control on incident reports prevents unauthorized overwrites and supports audit trails.",
+        "Access to incident reports and team member data is limited to authorized users only, with logging of access events.",
+        "Background jobs operate with least privilege principle and access only necessary data.",
+        "Voice-to-Text integration sanitizes inputs and outputs to prevent injection or leakage.",
+        "Compliance with institutional data privacy policies and regulatory requirements is enforced.",
+        "Regular security audits and penetration testing recommended to identify vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the New Incident Report page with valid site and incident data",
+          "when": "The user submits the incident report form including optional voice note and attachments",
+          "then": "The system validates input, stores the incident report with encrypted sensitive fields, returns a confirmation with compliance check feedback, and triggers risk assessment job"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user requests the incident report detail page for a valid incident ID",
+          "when": "The system fetches the incident report data including version history",
+          "then": "The user sees the full incident details, can edit the report, and compliance status is displayed"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user accesses the Safety Compliance Dashboard with site and date range filters applied",
+          "when": "The dashboard data API returns aggregated metrics, alerts, and recommendations",
+          "then": "The dashboard UI displays charts, alerts, compliance summaries, and allows export of reports"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user submits an incident report with missing required fields",
+          "when": "The API validates the input",
+          "then": "The API returns a 400 error with detailed validation messages and the UI displays these to the user"
+        },
+        {
+          "id": "AT-005",
+          "given": "Multiple users attempt concurrent edits on the same incident report version",
+          "when": "A user submits an edit with an outdated version number",
+          "then": "The API returns a 409 conflict error indicating version mismatch and the UI prompts the user to resolve conflicts"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user with insufficient permissions attempts to access team member data",
+          "when": "The API receives the request",
+          "then": "The API returns a 403 forbidden error and access is denied"
+        },
+        {
+          "id": "AT-007",
+          "given": "The system is offline and a user submits an incident report",
+          "when": "The UI captures data offline and queues for sync",
+          "then": "Upon connectivity restoration, the data syncs automatically with conflict resolution if needed"
+        },
+        {
+          "id": "AT-008",
+          "given": "A permit is nearing expiration",
+          "when": "The PermitExpirationAlertJob runs",
+          "then": "Relevant users receive notifications and expiration alerts appear on the Permits page"
+        },
+        {
+          "id": "AT-009",
+          "given": "Voice note is uploaded in a supported language and accent",
+          "when": "Voice-to-Text Integration processes the note",
+          "then": "The transcript is returned accurately and included in the incident report submission"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user logs in with valid credentials",
+          "when": "The API-auth login endpoint is called",
+          "then": "The system returns an auth token and user info, enabling access to protected routes"
+        }
+      ],
+      "buildOrder": [
+        "Implement Prisma data models for IncidentReport, TeamMember, FieldSite, Permit, Equipment with encryption and indexing.",
+        "Develop API-auth routes for authentication and role-based access control.",
+        "Build Incident Management API with CRUD operations, validation, compliance checks, and version control.",
+        "Create Voice-to-Text Integration service with offline support and multi-language handling.",
+        "Develop Dashboard Data API aggregating metrics, trends, alerts, and recommendations with caching.",
+        "Implement UI pages: /incident-report/new, /incident-report/:id, /dashboard, /team, /permits, /equipment with forms, filters, and data display.",
+        "Integrate offline data capture and sync mechanisms in Incident Reporting UI and Voice-to-Text Integration.",
+        "Develop background jobs: RiskAssessmentJob, PermitExpirationAlertJob, EquipmentMaintenanceReminderJob with triggers and notification hooks.",
+        "Implement error handling and logging across APIs, UI, and background jobs.",
+        "Conduct security hardening including encryption, access control, and audit logging.",
+        "Write acceptance tests and perform end-to-end testing for all user flows and edge cases."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/incident-report/new",
+          "/incident-report/[id]",
+          "/dashboard",
+          "/team",
+          "/permits",
+          "/equipment"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.js",
+          "/api/incidents/index.js",
+          "/api/incidents/[id].js",
+          "/api/dashboard/index.js",
+          "/api/team-members/index.js",
+          "/api/permits/index.js",
+          "/api/equipment/index.js"
+        ],
+        "prismaModelsToAdd": [
+          "model IncidentReport { id String @id siteId String reportedByUserId String timestamp DateTime incidentType String description String voiceTranscript String? complianceStatus String? attachments Json? version Int }",
+          "model TeamMember { id String @id name String role String emergencyContacts Json? contactInfo Json permissions Json }",
+          "model FieldSite { id String @id name String location Json environmentalHazards Json? projectPhase String? }",
+          "model Permit { id String @id siteId String document Json expirationDate DateTime complianceRequirements Json? }",
+          "model Equipment { id String @id siteId String name String calibrationRecords Json? maintenanceStatus String? lastUsed DateTime? }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints, clarify scenarios, and gather additional requirements for the system.",
+        "promptTemplate": "You are a planner refining the requirements for the Academic Fieldwork Safety & Incident Reporting System. Given the current blueprint and idea: {{BLUEPRINT}} and {{IDEA}}, ask clarifying questions to uncover missing constraints, edge cases, and user needs. Use user input: {{USER_INPUT}} to guide your inquiry."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages, data models, and API routes for the system.",
+        "promptTemplate": "You are an architect tasked with finalizing the design of the Academic Fieldwork Safety & Incident Reporting System. Given the current blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}, produce detailed definitions for UI pages, data models, and API endpoints. Incorporate user feedback: {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffolded code stubs for the planned UI pages and API endpoints.",
+        "promptTemplate": "You are a builder generating code stubs for the Academic Fieldwork Safety & Incident Reporting System. Based on the finalized blueprint and architecture: {{BLUEPRINT}} and {{EXPANDED}}, create scaffold code for UI pages and API routes. Use user input {{USER_INPUT}} to customize templates."
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages with API endpoints and backend data stores to form a working system.",
+        "promptTemplate": "You are an integrator connecting the UI, API, and database layers of the Academic Fieldwork Safety & Incident Reporting System. Using the blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}, produce integration plans and code linking front-end pages, API routes, and data models. Incorporate any user input {{USER_INPUT}} for specific integration details."
+      }
+    ]
+  }
+}

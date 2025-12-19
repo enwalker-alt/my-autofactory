@@ -1,0 +1,729 @@
+{
+  "slug": "academic-methodology-validator",
+  "title": "Academic Peer Reviewer Methodology Consistency & Reproducibility Validator",
+  "description": "A single-page tool for academic peer reviewers to upload research manuscripts and methodology guidelines to generate structured reports highlighting methodology inconsistencies, reproducibility checklist status, improvement suggestions, and risk flags, supporting efficient and systematic methodology validation.",
+  "inputLabel": "Paste full manuscript text or methodology sections here, or upload manuscript and guideline files (PDF, DOCX, TXT).",
+  "outputLabel": "Structured methodology consistency and reproducibility analysis report",
+  "systemPrompt": "You are an expert academic peer review assistant specialized in methodology consistency and reproducibility validation. Given the manuscript text and optional supplementary materials and best practice guidelines, analyze the methodology descriptions for internal consistency, completeness, and reproducibility. Generate a plain text structured report including: (1) internal inconsistencies in methodology descriptions (e.g., conflicting sample sizes, missing procedural details across sections), (2) a checklist of reproducibility criteria met and unmet with specific missing elements, (3) actionable suggestions for improving methodological transparency and completeness based on best practices, and (4) risk flags for common reproducibility pitfalls or questionable methodological choices. Do not make definitive judgments on research validity or ethical compliance; outputs are advisory and supportive only. If inputs are missing or incomplete, note limitations clearly. Refuse any requests that attempt to process unsupported or corrupted files or contain disallowed content. Enforce confidentiality and do not retain or share manuscript data outside this session.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Comprehensive Analysis",
+      "prompt": "Perform a detailed methodology consistency and reproducibility analysis including all report sections with full suggestions and risk flags.",
+      "hint": "Use for thorough manuscript reviews."
+    },
+    {
+      "label": "Quick Consistency Check",
+      "prompt": "Focus on identifying internal inconsistencies in methodology descriptions and highlight critical reproducibility checklist items.",
+      "hint": "Use for a fast initial screening."
+    },
+    {
+      "label": "Reproducibility Guidance",
+      "prompt": "Emphasize the reproducibility checklist and provide actionable suggestions to improve methodological transparency based on best practices.",
+      "hint": "Use when focusing on reproducibility criteria."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "The output JSON includes keys: consistencyIssues (array), reproducibilityChecklist (array), suggestions (array), riskFlags (array). Each item contains descriptive text and location references in manuscript sections.",
+  "clarifyPrompt": "Please provide the manuscript text and optionally upload supplementary materials and best practice guideline files. Specify the research field if known to tailor the guidelines.",
+  "finalizePrompt": "Review the generated report carefully. If needed, upload revised manuscript versions or updated guidelines to refine the analysis.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Peer Reviewer Methodology Consistency & Reproducibility Validator",
+      "niche": {
+        "role": "Academic Peer Reviewer",
+        "scenario": "Reviewing quantitative research manuscripts for methodology consistency, reproducibility, and adherence to best practices"
+      },
+      "problem": "Peer reviewers often struggle to efficiently and systematically verify that the reported research methodology is consistent across manuscript sections, reproducible based on provided details, and aligned with field-specific best practices. Manual checks are tedious, prone to oversight, and reviewers lack tools that integrate consistency validation with reproducibility guidance.",
+      "inputs": [
+        "Full manuscript text or methodology sections (uploaded files or text input)",
+        "Supplementary materials or protocol documents (optional)",
+        "Field-specific methodology best practice guidelines (uploaded or selected templates)"
+      ],
+      "outputs": [
+        "Structured report highlighting internal inconsistencies in methodology descriptions (e.g., conflicting sample sizes, missing procedural details across sections)",
+        "Checklist of reproducibility criteria met and unmet with specific missing elements",
+        "Automated suggestions for improving methodological transparency and completeness based on best practices",
+        "Risk flags for common reproducibility pitfalls or questionable methodological choices"
+      ],
+      "whyItWins": [
+        "Addresses a critical unmet need for systematic, repeatable methodology validation beyond textual critique",
+        "Combines consistency checking and reproducibility guidance in one tool tailored for peer review workflow",
+        "Reduces reviewer cognitive load and improves review quality with actionable, structured feedback",
+        "Supports iterative review cycles with version tracking and comparison of revised manuscripts",
+        "Differs from existing tools that focus on statistical methodology audit or ethical compliance by targeting overall methodology consistency and reproducibility"
+      ],
+      "upgradePath": {
+        "today": "Single-page tool accepting manuscript uploads and guideline inputs to generate structured methodology consistency and reproducibility reports with actionable feedback.",
+        "in90Days": "Add interactive dashboard for reviewers to explore flagged issues by section, track revisions, and annotate reports. Integrate common field-specific best practice libraries and templates.",
+        "in12Months": "Develop multi-page peer review platform supporting multi-round reviews, reviewer collaboration, automated version comparison, integration with journal submission systems, and exportable reviewer reports with compliance scoring."
+      },
+      "riskNotes": [
+        "Must avoid making definitive judgments on research validity to respect reviewer expertise; outputs are advisory and supportive.",
+        "Requires careful handling of confidential manuscript data with secure uploads and data retention policies.",
+        "Field-specific guideline variability may require customizable templates and updates to stay current."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized peer review tool that validates academic research methodology consistency and reproducibility by analyzing manuscripts against best practice guidelines, providing structured reports, actionable feedback, and supporting iterative review cycles with version tracking and collaboration.",
+      "primaryUser": "Academic Peer Reviewer",
+      "successMetrics": [
+        "Reduction in time spent manually verifying methodology consistency",
+        "Increase in reviewer satisfaction and perceived usefulness",
+        "Number of manuscripts reviewed using the tool",
+        "Frequency of iterative review cycles tracked",
+        "Accuracy and relevance of identified inconsistencies and reproducibility flags"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Manuscript & Guidelines Upload UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload manuscript files, supplementary materials, and select or upload field-specific best practice guidelines.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multiple file formats (PDF, DOCX, TXT)",
+            "Handles optional supplementary uploads",
+            "Validates file types and sizes",
+            "Secure upload with encryption in transit"
+          ]
+        },
+        {
+          "id": "ui-report-dashboard",
+          "name": "Interactive Report & Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display structured methodology consistency and reproducibility reports, enable exploration by manuscript section, track revisions, and allow annotations and collaboration.",
+          "dependsOn": [
+            "api-report",
+            "data-versioning"
+          ],
+          "notes": [
+            "Supports filtering and sorting of flagged issues",
+            "Version comparison views for iterative reviews",
+            "Annotation and comment features for collaboration",
+            "Responsive design for various devices"
+          ]
+        },
+        {
+          "id": "api-upload-processing",
+          "name": "Upload Processing & Parsing API",
+          "type": "api",
+          "responsibility": "Receive uploads, parse manuscript and supplementary materials, extract methodology sections, and normalize text for analysis.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Handles OCR if needed",
+            "Extracts structured sections (e.g., Methods, Results)",
+            "Error handling for corrupted or unsupported files"
+          ]
+        },
+        {
+          "id": "api-analysis",
+          "name": "Methodology Consistency & Reproducibility Analysis API",
+          "type": "api",
+          "responsibility": "Analyze parsed manuscript data against best practice guidelines to detect internal inconsistencies, generate reproducibility checklists, suggest improvements, and flag risks.",
+          "dependsOn": [
+            "api-upload-processing",
+            "data-guidelines",
+            "data-storage"
+          ],
+          "notes": [
+            "Uses rule-based and heuristic algorithms",
+            "Outputs structured JSON reports",
+            "Must avoid definitive validity judgments",
+            "Handles missing or incomplete data gracefully"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store uploaded manuscripts, supplementary materials, guidelines, analysis reports, user annotations, and version histories securely.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted at rest",
+            "Access control for confidentiality",
+            "Retention policies compliant with privacy requirements"
+          ]
+        },
+        {
+          "id": "data-guidelines",
+          "name": "Best Practice Guidelines Repository",
+          "type": "data",
+          "responsibility": "Maintain customizable and updatable templates of field-specific methodology best practices used for analysis.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Supports versioning of guideline templates",
+            "Allows user uploads and selections",
+            "Facilitates updates to keep current with evolving standards"
+          ]
+        },
+        {
+          "id": "job-versioning",
+          "name": "Version Tracking & Comparison Job",
+          "type": "job",
+          "responsibility": "Automatically track manuscript versions, generate diffs between iterations, and update reports accordingly to support iterative reviews.",
+          "dependsOn": [
+            "data-storage",
+            "api-analysis"
+          ],
+          "notes": [
+            "Triggers on new manuscript uploads or revisions",
+            "Detects changes in methodology sections",
+            "Notifies users of significant changes"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Manuscript",
+          "purpose": "Represents uploaded manuscripts and associated metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "authors",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileReferences",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "parsedSections",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "GuidelineTemplate",
+          "purpose": "Stores field-specific methodology best practice guidelines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "uploadedByUserId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "field",
+            "version"
+          ]
+        },
+        {
+          "name": "AnalysisReport",
+          "purpose": "Holds structured results of methodology consistency and reproducibility analysis.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "consistencyIssues",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "reproducibilityChecklist",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "suggestions",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "riskFlags",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "manuscriptId",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "UserAnnotation",
+          "purpose": "Stores reviewer annotations and comments on reports and manuscript sections.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "section",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "comment",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "manuscriptId",
+            "userId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents peer reviewers using the system.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Manuscript & Guidelines",
+          "purpose": "Page for users to upload manuscripts, supplementary materials, and select or upload best practice guidelines.",
+          "inputs": [
+            "Manuscript files",
+            "Supplementary materials",
+            "Guideline templates or uploads"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Parsing status",
+            "Error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/report/:manuscriptId/:version",
+          "title": "Methodology Consistency & Reproducibility Report",
+          "purpose": "Display detailed structured report with flagged issues, checklist, suggestions, and risk flags; supports annotations and version comparison.",
+          "inputs": [
+            "Manuscript ID",
+            "Version number"
+          ],
+          "outputs": [
+            "Structured report",
+            "Annotations",
+            "Version diffs"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Reviewer Dashboard",
+          "purpose": "Overview of all manuscripts under review, status tracking, recent activity, and access to reports and annotations.",
+          "inputs": [
+            "User ID"
+          ],
+          "outputs": [
+            "List of manuscripts",
+            "Review statuses",
+            "Notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/guidelines",
+          "title": "Best Practice Guidelines Management",
+          "purpose": "Manage, upload, update, and select field-specific methodology best practice guidelines.",
+          "inputs": [
+            "Guideline uploads",
+            "Field selection"
+          ],
+          "outputs": [
+            "List of available guidelines",
+            "Upload status",
+            "Error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the peer review platform.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token",
+            "Login success/failure messages"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Receive manuscript and guideline uploads, initiate parsing and storage.",
+          "requestShape": "{ manuscriptFiles: File[], supplementaryFiles?: File[], guidelineTemplate?: File | string }",
+          "responseShape": "{ uploadId: string, status: 'processing' | 'completed' | 'failed', errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/report/:manuscriptId/:version",
+          "method": "GET",
+          "purpose": "Retrieve structured methodology consistency and reproducibility report for a specific manuscript version.",
+          "requestShape": "N/A",
+          "responseShape": "{ consistencyIssues: object[], reproducibilityChecklist: object[], suggestions: object[], riskFlags: object[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/annotations",
+          "method": "POST",
+          "purpose": "Submit user annotations and comments on reports or manuscript sections.",
+          "requestShape": "{ manuscriptId: string, versionNumber: number, section: string, comment: string }",
+          "responseShape": "{ annotationId: string, status: 'saved' }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/guidelines",
+          "method": "GET",
+          "purpose": "List available best practice guideline templates.",
+          "requestShape": "N/A",
+          "responseShape": "{ guidelines: { id: string, field: string, version: string }[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return access token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ManuscriptParsingJob",
+          "trigger": "On manuscript upload",
+          "purpose": "Parse uploaded manuscripts and supplementary materials to extract structured sections for analysis."
+        },
+        {
+          "name": "AnalysisGenerationJob",
+          "trigger": "After parsing completion",
+          "purpose": "Run methodology consistency and reproducibility analysis using parsed data and selected guidelines."
+        },
+        {
+          "name": "VersionDiffJob",
+          "trigger": "On new manuscript version upload",
+          "purpose": "Generate diffs between manuscript versions to highlight changes in methodology sections."
+        },
+        {
+          "name": "DataRetentionCleanupJob",
+          "trigger": "Scheduled periodic",
+          "purpose": "Enforce data retention policies by securely deleting expired or obsolete manuscript data."
+        }
+      ],
+      "edgeCases": [
+        "Manuscripts with incomplete or missing methodology sections",
+        "Conflicting information spread across multiple manuscript sections",
+        "Unsupported or corrupted file uploads",
+        "Guideline templates that are outdated or inconsistent",
+        "Multiple simultaneous users annotating the same report section",
+        "Manuscripts with highly domain-specific or novel methodologies not covered by existing guidelines",
+        "Network interruptions during upload or analysis processing",
+        "User attempts to access reports or manuscripts without proper authorization"
+      ],
+      "nonGoals": [
+        "Making definitive judgments on research validity or ethical compliance",
+        "Performing detailed statistical audits or data analysis beyond methodology consistency",
+        "Replacing peer reviewer expertise or manual review entirely",
+        "Hosting or managing journal submission workflows beyond peer review support",
+        "Automated correction or rewriting of manuscript text"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receives token for API access.",
+        "User uploads manuscript files, supplementary materials, and guideline templates via /upload page.",
+        "Upload POST /api/upload receives files and guideline data, validates and stores them encrypted in data-storage.",
+        "ManuscriptParsingJob triggers on upload completion, parses files extracting structured sections (Methods, Results, etc.), handles OCR if needed, updates Manuscript.parsedSections.",
+        "AnalysisGenerationJob triggers after parsing, fetches parsed manuscript sections and selected guideline templates, runs rule-based and heuristic analysis, generates structured AnalysisReport JSON.",
+        "VersionDiffJob triggers on new manuscript versions, compares parsedSections to previous versions, generates diffs and flags significant changes.",
+        "User accesses /report/:manuscriptId/:version page, which fetches report data and annotations via /api/report/:manuscriptId/:version and /api/annotations endpoints.",
+        "Users submit annotations/comments via POST /api/annotations, stored linked to manuscript version and section.",
+        "User accesses /dashboard to see overview of manuscripts, statuses, notifications fetched from data-storage.",
+        "User manages guidelines via /guidelines page, fetching available guidelines via GET /api/guidelines and uploading new templates via /upload or dedicated API.",
+        "DataRetentionCleanupJob runs periodically to enforce retention policies, deleting expired or obsolete data securely."
+      ],
+      "validationRules": [
+        "File uploads must be PDF, DOCX, or TXT formats only; reject unsupported or corrupted files with clear error messages.",
+        "Maximum file size limits enforced per file type to prevent large uploads.",
+        "Guideline templates must be valid JSON or accepted file format and conform to schema for best practice guidelines.",
+        "User authentication required for all API routes except /api/login; tokens must be validated on each request.",
+        "Manuscript metadata fields (title, authors) are optional but if provided must be strings or valid JSON arrays.",
+        "Version numbers must increment sequentially for manuscript uploads.",
+        "Annotations must include manuscriptId, versionNumber, section, and non-empty comment strings.",
+        "API input payloads validated for required fields and types; reject requests with missing or invalid data.",
+        "Parsing jobs must handle missing or incomplete methodology sections gracefully without crashing.",
+        "Analysis jobs must handle missing guideline templates or incomplete data by generating partial reports with warnings."
+      ],
+      "errorHandling": [
+        "Upload API returns status 'failed' with error array if file validation or storage fails.",
+        "Parsing jobs log errors for corrupted files and notify users via upload status updates.",
+        "Analysis API returns partial reports with warnings if data incomplete or guidelines missing.",
+        "API routes return 401 Unauthorized if user token missing or invalid.",
+        "API routes return 400 Bad Request for invalid input data with descriptive error messages.",
+        "Background jobs retry transient failures with exponential backoff; permanent failures logged and notified.",
+        "UI displays user-friendly error messages for network interruptions or server errors during uploads or report fetching.",
+        "Conflicting annotations or simultaneous edits handled by last-write-wins with versioning or locking mechanisms.",
+        "Access to manuscripts and reports denied with 403 Forbidden if user lacks permissions."
+      ],
+      "securityNotes": [
+        "All file uploads and downloads encrypted in transit via HTTPS.",
+        "Data stored encrypted at rest in data-storage to protect confidentiality.",
+        "Access control enforced on all data queries to ensure users only access authorized manuscripts and reports.",
+        "User passwords stored hashed with strong algorithm (e.g., bcrypt).",
+        "Authentication tokens issued with expiration and refresh mechanisms.",
+        "Input validation and sanitization to prevent injection attacks.",
+        "Rate limiting on API endpoints to prevent abuse.",
+        "Audit logging of user actions for traceability.",
+        "Background jobs run with least privilege access to data.",
+        "Secure handling of sensitive data in logs and error messages to avoid leakage."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page",
+          "when": "They upload valid manuscript files and select a guideline template",
+          "then": "The system accepts the files, initiates parsing, and returns a processing status without errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "A manuscript has been parsed and analyzed",
+          "when": "The user navigates to /report/:manuscriptId/:version",
+          "then": "The system displays a structured report with consistency issues, reproducibility checklist, suggestions, and risk flags"
+        },
+        {
+          "id": "AT-003",
+          "given": "Multiple users annotate the same manuscript section concurrently",
+          "when": "They submit annotations via /api/annotations",
+          "then": "All annotations are saved and visible in the report UI without data loss or conflicts"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user attempts to upload an unsupported file format",
+          "when": "They submit the upload form",
+          "then": "The system rejects the upload with a clear error message indicating unsupported file type"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user is not authenticated",
+          "when": "They attempt to access /dashboard or /report pages or APIs",
+          "then": "The system redirects to /login or returns 401 Unauthorized responses"
+        },
+        {
+          "id": "AT-006",
+          "given": "A new manuscript version is uploaded",
+          "when": "VersionDiffJob runs",
+          "then": "The system generates and stores diffs highlighting methodology section changes and notifies users of significant changes"
+        },
+        {
+          "id": "AT-007",
+          "given": "A guideline template is outdated or inconsistent",
+          "when": "AnalysisGenerationJob runs",
+          "then": "The system generates analysis reports with warnings about guideline limitations without failing"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads manuscript files with missing methodology sections",
+          "when": "Parsing and analysis jobs run",
+          "then": "The system completes processing gracefully and flags missing sections in the report"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma data models and database schema for Manuscript, GuidelineTemplate, AnalysisReport, UserAnnotation, User",
+        "Implement user authentication API (/api/login) and login page",
+        "Implement secure file upload API (/api/upload) and /upload page with file validation",
+        "Implement ManuscriptParsingJob to parse uploaded files and update Manuscript records",
+        "Implement Best Practice Guidelines repository with data-guidelines model and /api/guidelines endpoint",
+        "Implement AnalysisGenerationJob to run methodology consistency analysis and generate AnalysisReport",
+        "Implement /api/report/:manuscriptId/:version endpoint and /report page to display structured reports",
+        "Implement UserAnnotation API (/api/annotations) and UI annotation features on report page",
+        "Implement VersionDiffJob to track manuscript versions and generate diffs",
+        "Implement /dashboard page to overview manuscripts and statuses",
+        "Implement /guidelines page for guideline management",
+        "Implement DataRetentionCleanupJob for periodic data cleanup",
+        "Add comprehensive validation, error handling, and security measures",
+        "Write acceptance tests and perform end-to-end testing"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/report/[manuscriptId]/[version]",
+          "/dashboard",
+          "/guidelines",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload.ts",
+          "/api/report/[manuscriptId]/[version].ts",
+          "/api/annotations.ts",
+          "/api/guidelines.ts",
+          "/api/login.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Manuscript",
+          "GuidelineTemplate",
+          "AnalysisReport",
+          "UserAnnotation",
+          "User"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints and details to better define the tool requirements and scope.",
+        "promptTemplate": "Given the initial idea and blueprint:\n\n{{IDEA}}\n\n{{BLUEPRINT}}\n\nPlease ask the user for any missing constraints, details, or clarifications needed to refine the requirements for the Academic Peer Reviewer Methodology Validator tool. Include questions about input types, output details, user roles, security, and usage scenarios.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the detailed pages, data models, API routes, and workflows for the tool based on refined requirements.",
+        "promptTemplate": "Given the refined requirements and initial blueprint:\n\n{{REFINED_REQUIREMENTS}}\n\n{{BLUEPRINT}}\n\nDesign the complete set of pages, data models, API endpoints, and their interactions needed to implement the Academic Peer Reviewer Methodology Validator. Provide detailed descriptions and rationale.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code scaffolds and page stubs for the defined pages and API routes to jumpstart development.",
+        "promptTemplate": "Using the finalized design and data models:\n\n{{FINAL_DESIGN}}\n\nGenerate code scaffolds and page stubs for the upload, report, dashboard, guidelines, and login pages, as well as the API routes for upload, report retrieval, annotations, guidelines management, and login. Include placeholder handlers and validation logic.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wireup",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration of UI pages with backend API routes and database models for end-to-end functionality.",
+        "promptTemplate": "Given the generated page stubs and API scaffolds:\n\n{{PAGE_STUBS}}\n\nWire the UI pages to call the appropriate API routes, handle authentication tokens, manage file uploads, display structured reports, and persist user annotations. Connect API handlers to the database models and implement validation, error handling, and security.\nUser input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,873 @@
+{
+  "slug": "grant-budget-reforecast-variance-analyzer",
+  "title": "Academic Research Grant Budget Reforecast & Variance Analyzer",
+  "description": "Upload original grant budgets, multi-institution expense reports, and project scope notes to generate consolidated budget reforecast reports with variance analysis, compliance flags, and recommendations. Designed for post-award academic research grant financial managers to reduce errors, ensure compliance, and improve audit readiness.",
+  "inputLabel": "Upload approved budget files, expense reports, and optionally project scope notes (JSON or CSV).",
+  "outputLabel": "Consolidated Budget Reforecast Report with Variance Analysis and Compliance Flags",
+  "systemPrompt": "You are an expert assistant for academic research grant financial managers. Given uploaded original approved budgets, multi-institution expense reports, and project scope notes, generate a consolidated budget reforecast report comparing original and updated budgets. Highlight significant variances with explanations, flag any compliance risks based on funder guidelines, and recommend corrective actions or budget realignments. Refuse requests that attempt to provide financial advice or violate data security policies. Validate all inputs for completeness and correctness. Output the report in clear, professional plain text. If structured-output feature is enabled, produce valid JSON with sections: originalBudget, updatedBudget, varianceAnalysis, complianceFlags, recommendations, and auditTrail summary. Enforce strict confidentiality and disclaimers that final decisions require authorized financial officer approval.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary View",
+      "prompt": "Generate a concise summary of the consolidated reforecast report highlighting key variances and compliance flags only.",
+      "hint": "Use this for quick overview and decision support."
+    },
+    {
+      "label": "Detailed Analysis",
+      "prompt": "Produce a detailed variance analysis with explanations for deviations, compliance checks against funder rules, and recommendations for corrective actions.",
+      "hint": "Use for thorough review and audit preparation."
+    },
+    {
+      "label": "Compliance Focus",
+      "prompt": "Focus the report on compliance risk flags and detailed explanation of funder guideline breaches with remediation suggestions.",
+      "hint": "Use when prioritizing compliance monitoring."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output enabled, produce JSON with keys: originalBudget, updatedBudget, varianceAnalysis, complianceFlags, recommendations, auditTrailSummary.",
+  "clarifyPrompt": "Please upload your original approved budget files, recent multi-institution expense reports, and any relevant project scope notes. Specify any funder-specific guidelines to apply. If you want a summary or detailed report, select a preset or specify your preference.",
+  "finalizePrompt": "Confirm that all uploaded files are complete and accurate. The report generated is for informational and compliance assistance only and does not constitute financial advice. Final budget decisions must be approved by authorized financial officers. Proceed to generate the consolidated budget reforecast and variance analysis report.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Post-Award Budget Reforecasting & Variance Analyzer",
+      "niche": {
+        "role": "Academic Research Grant Financial Manager",
+        "scenario": "Managing ongoing multi-institutional research project finances during the post-award phase to ensure budget adherence and compliance"
+      },
+      "problem": "After grant funding is awarded, financial managers must frequently update and reforecast budgets to reflect actual spending, changes in project scope, and evolving funder requirements. Currently, this process is manual, error-prone, and lacks standardized variance analysis against approved budgets, increasing risk of non-compliance and funding shortfalls.",
+      "inputs": [
+        "Original approved grant budget documents",
+        "Periodic actual expense reports from multiple institutions",
+        "Updated project scope or timeline notes",
+        "Funder-specific post-award budget modification guidelines"
+      ],
+      "outputs": [
+        "Automated, consolidated budget reforecast report comparing original and updated budgets",
+        "Variance analysis highlighting significant deviations with explanations",
+        "Compliance risk flags for funder restrictions breaches",
+        "Recommendations for corrective actions or budget realignments",
+        "Exportable audit trail and version history of budget updates"
+      ],
+      "whyItWins": [
+        "Fills a critical gap in ongoing grant financial management by automating complex reforecasting and variance analysis",
+        "Reduces manual errors and labor-intensive consolidation across institutions",
+        "Supports proactive compliance monitoring with funder-specific rules",
+        "Enhances transparency and audit readiness with version control and detailed reports",
+        "Enables repeatable, structured workflows for frequent budget updates"
+      ],
+      "upgradePath": {
+        "today": "A lightweight single-page app that allows uploading approved budgets and recent expense reports to generate a consolidated variance report with simple compliance flags.",
+        "in90Days": "Add multi-user collaboration features with comment threads, real-time budget update tracking, and integration of project scope change notes for contextual variance explanations.",
+        "in12Months": "Develop into a full multi-page system with dynamic dashboards, automated alerts for risk thresholds, funder-specific rule engines, multi-institutional access controls, and scenario simulation tools for budget reallocation planning."
+      },
+      "riskNotes": [
+        "Must ensure secure handling of sensitive financial data and institutional confidentiality",
+        "Should avoid providing financial advice; focus on reporting and compliance assistance only",
+        "Requires clear disclaimers that final budget decisions must be approved by authorized financial officers",
+        "Needs rigorous validation of funder guidelines to avoid incorrect compliance flags"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive system to automate post-award academic research grant budget reforecasting and variance analysis, consolidating multi-institutional financial data, enforcing funder compliance rules, and supporting audit readiness with version control and collaboration features.",
+      "primaryUser": "Academic Research Grant Financial Manager",
+      "successMetrics": [
+        "Reduction in manual effort and errors in budget reforecasting",
+        "Percentage of budgets updated with variance analysis reports generated",
+        "Number of compliance risk flags accurately identified and resolved",
+        "User adoption rate among multi-institutional financial teams",
+        "Audit readiness demonstrated by complete version history and exportable reports"
+      ],
+      "components": [
+        {
+          "id": "ui-budget-management",
+          "name": "Budget Management UI",
+          "type": "ui",
+          "responsibility": "Facilitate uploading, viewing, editing, and versioning of approved budgets, actual expenses, project scope notes, and funder guidelines; display consolidated variance reports and compliance flags; support collaboration features like comments and notifications.",
+          "dependsOn": [
+            "api-budget-processing",
+            "api-user-management"
+          ],
+          "notes": [
+            "Must support multi-institutional data views with access controls",
+            "Include export functionality for audit trails and reports"
+          ]
+        },
+        {
+          "id": "api-budget-processing",
+          "name": "Budget Processing API",
+          "type": "api",
+          "responsibility": "Handle ingestion, validation, consolidation, and reforecasting of budget and expense data; perform variance analysis and compliance checks based on funder-specific rules; manage version history and audit trail data.",
+          "dependsOn": [
+            "data-models",
+            "integration-funder-rules"
+          ],
+          "notes": [
+            "Must validate input data rigorously to avoid incorrect compliance flags",
+            "Expose endpoints for report generation and scenario simulations"
+          ]
+        },
+        {
+          "id": "api-user-management",
+          "name": "User & Access Management API",
+          "type": "api",
+          "responsibility": "Manage user authentication, authorization, multi-institutional access controls, and collaboration permissions including comment threads and real-time update tracking.",
+          "dependsOn": [
+            "data-models"
+          ],
+          "notes": [
+            "Ensure secure handling of sensitive data with role-based access",
+            "Support audit logging of user actions"
+          ]
+        },
+        {
+          "id": "data-models",
+          "name": "Data Models & Persistence Layer",
+          "type": "data",
+          "responsibility": "Persist budgets, expense reports, project scope notes, funder guidelines, compliance rules, user data, version histories, comments, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Design indexes to optimize queries for variance reports and compliance checks",
+            "Ensure data integrity and confidentiality"
+          ]
+        },
+        {
+          "id": "integration-funder-rules",
+          "name": "Funder Compliance Rules Engine",
+          "type": "integration",
+          "responsibility": "Maintain and update funder-specific post-award budget modification guidelines and enforce compliance checks during variance analysis.",
+          "dependsOn": [
+            "data-models"
+          ],
+          "notes": [
+            "Must allow rule updates without downtime",
+            "Provide interfaces for validation and testing of rules"
+          ]
+        },
+        {
+          "id": "job-report-generation",
+          "name": "Background Report Generation Job",
+          "type": "job",
+          "responsibility": "Generate consolidated budget reforecast reports, variance analyses, compliance flags, and exportable audit trails asynchronously to improve UI responsiveness.",
+          "dependsOn": [
+            "api-budget-processing",
+            "data-models"
+          ],
+          "notes": [
+            "Handle large data sets from multiple institutions efficiently",
+            "Retry and alert on failures"
+          ]
+        },
+        {
+          "id": "job-alerts-notifications",
+          "name": "Alerts & Notifications Job",
+          "type": "job",
+          "responsibility": "Monitor budget updates and compliance risk thresholds to trigger alerts and notifications to users for proactive management.",
+          "dependsOn": [
+            "data-models",
+            "api-user-management"
+          ],
+          "notes": [
+            "Must respect user notification preferences",
+            "Ensure timely delivery of critical alerts"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Budget",
+          "purpose": "Store original approved budgets, reforecast versions, and associated metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "data",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "institutionId",
+            "version"
+          ]
+        },
+        {
+          "name": "ExpenseReport",
+          "purpose": "Store periodic actual expense reports submitted by institutions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "periodStart",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "periodEnd",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "data",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "submittedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "institutionId",
+            "periodStart",
+            "periodEnd"
+          ]
+        },
+        {
+          "name": "ProjectScopeNote",
+          "purpose": "Capture notes on project scope or timeline changes affecting budgets.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "note",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "authorId"
+          ]
+        },
+        {
+          "name": "FunderGuideline",
+          "purpose": "Store funder-specific post-award budget modification rules and guidelines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Manage user identities, roles, and institution affiliations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "VersionHistory",
+          "purpose": "Track changes and versions of budgets and related documents for audit purposes.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "changes",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "changedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "changedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "entityType",
+            "entityId",
+            "version"
+          ]
+        },
+        {
+          "name": "CommentThread",
+          "purpose": "Support collaborative comments linked to budgets or reports.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "comments",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "entityType",
+            "entityId"
+          ]
+        },
+        {
+          "name": "AuditLog",
+          "purpose": "Log user actions and system events for security and compliance auditing.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityType",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "entityId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Dashboard",
+          "purpose": "Provide overview of grants, budget statuses, compliance flags, and alerts.",
+          "inputs": [],
+          "outputs": [
+            "grant summaries",
+            "alerts",
+            "notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/budgets/upload",
+          "title": "Upload Budgets & Expense Reports",
+          "purpose": "Allow users to upload original budgets, expense reports, and project scope notes.",
+          "inputs": [
+            "budget files",
+            "expense report files",
+            "scope notes"
+          ],
+          "outputs": [
+            "upload status",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/budgets/:grantId",
+          "title": "Budget Details & Reforecasting",
+          "purpose": "View and edit budgets, see variance analysis, compliance flags, and version history.",
+          "inputs": [
+            "grantId",
+            "budget edits",
+            "comments"
+          ],
+          "outputs": [
+            "consolidated budget view",
+            "variance report",
+            "compliance flags",
+            "comments"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/export",
+          "title": "Export Reports & Audit Trails",
+          "purpose": "Generate and download consolidated reports and audit trails for compliance and audits.",
+          "inputs": [
+            "grantId",
+            "version",
+            "report type"
+          ],
+          "outputs": [
+            "exported files (PDF, CSV)"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/admin/funder-guidelines",
+          "title": "Funder Guidelines Management",
+          "purpose": "Admin interface to update and validate funder-specific compliance rules.",
+          "inputs": [
+            "funder name",
+            "rule updates"
+          ],
+          "outputs": [
+            "validation results",
+            "update status"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue access token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: object }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/budgets/upload",
+          "method": "POST",
+          "purpose": "Upload budget or expense report files and project scope notes.",
+          "requestShape": "{ files: [file], notes: string }",
+          "responseShape": "{ success: boolean, errors: [string] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets/:grantId",
+          "method": "GET",
+          "purpose": "Retrieve consolidated budget, variance analysis, compliance flags, and version history for a grant.",
+          "requestShape": "{}",
+          "responseShape": "{ budget: object, varianceReport: object, complianceFlags: [object], versionHistory: [object] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets/:grantId",
+          "method": "POST",
+          "purpose": "Submit budget edits or reforecast updates.",
+          "requestShape": "{ edits: object }",
+          "responseShape": "{ success: boolean, errors: [string] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/export",
+          "method": "POST",
+          "purpose": "Request generation of exportable reports and audit trails.",
+          "requestShape": "{ grantId: string, version: number, reportType: string }",
+          "responseShape": "{ fileUrl: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funder-guidelines",
+          "method": "GET",
+          "purpose": "Retrieve funder compliance rules.",
+          "requestShape": "{}",
+          "responseShape": "{ guidelines: [object] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funder-guidelines",
+          "method": "POST",
+          "purpose": "Update funder compliance rules.",
+          "requestShape": "{ funderName: string, rules: object }",
+          "responseShape": "{ success: boolean, errors: [string] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments/:entityType/:entityId",
+          "method": "GET",
+          "purpose": "Retrieve comments for a budget or report entity.",
+          "requestShape": "{}",
+          "responseShape": "{ comments: [object] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments/:entityType/:entityId",
+          "method": "POST",
+          "purpose": "Add a comment to a budget or report entity.",
+          "requestShape": "{ comment: string }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ReportGenerationJob",
+          "trigger": "On budget or expense data upload or update",
+          "purpose": "Asynchronously generate consolidated reforecast and variance analysis reports with compliance flags."
+        },
+        {
+          "name": "AlertsNotificationJob",
+          "trigger": "Scheduled periodic checks and on data updates",
+          "purpose": "Monitor compliance risk thresholds and notify users proactively."
+        }
+      ],
+      "edgeCases": [
+        "Conflicting budget data submissions from multiple institutions for the same period",
+        "Incomplete or malformed expense reports causing validation failures",
+        "Frequent updates causing race conditions in version history and report generation",
+        "Funder guideline changes mid-cycle requiring re-validation of existing budgets",
+        "User permission conflicts when accessing multi-institutional data",
+        "Network or system failures during large file uploads or report generation",
+        "Handling sensitive data breaches or unauthorized access attempts"
+      ],
+      "nonGoals": [
+        "Providing direct financial advice or decision-making authority",
+        "Replacing institutional financial systems or ERP software",
+        "Automating fund disbursement or payment processing",
+        "Supporting grant application or pre-award budgeting processes",
+        "Real-time financial transaction processing or auditing"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/auth/login to receive authentication token.",
+        "Authenticated user accesses /dashboard to view grant summaries, alerts, and notifications fetched from /api/budgets/:grantId and alerts APIs.",
+        "User uploads budget files, expense reports, and project scope notes via /budgets/upload page, which sends data to /api/budgets/upload endpoint.",
+        "API validates uploaded data, persists Budget, ExpenseReport, and ProjectScopeNote records, triggers ReportGenerationJob asynchronously.",
+        "ReportGenerationJob consolidates data, performs variance analysis and compliance checks using FunderGuidelines, updates VersionHistory and AuditLog.",
+        "User views budget details and reforecasting on /budgets/:grantId page, which fetches consolidated budget, variance reports, compliance flags, version history, and comments from /api/budgets/:grantId and /api/comments/:entityType/:entityId.",
+        "User submits budget edits or reforecast updates via /budgets/:grantId POST API; system validates edits, updates Budget and VersionHistory, triggers ReportGenerationJob.",
+        "User accesses /reports/export to request export of reports and audit trails via /api/reports/export; system generates export files asynchronously and returns file URLs.",
+        "Admin users manage funder guidelines on /admin/funder-guidelines page, interacting with /api/funder-guidelines GET and POST endpoints to retrieve and update rules with validation.",
+        "AlertsNotificationJob runs periodically and on data updates to monitor compliance risk thresholds, sending notifications respecting user preferences via API-user-management.",
+        "Collaboration features allow users to add and retrieve comments linked to budgets or reports via /api/comments/:entityType/:entityId endpoints."
+      ],
+      "validationRules": [
+        "Authentication: Validate email format and password presence on login.",
+        "Budget Upload: Validate file types, required fields in budget and expense report JSON data, and completeness of project scope notes.",
+        "Budget Edits: Validate edits against schema and funder compliance rules before acceptance.",
+        "Funder Guidelines: Validate rule syntax and semantics before updating to prevent downtime.",
+        "Comments: Validate comment text length and sanitize inputs to prevent XSS.",
+        "User Access: Validate user roles and institution affiliations for all data access and modifications.",
+        "Report Export: Validate grantId, version number, and reportType against existing data.",
+        "Concurrency: Validate version numbers during updates to prevent race conditions.",
+        "Data Integrity: Enforce referential integrity between Budget, ExpenseReport, ProjectScopeNote, and User entities.",
+        "File Uploads: Enforce size limits and scan for malicious content."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Validation errors return 400 Bad Request with detailed error arrays specifying fields and issues.",
+        "Authorization failures return 403 Forbidden with explanation.",
+        "Not Found errors return 404 with context (e.g., grantId not found).",
+        "Server errors return 500 Internal Server Error with generic message; detailed logs kept internally.",
+        "File upload errors handle partial failures gracefully, reporting specific file errors.",
+        "Concurrency conflicts return 409 Conflict with instructions to refresh data.",
+        "Background job failures trigger retries with exponential backoff and alert system admins.",
+        "API rate limiting returns 429 Too Many Requests with retry-after headers.",
+        "Input sanitization errors prevent injection attacks and return 400 with sanitized feedback."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all client-server communications.",
+        "Implement JWT or similar token-based authentication with secure storage on client.",
+        "Enforce role-based access control (RBAC) on all API endpoints.",
+        "Validate and sanitize all user inputs to prevent injection and XSS attacks.",
+        "Store passwords hashed with strong algorithms (e.g., bcrypt).",
+        "Log all user actions and sensitive operations in AuditLog for compliance.",
+        "Implement rate limiting and brute force protection on authentication endpoints.",
+        "Encrypt sensitive data at rest where applicable.",
+        "Ensure multi-institutional data access respects user affiliations and permissions.",
+        "Secure file uploads by validating file types, sizes, and scanning for malware."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials",
+          "when": "they submit login form with correct email and password",
+          "then": "they receive an authentication token and access to protected pages"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /budgets/upload page",
+          "when": "they upload valid budget and expense report files with scope notes",
+          "then": "the system accepts the files, validates data, stores records, and triggers report generation"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user viewing /budgets/:grantId",
+          "when": "they request budget details",
+          "then": "they receive consolidated budget data, variance reports, compliance flags, version history, and comments"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user submits budget edits via /api/budgets/:grantId POST",
+          "when": "the edits comply with validation and funder rules",
+          "then": "the edits are saved, version history updated, and report generation triggered"
+        },
+        {
+          "id": "AT-005",
+          "given": "An admin user on /admin/funder-guidelines",
+          "when": "they submit updated funder compliance rules",
+          "then": "the system validates rules, updates guidelines without downtime, and returns success"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user requests export of reports on /reports/export",
+          "when": "they submit valid grantId, version, and reportType",
+          "then": "the system generates export files asynchronously and returns accessible file URLs"
+        },
+        {
+          "id": "AT-007",
+          "given": "Multiple institutions submit conflicting budget data for the same period",
+          "when": "the system processes submissions",
+          "then": "it detects conflicts, flags them for review, and prevents data corruption"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to access data for an institution they are not affiliated with",
+          "when": "they request budget or expense data",
+          "then": "the system denies access with 403 Forbidden"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user adds a comment to a budget entity",
+          "when": "the comment is submitted via /api/comments/:entityType/:entityId POST",
+          "then": "the comment is saved, sanitized, and retrievable via GET endpoint"
+        },
+        {
+          "id": "AT-010",
+          "given": "Background jobs encounter transient failures",
+          "when": "report generation or alert notification fails",
+          "then": "the system retries with backoff and alerts administrators on persistent failure"
+        }
+      ],
+      "buildOrder": [
+        "data-models",
+        "api-user-management",
+        "integration-funder-rules",
+        "api-budget-processing",
+        "ui-budget-management",
+        "backgroundJobs",
+        "pages",
+        "security-hardening",
+        "testing-and-validation"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/budgets/upload",
+          "/budgets/[grantId]",
+          "/reports/export",
+          "/admin/funder-guidelines"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/budgets/upload.ts",
+          "/api/budgets/[grantId].ts",
+          "/api/reports/export.ts",
+          "/api/funder-guidelines.ts",
+          "/api/comments/[entityType]/[entityId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "Budget",
+          "ExpenseReport",
+          "ProjectScopeNote",
+          "FunderGuideline",
+          "User",
+          "VersionHistory",
+          "CommentThread",
+          "AuditLog"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Elicit missing constraints, clarify use cases, and gather additional user needs.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease ask clarifying questions to refine and complete the requirements for the Academic Research Grant Budget Reforecasting tool."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define final page routes, data model schemas, and API endpoints for the app.",
+        "promptTemplate": "With the refined requirements and existing blueprint: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nProduce a finalized design of pages, data models, and APIs for the grant budget reforecasting system."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial page component and API handler stubs for the system.",
+        "promptTemplate": "Using the finalized design: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nGenerate starter code stubs for front-end pages and backend API routes for the grant budget reforecasting app."
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI components with API endpoints and database models to form a working system.",
+        "promptTemplate": "Given the page stubs and data models: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nProvide code and instructions to integrate UI pages with backend APIs and database persistence for full functionality."
+      }
+    ]
+  }
+}

@@ -1,0 +1,840 @@
+{
+  "slug": "academic-preprint-impact-amplifier",
+  "title": "Academic Research Preprint Impact Amplifier",
+  "description": "Upload your preprint manuscript and metadata to receive a tailored multi-channel promotion checklist and customizable outreach message templates, helping you enhance visibility and early scholarly engagement before journal submission.",
+  "inputLabel": "Upload your preprint (PDF or DOCX) and enter metadata below",
+  "outputLabel": "Generated Promotion Plan and Outreach Templates",
+  "systemPrompt": "You are an assistant specialized in academic preprint promotion. Accept only PDF or DOCX files up to 50MB, and metadata including title, authors (JSON array), abstract, and optional keywords and related datasets/code (JSON). Refuse any requests violating embargo restrictions or journal policies. Generate a safe, clear, and actionable promotion checklist and outreach message templates tailored to the preprint metadata. Do not generate misleading claims about impact or citations. Ensure all output is plain text suitable for direct user use. Reject unsupported file types or missing required metadata with clear error messages.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Promotion Plan",
+      "prompt": "Generate a simple multi-channel promotion checklist and outreach message templates based on the uploaded preprint's title, authors, abstract, and keywords. Include recommended journals, preprint servers, social media, and mailing lists for dissemination.",
+      "hint": "Use this to get a straightforward promotion plan with messaging templates."
+    },
+    {
+      "label": "Community Targeting Suggestions",
+      "prompt": "Based on the preprint metadata, suggest relevant research communities, conferences, collaborators, and social media groups for targeted dissemination to maximize early engagement.",
+      "hint": "Focus on identifying key audiences and collaborators."
+    },
+    {
+      "label": "Feedback Solicitation Checklist",
+      "prompt": "Create a structured checklist and customizable survey templates to solicit constructive feedback from peers on the preprint before journal submission.",
+      "hint": "Use this to design surveys and feedback requests."
+    },
+    {
+      "label": "Engagement Summary Report",
+      "prompt": "Summarize potential early impact metrics such as altmetrics, downloads, and citations for the preprint, including disclaimers about data limitations and embargoes.",
+      "hint": "Get a concise report on expected engagement."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON must include fields: {promotionChecklist: string[], outreachTemplates: {channel: string, message: string}[]}. Validate all fields and reject if embargo applies.",
+  "clarifyPrompt": "Please provide the preprint file (PDF or DOCX, max 50MB), title, authors (JSON array), abstract, and optional keywords or related datasets/code. If you have any embargo restrictions or journal policies, please specify to avoid disallowed promotion.",
+  "finalizePrompt": "Confirm all preprint metadata and file uploads are correct and compliant with embargo or journal policies. If ready, generate the tailored promotion plan and outreach templates.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Preprint Impact Amplifier",
+      "niche": {
+        "role": "Academic researcher preparing preprints",
+        "scenario": "Enhancing visibility, engagement, and scholarly feedback for preprints before journal submission"
+      },
+      "problem": "Academic researchers struggle to systematically increase the visibility and early scholarly engagement of their preprints, limiting timely feedback, citation potential, and impact tracking prior to formal journal publication.",
+      "inputs": [
+        "Preprint manuscript file (PDF, DOCX)",
+        "Preprint metadata (title, authors, abstract, keywords)",
+        "Target research community profiles or social media handles",
+        "Optional preliminary citation or altmetric data",
+        "Optional upload of related datasets or code repositories"
+      ],
+      "outputs": [
+        "Tailored multi-channel preprint promotion plan (journals, preprint servers, social media, mailing lists)",
+        "Customizable outreach message templates for different platforms",
+        "Automated suggestions for relevant community groups, conferences, and collaborators for targeted dissemination",
+        "Structured feedback solicitation checklist and survey templates",
+        "Early impact tracking dashboard integrating altmetrics, downloads, and citations",
+        "Periodic engagement summary reports with actionable recommendations"
+      ],
+      "whyItWins": [
+        "Fills a unique gap by focusing on pre-publication visibility and measurable early engagement rather than manuscript preparation or compliance",
+        "Supports repeated use throughout the preprint lifecycle, encouraging continual refinement and outreach",
+        "Combines content analysis with community targeting and feedback management for holistic impact amplification",
+        "Automates and structures outreach and impact tracking, reducing manual effort and increasing reach",
+        "Offers scalable complexity from single preprint promotion to multi-preprint portfolio management"
+      ],
+      "upgradePath": {
+        "today": "Provide a simple single-page app where users upload a preprint and metadata to receive a basic tailored promotion checklist and outreach message templates.",
+        "in90Days": "Add integration with social media platforms and preprint servers to automate scheduled postings and feedback collection; incorporate altmetric tracking widgets and customizable survey generation.",
+        "in12Months": "Develop a full multi-page dashboard enabling portfolio-level management of multiple preprints, detailed analytics on engagement and impact trends, collaboration network suggestions, and AI-powered feedback sentiment analysis to prioritize revisions and dissemination strategies."
+      },
+      "riskNotes": [
+        "Must ensure compliance with preprint server policies and respect for embargoes or journal pre-publication restrictions.",
+        "Avoid generating or endorsing misleading claims about impact or premature citations.",
+        "Careful handling of personal data and contact information to comply with privacy regulations in outreach templates.",
+        "Maintain clear disclaimers that tool supports promotion and engagement but does not guarantee increased citations or journal acceptance."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A platform to help academic researchers systematically enhance the visibility, engagement, and early scholarly feedback of their preprints through tailored promotion plans, outreach automation, impact tracking, and feedback management.",
+      "primaryUser": "Academic researchers preparing and promoting preprints",
+      "successMetrics": [
+        "Number of preprints uploaded and managed",
+        "User engagement with promotion plans and outreach templates",
+        "Frequency and quality of feedback collected via surveys",
+        "Increase in tracked altmetrics, downloads, and citations pre-publication",
+        "User retention and repeated use across multiple preprints",
+        "User satisfaction with actionable recommendations and analytics"
+      ],
+      "components": [
+        {
+          "id": "ui-preprint-upload",
+          "name": "Preprint Upload & Metadata Entry UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload preprint files, enter metadata, and optionally add related datasets or code repositories.",
+          "dependsOn": [],
+          "notes": [
+            "Supports PDF and DOCX uploads with file validation.",
+            "Metadata fields include title, authors, abstract, keywords.",
+            "Handles optional inputs with clear UI guidance."
+          ]
+        },
+        {
+          "id": "ui-promotion-dashboard",
+          "name": "Promotion Planning & Outreach UI",
+          "type": "ui",
+          "responsibility": "Display tailored multi-channel promotion plans, outreach message templates, and feedback solicitation tools; enable customization and scheduling.",
+          "dependsOn": [
+            "api-promotion-planner",
+            "api-outreach-templates",
+            "api-feedback-tools"
+          ],
+          "notes": [
+            "Supports single preprint and portfolio views.",
+            "Includes interactive checklist and message customization.",
+            "Allows scheduling of social media and mailing list posts."
+          ]
+        },
+        {
+          "id": "ui-impact-analytics",
+          "name": "Impact Tracking & Analytics UI",
+          "type": "ui",
+          "responsibility": "Visualize early impact metrics such as altmetrics, downloads, citations, and engagement summaries with actionable recommendations.",
+          "dependsOn": [
+            "api-impact-data"
+          ],
+          "notes": [
+            "Dashboard supports trend analysis and filtering by preprint.",
+            "Includes disclaimers about data limitations and embargoes."
+          ]
+        },
+        {
+          "id": "api-preprint-management",
+          "name": "Preprint Management API",
+          "type": "api",
+          "responsibility": "Handle storage, update, and retrieval of preprint files, metadata, and related resources.",
+          "dependsOn": [
+            "data-preprints"
+          ],
+          "notes": [
+            "Enforces file size limits and format validation.",
+            "Supports versioning for preprint updates."
+          ]
+        },
+        {
+          "id": "api-promotion-planner",
+          "name": "Promotion Plan Generation API",
+          "type": "api",
+          "responsibility": "Generate tailored multi-channel promotion plans and outreach message templates based on preprint content and target communities.",
+          "dependsOn": [
+            "api-community-suggestions",
+            "data-preprints"
+          ],
+          "notes": [
+            "Incorporates rules to respect embargoes and journal policies.",
+            "Allows customization inputs from users."
+          ]
+        },
+        {
+          "id": "api-community-suggestions",
+          "name": "Community & Collaboration Suggestion API",
+          "type": "api",
+          "responsibility": "Suggest relevant research communities, conferences, collaborators, and social media groups for targeted dissemination.",
+          "dependsOn": [
+            "data-communities"
+          ],
+          "notes": [
+            "Uses keyword matching and metadata analysis.",
+            "Supports periodic updates to community database."
+          ]
+        },
+        {
+          "id": "api-feedback-tools",
+          "name": "Feedback Solicitation API",
+          "type": "api",
+          "responsibility": "Provide structured feedback checklists and customizable survey templates; collect and store feedback responses.",
+          "dependsOn": [
+            "data-feedback"
+          ],
+          "notes": [
+            "Supports anonymous and identified feedback modes.",
+            "Ensures privacy compliance for contact data."
+          ]
+        },
+        {
+          "id": "api-impact-data",
+          "name": "Impact Data Aggregation API",
+          "type": "api",
+          "responsibility": "Aggregate altmetrics, citation counts, and download statistics from integrated sources and preprint servers.",
+          "dependsOn": [
+            "integration-altmetrics",
+            "integration-preprint-servers",
+            "data-impact-metrics"
+          ],
+          "notes": [
+            "Handles API rate limits and data refresh scheduling.",
+            "Normalizes data from multiple sources."
+          ]
+        },
+        {
+          "id": "integration-altmetrics",
+          "name": "Altmetrics Integration",
+          "type": "integration",
+          "responsibility": "Connect to altmetric data providers to retrieve early impact metrics for preprints.",
+          "dependsOn": [],
+          "notes": [
+            "Requires API keys and compliance with provider terms.",
+            "Handles failures gracefully with retries and fallbacks."
+          ]
+        },
+        {
+          "id": "integration-preprint-servers",
+          "name": "Preprint Server Integration",
+          "type": "integration",
+          "responsibility": "Integrate with major preprint servers to fetch metadata, upload status, and enable automated postings.",
+          "dependsOn": [],
+          "notes": [
+            "Supports servers with public APIs (e.g., arXiv, bioRxiv).",
+            "Respects embargoes and server policies."
+          ]
+        },
+        {
+          "id": "job-scheduled-posting",
+          "name": "Scheduled Outreach Posting Job",
+          "type": "job",
+          "responsibility": "Automate scheduled postings of outreach messages to social media and mailing lists based on user plans.",
+          "dependsOn": [
+            "api-promotion-planner",
+            "integration-social-media"
+          ],
+          "notes": [
+            "Retries failed posts with backoff.",
+            "Logs posting status and errors."
+          ]
+        },
+        {
+          "id": "job-impact-data-refresh",
+          "name": "Impact Data Refresh Job",
+          "type": "job",
+          "responsibility": "Periodically refresh altmetrics, citation, and download data for tracked preprints.",
+          "dependsOn": [
+            "api-impact-data"
+          ],
+          "notes": [
+            "Schedules updates respecting API rate limits.",
+            "Triggers notifications for significant changes."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Preprint",
+          "purpose": "Store uploaded preprint files, metadata, related datasets/code, and version history.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authors",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "abstract",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "keywords",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "fileUrl",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedResources",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "embargoStatus",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "title"
+          ]
+        },
+        {
+          "name": "PromotionPlan",
+          "purpose": "Store generated promotion plans, outreach templates, and user customizations per preprint.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preprintId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "channels",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "messageTemplates",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "customizations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "preprintId"
+          ]
+        },
+        {
+          "name": "FeedbackSurvey",
+          "purpose": "Store feedback survey templates and collected responses linked to preprints.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preprintId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "template",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "responses",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "preprintId"
+          ]
+        },
+        {
+          "name": "ImpactMetric",
+          "purpose": "Store aggregated altmetrics, citations, downloads, and engagement data per preprint.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preprintId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "altmetrics",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "citations",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "downloads",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "preprintId"
+          ]
+        },
+        {
+          "name": "CommunityProfile",
+          "purpose": "Store data about research communities, conferences, collaborators, and social media groups for suggestions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "keywords",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "contactInfo",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "type",
+            "name"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Preprint",
+          "purpose": "Page for users to upload preprint files and enter metadata.",
+          "inputs": [
+            "Preprint file",
+            "Title",
+            "Authors",
+            "Abstract",
+            "Keywords",
+            "Related datasets/code"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Preprint summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/promotion",
+          "title": "Promotion Planning",
+          "purpose": "View and customize tailored promotion plans and outreach message templates.",
+          "inputs": [
+            "Selected preprint",
+            "User customizations"
+          ],
+          "outputs": [
+            "Promotion checklist",
+            "Outreach templates",
+            "Scheduling options"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/feedback",
+          "title": "Feedback Management",
+          "purpose": "Create and manage feedback surveys; view collected feedback.",
+          "inputs": [
+            "Preprint selection",
+            "Survey templates",
+            "Feedback responses"
+          ],
+          "outputs": [
+            "Survey creation UI",
+            "Feedback summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/analytics",
+          "title": "Impact Analytics Dashboard",
+          "purpose": "Display early impact metrics and engagement trends for preprints.",
+          "inputs": [
+            "Preprint selection",
+            "Date range filters"
+          ],
+          "outputs": [
+            "Altmetrics charts",
+            "Citation/download stats",
+            "Engagement reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/portfolio",
+          "title": "Preprint Portfolio Management",
+          "purpose": "Manage multiple preprints, view aggregated analytics and outreach status.",
+          "inputs": [
+            "User preprint list",
+            "Filter/sort options"
+          ],
+          "outputs": [
+            "Portfolio overview",
+            "Engagement summaries",
+            "Actionable recommendations"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/preprints",
+          "method": "POST",
+          "purpose": "Upload a new preprint with metadata and files.",
+          "requestShape": "{ file: File, metadata: {title, authors, abstract, keywords, relatedResources} }",
+          "responseShape": "{ preprintId, status }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/preprints/{id}",
+          "method": "GET",
+          "purpose": "Retrieve preprint metadata and file info.",
+          "requestShape": "{ id: string }",
+          "responseShape": "{ preprint }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/promotion-plan/{preprintId}",
+          "method": "GET",
+          "purpose": "Get tailored promotion plan and outreach templates for a preprint.",
+          "requestShape": "{ preprintId: string }",
+          "responseShape": "{ promotionPlan }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/promotion-plan/{preprintId}",
+          "method": "POST",
+          "purpose": "Save user customizations to promotion plan.",
+          "requestShape": "{ preprintId: string, customizations: json }",
+          "responseShape": "{ status }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/feedback-survey/{preprintId}",
+          "method": "GET",
+          "purpose": "Retrieve feedback survey templates and responses for a preprint.",
+          "requestShape": "{ preprintId: string }",
+          "responseShape": "{ surveyTemplate, responses }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/feedback-survey/{preprintId}/submit",
+          "method": "POST",
+          "purpose": "Submit feedback response for a preprint survey.",
+          "requestShape": "{ preprintId: string, response: json }",
+          "responseShape": "{ status }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/impact-metrics/{preprintId}",
+          "method": "GET",
+          "purpose": "Retrieve aggregated impact metrics for a preprint.",
+          "requestShape": "{ preprintId: string }",
+          "responseShape": "{ altmetrics, citations, downloads }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/community-suggestions",
+          "method": "POST",
+          "purpose": "Get suggested communities and collaborators based on preprint metadata.",
+          "requestShape": "{ metadata: json }",
+          "responseShape": "{ suggestions: json }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Scheduled Outreach Posting",
+          "trigger": "Time-based schedule per user-defined posting plan",
+          "purpose": "Automatically post outreach messages to social media and mailing lists."
+        },
+        {
+          "name": "Impact Data Refresh",
+          "trigger": "Periodic timer (e.g., daily or weekly)",
+          "purpose": "Refresh altmetrics, citation, and download data from integrated sources."
+        }
+      ],
+      "edgeCases": [
+        "Preprint files exceeding size or unsupported formats must be rejected with clear error messages.",
+        "Embargoed preprints or those with journal restrictions must not trigger promotion or automated postings.",
+        "Failures or rate limits from external altmetric or preprint server APIs must be handled gracefully with retries and fallback data.",
+        "User privacy must be maintained when generating outreach templates and collecting feedback; personal data must be protected and compliant with regulations.",
+        "Feedback surveys may receive incomplete or spam responses; system should support validation and filtering.",
+        "Users may upload multiple versions of a preprint; version management and impact tracking must correctly associate data.",
+        "Network failures during scheduled postings or data refreshes must be logged and retried without user disruption."
+      ],
+      "nonGoals": [
+        "Not a manuscript preparation or editing tool; does not provide writing assistance.",
+        "Does not guarantee increased citations, journal acceptance, or impact.",
+        "Does not provide direct journal submission or peer review services.",
+        "Does not replace manual outreach but assists and automates parts of the process.",
+        "Does not store or process sensitive unpublished research data beyond metadata and files uploaded by users."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses /upload page to submit preprint files and metadata.",
+        "UI-preprint-upload validates input, then calls POST /api/preprints with file and metadata.",
+        "api-preprint-management validates file size/type, stores file, creates Preprint record with versioning.",
+        "User navigates to /promotion to view promotion plans; UI-promotion-dashboard fetches data from GET /api/promotion-plan/{preprintId}.",
+        "api-promotion-planner generates tailored promotion plans using preprint metadata and suggestions from api-community-suggestions.",
+        "User customizes promotion plan; UI posts customizations via POST /api/promotion-plan/{preprintId}.",
+        "User accesses /feedback to create/manage surveys; UI calls GET /api/feedback-survey/{preprintId} to retrieve templates and responses.",
+        "Feedback responses submitted publicly via POST /api/feedback-survey/{preprintId}/submit; api-feedback-tools stores responses with privacy compliance.",
+        "User views impact analytics on /analytics; UI calls GET /api/impact-metrics/{preprintId} to retrieve aggregated metrics.",
+        "api-impact-data aggregates data from integration-altmetrics and integration-preprint-servers, normalizes and stores in ImpactMetric model.",
+        "Background job 'Impact Data Refresh' periodically triggers api-impact-data to update metrics.",
+        "Background job 'Scheduled Outreach Posting' uses saved promotion plans to post messages via integration-social-media with retry and logging.",
+        "Community suggestions are fetched via POST /api/community-suggestions with preprint metadata to aid promotion planning."
+      ],
+      "validationRules": [
+        "Preprint file must be PDF or DOCX and not exceed configured size limit (e.g., 50MB).",
+        "Metadata fields: title (non-empty string), authors (non-empty JSON array), abstract (non-empty string).",
+        "Keywords and relatedResources are optional but if provided must be valid JSON arrays or objects.",
+        "Promotion plan customizations must conform to expected JSON schema for channels and messageTemplates.",
+        "Feedback survey responses must match survey template structure; support validation for required fields and filter spam/incomplete entries.",
+        "User authentication required for all API routes except feedback submission.",
+        "EmbargoStatus field must be checked before generating promotion plans or scheduling postings; embargoed preprints disallow promotion actions.",
+        "Version number increments on each preprint update; older versions remain accessible.",
+        "Community suggestions input metadata must include required fields (e.g., keywords) for matching.",
+        "Date filters on analytics must be valid date ranges."
+      ],
+      "errorHandling": [
+        "Reject preprint uploads with unsupported file types or oversized files with clear error messages.",
+        "Return 401 Unauthorized for API calls without valid user authentication where required.",
+        "Return 404 Not Found for requests referencing non-existent preprints or resources.",
+        "Gracefully handle external API failures (altmetrics, preprint servers) with retries and fallback cached data; log errors.",
+        "On promotion plan generation, if embargo or journal restrictions apply, return informative message preventing promotion.",
+        "For feedback submission, validate input and reject malformed or spam-like responses with appropriate status.",
+        "Background jobs log all failures and retry with exponential backoff; do not block user interactions.",
+        "API responses include error codes and descriptive messages for client display.",
+        "Validate all user inputs server-side to prevent injection or malformed data."
+      ],
+      "securityNotes": [
+        "All user-authenticated API routes require JWT or session-based authentication with proper authorization checks.",
+        "File uploads scanned for malware and stored securely with access controls.",
+        "User data and uploaded files are isolated per user; users can only access their own preprints and related data.",
+        "Feedback responses support anonymous mode; personal data collected must comply with privacy regulations (e.g., GDPR).",
+        "Sensitive API keys for external integrations stored securely in environment variables; never exposed client-side.",
+        "Rate limiting applied on public endpoints (e.g., feedback submission) to prevent abuse.",
+        "Data validation and sanitization applied to prevent injection attacks.",
+        "Logs and error reports exclude sensitive user data.",
+        "Scheduled jobs operate with least privilege principle and secure credentials for social media posting."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on /upload page with a valid PDF preprint file and complete metadata",
+          "when": "User submits the upload form",
+          "then": "The system accepts the file, stores it, creates a Preprint record with version 1, and returns upload confirmation with preprint summary"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user attempts to upload a file exceeding size limit or unsupported format",
+          "when": "User submits the upload form",
+          "then": "The system rejects the upload with a clear error message indicating file size or format issue"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user requests promotion plan for a preprint without embargo",
+          "when": "User accesses /promotion page and fetches promotion plan",
+          "then": "The system returns a tailored promotion plan with channels and message templates based on preprint metadata"
+        },
+        {
+          "id": "AT-004",
+          "given": "A preprint is embargoed",
+          "when": "User requests promotion plan or scheduling outreach posts",
+          "then": "The system prevents promotion actions and returns informative messages about embargo restrictions"
+        },
+        {
+          "id": "AT-005",
+          "given": "A public user submits feedback response to a survey",
+          "when": "User posts valid feedback response",
+          "then": "The system stores the response respecting anonymity settings and returns success status"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user views impact analytics for a preprint",
+          "when": "User applies date filters and selects preprint",
+          "then": "The system displays normalized altmetrics, citation counts, download stats, and engagement reports with disclaimers"
+        },
+        {
+          "id": "AT-007",
+          "given": "Background job runs to refresh impact data",
+          "when": "Scheduled timer triggers job",
+          "then": "The system fetches updated metrics from external APIs, handles rate limits, updates ImpactMetric records, and logs any errors"
+        },
+        {
+          "id": "AT-008",
+          "given": "User customizes promotion plan with valid JSON customizations",
+          "when": "User submits customization via API",
+          "then": "The system validates and saves customizations, updating the PromotionPlan record"
+        },
+        {
+          "id": "AT-009",
+          "given": "An unauthenticated user attempts to access protected API routes",
+          "when": "User makes API request",
+          "then": "The system returns 401 Unauthorized error"
+        },
+        {
+          "id": "AT-010",
+          "given": "External altmetrics API is temporarily unavailable",
+          "when": "Impact data refresh job runs",
+          "then": "The system retries with backoff, uses cached data if available, and logs the failure without crashing"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database",
+        "Implement api-preprint-management with file upload, validation, and versioning",
+        "Build /upload page UI with file and metadata form, integrate with preprint API",
+        "Implement api-community-suggestions for community matching",
+        "Implement api-promotion-planner to generate promotion plans using community suggestions and preprint data",
+        "Build /promotion page UI to display and customize promotion plans, integrate with promotion APIs",
+        "Implement api-feedback-tools for survey templates and response collection",
+        "Build /feedback page UI for survey creation and feedback viewing",
+        "Implement integration-altmetrics and integration-preprint-servers with API clients and caching",
+        "Implement api-impact-data to aggregate and normalize impact metrics",
+        "Build /analytics page UI to display impact metrics and trends",
+        "Implement background jobs: Impact Data Refresh and Scheduled Outreach Posting with retry and logging",
+        "Implement authentication and authorization middleware for API routes and pages",
+        "Implement error handling and validation across all APIs and UI forms",
+        "Add security measures: input sanitization, rate limiting, privacy compliance",
+        "Implement /portfolio page UI to manage multiple preprints and show aggregated analytics",
+        "Perform end-to-end testing and acceptance tests"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/promotion",
+          "/feedback",
+          "/analytics",
+          "/portfolio"
+        ],
+        "apiFilesToCreate": [
+          "api/preprints/index.ts (POST)",
+          "api/preprints/[id].ts (GET)",
+          "api/promotion-plan/[preprintId].ts (GET, POST)",
+          "api/feedback-survey/[preprintId].ts (GET)",
+          "api/feedback-survey/[preprintId]/submit.ts (POST)",
+          "api/impact-metrics/[preprintId].ts (GET)",
+          "api/community-suggestions.ts (POST)"
+        ],
+        "prismaModelsToAdd": [
+          "Preprint",
+          "PromotionPlan",
+          "FeedbackSurvey",
+          "ImpactMetric",
+          "CommunityProfile"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and refine missing constraints, edge cases, and user needs for the preprint promotion tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs, ask detailed questions about missing or ambiguous requirements to ensure a complete understanding of the preprint impact amplification workflow. Use context: {{BLUEPRINT}}, user input: {{USER_INPUT}}."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the complete set of UI pages, API routes, and data models needed for the platform.",
+        "promptTemplate": "Based on the refined requirements and blueprint, produce a detailed specification of pages, APIs, and data models including fields, relations, and access control. Reference: {{BLUEPRINT}}, expansions: {{EXPANDED}}, user notes: {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create scaffold code for the frontend pages and API endpoints to accelerate development.",
+        "promptTemplate": "Generate code stubs for the specified pages and API routes from the blueprint including placeholders for UI elements, input validation, and integration points. Use the finalized designs and specs: {{BLUEPRINT}}, {{EXPANDED}}, user directives: {{USER_INPUT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the data flow by connecting frontend pages, backend API routes, and the database models.",
+        "promptTemplate": "Provide detailed implementation guidance and code snippets to connect UI pages with API routes and database models, ensuring validation, authentication, error handling, and security best practices. Use the full blueprint and expansions: {{BLUEPRINT}}, {{EXPANDED}}, user input: {{USER_INPUT}}."
+      }
+    ]
+  }
+}

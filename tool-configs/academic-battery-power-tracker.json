@@ -1,0 +1,707 @@
+{
+  "slug": "academic-battery-power-tracker",
+  "title": "Academic Research Device Battery & Power Tracker",
+  "description": "A lightweight tool for academic field research technicians to input battery charge logs and power usage data for multiple devices, generating battery health summaries and alert flags to help prevent unexpected downtime during field deployments.",
+  "inputLabel": "Enter device battery charge logs, power usage data, and device metadata in JSON or text format",
+  "outputLabel": "Battery usage summary and alert flags",
+  "systemPrompt": "You are a specialized assistant for academic field research technicians managing multiple data collection devices. Given input data about device metadata, battery charge logs, and power consumption logs, generate a concise and clear summary of battery health status per device, including any predictive alerts for battery depletion risk. Validate all inputs strictly: reject and explain any data with missing required fields, invalid date formats, out-of-sequence timestamps, or out-of-range charge levels. Refuse any input requesting medical or safety-critical decisions. Output plain text summaries, and if structured-output is enabled, produce JSON reports conforming to the data models. Always prioritize data privacy and security in responses. Do not generate or infer data beyond what is provided. Use polite, clear language suitable for technical users.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Battery Health Summary",
+      "prompt": "Summarize the battery charge logs and power consumption data for the devices provided. Highlight any battery depletion risks or irregularities in charge level trends."
+    },
+    {
+      "label": "Validate Input Data",
+      "prompt": "Check the input data for required fields, correct formats, and logical consistency such as timestamp order and value ranges. Report any errors found."
+    },
+    {
+      "label": "Generate Maintenance Alert Flags",
+      "prompt": "Based on the battery charge and power consumption logs, identify devices likely needing battery maintenance or replacement soon. Provide alert messages."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON objects with deviceId, batteryHealthSummary, alertFlags, and validationErrors arrays matching the defined data models.",
+  "clarifyPrompt": "Please provide the device metadata, battery charge logs, and power consumption logs in the specified format. Include device model, battery type, capacity, and timestamps with charge levels. If you want maintenance alerts, specify so.",
+  "finalizePrompt": "Review the generated battery health summaries and alert flags. Confirm if you want to export the data or input additional logs for further analysis.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Device Battery & Power Usage Tracker",
+      "niche": {
+        "role": "Academic field research technician",
+        "scenario": "Tracking and managing battery and power usage of multiple data collection devices during extended fieldwork deployments"
+      },
+      "problem": "Field research technicians managing multiple data collection devices struggle to monitor battery and power usage across devices, leading to unexpected downtime, data loss, and inefficient replacement planning. Existing calibration and usage trackers do not cover power consumption and battery health monitoring integrated with deployment schedules.",
+      "inputs": [
+        "Device metadata (model, battery type, capacity)",
+        "Deployment schedule and location",
+        "Battery charge logs (timestamps and charge levels)",
+        "Power consumption logs or usage patterns",
+        "Maintenance and replacement records"
+      ],
+      "outputs": [
+        "Device-specific battery usage and health reports",
+        "Predictive battery depletion alerts",
+        "Optimized battery replacement and charging schedules",
+        "Summary dashboards showing power usage trends across devices",
+        "Exportable maintenance and battery management logs"
+      ],
+      "whyItWins": [
+        "Fills a critical monitoring gap not addressed by existing calibration or usage trackers",
+        "Reduces risk of data loss due to unexpected device power failure",
+        "Supports proactive fieldwork planning with predictive alerts",
+        "Enables efficient battery resource management across multiple devices",
+        "Designed specifically for repeated use in extended, multi-device field deployments"
+      ],
+      "upgradePath": {
+        "today": "A lightweight single-page tool to manually input battery charge logs and device usage, generating basic battery health summaries and alert flags.",
+        "in90Days": "Add automated data import from device logs or mobile apps, integrated alerts via email/SMS, and visualization dashboards for multiple devices and locations.",
+        "in12Months": "Develop a multi-page app with role-based access for technicians and field managers, mobile app integration for real-time monitoring, predictive analytics for battery life, maintenance workflows, and integration with overall fieldwork logistics and compliance systems."
+      },
+      "riskNotes": [
+        "Must ensure privacy and security of device and deployment location data to protect sensitive field research sites.",
+        "Avoid medical or safety-critical decision-making claims; focus strictly on battery and power usage monitoring.",
+        "Require clear user guidance on correct logging to avoid erroneous data impacting alerts."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A specialized multi-page application designed for academic field research technicians to monitor, analyze, and manage battery and power usage across multiple data collection devices during extended field deployments. It supports manual and automated data input, predictive alerts, maintenance scheduling, and comprehensive reporting to reduce downtime and optimize battery resource management.",
+      "primaryUser": "Academic field research technician",
+      "successMetrics": [
+        "Reduction in unexpected device power failures during deployments",
+        "Accuracy and timeliness of predictive battery depletion alerts",
+        "User adoption rate of battery and power usage tracking features",
+        "Frequency and effectiveness of maintenance and replacement scheduling",
+        "User satisfaction with dashboards and reporting tools"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide summary views and visualizations of battery usage trends, alerts, and device status across deployments.",
+          "dependsOn": [
+            "api-deviceData",
+            "api-alerts"
+          ],
+          "notes": [
+            "Supports filtering by device, location, and deployment period",
+            "Displays predictive alerts and maintenance recommendations"
+          ]
+        },
+        {
+          "id": "ui-deviceManagement",
+          "name": "Device & Deployment Management UI",
+          "type": "ui",
+          "responsibility": "Enable users to input and manage device metadata, deployment schedules, battery logs, and maintenance records.",
+          "dependsOn": [
+            "api-deviceData",
+            "api-logs",
+            "api-maintenance"
+          ],
+          "notes": [
+            "Supports manual data entry and editing",
+            "Includes validation and user guidance to ensure data accuracy"
+          ]
+        },
+        {
+          "id": "api-deviceData",
+          "name": "Device Data API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for device metadata, deployment schedules, and associated data.",
+          "dependsOn": [
+            "data-devices",
+            "data-deployments"
+          ],
+          "notes": [
+            "Ensures data consistency and enforces access controls",
+            "Supports bulk import endpoints for future automated data ingestion"
+          ]
+        },
+        {
+          "id": "api-logs",
+          "name": "Battery & Power Logs API",
+          "type": "api",
+          "responsibility": "Manage battery charge logs, power consumption logs, and usage patterns data ingestion and retrieval.",
+          "dependsOn": [
+            "data-logs"
+          ],
+          "notes": [
+            "Validates timestamp sequences and charge level ranges",
+            "Supports data aggregation for reporting and alerting"
+          ]
+        },
+        {
+          "id": "api-alerts",
+          "name": "Alerts & Notifications API",
+          "type": "api",
+          "responsibility": "Generate and serve predictive battery depletion alerts and maintenance notifications.",
+          "dependsOn": [
+            "data-alerts",
+            "job-predictiveAnalysis"
+          ],
+          "notes": [
+            "Supports user subscription preferences for email/SMS alerts",
+            "Handles alert lifecycle including acknowledgment and dismissal"
+          ]
+        },
+        {
+          "id": "api-maintenance",
+          "name": "Maintenance Records API",
+          "type": "api",
+          "responsibility": "Manage maintenance and replacement records tied to devices and deployments.",
+          "dependsOn": [
+            "data-maintenance"
+          ],
+          "notes": [
+            "Tracks maintenance history and schedules",
+            "Supports export of logs for compliance and reporting"
+          ]
+        },
+        {
+          "id": "job-predictiveAnalysis",
+          "name": "Predictive Battery Life Analysis Job",
+          "type": "job",
+          "responsibility": "Periodically analyze battery charge and power consumption logs to predict depletion and generate alerts.",
+          "dependsOn": [
+            "data-logs",
+            "data-alerts"
+          ],
+          "notes": [
+            "Runs on scheduled intervals or triggered by new data ingestion",
+            "Implements models to estimate battery health and remaining life"
+          ]
+        },
+        {
+          "id": "integration-dataImport",
+          "name": "Automated Data Import Integration",
+          "type": "integration",
+          "responsibility": "Integrate with device logs or mobile app data sources to automate battery and power usage data ingestion.",
+          "dependsOn": [
+            "api-logs",
+            "api-deviceData"
+          ],
+          "notes": [
+            "Supports multiple data formats and secure authentication",
+            "Includes error handling for malformed or incomplete data"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Device",
+          "purpose": "Store metadata about each data collection device including battery specifications.",
+          "fields": [
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "model",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "batteryType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "batteryCapacitymAh",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "deviceId"
+          ]
+        },
+        {
+          "name": "Deployment",
+          "purpose": "Record deployment schedules and locations for devices.",
+          "fields": [
+            {
+              "name": "deploymentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "deploymentId",
+            "deviceId"
+          ]
+        },
+        {
+          "name": "BatteryChargeLog",
+          "purpose": "Log battery charge levels over time for devices.",
+          "fields": [
+            {
+              "name": "logId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "chargeLevelPercent",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "PowerConsumptionLog",
+          "purpose": "Record power consumption or usage pattern data for devices.",
+          "fields": [
+            {
+              "name": "logId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "powerUsageWatts",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "MaintenanceRecord",
+          "purpose": "Track maintenance and battery replacement events for devices.",
+          "fields": [
+            {
+              "name": "recordId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "date",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "date"
+          ]
+        },
+        {
+          "name": "Alert",
+          "purpose": "Store generated alerts related to battery depletion and maintenance.",
+          "fields": [
+            {
+              "name": "alertId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alertType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "acknowledged",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "alertType",
+            "createdAt"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Battery & Power Usage Dashboard",
+          "purpose": "Visualize power usage trends, device status, and alerts across deployments.",
+          "inputs": [
+            "filter by device, location, date range"
+          ],
+          "outputs": [
+            "charts, alert lists, summary statistics"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/devices",
+          "title": "Device & Deployment Management",
+          "purpose": "Manage device metadata, deployment schedules, and battery logs.",
+          "inputs": [
+            "device info, deployment dates, battery logs, maintenance records"
+          ],
+          "outputs": [
+            "device lists, deployment timelines, log summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/alerts",
+          "title": "Alerts & Notifications",
+          "purpose": "View and manage predictive battery depletion and maintenance alerts.",
+          "inputs": [
+            "alert filters, acknowledgment actions"
+          ],
+          "outputs": [
+            "alert details, notification settings"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reports & Export",
+          "purpose": "Generate and export battery health reports and maintenance logs.",
+          "inputs": [
+            "report parameters, export format selection"
+          ],
+          "outputs": [
+            "downloadable reports"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/devices",
+          "method": "GET",
+          "purpose": "Retrieve list of devices and metadata.",
+          "requestShape": "none",
+          "responseShape": "array of Device",
+          "auth": "user"
+        },
+        {
+          "route": "/api/devices",
+          "method": "POST",
+          "purpose": "Create or update device metadata.",
+          "requestShape": "Device object",
+          "responseShape": "Device object with id",
+          "auth": "user"
+        },
+        {
+          "route": "/api/deployments",
+          "method": "GET",
+          "purpose": "Retrieve deployment schedules.",
+          "requestShape": "optional filters",
+          "responseShape": "array of Deployment",
+          "auth": "user"
+        },
+        {
+          "route": "/api/battery-logs",
+          "method": "POST",
+          "purpose": "Submit battery charge logs.",
+          "requestShape": "BatteryChargeLog object or array",
+          "responseShape": "status and saved log ids",
+          "auth": "user"
+        },
+        {
+          "route": "/api/power-logs",
+          "method": "POST",
+          "purpose": "Submit power consumption logs.",
+          "requestShape": "PowerConsumptionLog object or array",
+          "responseShape": "status and saved log ids",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts",
+          "method": "GET",
+          "purpose": "Retrieve active alerts for user devices.",
+          "requestShape": "optional filters",
+          "responseShape": "array of Alert",
+          "auth": "user"
+        },
+        {
+          "route": "/api/maintenance",
+          "method": "POST",
+          "purpose": "Add or update maintenance records.",
+          "requestShape": "MaintenanceRecord object",
+          "responseShape": "MaintenanceRecord with id",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports",
+          "method": "POST",
+          "purpose": "Generate battery usage and maintenance reports.",
+          "requestShape": "report parameters (device, date range, format)",
+          "responseShape": "report file or download link",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Predictive Battery Life Analysis",
+          "trigger": "Scheduled (e.g., hourly or daily) or on new log ingestion",
+          "purpose": "Analyze logs to predict battery depletion and generate alerts."
+        },
+        {
+          "name": "Automated Data Import Processing",
+          "trigger": "On receiving new external device log files or API data",
+          "purpose": "Validate and ingest automated battery and power usage data."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or missing battery charge logs causing inaccurate predictions",
+        "Out-of-sequence timestamps in logs leading to data inconsistencies",
+        "Devices with multiple battery types or replacements during deployment",
+        "Network outages delaying data synchronization and alert delivery",
+        "User input errors causing invalid or conflicting device metadata",
+        "Handling deployments with overlapping dates or locations",
+        "Ensuring alerts are not duplicated or missed during job failures"
+      ],
+      "nonGoals": [
+        "Making medical or safety-critical decisions based on battery data",
+        "Providing hardware-level battery calibration or diagnostics",
+        "Replacing existing fieldwork logistics or compliance systems",
+        "Real-time monitoring requiring continuous device connectivity",
+        "Managing non-battery related device maintenance or repairs"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages (/dashboard, /devices, /alerts, /reports).",
+        "UI pages send requests to respective API routes to fetch or submit data (e.g., /api/devices, /api/battery-logs).",
+        "APIs validate input data, enforce access control, and interact with Prisma models to read/write database records.",
+        "Background job 'Predictive Battery Life Analysis' runs on schedule or triggered by new log ingestion, reads BatteryChargeLog and PowerConsumptionLog data, analyzes battery health, and writes Alert records.",
+        "Background job 'Automated Data Import Processing' ingests external device log data, validates and normalizes it, then submits to /api/battery-logs and /api-power-logs endpoints.",
+        "Alerts API serves active alerts to UI and handles acknowledgment/dismissal updates.",
+        "Maintenance API manages maintenance records linked to devices and deployments.",
+        "Reports API generates battery usage and maintenance reports based on user parameters and returns downloadable files.",
+        "UI components consume API responses to render charts, lists, and summaries with filtering options."
+      ],
+      "validationRules": [
+        "Device: deviceId, model, batteryType, batteryCapacitymAh are required; batteryCapacitymAh must be positive number.",
+        "Deployment: deploymentId, deviceId, location, startDate required; endDate optional but if present must be >= startDate.",
+        "BatteryChargeLog: logId, deviceId, timestamp, chargeLevelPercent required; chargeLevelPercent between 0 and 100; timestamps must be in ascending order per device.",
+        "PowerConsumptionLog: logId, deviceId, timestamp, powerUsageWatts required; powerUsageWatts >= 0; timestamps must be in ascending order per device.",
+        "MaintenanceRecord: recordId, deviceId, date, type required; date must be valid date; notes optional.",
+        "Alert: alertId, deviceId, alertType, message, createdAt, acknowledged required; acknowledged boolean.",
+        "API request payloads must conform to above models; bulk submissions validate each item individually and reject entire batch if any invalid.",
+        "Filters on UI and API endpoints must validate date ranges and device/location identifiers.",
+        "User input forms enforce required fields and provide inline validation feedback.",
+        "Prevent overlapping deployments for same device with conflicting dates.",
+        "Reject or flag out-of-sequence timestamps in logs with detailed error messages."
+      ],
+      "errorHandling": [
+        "API endpoints return HTTP 400 for validation errors with detailed error messages per field.",
+        "API endpoints return HTTP 401 if user is unauthenticated or unauthorized.",
+        "API endpoints return HTTP 404 if requested device, deployment, or alert not found.",
+        "API endpoints return HTTP 500 for unexpected server errors with logging for diagnostics.",
+        "Bulk data ingestion endpoints report partial failures with list of failed entries and reasons.",
+        "Background jobs log errors and retry transient failures; alert generation ensures idempotency to avoid duplicates.",
+        "UI displays user-friendly error messages and guides corrective actions.",
+        "Network or synchronization failures queue data locally and retry submission.",
+        "Malformed or incomplete automated data import entries are rejected with error logs and notifications."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user sessions; enforce authorization to restrict access to user-owned devices and data.",
+        "Validate and sanitize all user inputs to prevent injection attacks.",
+        "Use HTTPS for all client-server communication.",
+        "Implement rate limiting on APIs to prevent abuse.",
+        "Secure automated data import endpoints with API keys or OAuth tokens.",
+        "Store sensitive data such as user credentials securely using environment variables and encryption.",
+        "Log access and changes for audit trails.",
+        "Ensure background jobs run with least privilege principle.",
+        "Implement CORS policies to restrict API access to trusted origins.",
+        "Regularly update dependencies to patch security vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user accesses the /dashboard page with valid device and date filters",
+          "when": "The page loads and requests data from /api/devices, /api/deployments, and /api/alerts",
+          "then": "The dashboard displays accurate charts, alert lists, and summary statistics filtered accordingly"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user submits a new device with all required fields correctly filled",
+          "when": "The user posts the device data to /api/devices",
+          "then": "The API responds with the created device object including its id, and the device is retrievable via GET /api/devices"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user submits battery charge logs with out-of-sequence timestamps",
+          "when": "The user posts the logs to /api/battery-logs",
+          "then": "The API rejects the request with HTTP 400 and an error message indicating timestamp sequence violation"
+        },
+        {
+          "id": "AT-004",
+          "given": "The predictive analysis job runs after new battery logs ingestion",
+          "when": "It processes logs and detects a battery depletion risk",
+          "then": "An alert is generated and stored, retrievable via /api/alerts, and visible on the /alerts UI page"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user requests a report with valid parameters",
+          "when": "The user posts to /api/reports with device, date range, and format",
+          "then": "The API returns a downloadable report file matching the requested parameters"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthenticated user attempts to access /devices or any API endpoint",
+          "when": "The request is made",
+          "then": "The system responds with HTTP 401 Unauthorized and redirects UI to login"
+        },
+        {
+          "id": "AT-007",
+          "given": "An automated data import sends malformed battery log data",
+          "when": "The integration processes the data",
+          "then": "The system rejects invalid entries, logs errors, and does not corrupt existing data"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Device, Deployment, BatteryChargeLog, PowerConsumptionLog, MaintenanceRecord, Alert",
+        "Implement authentication and authorization middleware",
+        "Develop API routes for devices, deployments, battery-logs, power-logs, alerts, maintenance, and reports with validation and error handling",
+        "Create UI pages /dashboard, /devices, /alerts, /reports with forms, filters, and data visualization components",
+        "Implement background jobs for predictive battery life analysis and automated data import processing",
+        "Integrate automated data import with secure authentication and error handling",
+        "Add unit and integration tests for APIs, background jobs, and UI components",
+        "Implement acceptance tests and perform user acceptance testing",
+        "Deploy and monitor system with logging and alerting"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/devices",
+          "/alerts",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "api/devices.ts",
+          "api/deployments.ts",
+          "api/battery-logs.ts",
+          "api/power-logs.ts",
+          "api/alerts.ts",
+          "api/maintenance.ts",
+          "api/reports.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Device",
+          "Deployment",
+          "BatteryChargeLog",
+          "PowerConsumptionLog",
+          "MaintenanceRecord",
+          "Alert"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, clarify ambiguous needs, and gather detailed requirements for the battery and power tracking tool.",
+        "promptTemplate": "Given the current blueprint and idea: {{BLUEPRINT}}\nPlease provide any missing constraints, additional use cases, or specific requirements that should be considered for the Academic Research Device Battery & Power Tracker. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages, API endpoints, and data models needed to implement the tool effectively.",
+        "promptTemplate": "Based on the refined requirements and existing blueprint: {{BLUEPRINT}}\nDesign and finalize the pages, APIs, and data models for the tool. Highlight any necessary adjustments or additions. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for the UI pages and API routes as per the finalized design.",
+        "promptTemplate": "Using the finalized blueprint and data models: {{BLUEPRINT}}\nGenerate code stubs for the UI pages and API routes to start the implementation. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages to API endpoints and data storage, ensuring data flows correctly and securely.",
+        "promptTemplate": "Given the generated page and API stubs and data models: {{BLUEPRINT}}\nImplement the wiring and integration between UI, API, and database layers. Address authentication, validation, and error handling. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

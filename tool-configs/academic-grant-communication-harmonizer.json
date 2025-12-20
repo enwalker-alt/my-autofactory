@@ -1,0 +1,760 @@
+{
+  "slug": "academic-grant-communication-harmonizer",
+  "title": "Academic Research Grant Communication Harmonizer",
+  "description": "Upload collaborator info, task lists, and proposal drafts to generate consolidated task dashboards and role-specific communication briefs that help multi-institutional academic grant teams align on tasks, deadlines, and document versions.",
+  "inputLabel": "Paste collaborator info, task list, meeting notes, or upload proposal drafts",
+  "outputLabel": "Generated consolidated task dashboard and communication briefs",
+  "systemPrompt": "You are an assistant specialized in academic research grant project management communication. Given collaborator contact lists, task lists or milestone descriptions, meeting notes, and proposal document drafts (uploaded or pasted), generate a consolidated, prioritized task and deadline dashboard with collaborator assignments, highlight conflicts or overlaps, and produce automated, role-specific communication briefs summarizing recent updates and upcoming actions. Refuse any requests that attempt to access unauthorized data or violate privacy. Ensure outputs are clear, concise, and tailored for academic grant project managers to reduce miscommunication and inefficiency. Always validate inputs and confirm that deadlines are future dates and collaborators are valid. Do not generate budget, compliance, or unrelated project management content.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Dashboard",
+      "prompt": "Generate a consolidated task and deadline dashboard with collaborator assignments and highlight conflicts or overlaps based on the provided inputs: {{USER_INPUT}}",
+      "hint": "Use this preset to get a clear task overview."
+    },
+    {
+      "label": "Communication Brief",
+      "prompt": "Create an automated, role-specific communication brief summarizing recent task updates, document statuses, and upcoming actions from the input data: {{USER_INPUT}}",
+      "hint": "Use this preset to produce communication briefs tailored by role."
+    },
+    {
+      "label": "Conflict Alert Analysis",
+      "prompt": "Analyze the provided tasks and document data for conflicts or overlapping assignments and deadlines, and generate alerts with explanations: {{USER_INPUT}}",
+      "hint": "Use this preset to detect potential coordination issues."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output a JSON object with keys: 'taskDashboard' (array of tasks with assignments, deadlines, conflict flags), 'communicationBriefs' (array of role-specific briefs), and 'conflictAlerts' (array of conflict descriptions).",
+  "clarifyPrompt": "Please provide collaborator lists, task lists or milestones, and optionally meeting notes or proposal draft files or links. Ensure deadlines are future dates and collaborator info includes roles and availability.",
+  "finalizePrompt": "Generate the finalized consolidated task dashboard and role-specific communication briefs based on all provided inputs and clarifications.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaboration Communication Harmonizer",
+      "niche": {
+        "role": "Academic Research Grant Project Manager",
+        "scenario": "Coordinating multi-institutional grant proposal teams to ensure clear, consistent communication and alignment on tasks, deadlines, and document versions"
+      },
+      "problem": "Multi-institutional academic research grant proposals suffer from fragmented communication across collaborators, leading to missed deadlines, duplicated work, inconsistent document versions, and unclear task ownership. Existing tools focus on budget, compliance, or text generation but do not provide an integrated communication alignment and task coordination platform tailored for academic grant project managers.",
+      "inputs": [
+        "Collaborator contact lists with roles and availability",
+        "Draft proposal document versions (uploaded files or links)",
+        "Task lists or milestone descriptions (uploaded or text input)",
+        "Meeting notes or email threads (optional uploads or pasted text)"
+      ],
+      "outputs": [
+        "Consolidated, prioritized task and deadline dashboard with collaborator assignments",
+        "Version-controlled proposal document status summaries highlighting changes and pending reviews",
+        "Automated, role-specific communication briefs summarizing recent updates and upcoming actions",
+        "Conflict and overlap alerts for task assignments and document edits"
+      ],
+      "whyItWins": [
+        "Fills a critical coordination gap for academic grant project managers beyond budget and compliance tools",
+        "Integrates document version tracking with communication and task management in a single platform",
+        "Reduces risk of miscommunication and inefficiency in complex, multi-institutional grant collaborations",
+        "Supports repeated use across multiple grant cycles for continuous improvement and team onboarding"
+      ],
+      "upgradePath": {
+        "today": "Provide a lightweight web tool to upload collaborator info, task lists, and proposal drafts to generate consolidated task dashboards and communication briefs",
+        "in90Days": "Add real-time multi-user task editing, automated document version diffing with change alerts, and integration with common email/calendar systems for notifications",
+        "in12Months": "Develop a full multi-page collaboration platform with role-based access, timeline visualization, integrated chat, meeting scheduling, document co-editing, and analytics on team communication patterns to optimize proposal development workflows"
+      },
+      "riskNotes": [
+        "Ensure strict privacy and access controls for sensitive grant proposal documents and collaborator data",
+        "Avoid replacing existing specialized budget or compliance tools; focus on communication coordination",
+        "Mitigate risk of information overload by providing clear prioritization and filtering options",
+        "Build modularly to allow integration or coexistence with institutional project management systems"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An integrated platform tailored for academic research grant project managers to harmonize communication, task coordination, and document version tracking across multi-institutional teams, reducing miscommunication and inefficiency in grant proposal development.",
+      "primaryUser": "Academic Research Grant Project Manager",
+      "successMetrics": [
+        "Reduction in missed deadlines and duplicated tasks across grant teams",
+        "Increased clarity and alignment on task ownership and document versions",
+        "User adoption rate across multiple grant cycles and institutions",
+        "Frequency of communication brief usage and task dashboard engagement",
+        "Positive feedback on reduction of communication fragmentation"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Task & Deadline Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display consolidated, prioritized tasks with collaborator assignments, deadlines, and conflict alerts.",
+          "dependsOn": [
+            "api-task",
+            "api-collaborator",
+            "data-task",
+            "data-collaborator"
+          ],
+          "notes": [
+            "Supports filtering and prioritization to avoid information overload.",
+            "Shows conflict and overlap alerts prominently."
+          ]
+        },
+        {
+          "id": "ui-documents",
+          "name": "Proposal Document Version UI",
+          "type": "ui",
+          "responsibility": "Present version-controlled proposal documents with status summaries and highlighted changes.",
+          "dependsOn": [
+            "api-document",
+            "data-document"
+          ],
+          "notes": [
+            "Supports upload and link input for documents.",
+            "Visual diff summaries and pending review indicators."
+          ]
+        },
+        {
+          "id": "ui-communication",
+          "name": "Communication Briefs UI",
+          "type": "ui",
+          "responsibility": "Generate and display automated, role-specific communication briefs summarizing updates and upcoming actions.",
+          "dependsOn": [
+            "api-communication",
+            "data-communication",
+            "data-collaborator"
+          ],
+          "notes": [
+            "Briefs are customizable by role and frequency.",
+            "Includes recent changes, task updates, and alerts."
+          ]
+        },
+        {
+          "id": "api-task",
+          "name": "Task Management API",
+          "type": "api",
+          "responsibility": "Manage task creation, updates, prioritization, assignments, conflict detection, and retrieval.",
+          "dependsOn": [
+            "data-task",
+            "data-collaborator"
+          ],
+          "notes": [
+            "Validates task ownership and deadlines.",
+            "Detects overlapping assignments or conflicting deadlines."
+          ]
+        },
+        {
+          "id": "api-document",
+          "name": "Document Versioning API",
+          "type": "api",
+          "responsibility": "Handle document uploads, version tracking, diff generation, status updates, and retrieval.",
+          "dependsOn": [
+            "data-document"
+          ],
+          "notes": [
+            "Supports file storage integration or link references.",
+            "Generates change summaries for UI display."
+          ]
+        },
+        {
+          "id": "api-collaborator",
+          "name": "Collaborator Management API",
+          "type": "api",
+          "responsibility": "Manage collaborator contact info, roles, availability, and access permissions.",
+          "dependsOn": [
+            "data-collaborator"
+          ],
+          "notes": [
+            "Enforces privacy and access controls per collaborator and document.",
+            "Supports import from external contact lists."
+          ]
+        },
+        {
+          "id": "api-communication",
+          "name": "Communication Brief Generation API",
+          "type": "api",
+          "responsibility": "Aggregate recent updates, task changes, document statuses, and alerts to generate role-specific communication briefs.",
+          "dependsOn": [
+            "data-task",
+            "data-document",
+            "data-collaborator"
+          ],
+          "notes": [
+            "Implements prioritization and filtering to reduce overload.",
+            "Supports scheduling briefs for periodic delivery."
+          ]
+        },
+        {
+          "id": "data-task",
+          "name": "Task Data Store",
+          "type": "data",
+          "responsibility": "Persist task details, assignments, deadlines, priorities, and conflict metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Indexed by project and collaborator for efficient retrieval."
+          ]
+        },
+        {
+          "id": "data-document",
+          "name": "Document Data Store",
+          "type": "data",
+          "responsibility": "Persist document metadata, version history, change summaries, and status flags.",
+          "dependsOn": [],
+          "notes": [
+            "Stores references to file storage or external links."
+          ]
+        },
+        {
+          "id": "data-collaborator",
+          "name": "Collaborator Data Store",
+          "type": "data",
+          "responsibility": "Persist collaborator profiles, roles, availability, and access permissions.",
+          "dependsOn": [],
+          "notes": [
+            "Ensures sensitive data is encrypted and access-controlled."
+          ]
+        },
+        {
+          "id": "data-communication",
+          "name": "Communication Brief Data Store",
+          "type": "data",
+          "responsibility": "Persist generated communication briefs, delivery schedules, and user preferences.",
+          "dependsOn": [],
+          "notes": [
+            "Supports audit trail for communication history."
+          ]
+        },
+        {
+          "id": "job-conflictDetection",
+          "name": "Conflict and Overlap Detection Job",
+          "type": "job",
+          "responsibility": "Periodically analyze tasks and document edits to detect assignment conflicts and overlapping deadlines.",
+          "dependsOn": [
+            "data-task",
+            "data-document"
+          ],
+          "notes": [
+            "Triggers alerts to users via dashboard and communication briefs."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Collaborator",
+          "purpose": "Store collaborator contact info, roles, availability, and access permissions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "availability",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "permissions",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        },
+        {
+          "name": "Task",
+          "purpose": "Represent tasks with descriptions, assignments, deadlines, priorities, and conflict status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedTo",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deadline",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "priority",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "conflictFlag",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId",
+            "assignedTo",
+            "deadline"
+          ]
+        },
+        {
+          "name": "DocumentVersion",
+          "purpose": "Track proposal document versions, metadata, change summaries, and review status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileReference",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "externalLink",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "changeSummary",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "reviewStatus",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "CommunicationBrief",
+          "purpose": "Store generated communication briefs, targeted roles, timestamps, and delivery info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roleTarget",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "deliveryStatus",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId",
+            "roleTarget"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Task & Deadline Dashboard",
+          "purpose": "Provide a consolidated view of prioritized tasks, deadlines, assignments, and conflict alerts.",
+          "inputs": [
+            "Filter criteria (project, collaborator, priority)"
+          ],
+          "outputs": [
+            "Task list with statuses, conflict alerts, deadlines"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/documents",
+          "title": "Proposal Document Versions",
+          "purpose": "View and upload proposal document versions with change summaries and review statuses.",
+          "inputs": [
+            "Document upload or link input",
+            "Version selection"
+          ],
+          "outputs": [
+            "Version list, change highlights, review status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/communication-briefs",
+          "title": "Communication Briefs",
+          "purpose": "View automated, role-specific communication briefs summarizing recent updates and upcoming actions.",
+          "inputs": [
+            "Role selection",
+            "Date range"
+          ],
+          "outputs": [
+            "Brief content, delivery status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/collaborators",
+          "title": "Collaborator Management",
+          "purpose": "Manage collaborator contacts, roles, availability, and permissions.",
+          "inputs": [
+            "Collaborator info forms",
+            "Import options"
+          ],
+          "outputs": [
+            "Collaborator list, role and availability details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the platform.",
+          "inputs": [
+            "Username/email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token or session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/tasks",
+          "method": "GET",
+          "purpose": "Retrieve tasks filtered by project, collaborator, priority, or status.",
+          "requestShape": "JSON with optional filters",
+          "responseShape": "List of task objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Create or update a task with assignment and deadline details.",
+          "requestShape": "Task object JSON",
+          "responseShape": "Created/updated task object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents",
+          "method": "GET",
+          "purpose": "Retrieve document versions and metadata for a project.",
+          "requestShape": "Project ID JSON",
+          "responseShape": "List of document version objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents",
+          "method": "POST",
+          "purpose": "Upload a new document version or add external link.",
+          "requestShape": "Document version metadata and file/link",
+          "responseShape": "Created document version object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaborators",
+          "method": "GET",
+          "purpose": "Retrieve collaborator list and details for a project.",
+          "requestShape": "Project ID JSON",
+          "responseShape": "List of collaborator objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaborators",
+          "method": "POST",
+          "purpose": "Add or update collaborator information.",
+          "requestShape": "Collaborator object JSON",
+          "responseShape": "Created/updated collaborator object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/communication-briefs",
+          "method": "GET",
+          "purpose": "Retrieve communication briefs filtered by project and role.",
+          "requestShape": "Project ID and role JSON",
+          "responseShape": "List of communication brief objects",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Conflict and Overlap Detection",
+          "trigger": "Scheduled periodic job (e.g., every hour)",
+          "purpose": "Analyze tasks and document edits to detect conflicts and overlaps, generate alerts."
+        }
+      ],
+      "edgeCases": [
+        "Handling simultaneous edits or uploads causing version conflicts",
+        "Collaborators with overlapping roles or ambiguous task ownership",
+        "Incomplete or inconsistent collaborator availability data",
+        "Large document files causing upload or processing delays",
+        "Users with limited permissions attempting unauthorized access",
+        "Information overload from too many alerts or communication briefs",
+        "Network failures during file uploads or API requests",
+        "Importing collaborator lists with inconsistent formatting or duplicates"
+      ],
+      "nonGoals": [
+        "Replacing specialized budget management or compliance tools",
+        "Providing full document co-editing capabilities initially",
+        "Handling grant financial tracking or reporting",
+        "Serving as a general-purpose project management tool outside academic grants",
+        "Integrating deeply with all institutional systems at launch"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving session token for API access.",
+        "Dashboard page (/dashboard) requests tasks via GET /api/tasks with filters (project, collaborator, priority).",
+        "Task Management API validates user permissions, fetches tasks from Task Data Store, including conflict flags.",
+        "Dashboard UI displays tasks with deadlines, assignments, and conflict alerts; supports filtering and prioritization.",
+        "Documents page (/documents) fetches document versions via GET /api/documents by project ID.",
+        "Document Versioning API retrieves document metadata and version history from Document Data Store, including change summaries.",
+        "Users upload new document versions or add external links via POST /api/documents; API validates input, stores metadata, and triggers diff generation.",
+        "Communication Briefs page (/communication-briefs) requests briefs via GET /api/communication-briefs filtered by project and role.",
+        "Communication Brief Generation API aggregates recent task updates, document statuses, and alerts from respective data stores, applies role-based filtering, and returns briefs.",
+        "Collaborators page (/collaborators) fetches collaborator list via GET /api/collaborators by project ID.",
+        "Collaborator Management API manages collaborator profiles, roles, availability, and permissions, enforcing access control and privacy.",
+        "Background job 'Conflict and Overlap Detection' runs periodically, analyzing tasks and document edits from data stores to detect conflicts and overlaps, updating conflict flags and generating alerts.",
+        "Alerts and conflict notifications surface in dashboard UI and communication briefs.",
+        "All API routes enforce authentication and authorization based on user session and collaborator permissions."
+      ],
+      "validationRules": [
+        "Task creation/update requires non-empty description, valid projectId, assignedTo collaborator ID, and deadline as a future date.",
+        "Task priority, if provided, must be one of predefined levels (e.g., low, medium, high).",
+        "Task status, if provided, must be from allowed statuses (e.g., pending, in-progress, completed).",
+        "Document upload requires projectId, versionNumber (incremental), uploadDate (current date), and either fileReference or externalLink.",
+        "Document versionNumber must be greater than previous versions for the same project.",
+        "Change summaries and review statuses are optional but if provided, must be valid strings.",
+        "Collaborator creation/update requires unique email, non-empty name, role, and permissions JSON.",
+        "Collaborator availability JSON, if provided, must follow a defined schema (e.g., date ranges with availability flags).",
+        "Communication briefs retrieval requires valid projectId and roleTarget matching existing roles.",
+        "API requests must include valid authentication tokens; unauthorized or invalid tokens rejected.",
+        "File uploads must be validated for size limits and allowed file types.",
+        "Import collaborator lists must validate format consistency and deduplicate entries.",
+        "Conflict detection job must handle partial data gracefully and log inconsistencies."
+      ],
+      "errorHandling": [
+        "API endpoints return HTTP 400 for validation errors with descriptive messages.",
+        "Unauthorized access attempts return HTTP 401 with error details.",
+        "Forbidden actions due to insufficient permissions return HTTP 403.",
+        "Not found resources return HTTP 404 with context.",
+        "Server errors return HTTP 500 with generic error messages; detailed errors logged internally.",
+        "File upload errors (e.g., size, format) return HTTP 413 or 415 with guidance.",
+        "Conflict detection job logs errors and retries on transient failures; alerts admins on persistent issues.",
+        "UI displays user-friendly error messages and retry options on API failures.",
+        "Network failures during uploads or API calls trigger client-side retries with exponential backoff.",
+        "Import collaborator errors report line numbers and issues for correction.",
+        "Simultaneous edits causing version conflicts return HTTP 409 Conflict with resolution instructions."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /login; sessions managed securely with HTTP-only cookies or tokens.",
+        "Collaborator data encrypted at rest; sensitive fields protected and access-controlled.",
+        "Role-based access control enforced on all data retrieval and mutations.",
+        "File uploads scanned for malware and restricted to allowed types.",
+        "Rate limiting applied on APIs to prevent abuse.",
+        "Audit trails maintained for communication briefs and collaborator changes.",
+        "Cross-Site Request Forgery (CSRF) protections enabled on state-changing requests.",
+        "Input sanitization applied to prevent injection attacks.",
+        "Access to documents and tasks restricted per collaborator permissions and project membership.",
+        "Import functionality validates and sanitizes external data before persistence."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A logged-in project manager with assigned tasks",
+          "when": "They visit the /dashboard page and apply filters for project and priority",
+          "then": "They see a prioritized list of tasks with correct assignments, deadlines, and conflict alerts"
+        },
+        {
+          "id": "AT-002",
+          "given": "A logged-in user with permission to upload documents",
+          "when": "They upload a new document version with a file and metadata via /documents page",
+          "then": "The document version is stored, version number increments, and change summary is generated and displayed"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user requests communication briefs for a specific role and project",
+          "when": "They access /communication-briefs with role and date filters",
+          "then": "They receive role-specific briefs summarizing recent updates and alerts"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user attempts to create a task with missing description or invalid deadline",
+          "when": "They submit the task creation form",
+          "then": "The API rejects the request with validation error messages and HTTP 400 status"
+        },
+        {
+          "id": "AT-005",
+          "given": "The conflict detection job runs periodically",
+          "when": "There are overlapping task assignments or conflicting deadlines",
+          "then": "Conflict flags are set on affected tasks and alerts appear in dashboard and communication briefs"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user without proper permissions tries to access collaborator data",
+          "when": "They call GET /api/collaborators for a project they are not part of",
+          "then": "The API returns HTTP 403 Forbidden and no data is exposed"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user uploads a document exceeding size limits",
+          "when": "They submit the upload form",
+          "then": "The API rejects the upload with HTTP 413 Payload Too Large and an error message"
+        },
+        {
+          "id": "AT-008",
+          "given": "Simultaneous document version uploads occur",
+          "when": "Two users upload versions with the same versionNumber concurrently",
+          "then": "The API returns HTTP 409 Conflict for the second upload with instructions to resolve version conflict"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user imports a collaborator list with duplicate emails",
+          "when": "They submit the import",
+          "then": "The system detects duplicates, rejects or merges entries per rules, and reports issues to the user"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user session expires",
+          "when": "They attempt to access any authenticated page or API",
+          "then": "They are redirected to /login and prompted to re-authenticate"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for Collaborator, Task, DocumentVersion, CommunicationBrief with indexes and constraints",
+        "Implement authentication system and /login page with session management",
+        "Develop Collaborator Management API and /collaborators page with CRUD and import functionality",
+        "Develop Task Management API with validation, conflict flag support, and /dashboard page UI with filtering and alerts",
+        "Develop Document Versioning API with file upload handling, version tracking, diff generation, and /documents page UI",
+        "Develop Communication Brief Generation API aggregating data and /communication-briefs page UI",
+        "Implement background job for Conflict and Overlap Detection with alert generation",
+        "Integrate access control and permissions checks across all APIs and UI components",
+        "Implement error handling and validation feedback in UI",
+        "Add security features: encryption, rate limiting, CSRF protection, input sanitization",
+        "Perform acceptance testing and edge case handling",
+        "Optimize performance and indexing for efficient data retrieval"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/documents",
+          "/communication-briefs",
+          "/collaborators",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "api/tasks.ts",
+          "api/documents.ts",
+          "api/collaborators.ts",
+          "api/communication-briefs.ts",
+          "api/auth.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Collaborator { id String @id @unique email String @unique name String role String availability Json? permissions Json }",
+          "model Task { id String @id @unique projectId String description String assignedTo String deadline DateTime priority String? status String? conflictFlag Boolean? @@index([projectId]) @@index([assignedTo]) @@index([deadline]) }",
+          "model DocumentVersion { id String @id @unique projectId String versionNumber Int uploadDate DateTime fileReference String? externalLink String? changeSummary String? reviewStatus String? @@index([projectId]) @@index([versionNumber]) }",
+          "model CommunicationBrief { id String @id @unique projectId String roleTarget String content String generatedAt DateTime deliveryStatus String? @@index([projectId]) @@index([roleTarget]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints, edge cases, or clarifications in requirements to improve design accuracy.",
+        "promptTemplate": "You are a planner refining the project requirements for the Academic Grant Communication Harmonizer. Based on the current blueprint: {{BLUEPRINT}}, and expanded specs: {{EXPANDED}}, ask detailed questions to clarify any missing constraints, edge cases, or user needs. Use user input: {{USER_INPUT}} to guide your questions."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Finalize the list of pages, their inputs/outputs, and detailed data models to prepare for development.",
+        "promptTemplate": "You are an architect for the Academic Grant Communication Harmonizer. Using the refined requirements: {{REFINED_REQUIREMENTS}}, blueprint: {{BLUEPRINT}}, and expanded specs: {{EXPANDED}}, finalize the pages with routes, inputs, outputs, and detailed data models including fields and indexes. Incorporate user notes: {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code stubs for the UI pages based on the finalized architecture to accelerate development.",
+        "promptTemplate": "You are a builder creating page stubs for the Academic Grant Communication Harmonizer. Based on the finalized architecture: {{ARCHITECTURE}}, generate starter code stubs for each page route with placeholders for inputs, outputs, and authentication requirements. Use context from user input: {{USER_INPUT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages to backend APIs and the database models, ensuring end-to-end functionality and security.",
+        "promptTemplate": "You are an integrator connecting UI pages to APIs and database for the Academic Grant Communication Harmonizer. Using the page stubs: {{PAGE_STUBS}}, API specifications: {{API_SPECS}}, and data models: {{DATA_MODELS}}, write integration code that enforces authentication, authorization, input validation, error handling, and data flow. Refer to user input: {{USER_INPUT}} for special integration instructions."
+      }
+    ]
+  }
+}

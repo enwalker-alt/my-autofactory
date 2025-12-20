@@ -1,0 +1,693 @@
+{
+  "slug": "research-ethics-compliance-evidence-manager",
+  "title": "Research Ethics Compliance Evidence Manager",
+  "description": "A single-page web app to upload, tag, and manage research ethics compliance documents with metadata inputs, basic search, and annotation support for academic ethics officers.",
+  "inputLabel": "Upload compliance document file and enter metadata",
+  "outputLabel": "Status, search results, and document details",
+  "systemPrompt": "You are a compliance evidence management assistant for academic research ethics officers. Accept only valid document uploads (PDF, DOCX) with required metadata: project ID, site, document type, and optional expiration date. Validate metadata formats and reject disallowed file types or missing fields with clear error messages. Support basic search queries by project ID, site, or document type. Allow adding or updating annotations and compliance status with predefined valid values (compliant, non-compliant, pending). Enforce data privacy and refuse any requests outside of managing compliance evidence documents and their metadata. Output plain text status messages or JSON search results as requested. Do not provide legal advice or interpret ethical regulations. Reject unsafe or disallowed requests firmly.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Upload Compliance Document",
+      "prompt": "Upload a compliance document file (PDF or DOCX) with metadata: project ID, site, document type, upload date (optional), expiration date (optional). Validate and store the document securely.",
+      "hint": "Provide file and enter required metadata fields"
+    },
+    {
+      "label": "Search Documents",
+      "prompt": "Search compliance documents by optional filters: project ID, site, document type, or expiration date range. Return matching document metadata and preview links.",
+      "hint": "Use filters to find specific documents"
+    },
+    {
+      "label": "Annotate Document",
+      "prompt": "Add or update annotations and compliance status on a specified document by document ID. Compliance status must be one of: compliant, non-compliant, pending. Provide optional notes.",
+      "hint": "Annotate and update compliance status"
+    },
+    {
+      "label": "Show Compliance Status Summary",
+      "prompt": "Provide a summary of compliance statuses for documents filtered by project ID or site. Highlight missing or expiring documents.",
+      "hint": "Get overview of compliance status"
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Use JSON format for search results and annotation updates with defined fields: documentId, annotations (JSON), complianceStatus (string), notes (optional).",
+  "clarifyPrompt": "Please provide the required document file and metadata fields: project ID, site, and document type. Optionally include expiration date. For searches, specify any filters you want to apply.",
+  "finalizePrompt": "Confirm that all required metadata fields are present and valid, file type is allowed, and compliance status values are correct before submission.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Research Ethics Compliance Evidence Manager",
+      "niche": {
+        "role": "Academic Research Ethics Officers",
+        "scenario": "Managing and verifying documented evidence of ongoing research ethics compliance across multi-site academic research projects"
+      },
+      "problem": "Ethics officers struggle to efficiently gather, organize, validate, and monitor diverse compliance evidence (e.g., consent forms, ethics approvals, training certifications) submitted by multiple research teams across sites. This leads to fragmented records, missed deadlines, and difficulty in producing consolidated compliance reports for audits or regulators.",
+      "inputs": [
+        "Uploaded scanned or digital documents related to ethics compliance (consent forms, approval letters, training certificates)",
+        "Metadata inputs: research site, project ID, document type, submission date, expiration date",
+        "Manual compliance status updates and notes",
+        "Notifications and deadline inputs"
+      ],
+      "outputs": [
+        "A centralized, searchable compliance evidence repository with tagging and version tracking",
+        "Automated reminders for upcoming renewals or missing documents",
+        "Compliance summary dashboards with gap analyses by site and project",
+        "Audit-ready exportable compliance reports with document annotations and validation status"
+      ],
+      "whyItWins": [
+        "Fills a critical gap by focusing on evidence management and validation, not just protocol or checklist generation",
+        "Supports repeated compliance monitoring workflows requiring frequent updates and document tracking",
+        "Enhances collaboration and accountability across research sites through centralized, structured evidence management",
+        "Lightweight to start but naturally extends to a multi-page system with dashboards, workflows, and role-based access"
+      ],
+      "upgradePath": {
+        "today": "A simple web app to upload and tag compliance documents per project and site, with basic search and reminder features",
+        "in90Days": "Add validation workflows, structured metadata extraction from documents, and dashboard summaries highlighting compliance gaps",
+        "in12Months": "Develop a full multi-user platform with role-based permissions, automated document parsing, integration with institutional systems, audit trail logging, and customizable compliance reporting templates"
+      },
+      "riskNotes": [
+        "Must ensure strict data privacy and secure handling of potentially sensitive documents",
+        "Avoid legal advice; focus only on evidence management and compliance status tracking",
+        "Require clear user consent and institutional approval for document uploads and sharing",
+        "Complexity of document types and formats may require phased feature rollouts"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-user platform for academic research ethics officers to centrally manage, validate, and monitor compliance evidence across multi-site projects, featuring document uploads, metadata tagging, reminders, dashboards, and audit-ready reports.",
+      "primaryUser": "Academic Research Ethics Officers",
+      "successMetrics": [
+        "Reduction in missed compliance deadlines across sites",
+        "Increased completeness and accuracy of compliance evidence records",
+        "User adoption rate among ethics officers and research teams",
+        "Time saved in producing audit-ready compliance reports"
+      ],
+      "components": [
+        {
+          "id": "ui-documents",
+          "name": "Document Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload, tag, search, view, and annotate compliance documents with metadata and version tracking.",
+          "dependsOn": [
+            "api-documents",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports bulk uploads and drag-drop",
+            "Handles document preview and download",
+            "Includes metadata editing and version history"
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Compliance Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide summary views, gap analyses, and compliance status visualizations by site and project.",
+          "dependsOn": [
+            "api-dashboard",
+            "api-auth"
+          ],
+          "notes": [
+            "Interactive charts and filters",
+            "Highlights missing or expiring documents",
+            "Supports export of dashboard views"
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication and Authorization API",
+          "type": "api",
+          "responsibility": "Manage user login, role-based access control, and session management.",
+          "dependsOn": [],
+          "notes": [
+            "Supports roles: ethics officer, research team member, auditor",
+            "Ensures secure access to sensitive documents"
+          ]
+        },
+        {
+          "id": "api-documents",
+          "name": "Document Management API",
+          "type": "api",
+          "responsibility": "Handle document uploads, metadata CRUD, version control, search queries, and annotation storage.",
+          "dependsOn": [
+            "data-documents",
+            "api-auth"
+          ],
+          "notes": [
+            "Validates document types and sizes",
+            "Implements tagging and versioning logic",
+            "Supports metadata extraction extension"
+          ]
+        },
+        {
+          "id": "api-dashboard",
+          "name": "Dashboard and Reporting API",
+          "type": "api",
+          "responsibility": "Aggregate compliance data, generate gap analyses, and produce exportable audit reports with annotations and validation statuses.",
+          "dependsOn": [
+            "data-documents",
+            "data-reports",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports report customization",
+            "Generates PDF/CSV exports",
+            "Implements caching for performance"
+          ]
+        },
+        {
+          "id": "data-documents",
+          "name": "Document Storage and Metadata DB",
+          "type": "data",
+          "responsibility": "Persist uploaded documents, metadata, version history, annotations, and compliance statuses.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage for sensitive files",
+            "Indexes on project ID, site, document type, and expiration",
+            "Stores audit trails for document changes"
+          ]
+        },
+        {
+          "id": "data-reports",
+          "name": "Compliance Reports DB",
+          "type": "data",
+          "responsibility": "Store generated compliance reports, export logs, and report templates.",
+          "dependsOn": [],
+          "notes": [
+            "Supports versioning of report templates",
+            "Stores user-generated notes and validation flags"
+          ]
+        },
+        {
+          "id": "job-reminders",
+          "name": "Reminder Notification Job",
+          "type": "job",
+          "responsibility": "Periodically scan for upcoming document expirations or missing evidence and send automated reminders to responsible users.",
+          "dependsOn": [
+            "data-documents",
+            "api-auth"
+          ],
+          "notes": [
+            "Configurable reminder schedules",
+            "Handles retry and failure notifications"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Document",
+          "purpose": "Represents a compliance evidence document with metadata, versions, and annotations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "site",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documentType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "expirationDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "annotations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "complianceStatus",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "site",
+            "documentType",
+            "expirationDate"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents a system user with roles and access permissions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "ComplianceReport",
+          "purpose": "Stores generated compliance reports and related metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "site",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "reportData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "format",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "site",
+            "generatedAt"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "login errors"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/documents",
+          "title": "Document Management",
+          "purpose": "Upload, tag, search, view, annotate, and manage compliance documents.",
+          "inputs": [
+            "document files",
+            "metadata fields",
+            "search queries",
+            "annotations"
+          ],
+          "outputs": [
+            "document list",
+            "document previews",
+            "upload status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Compliance Dashboard",
+          "purpose": "View compliance summaries, gap analyses, and status visualizations by site and project.",
+          "inputs": [
+            "filter criteria",
+            "date ranges"
+          ],
+          "outputs": [
+            "charts",
+            "gap reports",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Audit Reports",
+          "purpose": "Generate, view, and export audit-ready compliance reports.",
+          "inputs": [
+            "project/site selectors",
+            "report templates",
+            "export format"
+          ],
+          "outputs": [
+            "generated report files",
+            "export status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/profile",
+          "title": "User Profile",
+          "purpose": "Manage user account details and preferences.",
+          "inputs": [
+            "profile updates",
+            "password changes"
+          ],
+          "outputs": [
+            "update confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/documents",
+          "method": "POST",
+          "purpose": "Upload a new compliance document with metadata.",
+          "requestShape": "{ file: binary, metadata: { projectId, site, documentType, expirationDate } }",
+          "responseShape": "{ documentId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents",
+          "method": "GET",
+          "purpose": "Search and retrieve documents by filters.",
+          "requestShape": "{ filters: { projectId?, site?, documentType?, expirationDateRange? } }",
+          "responseShape": "{ documents: Document[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents/:id/annotations",
+          "method": "POST",
+          "purpose": "Add or update annotations and compliance status on a document.",
+          "requestShape": "{ annotations: json, complianceStatus: string, notes?: string }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/dashboard/summary",
+          "method": "GET",
+          "purpose": "Retrieve compliance summary and gap analysis data.",
+          "requestShape": "{ projectId?, site?, dateRange? }",
+          "responseShape": "{ summaryData: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Generate an audit-ready compliance report.",
+          "requestShape": "{ projectId, site, templateId, format }",
+          "responseShape": "{ reportId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:id/download",
+          "method": "GET",
+          "purpose": "Download a previously generated compliance report.",
+          "requestShape": "{}",
+          "responseShape": "binary file",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ExpiryReminderJob",
+          "trigger": "Scheduled (daily)",
+          "purpose": "Scan documents for upcoming expirations or missing evidence and send reminder notifications to responsible users."
+        }
+      ],
+      "edgeCases": [
+        "Handling corrupted or unreadable document uploads",
+        "Managing simultaneous edits or annotations on the same document version",
+        "Expired documents submitted after deadline with no grace period",
+        "Users uploading incorrect or mislabeled document types",
+        "Network interruptions during bulk uploads",
+        "Ensuring data privacy when users leave or change roles",
+        "Handling documents with no expiration date or indefinite validity",
+        "Supporting partial metadata submissions with validation warnings"
+      ],
+      "nonGoals": [
+        "Providing legal advice or interpreting ethics regulations",
+        "Automated document content validation beyond metadata extraction",
+        "Replacing institutional identity or access management systems",
+        "Handling non-academic compliance domains",
+        "Supporting offline or mobile-first document uploads initially"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/auth/login POST endpoint.",
+        "API authenticates user, issues JWT token, and returns user info to client.",
+        "Authenticated user accesses /documents page, which fetches document list via /api/documents GET with filters.",
+        "User uploads documents via /documents page, sending files and metadata to /api/documents POST endpoint.",
+        "API validates, stores documents in encrypted storage, creates Document records with metadata and version info in data-documents DB.",
+        "User adds or updates annotations and compliance status on documents via /api/documents/:id/annotations POST endpoint.",
+        "User accesses /dashboard page, which fetches compliance summaries and gap analyses from /api/dashboard/summary GET endpoint.",
+        "User generates audit reports on /reports page by posting to /api/reports/generate with project/site/template/format info.",
+        "API generates report, stores in data-reports DB, and returns reportId and status.",
+        "User downloads reports via /api/reports/:id/download GET endpoint.",
+        "Background job ExpiryReminderJob runs daily, queries data-documents for documents nearing expiration or missing evidence, and sends reminder notifications to responsible users via api-auth user info."
+      ],
+      "validationRules": [
+        "Login: email must be valid format, password non-empty.",
+        "Document upload: file type must be allowed (e.g., PDF, DOCX), file size within limits, metadata fields projectId, site, documentType required and non-empty.",
+        "ExpirationDate if provided must be a valid future date or null.",
+        "Annotations JSON must conform to defined schema (e.g., annotation text, page number).",
+        "ComplianceStatus must be one of predefined statuses (e.g., compliant, non-compliant, pending).",
+        "Search filters accept optional projectId, site, documentType, expirationDateRange with correct types.",
+        "Report generation requires projectId, site, templateId, and format (PDF or CSV) to be valid and non-empty.",
+        "User profile updates validate email format, password strength if changed.",
+        "Bulk uploads handle partial failures with per-file validation and error reporting.",
+        "Metadata submissions allow partial fields but warn on missing required metadata.",
+        "Simultaneous annotation edits require optimistic concurrency control or version checks."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with error messages.",
+        "Validation errors return 400 Bad Request with detailed field error info.",
+        "File upload errors (corrupted, unsupported type, too large) return 422 Unprocessable Entity with descriptive messages.",
+        "API endpoints return 500 Internal Server Error on unexpected failures with logging.",
+        "Concurrent annotation edits detect conflicts and return 409 Conflict with instructions to reload.",
+        "Network interruptions during uploads support resumable uploads or clear error messages for retry.",
+        "Expired documents submitted after deadline return 403 Forbidden with explanation.",
+        "Missing or invalid auth tokens return 401 Unauthorized.",
+        "Background job failures log errors and retry with exponential backoff; notify admins on repeated failures."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/login require valid JWT tokens with role-based access control.",
+        "Sensitive documents stored encrypted at rest with access restricted by user roles and project/site permissions.",
+        "User passwords stored hashed with strong algorithm (e.g., bcrypt).",
+        "Session tokens have expiration and refresh mechanisms.",
+        "Audit trails maintained for document changes and user actions.",
+        "Input sanitization to prevent injection attacks on metadata and annotations.",
+        "Rate limiting on login and upload endpoints to prevent brute force and abuse.",
+        "Ensure proper CORS policies for API endpoints.",
+        "Data privacy enforced when users change roles or leave; access revoked promptly.",
+        "File downloads served securely with authorization checks."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive a valid authentication token and user info"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /documents page",
+          "when": "They upload a valid PDF document with required metadata",
+          "then": "The document is stored, metadata saved, and upload status success returned"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user searching documents",
+          "when": "They apply filters by projectId and documentType",
+          "then": "They receive a list of matching documents with metadata and previews"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user annotating a document",
+          "when": "They submit annotations and compliance status",
+          "then": "Annotations are saved and success response returned"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on /dashboard page",
+          "when": "They request compliance summary with filters",
+          "then": "They receive accurate summary data and gap analysis visualizations"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user generating a report",
+          "when": "They submit valid projectId, site, templateId, and format",
+          "then": "A report is generated, stored, and reportId with status returned"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user downloading a report",
+          "when": "They request /api/reports/:id/download for an existing report",
+          "then": "They receive the binary report file with correct format"
+        },
+        {
+          "id": "AT-008",
+          "given": "A document nearing expiration",
+          "when": "The daily ExpiryReminderJob runs",
+          "then": "Responsible users receive reminder notifications"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user attempts to upload unsupported file type",
+          "when": "They submit the file to /api/documents POST",
+          "then": "They receive a 422 error with descriptive message"
+        },
+        {
+          "id": "AT-010",
+          "given": "Two users attempt to annotate the same document version simultaneously",
+          "when": "Second user submits annotations after first user",
+          "then": "Second user receives a 409 conflict error indicating concurrent edit"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, Document, ComplianceReport with indexes and relations",
+        "Implement api-auth routes for login, JWT issuance, role-based middleware",
+        "Implement data-documents storage layer with encrypted file storage and metadata persistence",
+        "Implement api-documents endpoints for upload, search, annotation management with validation",
+        "Create /login page with form and integration to /api/auth/login",
+        "Create /documents page with upload UI, search, preview, annotation features",
+        "Implement data-reports storage and api-reports endpoints for report generation and download",
+        "Create /dashboard page with charts and filters consuming /api/dashboard/summary",
+        "Create /reports page for report generation and export",
+        "Create /profile page for user account management",
+        "Implement background job ExpiryReminderJob with scheduling and notification sending",
+        "Add concurrency control and error handling for annotations and uploads",
+        "Add security hardening, input sanitization, and audit logging",
+        "Implement acceptance tests and perform QA"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/documents",
+          "/dashboard",
+          "/reports",
+          "/profile"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/documents/index.ts",
+          "/api/documents/[id]/annotations.ts",
+          "/api/dashboard/summary.ts",
+          "/api/reports/generate.ts",
+          "/api/reports/[id]/download.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { id String @id @default(uuid()), email String @unique, name String, role String, lastLogin DateTime? }",
+          "model Document { id String @id @default(uuid()), projectId String, site String, documentType String, uploadDate DateTime, expirationDate DateTime?, uploadedBy String, versions Json, annotations Json?, complianceStatus String?, notes String?, @@index([projectId]), @@index([site]), @@index([documentType]), @@index([expirationDate]) }",
+          "model ComplianceReport { id String @id @default(uuid()), projectId String, site String, generatedBy String, generatedAt DateTime, reportData Json, format String, notes String?, @@index([projectId]), @@index([site]), @@index([generatedAt]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints, rules, or user needs for the compliance evidence manager.",
+        "promptTemplate": "You are a planner refining the requirements for the Research Ethics Compliance Evidence Manager. Given the current blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}} Please ask clarifying questions or identify missing constraints based on user input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-and-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final page routes, UI components, and data model schemas before implementation.",
+        "promptTemplate": "You are an architect finalizing the multi-page app design for the Research Ethics Compliance Evidence Manager. Using the idea, blueprint, and expanded specs: {{IDEA}} {{BLUEPRINT}} {{EXPANDED}} Generate detailed page definitions and data model schemas, considering user roles and data flow. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial code stubs for each page UI with placeholders and basic interactions.",
+        "promptTemplate": "You are a builder generating code stubs for the app pages of the Research Ethics Compliance Evidence Manager. Based on the blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}} Generate basic page code stubs for routes: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration between frontend pages, backend APIs, and database models.",
+        "promptTemplate": "You are an integrator wiring up the Research Ethics Compliance Evidence Manager app. Using the complete blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}} Integrate frontend components with API endpoints and database models. Focus on data validation, auth, and error handling. User instructions: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,787 @@
+{
+  "slug": "academic-manuscript-figure-table-auditor",
+  "title": "Academic Manuscript Figure & Table Consistency Auditor",
+  "description": "Upload your manuscript and optional figure/table files to generate a detailed report checking figure/table numbering, references, caption clarity, and journal formatting compliance. Helps authors and editors identify inconsistencies and improve manuscript quality before submission.",
+  "inputLabel": "Upload manuscript text file (DOCX, PDF, LaTeX). Optionally upload figure/table files and select a target journal.",
+  "outputLabel": "Structured audit report highlighting figure/table consistency issues, caption clarity suggestions, and formatting compliance checklist.",
+  "systemPrompt": "You are an expert assistant specialized in academic manuscript figure and table consistency auditing. Given a manuscript text and optional figure/table files, produce a detailed plain-text report listing all detected figures and tables, their captions, references, numbering issues, and any missing or duplicated references. Assess caption clarity and completeness, providing improvement suggestions. Validate compliance with provided journal formatting rules if any. Refuse any requests unrelated to academic manuscript figure/table auditing. Enforce privacy and do not store or share manuscript content. Output must be plain text report. Do not attempt to edit manuscript content automatically.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Consistency Check",
+      "prompt": "Analyze the uploaded manuscript and figures/tables to list all figures and tables with detected captions and references. Highlight missing, duplicated, or out-of-order figure/table references.",
+      "hint": "Focuses on numbering and referencing issues."
+    },
+    {
+      "label": "Caption Clarity Assessment",
+      "prompt": "Evaluate the clarity and completeness of all figure and table captions in the manuscript and suggest improvements for ambiguous or incomplete captions.",
+      "hint": "Uses NLP to assess caption language."
+    },
+    {
+      "label": "Journal Formatting Compliance",
+      "prompt": "Check all figures and tables against the selected journal's formatting guidelines and produce a compliance checklist with detected deviations.",
+      "hint": "Requires journal formatting guidelines."
+    },
+    {
+      "label": "Full Audit Report",
+      "prompt": "Generate a comprehensive report combining figure/table consistency checks, caption clarity assessments, and journal formatting compliance verification with prioritized correction tasks.",
+      "hint": "All-in-one detailed analysis."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output a JSON object with keys: figuresTables (list of objects with id, type, captionText, referencePositions, detectedNumber), issues (list of detected problems), suggestions (list of caption improvement suggestions), and complianceChecklist (list of formatting rule checks).",
+  "clarifyPrompt": "Please provide the manuscript file (DOCX, PDF, or LaTeX). Optionally upload figure/table files and specify the target journal for formatting compliance checks.",
+  "finalizePrompt": "Confirm you want to generate the audit report for the provided manuscript and optional files. This will analyze figure/table consistency, caption clarity, and journal formatting compliance if journal is specified.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Manuscript Figure & Table Consistency Auditor",
+      "niche": {
+        "role": "Academic researchers and journal editors",
+        "scenario": "Preparing and reviewing research manuscripts for publication submission"
+      },
+      "problem": "Ensuring that all figures and tables in academic manuscripts are consistently referenced, correctly numbered, clearly captioned, and compliant with journal-specific formatting guidelines is a tedious and error-prone manual process. Inconsistencies cause delays, reviewer complaints, and increased revision cycles.",
+      "inputs": [
+        "Full manuscript text file (DOCX, PDF, or LaTeX source)",
+        "Figure and table files or embedded objects",
+        "Target journal formatting and style guideline documents"
+      ],
+      "outputs": [
+        "Structured report listing all figures and tables with detected captions",
+        "Cross-check report highlighting missing, duplicated, or out-of-order figure/table references",
+        "Caption clarity and completeness assessment with improvement suggestions",
+        "Journal formatting compliance checklist for figures and tables",
+        "Exportable summary with prioritized correction tasks"
+      ],
+      "whyItWins": [
+        "Targets a high-impact niche workflow step not covered by existing tools focused on text or citation checks",
+        "Automates complex cross-referencing and formatting compliance that currently require painstaking manual proofreading",
+        "Supports repeated iterative manuscript revisions with change tracking and version comparisons",
+        "Reduces submission delays and improves manuscript professionalism, increasing acceptance chances",
+        "Offers direct value to both authors and editors, enabling broader adoption and collaboration"
+      ],
+      "upgradePath": {
+        "today": "Provide a lightweight web tool to upload manuscript and figure/table files to generate a basic consistency and caption completeness report.",
+        "in90Days": "Add journal-specific formatting templates, enhanced caption language clarity analysis using NLP, and cross-reference validation with interactive correction suggestions.",
+        "in12Months": "Develop a full multi-page system with manuscript version control, collaborative annotation, integration with reference managers, batch journal compliance profiles, and export-ready formatted manuscript components."
+      },
+      "riskNotes": [
+        "Must ensure data privacy and copyright compliance when handling unpublished manuscripts",
+        "Complexity in parsing varied manuscript formats and figure/table embedding styles",
+        "Potential false positives in caption or reference detection requiring user validation",
+        "Need clear disclaimers that tool aids but does not replace final human proofreading"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web-based system to audit academic research manuscripts for figure and table consistency, caption clarity, and journal formatting compliance, evolving from a simple upload-and-report tool into a collaborative multi-version manuscript management platform with advanced NLP and integration features.",
+      "primaryUser": "Academic researchers and journal editors preparing and reviewing manuscripts for publication submission",
+      "successMetrics": [
+        "Reduction in manuscript revision cycles related to figure/table inconsistencies",
+        "User adoption rate among target academic and editorial communities",
+        "Accuracy and usefulness of generated reports and correction suggestions",
+        "Number of manuscripts processed and versions tracked",
+        "User satisfaction and reduction in manual proofreading time"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend User Interface",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for manuscript upload, report visualization, interactive correction suggestions, version management, and collaborative annotations.",
+          "dependsOn": [
+            "api-backend"
+          ],
+          "notes": [
+            "Supports file upload (DOCX, PDF, LaTeX sources, figures/tables)",
+            "Displays structured reports with filtering and prioritization",
+            "Interactive UI for users to validate and correct detected issues",
+            "Supports authentication and user session management",
+            "Responsive design for desktop use"
+          ]
+        },
+        {
+          "id": "api-backend",
+          "name": "Backend API Server",
+          "type": "api",
+          "responsibility": "Handle file processing requests, run parsing and analysis pipelines, serve reports and user data, manage authentication and authorization.",
+          "dependsOn": [
+            "data-db",
+            "integration-nlp",
+            "integration-formatting"
+          ],
+          "notes": [
+            "Exposes RESTful endpoints for manuscript upload, report retrieval, version control, and user management",
+            "Implements business logic for cross-referencing and compliance checks",
+            "Manages user sessions and permissions"
+          ]
+        },
+        {
+          "id": "data-db",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store manuscripts, extracted figures/tables metadata, user accounts, reports, version histories, journal formatting profiles, and user annotations.",
+          "dependsOn": [],
+          "notes": [
+            "Ensures data privacy and secure storage",
+            "Supports versioning of manuscript uploads and reports",
+            "Indexes for fast retrieval of manuscript components and reports"
+          ]
+        },
+        {
+          "id": "job-parsing-analysis",
+          "name": "Parsing and Analysis Background Jobs",
+          "type": "job",
+          "responsibility": "Asynchronously process uploaded manuscripts and associated files to extract figures/tables, detect references, analyze captions, validate numbering and formatting compliance, and generate reports.",
+          "dependsOn": [
+            "integration-nlp",
+            "integration-formatting",
+            "data-db"
+          ],
+          "notes": [
+            "Handles complex parsing of DOCX, PDF, LaTeX formats",
+            "Runs NLP models for caption clarity and language analysis",
+            "Applies journal-specific formatting rules",
+            "Queues jobs for scalability and failure recovery"
+          ]
+        },
+        {
+          "id": "integration-nlp",
+          "name": "NLP Analysis Integration",
+          "type": "integration",
+          "responsibility": "Provide natural language processing capabilities for caption clarity assessment, completeness checks, and improvement suggestions.",
+          "dependsOn": [],
+          "notes": [
+            "Can integrate third-party NLP services or in-house models",
+            "Supports language detection and error highlighting",
+            "Must handle domain-specific academic language"
+          ]
+        },
+        {
+          "id": "integration-formatting",
+          "name": "Journal Formatting Profiles Integration",
+          "type": "integration",
+          "responsibility": "Manage and apply journal-specific figure/table formatting and style guidelines for compliance validation.",
+          "dependsOn": [],
+          "notes": [
+            "Includes a repository of journal templates and rules",
+            "Supports updates and additions of new journals",
+            "Enables batch compliance checks across multiple journals"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user account and authentication information",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Manuscript",
+          "purpose": "Store uploaded manuscript metadata and version information",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "title"
+          ]
+        },
+        {
+          "name": "FigureTableMetadata",
+          "purpose": "Store extracted figures and tables info including captions and references",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "captionText",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "referencePositions",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "detectedNumber",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "manuscriptId",
+            "type"
+          ]
+        },
+        {
+          "name": "Report",
+          "purpose": "Store generated audit reports with issue listings and suggestions",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "summary",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "issues",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "suggestions",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "manuscriptId",
+            "generatedAt"
+          ]
+        },
+        {
+          "name": "JournalProfile",
+          "purpose": "Store journal-specific formatting and style guidelines",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "journalName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "formattingRules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "journalName"
+          ]
+        },
+        {
+          "name": "Annotation",
+          "purpose": "Store user annotations and collaborative comments on manuscripts and reports",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "manuscriptId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "manuscriptId",
+            "userId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Home / Dashboard",
+          "purpose": "Landing page showing user manuscripts, recent reports, and quick upload option",
+          "inputs": [
+            "manuscript file upload",
+            "journal selection"
+          ],
+          "outputs": [
+            "list of manuscripts",
+            "status of reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/manuscript/:id",
+          "title": "Manuscript Detail and Version History",
+          "purpose": "View manuscript metadata, upload new versions, and access version comparison",
+          "inputs": [
+            "new manuscript version upload"
+          ],
+          "outputs": [
+            "version list",
+            "metadata",
+            "annotations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/report/:manuscriptId",
+          "title": "Audit Report Viewer",
+          "purpose": "Display detailed figure/table consistency and compliance reports with interactive correction suggestions",
+          "inputs": [
+            "user feedback on issues",
+            "annotation inputs"
+          ],
+          "outputs": [
+            "structured report",
+            "issue lists",
+            "suggestions"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings/journals",
+          "title": "Journal Formatting Profiles",
+          "purpose": "Manage and select journal formatting templates for compliance checks",
+          "inputs": [
+            "add/edit journal profiles"
+          ],
+          "outputs": [
+            "list of journal profiles"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token or session"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/register",
+          "title": "User Registration",
+          "purpose": "Allow new users to create accounts",
+          "inputs": [
+            "email",
+            "password",
+            "role selection"
+          ],
+          "outputs": [
+            "account creation confirmation"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/manuscripts",
+          "method": "POST",
+          "purpose": "Upload a new manuscript or new version",
+          "requestShape": "{ userId: string, file: file, title?: string, journalId?: string }",
+          "responseShape": "{ manuscriptId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/manuscripts/:id",
+          "method": "GET",
+          "purpose": "Retrieve manuscript metadata and versions",
+          "requestShape": "{ }",
+          "responseShape": "{ manuscript: Manuscript, versions: Manuscript[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:manuscriptId",
+          "method": "GET",
+          "purpose": "Fetch the latest or specified audit report for a manuscript",
+          "requestShape": "{ versionNumber?: number }",
+          "responseShape": "{ report: Report }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/journals",
+          "method": "GET",
+          "purpose": "List available journal formatting profiles",
+          "requestShape": "{}",
+          "responseShape": "{ journals: JournalProfile[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/journals",
+          "method": "POST",
+          "purpose": "Add or update a journal formatting profile",
+          "requestShape": "{ journalName: string, formattingRules: json }",
+          "responseShape": "{ journalId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/annotations",
+          "method": "POST",
+          "purpose": "Add annotation or comment on a manuscript or report",
+          "requestShape": "{ manuscriptId: string, content: string, location?: json }",
+          "responseShape": "{ annotationId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and create session",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/register",
+          "method": "POST",
+          "purpose": "Register a new user account",
+          "requestShape": "{ email: string, password: string, role: string }",
+          "responseShape": "{ userId: string, status: string }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ManuscriptParsingJob",
+          "trigger": "Triggered upon successful manuscript upload",
+          "purpose": "Parse manuscript files to extract figures, tables, captions, and references"
+        },
+        {
+          "name": "ConsistencyCheckJob",
+          "trigger": "Triggered after parsing completes",
+          "purpose": "Validate figure/table numbering, detect missing or duplicated references, and check ordering"
+        },
+        {
+          "name": "CaptionClarityAnalysisJob",
+          "trigger": "Triggered after parsing completes",
+          "purpose": "Run NLP analysis on captions to assess clarity, completeness, and suggest improvements"
+        },
+        {
+          "name": "FormattingComplianceJob",
+          "trigger": "Triggered after parsing completes or journal profile updates",
+          "purpose": "Check manuscript figures and tables against selected journal formatting rules"
+        },
+        {
+          "name": "ReportGenerationJob",
+          "trigger": "Triggered after all analyses complete",
+          "purpose": "Aggregate findings into structured reports and notify users"
+        }
+      ],
+      "edgeCases": [
+        "Manuscripts with mixed or corrupted file formats causing partial parsing failures",
+        "Figures or tables embedded in unusual ways (e.g., images inside text boxes or complex LaTeX macros)",
+        "Multiple figure/table numbering schemes or manual overrides by authors",
+        "Captions written in languages other than English or containing domain-specific jargon",
+        "Users uploading incomplete or draft manuscripts lacking final figure/table references",
+        "Simultaneous uploads or edits causing version conflicts",
+        "False positives in detecting missing or duplicated references requiring manual user validation",
+        "Handling large manuscripts with many figures/tables causing performance bottlenecks"
+      ],
+      "nonGoals": [
+        "Replacing full manuscript proofreading or peer review processes",
+        "Automatic correction of manuscript content without user approval",
+        "Parsing and validating references and citations outside figures and tables",
+        "Supporting manuscript submission directly to journals",
+        "Providing full LaTeX compilation or PDF editing capabilities",
+        "Handling non-academic document types or non-figure/table content auditing"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login or /register endpoints, receiving a session token.",
+        "Authenticated user uploads manuscript files (DOCX, PDF, LaTeX) via POST /api/manuscripts with metadata including optional journal selection.",
+        "API backend stores manuscript metadata and file path in the database, assigns version number, and enqueues ManuscriptParsingJob.",
+        "ManuscriptParsingJob asynchronously parses the manuscript to extract figures, tables, captions, and references, storing extracted metadata in FigureTableMetadata.",
+        "Upon parsing completion, ConsistencyCheckJob validates numbering, detects missing/duplicated references, and checks ordering.",
+        "CaptionClarityAnalysisJob runs NLP analysis on captions via integration-nlp, assessing clarity and suggesting improvements.",
+        "FormattingComplianceJob applies journal-specific formatting rules from integration-formatting to validate compliance.",
+        "ReportGenerationJob aggregates all findings into a structured Report entity linked to the manuscript version, storing issues and suggestions.",
+        "User accesses dashboard (/) to view manuscripts and report statuses via GET /api/manuscripts and related endpoints.",
+        "User views manuscript details and version history at /manuscript/:id, fetching metadata and annotations via GET /api/manuscripts/:id and GET /api/annotations.",
+        "User views audit reports at /report/:manuscriptId, retrieving report data via GET /api/reports/:manuscriptId.",
+        "Users add annotations/comments via POST /api/annotations, linked to manuscripts and optionally to report locations.",
+        "Users manage journal formatting profiles at /settings/journals via GET and POST /api/journals endpoints.",
+        "All user actions requiring authentication validate session tokens and enforce role-based permissions."
+      ],
+      "validationRules": [
+        "User registration requires unique email, valid email format, password minimum length (e.g., 8 characters), and valid role selection.",
+        "Login requires existing email and correct password matching stored passwordHash.",
+        "Manuscript upload requires authenticated userId, supported file types (DOCX, PDF, LaTeX), non-empty file, and optional valid journalId if provided.",
+        "Manuscript version number auto-incremented per user manuscript; reject uploads with conflicting version numbers.",
+        "Journal profile creation/update requires unique journalName and well-formed JSON formattingRules matching schema.",
+        "Annotations require authenticated userId, non-empty content, valid manuscriptId, and optional location JSON with defined structure.",
+        "API routes requiring authentication reject requests without valid session or token.",
+        "File uploads are scanned for size limits (e.g., max 50MB) and file type validation to prevent malicious files.",
+        "Report retrieval validates manuscript ownership or user permissions before serving data.",
+        "Background jobs validate input data presence and integrity before processing; partial failures logged and retried.",
+        "All JSON inputs validated against expected schemas to prevent injection or malformed data."
+      ],
+      "errorHandling": [
+        "API endpoints return standard HTTP status codes: 400 for bad requests, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors.",
+        "File upload errors (e.g., unsupported format, size limit exceeded) return descriptive error messages with guidance.",
+        "Background jobs log errors with context; failed jobs retried with exponential backoff; persistent failures notify admins.",
+        "Parsing partial failures produce warnings in reports but do not block overall processing; users informed of partial data.",
+        "Version conflicts during manuscript upload return 409 Conflict with instructions to resolve.",
+        "Authentication failures return 401 Unauthorized with no sensitive info leakage.",
+        "Invalid journal profile JSON returns 400 with schema validation errors.",
+        "Annotation submission errors return 400 with details on missing or invalid fields.",
+        "Unhandled exceptions caught by global middleware returning 500 with generic error message and error ID for support.",
+        "User input validation errors return 422 Unprocessable Entity with field-specific error messages."
+      ],
+      "securityNotes": [
+        "All API routes requiring authentication enforce JWT or session-based auth with secure cookie flags.",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt) and salted.",
+        "File uploads scanned and stored outside web root; access controlled via API only.",
+        "Input validation prevents injection attacks (SQL, NoSQL, XSS).",
+        "Rate limiting applied on authentication endpoints to prevent brute force attacks.",
+        "User roles enforced to restrict journal profile management to authorized users only.",
+        "Sensitive data (passwordHash, tokens) never exposed in API responses.",
+        "CORS policies configured to restrict frontend origins.",
+        "Audit logs maintained for critical actions (login, uploads, profile changes).",
+        "Background jobs run in isolated environment with limited permissions."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user is logged in",
+          "when": "They upload a valid DOCX manuscript with a selected journal",
+          "then": "The manuscript is stored, versioned, and a parsing job is enqueued; user receives manuscriptId and status 'processing'"
+        },
+        {
+          "id": "AT-002",
+          "given": "A manuscript has completed parsing and analysis jobs",
+          "when": "The user views the audit report page for that manuscript version",
+          "then": "The system displays a structured report with issues, suggestions, and allows annotations"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user attempts to upload a manuscript with unsupported file type",
+          "when": "They submit the upload form",
+          "then": "The system rejects the upload with a 400 error and descriptive message"
+        },
+        {
+          "id": "AT-004",
+          "given": "An unauthenticated user tries to access the dashboard",
+          "when": "They navigate to '/' route",
+          "then": "They are redirected to the login page"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user submits an annotation on a manuscript",
+          "when": "They POST annotation content with valid manuscriptId",
+          "then": "The annotation is stored and linked to the user and manuscript, returning annotationId and status 'success'"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user updates a journal formatting profile with invalid JSON",
+          "when": "They submit the update form",
+          "then": "The system returns a 400 error with validation error details"
+        },
+        {
+          "id": "AT-007",
+          "given": "Multiple users upload new versions of the same manuscript simultaneously",
+          "when": "Uploads are processed",
+          "then": "Version conflicts are detected and uploads with conflicting version numbers are rejected with 409 errors"
+        },
+        {
+          "id": "AT-008",
+          "given": "A manuscript contains captions in a non-English language",
+          "when": "CaptionClarityAnalysisJob runs",
+          "then": "The NLP integration detects language and provides appropriate clarity assessment or flags for manual review"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models and database schema for all data models",
+        "Implement authentication API routes (/api/auth/login, /api/auth/register) with password hashing and session management",
+        "Develop user management and role enforcement middleware",
+        "Implement manuscript upload API with file storage and versioning logic",
+        "Create background job infrastructure and ManuscriptParsingJob with file parsing capabilities",
+        "Integrate NLP and formatting services for CaptionClarityAnalysisJob and FormattingComplianceJob",
+        "Implement ConsistencyCheckJob and ReportGenerationJob to produce audit reports",
+        "Develop API routes for manuscript retrieval, report fetching, journal profile management, and annotations",
+        "Build frontend pages: login, register, dashboard (/), manuscript detail (/manuscript/:id), report viewer (/report/:manuscriptId), journal settings (/settings/journals)",
+        "Add client-side validation and authentication handling",
+        "Implement annotation UI and collaborative features",
+        "Add error handling and user feedback mechanisms",
+        "Conduct acceptance testing and edge case handling",
+        "Optimize performance for large manuscripts and concurrent usage",
+        "Deploy with secure environment configurations"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/manuscript/[id]",
+          "/report/[manuscriptId]",
+          "/settings/journals",
+          "/login",
+          "/register"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/auth/register.ts",
+          "api/manuscripts/index.ts",
+          "api/manuscripts/[id].ts",
+          "api/reports/[manuscriptId].ts",
+          "api/journals/index.ts",
+          "api/annotations/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Manuscript",
+          "FigureTableMetadata",
+          "Report",
+          "JournalProfile",
+          "Annotation"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to gather missing constraints and user preferences for the manuscript auditor tool.",
+        "promptTemplate": "Given the current blueprint and idea for the Academic Manuscript Figure & Table Consistency Auditor, please ask detailed questions to clarify any missing functional or non-functional requirements, user roles, security needs, and usage scenarios. Blueprint: {{BLUEPRINT}} Idea: {{IDEA}} User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the full set of pages and data models for the multi-page manuscript auditing system.",
+        "promptTemplate": "Using the refined requirements and blueprint, design and finalize the web app pages, routes, and data models needed to support the Academic Manuscript Figure & Table Consistency Auditor. Include authentication, manuscript versioning, report viewing, journal profile management, and annotations. Blueprint: {{BLUEPRINT}} Expanded specs: {{EXPANDED}} User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate stub code or UI scaffolding for all planned pages and API routes for the manuscript auditor tool.",
+        "promptTemplate": "Based on the finalized architecture and data models, generate code stubs or detailed descriptions for each frontend page and backend API route of the Academic Manuscript Figure & Table Consistency Auditor. Include placeholders for authentication, file upload, report display, and journal settings. Blueprint: {{BLUEPRINT}} Expanded: {{EXPANDED}} User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration between frontend pages, backend API routes, and database models with authentication and background job triggers.",
+        "promptTemplate": "Describe and generate example code snippets or instructions to connect the frontend UI pages to backend API endpoints and the database for the manuscript auditor app. Include session management, file upload handling, job enqueuing, and report retrieval flows. Blueprint: {{BLUEPRINT}} Expanded: {{EXPANDED}} User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

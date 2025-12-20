@@ -1,0 +1,964 @@
+{
+  "slug": "grant-financial-post-award-tracker",
+  "title": "Academic Research Grant Post-Award Financial Tracker",
+  "description": "A lightweight single-page tool for academic research grant financial managers to input award details, upload expenditure data, and receive a basic disbursement calendar, compliance flags, and interim report drafts. Supports manual data entry and file upload (CSV/Excel) with validation and compliance alerting.",
+  "inputLabel": "Enter grant award details, upload expenditure data file (CSV/Excel), or describe current disbursement and compliance status:",
+  "outputLabel": "Generated disbursement calendar, compliance risk flags, and interim financial report draft:",
+  "systemPrompt": "You are a specialized assistant for academic research grant financial managers focusing on post-award financial disbursement tracking and compliance monitoring. Accept only requests related to entering award details, uploading expenditure data (CSV/Excel), or requesting compliance and disbursement summaries. Validate all inputs strictly for format, date ranges, and amounts. Refuse any requests outside post-award financial tracking or that seek legal/accounting advice. Output must be clear, actionable, and safe. When structured output is enabled, produce valid JSON with disbursement schedules, compliance flags, and report drafts. Always ensure user data privacy and avoid exposing sensitive bank or personal data. Do not execute fund transfers or provide unauthorized access. Enforce strict input validation and reject malformed or disallowed files.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Disbursement Calendar View",
+      "prompt": "Generate a clear calendar of scheduled fund disbursements with dates, amounts, recipient institutions, and status summaries based on the provided award and expenditure data.",
+      "hint": "Use this to review upcoming and completed disbursements."
+    },
+    {
+      "label": "Compliance Risk Flags",
+      "prompt": "Analyze uploaded expenditure data against budget categories and funder restrictions. Identify any overspending, restricted use, or compliance risks with clear flags and explanations.",
+      "hint": "Use this to detect financial compliance issues early."
+    },
+    {
+      "label": "Interim Financial Report Draft",
+      "prompt": "Draft an interim financial report aligned with typical funder requirements, summarizing disbursement status, expenditures, compliance observations, and upcoming deadlines.",
+      "hint": "Use this to prepare financial report submissions."
+    },
+    {
+      "label": "Summary of All Outputs",
+      "prompt": "Provide a combined summary including disbursement calendar, compliance risk flags, and an interim report draft based on all provided inputs.",
+      "hint": "Use this for a comprehensive overview."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "When structured output is enabled, output JSON with keys: disbursementCalendar (array of {date, amount, institution, status}), complianceFlags (array of {issue, severity, details}), and interimReport (string summary).",
+  "clarifyPrompt": "Please provide the grant award details, upload expenditure data file (CSV or Excel), or describe your current disbursement and compliance status. Ensure all dates are in ISO 8601 format and amounts are positive numbers.",
+  "finalizePrompt": "Review the generated disbursement calendar, compliance flags, and interim financial report draft. If needed, refine inputs or request specific focus on any area.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Post-Award Financial Disbursement & Compliance Tracker",
+      "niche": {
+        "role": "Academic research grant financial managers",
+        "scenario": "Managing post-award financial disbursement schedules, compliance with spending restrictions, multi-institution fund transfers, and reporting deadlines throughout the grant lifecycle"
+      },
+      "problem": "After funding is awarded, grant financial managers must carefully track and coordinate disbursement of funds to multiple institutions, ensure expenditures comply with funder restrictions, monitor spending against budget categories, prepare interim financial compliance reports, and manage deadline alerts. Current tools focus mainly on proposal budgeting or compliance checklists but lack integrated post-award disbursement tracking and multi-institution coordination features, leading to risks of overspending, compliance breaches, delayed reports, and inefficient communication.",
+      "inputs": [
+        "Award notification details (funding amount, period, conditions)",
+        "Multi-institution bank account and contact info",
+        "Approved budget categories with spending restrictions",
+        "Disbursement schedule plans or agreements",
+        "Actual expenditure data uploads (CSV/Excel)",
+        "Funder compliance and reporting guidelines"
+      ],
+      "outputs": [
+        "Dynamic, interactive disbursement calendar with alerts",
+        "Multi-institution fund transfer tracking dashboard",
+        "Compliance risk flags highlighting overspending or restricted use",
+        "Interim financial report drafts aligned with funder requirements",
+        "Automated reminders for reporting deadlines and milestones",
+        "Communication briefs for coordinating with institutional finance teams"
+      ],
+      "whyItWins": [
+        "Fills a critical gap in the post-award grant financial management workflow by combining disbursement tracking, compliance monitoring, and multi-institution coordination",
+        "Reduces risk of non-compliance and fund misuse through proactive alerts and clear reporting",
+        "Streamlines complex communication between grant managers and multiple institutions’ finance departments",
+        "Supports repeated use throughout the entire grant lifecycle, not just proposal or planning phases",
+        "Provides a foundation for rich, multi-page system expansion with dashboards, role-based access, document uploads, and audit trails"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app where users manually input award and budget data, upload expenditure spreadsheets, and receive basic disbursement calendars, compliance flags, and report templates",
+        "in90Days": "Add multi-user support with role-based access, institutional contact management, automatic email reminders for deadlines, and customizable compliance rules based on funder profiles",
+        "in12Months": "Develop a full-featured multi-page system integrating bank transfer APIs for automated fund movement tracking, real-time expenditure syncing from institutional financial software, comprehensive audit logs, interactive dashboards, and multi-institution collaboration portals"
+      },
+      "riskNotes": [
+        "Financial data must be handled securely with strict access controls and encryption",
+        "The system should avoid providing direct legal or accounting advice, focusing instead on alerting and facilitating compliance",
+        "Reliance on manual data entry initially could introduce errors; clear validation and user training will be necessary",
+        "Multi-institution coordination requires clear privacy and data sharing agreements to prevent unauthorized access"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive post-award academic research grant financial management system that enables grant financial managers to track disbursement schedules, ensure compliance with funder restrictions, coordinate multi-institution fund transfers, and manage reporting deadlines throughout the grant lifecycle.",
+      "primaryUser": "Academic research grant financial managers",
+      "successMetrics": [
+        "Reduction in compliance breaches and overspending incidents",
+        "Timely completion and submission of interim financial reports",
+        "User adoption rate among grant financial managers and institutional finance teams",
+        "Accuracy and timeliness of fund disbursement tracking",
+        "Decrease in manual communication overhead between institutions"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "User Interface - Dashboard & Pages",
+          "type": "ui",
+          "responsibility": "Provide interactive pages including disbursement calendar, compliance dashboard, fund transfer tracking, report drafts, and communication briefs.",
+          "dependsOn": [
+            "api-auth",
+            "api-grants",
+            "api-disbursements",
+            "api-compliance",
+            "api-communications"
+          ],
+          "notes": [
+            "Role-based access controls to restrict sensitive financial data.",
+            "Responsive design for desktop and tablet use.",
+            "Input validation to reduce manual entry errors."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Manage user authentication, multi-user roles, and access permissions for grant managers and institutional finance teams.",
+          "dependsOn": [
+            "data-users",
+            "data-roles"
+          ],
+          "notes": [
+            "Supports secure password storage and session management.",
+            "Role-based access to sensitive financial and institutional data."
+          ]
+        },
+        {
+          "id": "api-grants",
+          "name": "Grant & Budget Management API",
+          "type": "api",
+          "responsibility": "Handle award notification data, budget categories, spending restrictions, and multi-institution contact info.",
+          "dependsOn": [
+            "data-grants",
+            "data-institutions",
+            "data-budgetCategories"
+          ],
+          "notes": [
+            "Validate award period and funding amounts.",
+            "Support manual input and bulk data upload."
+          ]
+        },
+        {
+          "id": "api-disbursements",
+          "name": "Disbursement & Fund Transfer API",
+          "type": "api",
+          "responsibility": "Manage disbursement schedules, track fund transfers across institutions, and update actual expenditure data.",
+          "dependsOn": [
+            "data-disbursements",
+            "data-expenditures",
+            "integration-bankAPIs"
+          ],
+          "notes": [
+            "Initial version supports manual data entry and CSV uploads.",
+            "Future integration with bank APIs for automated tracking."
+          ]
+        },
+        {
+          "id": "api-compliance",
+          "name": "Compliance Monitoring & Reporting API",
+          "type": "api",
+          "responsibility": "Monitor spending against restrictions, generate compliance risk flags, draft interim financial reports, and manage reporting deadlines.",
+          "dependsOn": [
+            "data-complianceRules",
+            "data-reports",
+            "data-deadlines"
+          ],
+          "notes": [
+            "Customizable compliance rules per funder profile.",
+            "Automated alerts for overspending and upcoming deadlines."
+          ]
+        },
+        {
+          "id": "api-communications",
+          "name": "Communication & Notification API",
+          "type": "api",
+          "responsibility": "Generate communication briefs, send automated reminders, and facilitate coordination between grant managers and institutional finance teams.",
+          "dependsOn": [
+            "data-communications",
+            "backgroundJobs-reminders"
+          ],
+          "notes": [
+            "Email notifications with audit trails.",
+            "Configurable notification preferences."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store all persistent data including users, grants, budgets, institutions, disbursements, expenditures, compliance rules, reports, deadlines, and communications.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted sensitive fields such as bank account info.",
+            "Indexes on grant IDs, institution IDs, and user roles for performance."
+          ]
+        },
+        {
+          "id": "backgroundJobs-reminders",
+          "name": "Background Jobs - Deadline Reminders & Alerts",
+          "type": "job",
+          "responsibility": "Periodically check for upcoming reporting deadlines and compliance risks, then trigger notifications and alerts.",
+          "dependsOn": [
+            "data-deadlines",
+            "data-complianceRules",
+            "api-communications"
+          ],
+          "notes": [
+            "Runs daily or configurable frequency.",
+            "Handles retry logic for failed notifications."
+          ]
+        },
+        {
+          "id": "integration-bankAPIs",
+          "name": "Bank Transfer Integration",
+          "type": "integration",
+          "responsibility": "Integrate with institutional bank APIs to automate fund transfer tracking and reconciliation.",
+          "dependsOn": [
+            "api-disbursements"
+          ],
+          "notes": [
+            "Planned for future phases (12 months+).",
+            "Requires secure API credentials and compliance with privacy agreements."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents system users including grant managers and institutional finance contacts.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "role",
+            "institutionId"
+          ]
+        },
+        {
+          "name": "Grant",
+          "purpose": "Stores award notification details and overall grant metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fundingAmount",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "fundingPeriodStart",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fundingPeriodEnd",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "funderConditions",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id"
+          ]
+        },
+        {
+          "name": "Institution",
+          "purpose": "Represents participating institutions with bank and contact info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "bankAccountInfo",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "financeContact",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "BudgetCategory",
+          "purpose": "Defines approved budget categories and spending restrictions per grant.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "categoryName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "spendingRestriction",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "categoryName"
+          ]
+        },
+        {
+          "name": "DisbursementSchedule",
+          "purpose": "Tracks planned disbursement dates, amounts, and recipient institutions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scheduledDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "institutionId",
+            "scheduledDate"
+          ]
+        },
+        {
+          "name": "Expenditure",
+          "purpose": "Records actual expenditures uploaded or entered for compliance monitoring.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "categoryId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "date",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "institutionId",
+            "categoryId",
+            "date"
+          ]
+        },
+        {
+          "name": "ComplianceRule",
+          "purpose": "Defines funder compliance rules and reporting guidelines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ruleDescription",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ruleLogic",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantId"
+          ]
+        },
+        {
+          "name": "Report",
+          "purpose": "Stores interim financial report drafts and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "reportType"
+          ]
+        },
+        {
+          "name": "Deadline",
+          "purpose": "Tracks reporting and milestone deadlines per grant.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deadlineType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "dueDate"
+          ]
+        },
+        {
+          "name": "Communication",
+          "purpose": "Stores communication briefs and notification logs.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "recipientUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sentAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "recipientUserId",
+            "sentAt"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Grant Financial Dashboard",
+          "purpose": "Overview of active grants with disbursement calendar, compliance flags, and alerts.",
+          "inputs": [],
+          "outputs": [
+            "grant summaries",
+            "alerts",
+            "calendar view"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grants/:grantId/disbursements",
+          "title": "Disbursement Schedule & Fund Transfers",
+          "purpose": "View and manage disbursement plans and track fund transfers to institutions.",
+          "inputs": [
+            "grantId"
+          ],
+          "outputs": [
+            "disbursement calendar",
+            "transfer status",
+            "institution details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grants/:grantId/compliance",
+          "title": "Compliance Monitoring & Reports",
+          "purpose": "Monitor spending compliance, view risk flags, and draft interim financial reports.",
+          "inputs": [
+            "grantId"
+          ],
+          "outputs": [
+            "compliance flags",
+            "report drafts",
+            "expenditure summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/institutions",
+          "title": "Institutions & Contacts",
+          "purpose": "Manage institutional profiles, bank info, and finance contacts.",
+          "inputs": [],
+          "outputs": [
+            "institution list",
+            "contact details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings & Notifications",
+          "purpose": "Manage user profile, roles, and notification preferences.",
+          "inputs": [],
+          "outputs": [
+            "profile data",
+            "notification settings"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue access token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: { id, email, role } }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/grants",
+          "method": "GET",
+          "purpose": "Retrieve list of grants accessible to the user.",
+          "requestShape": "none",
+          "responseShape": "Array of grant summaries",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants",
+          "method": "POST",
+          "purpose": "Create or update grant award and budget data.",
+          "requestShape": "{ title, fundingAmount, fundingPeriodStart, fundingPeriodEnd, funderConditions, budgetCategories }",
+          "responseShape": "{ grantId }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/disbursements",
+          "method": "GET",
+          "purpose": "Get disbursement schedules and fund transfer statuses for a grant.",
+          "requestShape": "none",
+          "responseShape": "Array of disbursement records",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/disbursements",
+          "method": "POST",
+          "purpose": "Add or update disbursement schedule entries.",
+          "requestShape": "{ institutionId, scheduledDate, amount, status }",
+          "responseShape": "{ disbursementId }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/expenditures/upload",
+          "method": "POST",
+          "purpose": "Upload expenditure data via CSV/Excel for compliance monitoring.",
+          "requestShape": "File upload (CSV/Excel)",
+          "responseShape": "{ success: boolean, errors: [] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/compliance/flags",
+          "method": "GET",
+          "purpose": "Retrieve compliance risk flags and alerts for a grant.",
+          "requestShape": "none",
+          "responseShape": "Array of compliance flags",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/reports",
+          "method": "GET",
+          "purpose": "Get interim financial report drafts.",
+          "requestShape": "none",
+          "responseShape": "Report content and metadata",
+          "auth": "user"
+        },
+        {
+          "route": "/api/communications/send",
+          "method": "POST",
+          "purpose": "Send communication briefs or reminders to institutional contacts.",
+          "requestShape": "{ grantId, recipientUserId, message }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "DeadlineReminderJob",
+          "trigger": "Scheduled daily",
+          "purpose": "Scan upcoming reporting deadlines and send reminder notifications to users."
+        },
+        {
+          "name": "ComplianceAlertJob",
+          "trigger": "Scheduled daily",
+          "purpose": "Evaluate expenditure data against compliance rules and generate risk alerts."
+        }
+      ],
+      "edgeCases": [
+        "Partial or inconsistent expenditure data uploads causing inaccurate compliance flags.",
+        "Delayed or missing fund transfer updates leading to stale disbursement status.",
+        "Users with multiple roles or institution affiliations requiring complex access control.",
+        "Handling expired or amended funder conditions mid-grant lifecycle.",
+        "Network or API failures during bank integration causing temporary data gaps.",
+        "Unauthorized access attempts or data leaks due to misconfigured permissions.",
+        "Conflicting disbursement schedules between institutions requiring manual resolution."
+      ],
+      "nonGoals": [
+        "Providing direct legal or accounting advice regarding grant compliance.",
+        "Automating actual fund transfers or financial transactions.",
+        "Replacing institutional financial management systems.",
+        "Supporting proposal phase budgeting or grant application submission.",
+        "Handling non-financial grant management activities such as research progress tracking."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to POST /api/auth/login.",
+        "API authenticates user, issues JWT token, and returns user info with role and institutionId.",
+        "User accesses /dashboard page with auth token; frontend calls GET /api/grants to fetch accessible grants.",
+        "Dashboard displays grant summaries, compliance flags (via GET /api/grants/:grantId/compliance/flags), and disbursement calendar (via GET /api/grants/:grantId/disbursements).",
+        "On /grants/:grantId/disbursements, frontend fetches disbursement schedules and statuses; user can add/update disbursements via POST /api/grants/:grantId/disbursements.",
+        "On /grants/:grantId/compliance, frontend fetches compliance flags and report drafts (GET /api/grants/:grantId/compliance/flags and GET /api/grants/:grantId/reports).",
+        "Users upload expenditure data files on /grants/:grantId via POST /api/grants/:grantId/expenditures/upload for compliance monitoring.",
+        "Institution and contact data managed on /institutions page, fetched and updated via respective APIs (to be created).",
+        "User settings and notification preferences managed on /settings page, interacting with user profile APIs (to be created).",
+        "Background jobs run daily: DeadlineReminderJob scans deadlines and triggers notifications via /api/communications/send; ComplianceAlertJob evaluates expenditures against compliance rules and generates alerts.",
+        "Future bank API integration will update disbursement statuses automatically, feeding into /api/grants/:grantId/disbursements data."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "Grant creation/update: title non-empty; fundingAmount positive number; fundingPeriodStart before fundingPeriodEnd; funderConditions JSON valid if provided; budgetCategories array with valid categoryName and optional spendingRestriction JSON.",
+        "Disbursement entries: institutionId must exist; scheduledDate valid date within grant funding period; amount positive number not exceeding remaining budget; status one of predefined enum (e.g., 'scheduled', 'completed', 'pending').",
+        "Expenditure uploads: CSV/Excel files must have required columns (date, amount, categoryId, institutionId); amounts positive; dates within grant period; categoryId and institutionId must exist and relate to grant.",
+        "Compliance rules: ruleDescription non-empty; ruleLogic valid JSON defining logic expressions.",
+        "Communication sends: grantId, recipientUserId, and message non-empty; recipientUserId belongs to institution related to grant.",
+        "User profile updates: email unique and valid; role within allowed roles; institutionId valid if provided.",
+        "All date fields must be valid ISO 8601 dates.",
+        "API routes require authentication and authorization checks based on user role and institution affiliation."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Validation errors return 400 Bad Request with detailed field error descriptions.",
+        "Authorization failures return 403 Forbidden with explanation.",
+        "Resource not found returns 404 Not Found.",
+        "File upload errors return 400 with parsing error details.",
+        "Server errors return 500 Internal Server Error with generic message; detailed logs kept server-side.",
+        "Background job failures logged with retry attempts; notification failures retried with exponential backoff.",
+        "API responses include consistent error object structure: { errorCode, message, details? }.",
+        "Frontend displays user-friendly error messages and guides corrective actions.",
+        "Rate limiting and throttling applied to sensitive endpoints to prevent abuse."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all client-server communication.",
+        "Store passwords securely with strong hashing (e.g., bcrypt).",
+        "Issue JWT tokens with short expiry and refresh tokens for session management.",
+        "Implement role-based access control on all API routes to restrict data access.",
+        "Encrypt sensitive fields in database such as bankAccountInfo.",
+        "Validate and sanitize all inputs to prevent injection attacks.",
+        "Audit trails for communications and critical data changes.",
+        "Limit file upload size and validate file types to prevent malicious uploads.",
+        "Secure background job credentials and limit access to internal APIs.",
+        "Plan for secure storage and handling of future bank API credentials.",
+        "Log and monitor unauthorized access attempts and suspicious activities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and user info with role"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated grant financial manager",
+          "when": "They access /dashboard",
+          "then": "They see a list of grants they have access to with compliance flags and disbursement calendar"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user on /grants/:grantId/disbursements page",
+          "when": "They add a new disbursement with valid data",
+          "then": "The disbursement is saved and visible in the schedule with correct status"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user uploads an expenditure CSV file with valid data",
+          "when": "They submit the file to /api/grants/:grantId/expenditures/upload",
+          "then": "The system processes the file, stores expenditures, and returns success with no errors"
+        },
+        {
+          "id": "AT-005",
+          "given": "A compliance monitoring API is called for a grant",
+          "when": "There are expenditures exceeding spending restrictions",
+          "then": "Compliance flags are returned indicating overspending risks"
+        },
+        {
+          "id": "AT-006",
+          "given": "A background job runs DeadlineReminderJob",
+          "when": "There are upcoming deadlines within configured timeframe",
+          "then": "Notification reminders are sent to relevant users and logged"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user without proper role attempts to access grant data",
+          "when": "They call a protected API endpoint",
+          "then": "They receive a 403 Forbidden error"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user submits malformed data to an API",
+          "when": "The API validates input",
+          "then": "The API returns 400 Bad Request with detailed validation errors"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user accesses /institutions page",
+          "when": "They view institution list",
+          "then": "They see institution names and finance contact details without sensitive bank info exposed"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user updates their notification preferences on /settings",
+          "when": "They save changes",
+          "then": "Preferences are persisted and used by background jobs for notification delivery"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for all entities with appropriate fields and indexes.",
+        "Implement API-auth with secure password hashing, JWT issuance, and role-based access control.",
+        "Develop user login page and authentication flow.",
+        "Build API-grants endpoints for grant CRUD and budget category management with validation.",
+        "Create API-disbursements endpoints for managing disbursement schedules and statuses.",
+        "Implement file upload handling and parsing for expenditures with validation.",
+        "Develop API-compliance to evaluate expenditures against rules and generate flags.",
+        "Build API-communications for sending notifications and storing communication logs.",
+        "Create UI pages: /dashboard, /grants/:grantId/disbursements, /grants/:grantId/compliance, /institutions, /settings with role-based access.",
+        "Implement background jobs for deadline reminders and compliance alerts with retry logic.",
+        "Add encryption for sensitive data fields in database and secure storage.",
+        "Implement error handling middleware and consistent API error responses.",
+        "Add input validation on frontend and backend to reduce errors.",
+        "Test all API routes with unit and integration tests.",
+        "Conduct acceptance testing per defined scenarios.",
+        "Plan and prepare for future bank API integration."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/grants/[grantId]/disbursements",
+          "/grants/[grantId]/compliance",
+          "/institutions",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/grants/index.ts",
+          "api/grants/[grantId]/disbursements.ts",
+          "api/grants/[grantId]/expenditures/upload.ts",
+          "api/grants/[grantId]/compliance/flags.ts",
+          "api/grants/[grantId]/reports.ts",
+          "api/communications/send.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Grant",
+          "Institution",
+          "BudgetCategory",
+          "DisbursementSchedule",
+          "Expenditure",
+          "ComplianceRule",
+          "Report",
+          "Deadline",
+          "Communication"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, edge cases, or detailed user needs to clarify the system scope.",
+        "promptTemplate": "Given the current project blueprint and expansion:\n{{BLUEPRINT}}\n{{EXPANDED}}\nPlease provide any additional constraints, edge cases, or user requirements that should be considered to ensure the system fully meets academic grant financial managers’ needs.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize detailed page routes, UI components, and data model schemas for implementation.",
+        "promptTemplate": "Based on the refined requirements and existing blueprint:\n{{BLUEPRINT}}\n{{EXPANDED}}\nDesign and finalize the complete set of UI pages, API endpoints, and data models required. Include fields, relationships, and access rules.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create scaffolded code stubs for pages and API routes to accelerate development.",
+        "promptTemplate": "Using the finalized architecture:\n{{BLUEPRINT}}\nGenerate scaffolded code stubs for the UI pages and API endpoints, including route handlers, input validation, and placeholder UI components.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-components",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring connecting UI pages with API and database models, ensuring security and validation.",
+        "promptTemplate": "Given the scaffolded code and data models:\n{{BLUEPRINT}}\n{{EXPANDED}}\nImplement the integration wiring connecting UI pages to API endpoints and database models. Ensure role-based access control, input validation, error handling, and secure data flows.\nUser input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

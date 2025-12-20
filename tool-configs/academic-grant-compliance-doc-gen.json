@@ -1,0 +1,823 @@
+{
+  "slug": "academic-grant-compliance-doc-gen",
+  "title": "Academic Research Grant Compliance Document Generator",
+  "description": "Generate tailored funder compliance documentation snippets for multi-institutional academic grant proposals by uploading project details, institutional policies, funder guidelines, and proposal drafts. Supports PDF and DOCX uploads and produces structured compliance text for inclusion in grant applications.",
+  "inputLabel": "Paste multi-institutional project details and preliminary grant proposal drafts here, and/or upload funder compliance guidelines and institutional policy documents (PDF or DOCX).",
+  "outputLabel": "Generated tailored funder-specific compliance documentation sections and integrated compliance summary report.",
+  "systemPrompt": "You are an expert compliance documentation assistant helping academic research grant managers synthesize uploaded multi-institutional project details, funder compliance guidelines, institutional policies, and grant proposal drafts into clear, tailored, and structured compliance text snippets suitable for inclusion in grant applications. Only accept PDF or DOCX documents up to 50MB. Refuse any request containing unsupported file types or disallowed content. Do not generate legally binding statements; always advise human review. Parse and integrate compliance requirements accurately, highlighting any conflicts or gaps. Maintain data privacy and security. Output the compliance documentation as plain text. If structured-output feature is enabled, produce valid JSON with compliance sections keyed by institution and funder. Enforce strict input validation and refuse malformed or unauthorized requests.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Generate Compliance Summary",
+      "prompt": "Generate a clear and concise compliance summary report integrating all uploaded funder guidelines, institutional policies, and proposal drafts, highlighting alignment and gaps per institution.",
+      "hint": "Use this to get an overview of compliance status across institutions."
+    },
+    {
+      "label": "Generate Institution-Specific Compliance Section",
+      "prompt": "Produce detailed compliance documentation text for the specified institution and funder based on uploaded documents. Focus on tailoring to the institution's policies and funder requirements.",
+      "hint": "Specify institution and funder names in your input."
+    },
+    {
+      "label": "Check for Compliance Conflicts",
+      "prompt": "Analyze all uploaded documents to identify conflicting compliance requirements across institutions or funders. Highlight conflicts and suggest points needing human review.",
+      "hint": "Good for risk assessment before finalizing documents."
+    },
+    {
+      "label": "Export Compliance Documentation",
+      "prompt": "Format the generated compliance sections and summary into export-ready text suitable for direct inclusion in grant applications. Include institution and funder headers.",
+      "hint": "Use this to prepare final documents for submission."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output JSON with keys: 'complianceSections' (array of {institutionId, funderId, content}), and 'summaryReport' with overall compliance status.",
+  "clarifyPrompt": "Please provide multi-institutional project details, upload funder compliance guidelines and institutional policy documents (PDF/DOCX), and/or paste preliminary grant proposal drafts. Specify the institution(s) and funder(s) to tailor compliance documentation. Ensure files are valid and within size limits.",
+  "finalizePrompt": "Review the generated compliance documentation carefully for accuracy and completeness. Confirm that all uploaded documents were processed correctly. Flag any conflicts or gaps for human review before using the text in grant applications.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Compliance Document Generator",
+      "niche": {
+        "role": "Academic Research Grant Manager",
+        "scenario": "Preparing multi-institutional grant applications with complex and varying funder compliance requirements"
+      },
+      "problem": "Grant managers struggle to manually create detailed, funder-specific compliance documentation that integrates diverse institutional and funder mandates, often leading to overlooked requirements and inconsistent compliance statements across collaborators.",
+      "inputs": [
+        "Multi-institutional project details",
+        "Uploaded funder compliance guidelines (PDF, DOCX)",
+        "Institutional policy documents",
+        "Preliminary grant proposal drafts"
+      ],
+      "outputs": [
+        "Tailored, structured funder compliance documentation sections per institution",
+        "Integrated compliance summary report highlighting cross-institutional alignment and gaps",
+        "Exportable compliance documents formatted for direct inclusion in grant applications"
+      ],
+      "whyItWins": [
+        "Automates complex synthesis of heterogeneous compliance guidelines into coherent, funder-ready documentation",
+        "Reduces risk of missing or inconsistent compliance statements across multi-institutional proposals",
+        "Supports repeated use across different grants with version control and template reuse",
+        "Frees grant managers to focus on strategic tasks by reducing manual compliance documentation effort"
+      ],
+      "upgradePath": {
+        "today": "Single-page app to upload documents and generate basic funder compliance text snippets customized per institution",
+        "in90Days": "Add multi-user collaboration with comment threads, versioning, and compliance gap visualization dashboards",
+        "in12Months": "Develop a full multi-page system with integrated project management, compliance tracking, deadline alerts, and automated funder guideline updates"
+      },
+      "riskNotes": [
+        "Must ensure no unauthorized sharing of sensitive institutional or funder documents",
+        "Avoid generating legally binding statements without human review to prevent compliance risk",
+        "Handle document parsing errors gracefully to prevent misleading output",
+        "Maintain data privacy and security for uploaded grant materials"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page application to assist academic research grant managers in generating tailored, funder-specific compliance documentation for multi-institutional grant applications by synthesizing uploaded funder and institutional documents with grant proposal drafts, supporting collaboration, versioning, and compliance gap analysis.",
+      "primaryUser": "Academic Research Grant Manager",
+      "successMetrics": [
+        "Reduction in time spent preparing compliance documentation",
+        "Decrease in compliance errors or overlooked requirements in grant applications",
+        "User adoption and repeated use across multiple grant projects",
+        "Positive user feedback on collaboration and version control features",
+        "Accuracy and clarity of generated compliance documents"
+      ],
+      "components": [
+        {
+          "id": "ui-portal",
+          "name": "User Interface Portal",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for document upload, project management, compliance document generation, collaboration, versioning, and dashboard visualization.",
+          "dependsOn": [
+            "api-auth",
+            "api-documents",
+            "api-compliance",
+            "data-projects"
+          ],
+          "notes": [
+            "Supports file uploads (PDF, DOCX) with progress and error feedback",
+            "Includes pages for project overview, document management, compliance generation, collaboration threads, and dashboards",
+            "Handles user authentication and authorization for secure access"
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication and Authorization API",
+          "type": "api",
+          "responsibility": "Manage user authentication, session management, and enforce access control to projects and documents.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Supports secure login, password reset, and session expiration",
+            "Implements role-based access control for multi-user collaboration",
+            "Protects sensitive uploaded documents and compliance data"
+          ]
+        },
+        {
+          "id": "api-documents",
+          "name": "Document Management API",
+          "type": "api",
+          "responsibility": "Handle upload, storage, parsing, and retrieval of funder guidelines, institutional policies, and proposal drafts.",
+          "dependsOn": [
+            "data-documents",
+            "job-document-parser"
+          ],
+          "notes": [
+            "Validates file types and size limits",
+            "Triggers background parsing jobs upon upload",
+            "Stores parsed content and metadata for downstream compliance generation"
+          ]
+        },
+        {
+          "id": "api-compliance",
+          "name": "Compliance Generation API",
+          "type": "api",
+          "responsibility": "Generate tailored compliance documentation sections per institution and produce integrated compliance summary reports.",
+          "dependsOn": [
+            "data-projects",
+            "data-documents",
+            "job-compliance-generator"
+          ],
+          "notes": [
+            "Aggregates parsed document data to synthesize compliance text snippets",
+            "Supports versioning and template reuse",
+            "Provides exportable document formats (e.g., DOCX, PDF)"
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, authentication credentials, roles, and permissions.",
+          "dependsOn": [],
+          "notes": [
+            "Stores hashed passwords and session tokens securely",
+            "Supports multi-user collaboration roles"
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Project and Collaboration Data Store",
+          "type": "data",
+          "responsibility": "Persist multi-institutional project details, collaboration metadata, version histories, and comment threads.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Tracks project states and compliance generation versions",
+            "Stores collaboration comments linked to documents and compliance sections"
+          ]
+        },
+        {
+          "id": "data-documents",
+          "name": "Document Storage and Parsed Content Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded raw documents and parsed text/content metadata for compliance processing.",
+          "dependsOn": [
+            "data-projects"
+          ],
+          "notes": [
+            "Stores original files securely with access controls",
+            "Stores parsed content as structured JSON for compliance synthesis"
+          ]
+        },
+        {
+          "id": "job-document-parser",
+          "name": "Document Parsing Background Job",
+          "type": "job",
+          "responsibility": "Process uploaded documents asynchronously to extract structured text and metadata for compliance generation.",
+          "dependsOn": [
+            "data-documents"
+          ],
+          "notes": [
+            "Handles PDF and DOCX parsing with error detection",
+            "Retries or flags documents on parsing failure",
+            "Ensures no data leakage during processing"
+          ]
+        },
+        {
+          "id": "job-compliance-generator",
+          "name": "Compliance Document Generation Background Job",
+          "type": "job",
+          "responsibility": "Asynchronously synthesize parsed document data into tailored compliance text snippets and summary reports.",
+          "dependsOn": [
+            "data-documents",
+            "data-projects"
+          ],
+          "notes": [
+            "Implements logic to detect compliance gaps and inconsistencies",
+            "Supports versioning and template application",
+            "Prepares exportable compliance documents"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user authentication and authorization information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Represent multi-institutional grant projects with associated metadata and collaboration data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "institutions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "versions",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "createdByUserId"
+          ]
+        },
+        {
+          "name": "Document",
+          "purpose": "Store uploaded raw documents and parsed content metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileUrl",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parsedContent",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "parsingStatus",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "type"
+          ]
+        },
+        {
+          "name": "ComplianceSection",
+          "purpose": "Store generated compliance text snippets per institution and funder.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "institutionId",
+            "funderId"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Store collaboration comments linked to projects, documents, or compliance sections.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "authorUserId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system securely.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/projects",
+          "title": "Project Dashboard",
+          "purpose": "List and manage multi-institutional grant projects.",
+          "inputs": [
+            "filters",
+            "search queries"
+          ],
+          "outputs": [
+            "project list",
+            "project status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/documents",
+          "title": "Document Management",
+          "purpose": "Upload, view, and manage funder and institutional documents and proposal drafts.",
+          "inputs": [
+            "file uploads",
+            "document metadata"
+          ],
+          "outputs": [
+            "document list",
+            "parsing status",
+            "error notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/compliance",
+          "title": "Compliance Document Generation",
+          "purpose": "Generate, view, and export tailored compliance documentation per institution and funder.",
+          "inputs": [
+            "generation parameters",
+            "template selections"
+          ],
+          "outputs": [
+            "compliance text snippets",
+            "summary reports",
+            "export files"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/collaboration",
+          "title": "Collaboration and Comments",
+          "purpose": "Support multi-user collaboration with comment threads on documents and compliance sections.",
+          "inputs": [
+            "comment submissions",
+            "comment filters"
+          ],
+          "outputs": [
+            "comment threads",
+            "notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/dashboard",
+          "title": "Compliance Gap Visualization Dashboard",
+          "purpose": "Visualize compliance alignment and gaps across institutions and funders.",
+          "inputs": [
+            "filter criteria"
+          ],
+          "outputs": [
+            "gap analysis charts",
+            "alerts"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string } | { error: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of projects for authenticated user.",
+          "requestShape": "{}",
+          "responseShape": "{ projects: Project[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project.",
+          "requestShape": "{ title: string, description?: string, institutions: json }",
+          "responseShape": "{ projectId: string } | { error: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/documents",
+          "method": "POST",
+          "purpose": "Upload a document for a project.",
+          "requestShape": "multipart/form-data with file and metadata",
+          "responseShape": "{ documentId: string, parsingStatus: string } | { error: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/compliance/generate",
+          "method": "POST",
+          "purpose": "Trigger compliance document generation for a project.",
+          "requestShape": "{ parameters: json }",
+          "responseShape": "{ jobId: string } | { error: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/compliance",
+          "method": "GET",
+          "purpose": "Retrieve generated compliance documents and summaries.",
+          "requestShape": "{}",
+          "responseShape": "{ complianceSections: ComplianceSection[], summaryReport: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/comments",
+          "method": "POST",
+          "purpose": "Add a comment to a project document or compliance section.",
+          "requestShape": "{ targetType: string, targetId: string, content: string }",
+          "responseShape": "{ commentId: string } | { error: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/comments",
+          "method": "GET",
+          "purpose": "Retrieve comments for a project.",
+          "requestShape": "{}",
+          "responseShape": "{ comments: Comment[] }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Document Parsing Job",
+          "trigger": "Triggered asynchronously upon document upload",
+          "purpose": "Parse uploaded PDF and DOCX files to extract structured text and metadata for compliance processing."
+        },
+        {
+          "name": "Compliance Document Generation Job",
+          "trigger": "Triggered by user request to generate compliance documentation",
+          "purpose": "Synthesize parsed document data into tailored compliance text snippets, detect gaps, and prepare exportable reports."
+        },
+        {
+          "name": "Periodic Funder Guideline Update Job",
+          "trigger": "Scheduled periodic job (future upgrade)",
+          "purpose": "Automatically fetch and update funder compliance guidelines to keep documentation current."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded documents fail to parse due to unsupported formats or corruption — system must notify user and allow re-upload.",
+        "Conflicting compliance requirements across institutions or funders — system highlights conflicts and flags for human review.",
+        "Unauthorized access attempts to projects or documents — system enforces strict access control and logs incidents.",
+        "Large file uploads exceeding limits — system rejects with clear error messages.",
+        "Simultaneous edits or generation requests causing version conflicts — system implements version locking and merge conflict resolution.",
+        "Sensitive information leakage during parsing or storage — system encrypts data at rest and in transit, restricts access.",
+        "Network interruptions during uploads or generation jobs — system supports resumable uploads and job retries."
+      ],
+      "nonGoals": [
+        "Automatically generating legally binding compliance statements without human review.",
+        "Replacing comprehensive project management tools beyond compliance documentation scope.",
+        "Full natural language understanding or AI-driven legal advice.",
+        "Handling grant budget or financial management.",
+        "Supporting document formats beyond PDF and DOCX in initial versions."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI portal and authenticates via /login page, sending credentials to /api/auth/login.",
+        "Upon successful login, user receives authentication token stored client-side for subsequent API calls.",
+        "User navigates to /projects to view and manage projects; UI fetches project list from /api/projects with auth token.",
+        "User creates new projects via POST to /api/projects with project metadata; server validates and stores in data-projects.",
+        "Within a project, user uploads documents (PDF/DOCX) via /projects/:projectId/documents page; UI sends multipart/form-data to /api/projects/:projectId/documents.",
+        "API-documents validates file type/size, stores raw file in data-documents, sets parsingStatus to 'pending', and triggers job-document-parser asynchronously.",
+        "Job-document-parser processes uploaded documents, extracts structured text and metadata, updates parsedContent and parsingStatus in data-documents.",
+        "User triggers compliance generation on /projects/:projectId/compliance page; UI sends generation parameters to /api/projects/:projectId/compliance/generate.",
+        "API-compliance enqueues job-compliance-generator to synthesize parsed document data into compliance sections and summary reports, storing results in data-projects and compliance sections.",
+        "User views generated compliance documents via GET /api/projects/:projectId/compliance; UI displays compliance snippets, summary reports, and export options.",
+        "Users collaborate on /projects/:projectId/collaboration page by posting comments via /api/projects/:projectId/comments and retrieving comment threads.",
+        "All API routes enforce authentication and authorization, validating user roles and project access before data operations.",
+        "Background jobs handle retries, error detection, and flagging for failed document parsing or compliance generation.",
+        "Versioning is maintained for projects and compliance sections to handle concurrent edits and generation requests."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "Project creation: title required, non-empty string; institutions must be valid JSON array with institution identifiers.",
+        "Document upload: file must be PDF or DOCX; file size must not exceed configured limit (e.g., 50MB).",
+        "Compliance generation parameters must conform to expected JSON schema (e.g., selected templates, institution filters).",
+        "Comments: targetType must be one of ['Document', 'ComplianceSection']; targetId must exist and belong to the project; content non-empty string.",
+        "API routes require valid authentication tokens; user must have access rights to the project and requested resources.",
+        "Version numbers for compliance sections must be incremented sequentially; concurrent updates must be detected and handled.",
+        "File uploads must be scanned for corruption and rejected if parsing fails repeatedly.",
+        "Input JSON fields must be sanitized to prevent injection attacks."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 with clear error messages (e.g., 'Invalid credentials').",
+        "Authorization failures return 403 with message 'Access denied'.",
+        "Validation errors return 400 with detailed field error messages.",
+        "File upload errors (unsupported format, size exceeded) return 400 with user-friendly messages.",
+        "Background job failures update document or compliance generation status to 'failed' with error logs; UI displays notifications and retry options.",
+        "Network or server errors return 500 with generic error message; UI shows retry prompts.",
+        "Version conflicts during compliance generation or edits return 409 with conflict details; UI prompts user to resolve.",
+        "Parsing failures notify user on document management page with instructions to re-upload or contact support.",
+        "All errors are logged server-side with context for audit and debugging."
+      ],
+      "securityNotes": [
+        "All API routes require HTTPS and enforce authentication tokens (e.g., JWT or session cookies).",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt) and never logged or exposed.",
+        "Role-based access control restricts project and document access to authorized users only.",
+        "Uploaded files stored securely with access controls; URLs are signed or protected to prevent unauthorized downloads.",
+        "Data at rest encrypted for sensitive fields (e.g., parsedContent, compliance content).",
+        "Background jobs run in isolated environments to prevent data leakage.",
+        "Input validation and sanitization prevent injection and XSS attacks.",
+        "Session expiration and token revocation implemented to reduce risk of hijacking.",
+        "Audit logs maintained for access and modification of sensitive data.",
+        "Rate limiting and monitoring to detect and prevent brute force or abuse."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials",
+          "when": "They submit login form with correct email and password",
+          "then": "They receive an authentication token and are redirected to the project dashboard"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the project dashboard",
+          "when": "They create a new project with valid title and institutions JSON",
+          "then": "The project is created, stored, and appears in their project list"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user on a project document management page",
+          "when": "They upload a valid PDF document within size limits",
+          "then": "The document is accepted, parsing job is triggered, and parsing status is 'pending'"
+        },
+        {
+          "id": "AT-004",
+          "given": "A document parsing job completes successfully",
+          "when": "User views document list",
+          "then": "Parsed content is available and parsing status is 'completed'"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user triggers compliance generation with valid parameters",
+          "when": "The compliance generation job completes",
+          "then": "Compliance sections and summary report are stored and retrievable via API"
+        },
+        {
+          "id": "AT-006",
+          "given": "Multiple users collaborating on a project",
+          "when": "They add comments linked to documents and compliance sections",
+          "then": "Comments are stored, visible to all authorized users, and linked correctly"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to upload an unsupported file type",
+          "when": "They submit the upload form",
+          "then": "The system rejects the upload with a clear error message"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user tries to access a project they are not authorized for",
+          "when": "They request project data via API",
+          "then": "The system returns 403 Access Denied"
+        },
+        {
+          "id": "AT-009",
+          "given": "Two users attempt simultaneous compliance generation",
+          "when": "A version conflict occurs",
+          "then": "The system detects conflict, returns 409, and prompts for resolution"
+        },
+        {
+          "id": "AT-010",
+          "given": "A document fails parsing due to corruption",
+          "when": "Parsing job flags failure",
+          "then": "User is notified with instructions to re-upload or seek support"
+        }
+      ],
+      "buildOrder": [
+        "data-users model and API-auth implementation with login and session management",
+        "data-projects model and /api/projects GET and POST endpoints with authorization",
+        "UI portal pages: /login and /projects with project listing and creation",
+        "data-documents model and /api/projects/:projectId/documents POST endpoint with file upload handling",
+        "job-document-parser background job for asynchronous document parsing",
+        "UI document management page with upload form and parsing status display",
+        "data-compliance model (ComplianceSection) and /api/projects/:projectId/compliance endpoints (GET and POST generate)",
+        "job-compliance-generator background job for compliance document synthesis",
+        "UI compliance generation page with parameter input, status, and export features",
+        "data-comments model and /api/projects/:projectId/comments GET and POST endpoints",
+        "UI collaboration page with comment threads and submission forms",
+        "Dashboard page /projects/:projectId/dashboard with compliance gap visualization",
+        "Implement versioning and conflict resolution logic for projects and compliance sections",
+        "Implement security hardening, error handling, and logging across all components",
+        "Implement resumable uploads and job retry mechanisms",
+        "Testing and QA including acceptance tests and edge case validations"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/projects",
+          "/projects/[projectId]/documents",
+          "/projects/[projectId]/compliance",
+          "/projects/[projectId]/collaboration",
+          "/projects/[projectId]/dashboard"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.js",
+          "api/projects/index.js",
+          "api/projects/[projectId]/documents.js",
+          "api/projects/[projectId]/compliance/index.js",
+          "api/projects/[projectId]/compliance/generate.js",
+          "api/projects/[projectId]/comments.js"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "Document",
+          "ComplianceSection",
+          "Comment"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify missing constraints, edge cases, and user needs for the compliance document generator.",
+        "promptTemplate": "You are planning the Academic Research Grant Compliance Document Generator. Based on the current blueprint and idea: {{BLUEPRINT}} and {{IDEA}}, ask {{USER_INPUT}} to clarify any missing requirements, constraints, or edge cases before design."
+      },
+      {
+        "id": "architect-finalize-pages-data",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define complete page routes, UI components, and data models needed to implement the system.",
+        "promptTemplate": "You are architecting the system based on blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}. Generate detailed page definitions and data model schemas for the Academic Research Grant Compliance Document Generator. Use {{USER_INPUT}} for additional context."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create scaffold code for the UI pages and API endpoints based on the finalized pages and models.",
+        "promptTemplate": "You are the builder. Using the architectural specs {{BLUEPRINT}} and {{EXPANDED}}, generate code stubs for UI pages and API routes for the Academic Research Grant Compliance Document Generator. Use {{USER_INPUT}} for customization."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration logic connecting UI pages with API endpoints and data stores, ensuring data flows correctly.",
+        "promptTemplate": "You are integrating the system components. Using {{BLUEPRINT}} and {{EXPANDED}}, write integration code to connect UI pages with API endpoints and the database models for the Academic Research Grant Compliance Document Generator. Address any synchronization, versioning, or security concerns using {{USER_INPUT}}."
+      }
+    ]
+  }
+}

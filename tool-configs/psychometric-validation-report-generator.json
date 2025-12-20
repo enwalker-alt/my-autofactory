@@ -1,0 +1,796 @@
+{
+  "slug": "psychometric-validation-report-generator",
+  "title": "Psychometric Instrument Validation & Report Generator",
+  "description": "A lightweight web app that accepts pilot survey response data and instrument metadata uploads to generate an initial psychometric validation report including reliability metrics and factor analysis summaries tailored for social science and psychology researchers.",
+  "inputLabel": "Upload your pilot survey data (CSV or Excel) and item metadata (JSON) here. Optionally enter research hypotheses.",
+  "outputLabel": "Automated psychometric validation report with reliability metrics, factor analysis summaries, and actionable recommendations.",
+  "systemPrompt": "You are a psychometric validation assistant for academic researchers in social sciences and psychology. Only accept CSV or Excel files for pilot survey data and JSON files for item metadata. Validate data structure consistency and reject disallowed file types or malformed data with clear error messages. Analyze provided data to produce a comprehensive but safe psychometric report including reliability metrics (e.g., Cronbach's alpha), exploratory factor analysis summaries, item-total correlations, and construct validity assessment. Do not provide clinical or diagnostic interpretations. Enforce strict data privacy by not storing or sharing any user data beyond session scope. Output a clear, structured plain text report summarizing key validation results and recommendations. Refuse requests lacking required inputs or containing disallowed content. Use a professional, concise, and accessible tone suitable for early-career researchers. If structured-output feature is enabled, output valid JSON conforming to the psychometric report schema. Enforce safe statistical methods and include disclaimers about expert judgment necessity.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Brief Summary",
+      "prompt": "Provide a concise summary of the psychometric validation results highlighting reliability and factor analysis outcomes."
+    },
+    {
+      "label": "Detailed Report",
+      "prompt": "Generate a detailed psychometric validation report including all reliability metrics, factor analysis details, item-total correlations, and construct validity assessment with recommendations."
+    },
+    {
+      "label": "Interpretation Lens",
+      "prompt": "Explain the psychometric results in accessible language focusing on practical implications for instrument refinement."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "When structured-output is enabled, output JSON with fields: reliabilityMetrics, factorAnalysisSummary, itemTotalCorrelations, constructValidity, recommendations, disclaimers.",
+  "clarifyPrompt": "Please upload valid pilot survey data (CSV or Excel) and corresponding item metadata (JSON). Optionally, provide your research hypotheses in text form. Ensure files match in structure and scale types are specified.",
+  "finalizePrompt": "Review the psychometric validation report for completeness and clarity. Confirm if you want to generate an exportable report or need further analysis.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Instrument Validation & Psychometric Report Generator",
+      "niche": {
+        "role": "Academic Researcher in Social Sciences or Psychology",
+        "scenario": "Validating a newly developed survey or psychometric instrument before large-scale data collection"
+      },
+      "problem": "Researchers often face challenges in rigorously validating new survey instruments or psychometric scales, requiring multiple analyses (e.g., reliability, factor analysis, construct validity) and producing comprehensive reports for publication or review. Existing tools typically require manual data analysis or fragmented software, making validation time-consuming, error-prone, and inaccessible for researchers with limited statistical expertise.",
+      "inputs": [
+        "Raw pilot survey response data (CSV or Excel)",
+        "Instrument item metadata (e.g., question text, scale type)",
+        "Research hypotheses about construct structure (optional)",
+        "Previous validation study reports or reference instruments (optional)"
+      ],
+      "outputs": [
+        "Automated psychometric validation report including reliability metrics (e.g., Cronbach's alpha), factor analysis results (EFA/CFA summaries), item-total correlations, and construct validity assessment",
+        "Visualizations such as scree plots, factor loading heatmaps, and item response distributions",
+        "A structured summary of validation findings with actionable recommendations for instrument refinement",
+        "Exportable report in PDF and editable formats for inclusion in manuscripts or grant applications"
+      ],
+      "whyItWins": [
+        "Streamlines complex psychometric validation workflow into a single, user-friendly platform without requiring advanced statistical software knowledge",
+        "Combines data analysis, visualization, and report generation tailored specifically for instrument validation, unlike general-purpose statistical tools",
+        "Supports iterative refinement by integrating user hypotheses and previous studies to contextualize results",
+        "Facilitates reproducibility and transparency by generating standardized, well-documented validation reports",
+        "Lowers barrier for early-career researchers and small labs to develop rigorous, publishable instruments"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app that accepts pilot survey data and item metadata uploads to generate an initial psychometric validation report with core reliability and factor analysis outputs.",
+        "in90Days": "Add interactive visualizations, hypothesis input forms, and side-by-side comparisons with reference instruments; enable user annotations and export in multiple formats.",
+        "in12Months": "Develop a multi-page system for full instrument lifecycle management including item bank creation, iterative validation cycles, multi-group analysis, collaboration features, version control, and integration with common survey platforms (e.g., Qualtrics, REDCap)."
+      },
+      "riskNotes": [
+        "Ensure data privacy and secure handling of potentially sensitive pilot response data",
+        "Avoid providing automated interpretations that substitute for expert psychometrician judgment; provide clear disclaimers",
+        "Focus on safe statistical methods and avoid medical or diagnostic claims",
+        "Manage scalability to handle datasets of varying sizes efficiently"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web-based platform that streamlines psychometric instrument validation by automating key analyses, visualizations, and report generation, tailored for social science and psychology researchers with limited statistical expertise.",
+      "primaryUser": "Academic researchers in social sciences or psychology validating new survey or psychometric instruments.",
+      "successMetrics": [
+        "Number of validation reports generated",
+        "User satisfaction and ease-of-use ratings",
+        "Reduction in time taken to complete instrument validation",
+        "Frequency of iterative validation cycles per instrument",
+        "Adoption by early-career researchers and small labs"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend User Interface",
+          "type": "ui",
+          "responsibility": "Provide multi-page web UI for data upload, hypothesis input, visualization exploration, report preview, and export management.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Pages include data upload, hypothesis input, visualization dashboard, report generation, and instrument management.",
+            "Supports user authentication and session management.",
+            "Handles client-side input validation and error feedback."
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Backend API Server",
+          "type": "api",
+          "responsibility": "Expose RESTful endpoints for data ingestion, analysis job submission, result retrieval, user management, and report export.",
+          "dependsOn": [
+            "data-storage",
+            "job-processor",
+            "integration-survey-platforms"
+          ],
+          "notes": [
+            "Handles authentication and authorization.",
+            "Validates and sanitizes inputs to prevent injection or malformed data.",
+            "Manages user sessions and instrument lifecycle operations."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store user accounts, uploaded raw data, instrument metadata, hypotheses, analysis results, generated reports, and version history.",
+          "dependsOn": [],
+          "notes": [
+            "Use relational DB for structured data and metadata.",
+            "Use object storage or blob storage for raw files and generated reports.",
+            "Ensure encryption at rest and access controls for sensitive data."
+          ]
+        },
+        {
+          "id": "job-processor",
+          "name": "Background Job Processor",
+          "type": "job",
+          "responsibility": "Execute computationally intensive psychometric analyses (e.g., reliability, factor analysis), generate visualizations, and produce report documents asynchronously.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Supports job queueing and retry on failure.",
+            "Implements safe statistical methods with clear error handling.",
+            "Scales to handle datasets of varying sizes efficiently."
+          ]
+        },
+        {
+          "id": "integration-survey-platforms",
+          "name": "Survey Platform Integrations",
+          "type": "integration",
+          "responsibility": "Connect with common survey platforms (e.g., Qualtrics, REDCap) to import pilot data and instrument metadata directly.",
+          "dependsOn": [
+            "api-core"
+          ],
+          "notes": [
+            "Implements OAuth or API key based authentication for external platforms.",
+            "Handles data format mapping and error reporting on import failures."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represent platform users and their authentication credentials.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLoginAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Instrument",
+          "purpose": "Store metadata and lifecycle info about psychometric instruments under validation.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "ownerId"
+          ]
+        },
+        {
+          "name": "InstrumentItem",
+          "purpose": "Details about individual survey or psychometric instrument items/questions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "instrumentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "questionText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scaleType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "order",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "instrumentId"
+          ]
+        },
+        {
+          "name": "PilotDataUpload",
+          "purpose": "Uploaded raw pilot survey response data files.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "instrumentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "instrumentId"
+          ]
+        },
+        {
+          "name": "Hypothesis",
+          "purpose": "User-submitted hypotheses about construct structure for validation context.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "instrumentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "instrumentId"
+          ]
+        },
+        {
+          "name": "AnalysisResult",
+          "purpose": "Stores results of psychometric analyses including metrics and visualizations references.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "instrumentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "analysisType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "resultData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "instrumentId",
+            "analysisType"
+          ]
+        },
+        {
+          "name": "ValidationReport",
+          "purpose": "Generated psychometric validation reports with exportable formats and annotations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "instrumentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "pdfPath",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "editableFormatPath",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "instrumentId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access their instruments and data.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/instruments",
+          "title": "Instrument Dashboard",
+          "purpose": "List and manage user's instruments and validation projects.",
+          "inputs": [],
+          "outputs": [
+            "instrument list",
+            "instrument status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/instruments/:id/upload",
+          "title": "Data Upload",
+          "purpose": "Upload pilot survey response data and instrument metadata files.",
+          "inputs": [
+            "CSV/Excel files",
+            "item metadata JSON"
+          ],
+          "outputs": [
+            "upload status",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/instruments/:id/hypotheses",
+          "title": "Hypothesis Input",
+          "purpose": "Input and manage research hypotheses about construct structure.",
+          "inputs": [
+            "hypothesis description"
+          ],
+          "outputs": [
+            "saved hypotheses list",
+            "error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/instruments/:id/analysis",
+          "title": "Analysis & Visualization Dashboard",
+          "purpose": "View psychometric analysis results, interactive visualizations, and diagnostics.",
+          "inputs": [
+            "analysis parameters",
+            "filter options"
+          ],
+          "outputs": [
+            "reliability metrics",
+            "factor analysis results",
+            "visualizations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/instruments/:id/report",
+          "title": "Validation Report",
+          "purpose": "Preview, annotate, and export comprehensive validation reports.",
+          "inputs": [
+            "annotation inputs",
+            "export format selection"
+          ],
+          "outputs": [
+            "report preview",
+            "download links"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/instruments",
+          "method": "GET",
+          "purpose": "Fetch list of user's instruments.",
+          "requestShape": "none",
+          "responseShape": "[Instrument]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/instruments",
+          "method": "POST",
+          "purpose": "Create a new instrument.",
+          "requestShape": "{ title: string, description?: string }",
+          "responseShape": "Instrument",
+          "auth": "user"
+        },
+        {
+          "route": "/api/instruments/:id/upload",
+          "method": "POST",
+          "purpose": "Upload pilot data or metadata files for an instrument.",
+          "requestShape": "{ file: file, type: 'pilotData' | 'itemMetadata' }",
+          "responseShape": "{ status: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/instruments/:id/hypotheses",
+          "method": "POST",
+          "purpose": "Add a new hypothesis for an instrument.",
+          "requestShape": "{ description: string }",
+          "responseShape": "Hypothesis",
+          "auth": "user"
+        },
+        {
+          "route": "/api/instruments/:id/analysis",
+          "method": "POST",
+          "purpose": "Trigger psychometric analysis job with optional parameters.",
+          "requestShape": "{ analysisTypes: string[], parameters?: json }",
+          "responseShape": "{ jobId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/analysis/:jobId/status",
+          "method": "GET",
+          "purpose": "Check status and retrieve results of analysis job.",
+          "requestShape": "none",
+          "responseShape": "{ status: 'pending' | 'running' | 'failed' | 'completed', results?: AnalysisResult, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/instruments/:id/report",
+          "method": "GET",
+          "purpose": "Retrieve latest validation report data and export links.",
+          "requestShape": "none",
+          "responseShape": "ValidationReport",
+          "auth": "user"
+        },
+        {
+          "route": "/api/instruments/:id/report/export",
+          "method": "POST",
+          "purpose": "Generate and export report in requested format.",
+          "requestShape": "{ format: 'pdf' | 'docx' }",
+          "responseShape": "{ downloadUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "PsychometricAnalysisJob",
+          "trigger": "API request to start analysis",
+          "purpose": "Perform reliability calculations, factor analyses, item-total correlations, and generate visualizations asynchronously."
+        },
+        {
+          "name": "ReportGenerationJob",
+          "trigger": "User requests report export",
+          "purpose": "Compile analysis results and visualizations into structured, exportable report formats (PDF, DOCX)."
+        },
+        {
+          "name": "DataImportJob",
+          "trigger": "Survey platform data import request",
+          "purpose": "Fetch and normalize data from external survey platforms, validate, and store for analysis."
+        }
+      ],
+      "edgeCases": [
+        "Malformed or incomplete data uploads (e.g., missing item metadata or inconsistent response data) should trigger clear validation errors.",
+        "Large datasets causing analysis timeouts or memory issues require job queue management and user notifications.",
+        "User uploads with sensitive or personally identifiable information must be securely handled and optionally anonymized.",
+        "Simultaneous edits or uploads on the same instrument require concurrency control to avoid data corruption.",
+        "Failed external survey platform integrations should provide detailed error messages and retry options.",
+        "Analysis failures due to statistical assumptions violations must be caught and reported with disclaimers."
+      ],
+      "nonGoals": [
+        "Providing clinical or diagnostic interpretations of psychometric results.",
+        "Replacing expert psychometrician judgment with automated decision making.",
+        "Supporting medical or health-related instrument validation beyond social science/psychology niche.",
+        "Handling real-time collaborative editing in initial versions.",
+        "Implementing full survey data collection or distribution capabilities."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User visits /login page and submits email and password.",
+        "Frontend sends POST /api/login with credentials; backend authenticates and returns token.",
+        "User accesses /instruments page; frontend sends GET /api/instruments with auth token; backend returns user's instruments.",
+        "User selects or creates an instrument; frontend sends POST /api/instruments to create new instrument.",
+        "User navigates to /instruments/:id/upload to upload pilot data CSV/Excel or item metadata JSON files.",
+        "Frontend sends POST /api/instruments/:id/upload with file and type; backend validates and stores files, updates DB.",
+        "User inputs hypotheses at /instruments/:id/hypotheses; frontend sends POST /api/instruments/:id/hypotheses with description; backend saves hypothesis.",
+        "User triggers analysis at /instruments/:id/analysis; frontend sends POST /api/instruments/:id/analysis with analysis types and parameters; backend enqueues PsychometricAnalysisJob.",
+        "Frontend polls GET /api/analysis/:jobId/status to check job status and retrieve results.",
+        "Analysis job processes data, stores AnalysisResult in DB, generates visualizations and metrics.",
+        "User views analysis results and visualizations on /instruments/:id/analysis page.",
+        "User previews and annotates report at /instruments/:id/report; frontend fetches report data via GET /api/instruments/:id/report.",
+        "User requests report export via POST /api/instruments/:id/report/export with format; backend enqueues ReportGenerationJob.",
+        "ReportGenerationJob compiles report, stores export files, returns download URL.",
+        "Integration with external survey platforms via API-core triggers DataImportJob to fetch and normalize data, storing it in data storage."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "Instrument creation: title required, non-empty string; description optional.",
+        "File uploads: accepted file types CSV, Excel for pilotData; JSON for itemMetadata; file size limits enforced.",
+        "Uploaded pilot data files must match instrument's item metadata structure; missing or inconsistent columns trigger errors.",
+        "Hypothesis description must be non-empty string, max length enforced (e.g., 1000 chars).",
+        "Analysis request: analysisTypes must be non-empty array of allowed strings (e.g., 'reliability', 'factorAnalysis'); parameters optional JSON validated against schema.",
+        "Report export format must be 'pdf' or 'docx'.",
+        "API routes require authentication where specified; token must be valid and user authorized for instrument access.",
+        "Concurrency control: reject simultaneous conflicting uploads or edits on same instrument with appropriate error."
+      ],
+      "errorHandling": [
+        "API returns HTTP 400 with detailed validation error messages for malformed inputs.",
+        "Authentication failures return HTTP 401 with generic error to avoid info leakage.",
+        "Authorization failures return HTTP 403 when user lacks access to resource.",
+        "File upload errors return status with error array describing issues (e.g., invalid format, size, missing metadata).",
+        "Background jobs catch exceptions, update job status to 'failed' with error message retrievable via status API.",
+        "Large dataset timeouts handled by job queue with retries; user notified of delays or failures.",
+        "External integration failures return detailed error messages and retry options in UI.",
+        "Statistical assumption violations during analysis reported with disclaimers in results and logs.",
+        "Concurrency conflicts return HTTP 409 with message indicating concurrent modification detected."
+      ],
+      "securityNotes": [
+        "All sensitive data (passwords, tokens) stored securely; passwords hashed with strong algorithm (e.g., bcrypt).",
+        "Authentication tokens issued as JWT or session cookies with HttpOnly, Secure flags.",
+        "Access controls enforced on all API routes to restrict data to owner or authorized users.",
+        "Uploaded files scanned and stored securely with encryption at rest; access limited by user permissions.",
+        "Sensitive user data anonymized or masked where possible in reports and visualizations.",
+        "Input sanitization to prevent injection attacks on all user inputs and file contents.",
+        "OAuth or API key credentials for survey platform integrations stored securely and rotated as needed.",
+        "Rate limiting and brute force protections on login and critical endpoints.",
+        "Use HTTPS for all communications to protect data in transit."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "User submits correct email and password on /login",
+          "then": "User receives authentication token and is redirected to /instruments"
+        },
+        {
+          "id": "AT-002",
+          "given": "Authenticated user on /instruments page",
+          "when": "User creates a new instrument with valid title and optional description",
+          "then": "Instrument is created and appears in instrument list"
+        },
+        {
+          "id": "AT-003",
+          "given": "Authenticated user on /instruments/:id/upload",
+          "when": "User uploads valid pilot data CSV and matching item metadata JSON",
+          "then": "Files are accepted, stored, and upload status is success with no validation errors"
+        },
+        {
+          "id": "AT-004",
+          "given": "User uploads pilot data with missing required columns",
+          "when": "Upload is submitted",
+          "then": "API returns validation errors specifying missing columns"
+        },
+        {
+          "id": "AT-005",
+          "given": "Authenticated user on /instruments/:id/hypotheses",
+          "when": "User submits a non-empty hypothesis description",
+          "then": "Hypothesis is saved and appears in hypotheses list"
+        },
+        {
+          "id": "AT-006",
+          "given": "User triggers analysis job with valid analysisTypes",
+          "when": "POST /api/instruments/:id/analysis is called",
+          "then": "Job is enqueued and jobId returned; status API reflects job progress"
+        },
+        {
+          "id": "AT-007",
+          "given": "Analysis job completes successfully",
+          "when": "User requests analysis results",
+          "then": "Results include reliability metrics, factor analysis data, and visualization references"
+        },
+        {
+          "id": "AT-008",
+          "given": "User requests report export in PDF format",
+          "when": "POST /api/instruments/:id/report/export is called",
+          "then": "ReportGenerationJob runs and downloadUrl for PDF is returned"
+        },
+        {
+          "id": "AT-009",
+          "given": "User uploads file exceeding size limit",
+          "when": "Upload is attempted",
+          "then": "API rejects upload with error message about file size"
+        },
+        {
+          "id": "AT-010",
+          "given": "Unauthorized user attempts to access another user's instrument",
+          "when": "API request is made",
+          "then": "API returns HTTP 403 Forbidden"
+        },
+        {
+          "id": "AT-011",
+          "given": "External survey platform integration fails due to invalid credentials",
+          "when": "User initiates data import",
+          "then": "User receives detailed error message and retry option"
+        },
+        {
+          "id": "AT-012",
+          "given": "Simultaneous uploads on same instrument",
+          "when": "Second upload starts before first completes",
+          "then": "Second upload is rejected with concurrency conflict error"
+        }
+      ],
+      "buildOrder": [
+        "Setup Prisma models and database schema for all data models",
+        "Implement user authentication backend (POST /api/login) and session management",
+        "Build frontend login page and authentication flow",
+        "Implement instrument CRUD API endpoints and frontend instrument dashboard",
+        "Develop file upload API with validation and storage; build upload page UI",
+        "Implement hypothesis management API and frontend page",
+        "Develop job queue infrastructure and PsychometricAnalysisJob worker",
+        "Implement analysis API endpoints and frontend analysis dashboard with polling",
+        "Build report retrieval and export APIs and frontend report page",
+        "Implement ReportGenerationJob background worker",
+        "Integrate external survey platform connectors and DataImportJob",
+        "Add concurrency control and error handling mechanisms",
+        "Implement security hardening and input sanitization",
+        "Add comprehensive acceptance tests and error handling flows"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/instruments",
+          "/instruments/[id]/upload",
+          "/instruments/[id]/hypotheses",
+          "/instruments/[id]/analysis",
+          "/instruments/[id]/report"
+        ],
+        "apiFilesToCreate": [
+          "/api/login.ts",
+          "/api/instruments/index.ts",
+          "/api/instruments/[id]/upload.ts",
+          "/api/instruments/[id]/hypotheses.ts",
+          "/api/instruments/[id]/analysis.ts",
+          "/api/analysis/[jobId]/status.ts",
+          "/api/instruments/[id]/report.ts",
+          "/api/instruments/[id]/report/export.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Instrument",
+          "InstrumentItem",
+          "PilotDataUpload",
+          "Hypothesis",
+          "AnalysisResult",
+          "ValidationReport"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to identify missing constraints or details about the psychometric validation tool requirements.",
+        "promptTemplate": "You are the Planner refining the requirements for the Psychometric Instrument Validation tool. Given the current blueprint and user input:\n\nUser input: {{USER_INPUT}}\n\nBlueprint: {{BLUEPRINT}}\n\nList any missing constraints, unclear requirements, or potential risks that should be addressed before development."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the detailed page routes, API endpoints, and data models for the psychometric validation platform.",
+        "promptTemplate": "You are the Architect designing the Psychometric Instrument Validation system. Given the refined requirements and blueprint:\n\nRequirements: {{REQUIREMENTS}}\n\nBlueprint: {{BLUEPRINT}}\n\nDefine the final set of pages, API routes, and data models needed to support the core workflows."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create scaffold code or detailed descriptions for the frontend pages and API endpoints to jumpstart development.",
+        "promptTemplate": "You are the Builder tasked with generating initial page stubs and API endpoint skeletons for the Psychometric Validation tool.\n\nDesign: {{DESIGN}}\n\nGenerate code templates or detailed outlines for each required frontend page and API endpoint."
+      },
+      {
+        "id": "integrator-wireup",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Plan integration steps to connect frontend pages, backend APIs, and database models ensuring smooth data flow and authentication.",
+        "promptTemplate": "You are the Integrator planning the wiring of frontend pages, backend APIs, and database models for the Psychometric Validation platform.\n\nPages: {{PAGES}}\nAPIs: {{APIS}}\nData Models: {{DATA_MODELS}}\n\nOutline the integration steps, authentication flows, and error handling to ensure full system functionality."
+      }
+    ]
+  }
+}

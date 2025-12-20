@@ -1,0 +1,667 @@
+{
+  "slug": "academic-lab-inventory-expiry-usage-optimizer",
+  "title": "Academic Research Lab Inventory Expiry & Usage Optimizer",
+  "description": "Input your lab's inventory data including items, batches with expiry dates, and usage logs to receive prioritized expiry risk alerts and reorder recommendations. Designed to reduce waste and prevent shortages in academic research labs.",
+  "inputLabel": "Paste or upload your inventory data (JSON or CSV format) including items, batches, and usage logs:",
+  "outputLabel": "Expiry & Usage Optimization Report:",
+  "systemPrompt": "You are an assistant specialized in optimizing academic research lab inventory management. Given inventory data with items, batches (including expiry dates), and usage logs, generate prioritized expiry risk alerts and reorder recommendations. Reject any requests missing required fields or containing invalid data (e.g., expiry date before purchase date, zero or negative usage quantity). Do not provide medical, legal, or detailed safety compliance advice beyond general alerts. Output a clear report in plain text summarizing expiry risks, usage trends, and suggested reorder actions. If structured-output feature is enabled, output valid JSON matching the inventory alert schema. Enforce strict data validation and ensure responses are safe and actionable.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Alerts",
+      "prompt": "Analyze the provided inventory data and generate a concise summary of expiry risks and reorder recommendations prioritized by urgency."
+    },
+    {
+      "label": "Detailed Usage Trends",
+      "prompt": "Analyze the inventory and usage logs to provide detailed insights on consumption trends and suggest optimized reorder schedules."
+    },
+    {
+      "label": "Validation Check",
+      "prompt": "Validate the submitted inventory data for missing fields, incorrect date ranges, and logical inconsistencies. Report all detected issues."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, please produce a JSON object with fields: alerts (array of {itemName, batchNumber, expiryDate, riskLevel, recommendedAction}), usageTrends (array of {itemName, averageUsagePerPeriod}), and reorderSchedule (array of {itemName, suggestedReorderDate, quantity}).",
+  "clarifyPrompt": "Please provide the inventory data including item names, batch details with expiry dates, and usage logs. Ensure data validity to receive accurate alerts and recommendations.",
+  "finalizePrompt": "Review the generated expiry and usage optimization report. Confirm if you want to save or export this data, or if you need a more detailed analysis.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Lab Inventory Expiry & Usage Optimizer",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Managing chemical reagents, biological samples, and consumables inventory with expiry dates and usage tracking"
+      },
+      "problem": "Academic research labs struggle to efficiently track the expiry dates and usage rates of various reagents, biological samples, and consumables, leading to waste from expired materials, unexpected shortages, and disruptions in experimental workflows.",
+      "inputs": [
+        "Inventory item names and categories (e.g., reagent, sample, consumable)",
+        "Batch numbers and lot details",
+        "Purchase dates and expiry dates",
+        "Current stock quantities",
+        "Usage logs or consumption rates",
+        "Storage conditions and locations"
+      ],
+      "outputs": [
+        "Expiry risk alerts and prioritized inventory usage recommendations",
+        "Optimized reorder schedules based on consumption trends",
+        "Summary reports on inventory status, waste reduction opportunities, and cost savings",
+        "Dashboard visualizing inventory health, upcoming expirations, and usage metrics"
+      ],
+      "whyItWins": [
+        "Focuses specifically on inventory expiry and usage optimization, distinct from general equipment tracking or budgeting tools",
+        "Addresses a common pain point causing waste and experiment delays in academic labs",
+        "Provides actionable, prioritized alerts to prevent costly material expiry",
+        "Supports repeated, ongoing inventory management workflows",
+        "Delivers cost-saving insights and helps labs comply with safety standards related to chemical and biological material handling"
+      ],
+      "upgradePath": {
+        "today": "Lightweight single-page app to input current inventory and usage data with basic expiry alerts and manual reorder reminders",
+        "in90Days": "Add automated consumption trend analysis, batch tracking, and customizable alert settings; integrate barcode or QR code scanning for easier inventory updates",
+        "in12Months": "Develop a multi-page system with user roles (lab staff, managers), automated procurement integration, mobile app support, detailed analytics dashboards, and compliance documentation exports"
+      },
+      "riskNotes": [
+        "Must ensure data privacy and secure handling of potentially sensitive chemical and biological inventory information",
+        "Avoid offering medical, legal, or safety compliance advice beyond general alerts to remain safe and non-advisory",
+        "Require user validation for critical alerts to prevent accidental disposal or procurement errors",
+        "Ensure scalability to handle diverse lab inventory types and varying complexity"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An inventory management system tailored for academic research labs to track expiry dates and usage of reagents, samples, and consumables, providing prioritized alerts, usage optimization, and reorder recommendations to reduce waste and avoid experiment disruptions.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Reduction in expired inventory waste by X%",
+        "Improved on-time reorder rates to prevent stockouts",
+        "User engagement with expiry alerts and reorder recommendations",
+        "Accuracy and completeness of inventory and usage data logged",
+        "User satisfaction with dashboard insights and reports"
+      ],
+      "components": [
+        {
+          "id": "ui_inventoryManagement",
+          "name": "Inventory Management UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for inventory data entry, usage logging, batch tracking, and viewing alerts and reports.",
+          "dependsOn": [
+            "api_inventory",
+            "api_alerts"
+          ],
+          "notes": [
+            "Supports barcode/QR code scanning integration in future upgrades",
+            "Includes input validation to prevent data entry errors"
+          ]
+        },
+        {
+          "id": "ui_dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Visualize inventory health, upcoming expirations, usage metrics, and cost-saving insights.",
+          "dependsOn": [
+            "api_inventory",
+            "api_alerts",
+            "api_reports"
+          ],
+          "notes": [
+            "Supports filtering by category, location, expiry risk",
+            "Designed for quick actionable insights"
+          ]
+        },
+        {
+          "id": "api_inventory",
+          "name": "Inventory API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for inventory items, batches, usage logs, and storage locations.",
+          "dependsOn": [
+            "data_inventory"
+          ],
+          "notes": [
+            "Enforces data validation and access control",
+            "Supports batch and lot number tracking"
+          ]
+        },
+        {
+          "id": "api_alerts",
+          "name": "Alerts & Recommendations API",
+          "type": "api",
+          "responsibility": "Generate expiry risk alerts, usage-based reorder suggestions, and prioritized inventory usage recommendations.",
+          "dependsOn": [
+            "data_inventory",
+            "job_consumptionAnalysis"
+          ],
+          "notes": [
+            "Allows user customization of alert thresholds",
+            "Requires user confirmation for critical alerts"
+          ]
+        },
+        {
+          "id": "api_reports",
+          "name": "Reporting API",
+          "type": "api",
+          "responsibility": "Produce summary reports on inventory status, waste reduction opportunities, and cost savings.",
+          "dependsOn": [
+            "data_inventory",
+            "job_consumptionAnalysis"
+          ],
+          "notes": [
+            "Supports export to common formats (CSV, PDF) in future upgrades",
+            "Aggregates historical usage and expiry data"
+          ]
+        },
+        {
+          "id": "data_inventory",
+          "name": "Inventory Database",
+          "type": "data",
+          "responsibility": "Persist inventory items, batches, usage logs, storage locations, and user settings.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive data encrypted at rest",
+            "Indexes on expiry dates, batch numbers, and categories for efficient queries"
+          ]
+        },
+        {
+          "id": "job_consumptionAnalysis",
+          "name": "Consumption Trend Analysis Job",
+          "type": "job",
+          "responsibility": "Periodically analyze usage logs to identify consumption trends and update reorder recommendations.",
+          "dependsOn": [
+            "data_inventory"
+          ],
+          "notes": [
+            "Runs daily or weekly depending on system load",
+            "Handles missing or inconsistent usage data gracefully"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "InventoryItem",
+          "purpose": "Represent a chemical reagent, biological sample, or consumable in the lab inventory.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "category",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "storageLocation",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "name",
+            "category"
+          ]
+        },
+        {
+          "name": "Batch",
+          "purpose": "Track batch or lot details associated with an inventory item including expiry and purchase info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "inventoryItemId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "batchNumber",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "purchaseDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "expiryDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "quantity",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "storageConditions",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "inventoryItemId",
+            "batchNumber",
+            "expiryDate"
+          ]
+        },
+        {
+          "name": "UsageLog",
+          "purpose": "Record consumption events for inventory batches to track usage rates.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "batchId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "date",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "quantityUsed",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "batchId",
+            "date"
+          ]
+        },
+        {
+          "name": "UserSettings",
+          "purpose": "Store user preferences including alert thresholds and notification settings.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alertThresholdDays",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "notificationPreferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/inventory",
+          "title": "Inventory Management",
+          "purpose": "Allow users to add, edit, and view inventory items, batches, and usage logs.",
+          "inputs": [
+            "Inventory item details",
+            "Batch info",
+            "Usage logs"
+          ],
+          "outputs": [
+            "Inventory lists",
+            "Batch details",
+            "Usage history"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Inventory Dashboard",
+          "purpose": "Provide visual summaries of inventory health, upcoming expirations, and usage metrics.",
+          "inputs": [],
+          "outputs": [
+            "Expiry alerts",
+            "Usage trends",
+            "Reorder recommendations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/alerts",
+          "title": "Alerts & Recommendations",
+          "purpose": "Display prioritized expiry risk alerts and reorder suggestions with user action options.",
+          "inputs": [],
+          "outputs": [
+            "Alert lists",
+            "Action confirmations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reports",
+          "purpose": "Generate and view summary reports on inventory status, waste reduction, and cost savings.",
+          "inputs": [
+            "Report parameters (date range, categories)"
+          ],
+          "outputs": [
+            "Summary reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings",
+          "purpose": "Configure alert thresholds, notification preferences, and other user-specific settings.",
+          "inputs": [
+            "Alert threshold days",
+            "Notification preferences"
+          ],
+          "outputs": [
+            "Updated user settings confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/inventory",
+          "method": "GET",
+          "purpose": "Retrieve inventory items with optional filters.",
+          "requestShape": "query params: category?, storageLocation?",
+          "responseShape": "list of InventoryItem",
+          "auth": "user"
+        },
+        {
+          "route": "/api/inventory",
+          "method": "POST",
+          "purpose": "Create or update an inventory item.",
+          "requestShape": "InventoryItem object",
+          "responseShape": "InventoryItem with id",
+          "auth": "user"
+        },
+        {
+          "route": "/api/batches",
+          "method": "GET",
+          "purpose": "Retrieve batches for a given inventory item.",
+          "requestShape": "query param: inventoryItemId",
+          "responseShape": "list of Batch",
+          "auth": "user"
+        },
+        {
+          "route": "/api/batches",
+          "method": "POST",
+          "purpose": "Create or update batch information.",
+          "requestShape": "Batch object",
+          "responseShape": "Batch with id",
+          "auth": "user"
+        },
+        {
+          "route": "/api/usage",
+          "method": "POST",
+          "purpose": "Log usage of a batch.",
+          "requestShape": "UsageLog object",
+          "responseShape": "UsageLog with id",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts",
+          "method": "GET",
+          "purpose": "Fetch current expiry risk alerts and reorder recommendations.",
+          "requestShape": "none",
+          "responseShape": "list of alerts with priority and details",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports",
+          "method": "POST",
+          "purpose": "Generate inventory summary reports based on parameters.",
+          "requestShape": "{ dateRange: {start: date, end: date}, categories?: string[] }",
+          "responseShape": "Report data object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/settings",
+          "method": "GET",
+          "purpose": "Retrieve user settings.",
+          "requestShape": "none",
+          "responseShape": "UserSettings object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/settings",
+          "method": "POST",
+          "purpose": "Update user settings.",
+          "requestShape": "UserSettings object",
+          "responseShape": "Updated UserSettings confirmation",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Consumption Trend Analysis",
+          "trigger": "Scheduled daily or weekly",
+          "purpose": "Analyze usage logs to identify consumption trends and update reorder recommendations accordingly."
+        }
+      ],
+      "edgeCases": [
+        "Handling missing or incorrect expiry dates in batch data",
+        "Usage logs entered with future dates or zero/negative quantities",
+        "Simultaneous edits to inventory or batch data causing conflicts",
+        "Users ignoring or dismissing critical alerts leading to waste or shortages",
+        "Inventory items without batch or expiry data (e.g., consumables without expiry)",
+        "Scaling to large inventories with thousands of items and usage logs",
+        "Data privacy breaches exposing sensitive chemical or biological inventory details",
+        "System downtime or failures causing delayed alerts or data loss"
+      ],
+      "nonGoals": [
+        "Providing medical, legal, or detailed safety compliance advice beyond general alerts",
+        "Automated procurement or purchasing without user validation",
+        "Equipment or non-inventory asset tracking",
+        "Budgeting or financial accounting beyond basic cost-saving insights",
+        "Mobile app support in initial releases (planned for long-term upgrade)",
+        "Full barcode/QR code scanning integration in initial MVP"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages (/inventory, /dashboard, /alerts, /reports, /settings).",
+        "Inventory Management UI (/inventory) fetches inventory items and batches via GET /api/inventory and /api/batches with optional filters.",
+        "Users create or update inventory items and batches via POST /api/inventory and /api/batches respectively, sending validated data objects.",
+        "Usage logs are created via POST /api/usage to record consumption events linked to batches.",
+        "Dashboard UI (/dashboard) fetches aggregated inventory health, expiry alerts, usage trends, and reorder recommendations from GET /api/inventory, GET /api/alerts, and POST /api/reports.",
+        "Alerts UI (/alerts) fetches prioritized alerts and reorder suggestions from GET /api/alerts and allows user confirmation actions to be sent back via POST endpoints if needed.",
+        "Reports UI (/reports) sends report parameters (date range, categories) via POST /api/reports and receives summarized report data.",
+        "Settings UI (/settings) fetches and updates user preferences via GET and POST /api/settings.",
+        "Background job 'Consumption Trend Analysis' runs daily/weekly, reads usage logs and inventory data from the database, analyzes consumption trends, and updates reorder recommendations stored in the database or cache accessible by Alerts API.",
+        "APIs enforce authentication, validate inputs, and interact with Prisma models to persist or retrieve data from the inventory database.",
+        "UI components consume API responses and render data with filtering, sorting, and actionable alerts.",
+        "User actions on alerts (e.g., dismiss or confirm) update user settings or alert status via API calls."
+      ],
+      "validationRules": [
+        "InventoryItem: 'id' required for updates, 'name' and 'category' required non-empty strings, 'storageLocation' optional string, 'notes' optional string.",
+        "Batch: 'id' required for updates, 'inventoryItemId' must reference existing InventoryItem, 'batchNumber' non-empty string, 'purchaseDate' and 'expiryDate' valid dates with expiryDate >= purchaseDate, 'quantity' positive number, 'storageConditions' optional string.",
+        "UsageLog: 'id' required for updates, 'batchId' must reference existing Batch, 'date' cannot be in the future, 'quantityUsed' positive number, 'userId' optional but if present must be valid user.",
+        "UserSettings: 'userId' required and must match authenticated user, 'alertThresholdDays' optional positive integer, 'notificationPreferences' optional JSON object with defined schema for notification types.",
+        "API query parameters: category and storageLocation filters must be valid strings if provided.",
+        "Report parameters: dateRange.start and dateRange.end required and valid dates with start <= end, categories optional array of valid category strings.",
+        "Reject requests with missing required fields, invalid data types, or logical inconsistencies (e.g., expiryDate before purchaseDate).",
+        "Prevent simultaneous conflicting updates by implementing optimistic concurrency control or versioning where applicable."
+      ],
+      "errorHandling": [
+        "All API routes return standardized error responses with HTTP status codes: 400 for validation errors, 401 for unauthorized access, 404 for not found resources, 409 for conflicts, 500 for server errors.",
+        "Validation errors include detailed messages specifying invalid fields and reasons.",
+        "APIs log errors server-side with context for debugging and monitoring.",
+        "UI displays user-friendly error messages and guides users to correct input errors.",
+        "Background job handles missing or inconsistent usage data gracefully by skipping invalid records and logging warnings without failing the entire job.",
+        "APIs handle race conditions by checking data existence before updates and returning conflict errors if data changed concurrently.",
+        "Critical alerts require user confirmation; if ignored, system logs the dismissal and continues to remind or escalate as per user settings.",
+        "Fallback UI states handle API downtime by showing cached data or informative messages about temporary unavailability."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user context; enforce authorization checks to ensure users can only access their lab's inventory data.",
+        "Sensitive inventory data is encrypted at rest in the database using Prisma's encryption capabilities or underlying DB encryption.",
+        "Input validation prevents injection attacks and ensures data integrity.",
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Implement rate limiting and monitoring on APIs to prevent abuse.",
+        "User settings and alert preferences are scoped per user to prevent data leakage.",
+        "Audit logs record critical actions such as inventory updates and alert dismissals for traceability.",
+        "Ensure background job accesses data with least privilege and does not expose sensitive information in logs.",
+        "Plan for future integration of barcode/QR scanning with secure handling of scanned data."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /inventory page",
+          "when": "The user creates a new inventory item with valid name and category",
+          "then": "The item is saved successfully, and appears in the inventory list with correct details"
+        },
+        {
+          "id": "AT-002",
+          "given": "An existing inventory item with batches",
+          "when": "The user adds a batch with expiryDate before purchaseDate",
+          "then": "The API rejects the request with a validation error indicating invalid date range"
+        },
+        {
+          "id": "AT-003",
+          "given": "A batch with valid expiryDate approaching within user alert threshold",
+          "when": "The background job runs and the user accesses /alerts",
+          "then": "The expiry risk alert for that batch appears with correct priority and details"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user submits a usage log with quantityUsed as zero",
+          "when": "The API processes the request",
+          "then": "The API rejects the request with a validation error about quantityUsed being positive"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user updates their alertThresholdDays in /settings",
+          "when": "The user saves the settings",
+          "then": "The updated settings are persisted and reflected in subsequent alert calculations"
+        },
+        {
+          "id": "AT-006",
+          "given": "Multiple users attempt to update the same batch simultaneously",
+          "when": "Conflicting updates occur",
+          "then": "The API returns a conflict error for the second update, preventing data corruption"
+        },
+        {
+          "id": "AT-007",
+          "given": "The user requests a report with a valid date range and categories",
+          "when": "The report is generated via POST /api/reports",
+          "then": "The response contains accurate summary data matching the parameters"
+        },
+        {
+          "id": "AT-008",
+          "given": "An unauthenticated user attempts to access /api/inventory",
+          "when": "The request is made",
+          "then": "The API returns a 401 Unauthorized error"
+        },
+        {
+          "id": "AT-009",
+          "given": "The system experiences temporary database downtime",
+          "when": "User accesses /dashboard",
+          "then": "The UI shows an informative error message and does not crash"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user dismisses a critical alert in /alerts",
+          "when": "The dismissal is confirmed",
+          "then": "The alert is marked as dismissed and does not reappear unless conditions change"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for InventoryItem, Batch, UsageLog, UserSettings with indexes and encryption.",
+        "Implement API routes for inventory CRUD (/api/inventory), batch CRUD (/api/batches), and usage logging (/api/usage) with validation and auth.",
+        "Implement user settings API (/api/settings) with get and update endpoints.",
+        "Implement alerts API (/api/alerts) to generate expiry and reorder alerts based on inventory and usage data.",
+        "Implement reports API (/api/reports) to generate summary reports based on parameters.",
+        "Develop Inventory Management UI (/inventory) integrating inventory, batch, and usage APIs with input validation.",
+        "Develop Dashboard UI (/dashboard) consuming inventory, alerts, and reports APIs with filtering and visualization.",
+        "Develop Alerts UI (/alerts) to display alerts and handle user confirmations.",
+        "Develop Reports UI (/reports) to input parameters and display report summaries.",
+        "Develop Settings UI (/settings) to view and update user preferences.",
+        "Implement background job for Consumption Trend Analysis to update reorder recommendations.",
+        "Add error handling and user-friendly messages across UI and API layers.",
+        "Add security layers: authentication, authorization, encryption, and audit logging.",
+        "Conduct acceptance testing and edge case validation.",
+        "Plan for future upgrades: barcode scanning, export formats, mobile support."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/inventory",
+          "/dashboard",
+          "/alerts",
+          "/reports",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "/api/inventory.ts",
+          "/api/batches.ts",
+          "/api/usage.ts",
+          "/api/alerts.ts",
+          "/api/reports.ts",
+          "/api/settings.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model InventoryItem { id String @id @default(uuid()) name String category String storageLocation String? notes String? @@index([name]) @@index([category]) }",
+          "model Batch { id String @id @default(uuid()) inventoryItemId String batchNumber String purchaseDate DateTime expiryDate DateTime quantity Float storageConditions String? @@index([inventoryItemId]) @@index([batchNumber]) @@index([expiryDate]) }",
+          "model UsageLog { id String @id @default(uuid()) batchId String date DateTime quantityUsed Float userId String? @@index([batchId]) @@index([date]) }",
+          "model UserSettings { userId String @id alertThresholdDays Int? notificationPreferences Json? @@index([userId]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, preferences, or special scenarios to better tailor the inventory expiry and usage optimizer.",
+        "promptTemplate": "You are a planner helping to refine the requirements for the Academic Research Lab Inventory Expiry & Usage Optimizer. Given the current blueprint: {{BLUEPRINT}}, and user input: {{USER_INPUT}}, ask clarifying questions to identify missing constraints, specific lab workflows, or preferences that should be considered in the design."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Detail and finalize the UI pages and data models needed for the system based on refined requirements.",
+        "promptTemplate": "You are an architect tasked with finalizing UI pages and data models for the Academic Research Lab Inventory Expiry & Usage Optimizer. Based on the current blueprint: {{BLUEPRINT}}, expanded specs: {{EXPANDED}}, and user input: {{USER_INPUT}}, provide detailed page definitions, data model schemas, and API outlines."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create scaffolded code stubs for the UI pages to accelerate frontend development.",
+        "promptTemplate": "You are a builder generating page stubs for the Academic Research Lab Inventory Expiry & Usage Optimizer UI. Using the finalized pages from blueprint: {{BLUEPRINT}}, expanded specs: {{EXPANDED}}, and user input: {{USER_INPUT}}, create basic UI page code stubs including placeholders for data fetching and UI elements."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration connecting UI pages with API endpoints and underlying database models.",
+        "promptTemplate": "You are an integrator wiring the UI pages to API endpoints and the database for the Academic Research Lab Inventory Expiry & Usage Optimizer. Based on the blueprint: {{BLUEPRINT}}, expanded specs: {{EXPANDED}}, and user input: {{USER_INPUT}}, provide integration code snippets and descriptions that connect frontend pages with backend APIs and database operations."
+      }
+    ]
+  }
+}

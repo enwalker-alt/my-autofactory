@@ -1,0 +1,625 @@
+{
+  "slug": "academic-research-dashboard-designer",
+  "title": "Academic Research Data Visualization Dashboard Designer",
+  "description": "Upload your raw research datasets and define research goals to receive an initial multi-chart dashboard wireframe proposal with chart type recommendations and interaction design ideas tailored for academic research data analysis and communication.",
+  "inputLabel": "Upload dataset file (CSV, XLSX, JSON) and enter research goals",
+  "outputLabel": "Dashboard Wireframe Proposal",
+  "systemPrompt": "You are an academic research dashboard design assistant. You will analyze an uploaded dataset file and the user's research questions, target audience, and optional preferred chart types to generate a structured multi-chart dashboard layout plan, chart visualization specs, interaction design outline, and narrative annotation suggestions. Only accept input files in CSV, XLSX, or JSON format under size limits. Validate and refuse unsupported or corrupt files with clear error messages. Ensure outputs are clear, publication-quality dashboard proposals focused on clarity and academic communication. Do not provide advanced statistical analysis or replace domain expert interpretation. Refuse requests that involve unsupported file formats, personal data exposure, or non-academic use. Output must be plain text summarizing the dashboard proposal, optionally formatted as JSON if requested. Enforce strict data privacy and user ownership rules.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "High-level Proposal",
+      "prompt": "Analyze the uploaded dataset and research goals to produce an initial multi-chart dashboard wireframe with chart type recommendations and interaction design ideas. Focus on clarity and academic audience communication."
+    },
+    {
+      "label": "Detailed Chart Specs",
+      "prompt": "Provide detailed chart specifications and data mappings for each recommended chart in the dashboard proposal, including visualization styles and interaction details."
+    },
+    {
+      "label": "Narrative Annotation Suggestions",
+      "prompt": "Suggest narrative annotations and key insight highlights for the proposed dashboard to support data storytelling tailored to the target audience."
+    },
+    {
+      "label": "Interaction Design Outline",
+      "prompt": "Outline user interaction designs such as filtering, drill-downs, and linked views for the proposed dashboard to enhance exploratory analysis."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output JSON must include keys: layoutPlan (object), chartSpecifications (array), interactionDesign (object), annotations (array).",
+  "clarifyPrompt": "Please provide the research questions or hypotheses, target audience description, and optionally preferred chart types or draft figures. Upload your dataset file in CSV, XLSX, or JSON format. Maximum file size is 10MB.",
+  "finalizePrompt": "Review the generated dashboard wireframe proposal. If you want to customize chart configurations, filters, or annotations, please proceed to the dashboard editor. You can also export the dashboard to supported visualization platforms.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Visualization Dashboard Designer",
+      "niche": {
+        "role": "Academic Research Data Analyst",
+        "scenario": "Designing interactive multi-chart dashboards for complex research datasets to explore and communicate findings"
+      },
+      "problem": "Academic researchers often struggle to create effective, interactive, and publication-quality multi-chart dashboards that integrate diverse data types and support exploratory data analysis and stakeholder communication. Existing tools focus on static visualizations or single-chart outputs without guiding layout, interactivity design, or narrative flow tailored for academic workflows.",
+      "inputs": [
+        "Raw research dataset files (CSV, Excel, JSON)",
+        "Research questions or hypotheses text",
+        "Target audience description (e.g., peer reviewers, funding agencies, general public)",
+        "Preferred chart types or visualization styles (optional)",
+        "Existing draft figures or visual assets (optional)"
+      ],
+      "outputs": [
+        "Structured dashboard layout plan with multiple coordinated interactive charts",
+        "Chart-specific visualization specifications and data mappings",
+        "User interaction design outline (filtering, drill-downs, linked views)",
+        "Narrative annotation suggestions for key insights and data storytelling",
+        "Exportable dashboard prototype files or code snippets (e.g., for Tableau, Power BI, or web frameworks)"
+      ],
+      "whyItWins": [
+        "Addresses the unmet need for guided, integrated multi-chart dashboard design specialized for academic research data",
+        "Facilitates iterative refinement from raw data and research goals to polished, interactive visual storytelling",
+        "Supports diverse data types and audience tailoring, enhancing communication impact",
+        "Lowers the barrier for researchers without advanced data viz skills to produce publication- and presentation-ready dashboards",
+        "Has clear paths to integrate with existing data analysis pipelines and visualization platforms"
+      ],
+      "upgradePath": {
+        "today": "Provide a single-page tool that analyzes uploaded datasets and research goals to propose an initial multi-chart dashboard wireframe with chart type recommendations and interaction ideas.",
+        "in90Days": "Expand to a multi-page app enabling users to customize chart configurations, data filters, and annotation text, preview interactive dashboard mockups, and export specification reports.",
+        "in12Months": "Develop a full dashboard authoring system with live data integration, drag-and-drop layout editing, export to popular visualization platforms, collaboration features, and audience engagement analytics to support iterative research communication."
+      },
+      "riskNotes": [
+        "Must ensure data privacy and secure handling of potentially sensitive research datasets",
+        "Avoid producing overly complex visualizations that could confuse rather than clarify findings",
+        "Require clear disclaimers that tool assists design but does not replace domain expert data interpretation",
+        "Need to keep interface intuitive to not overwhelm researchers new to dashboarding"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An academic research dashboard designer that guides researchers from raw data and research questions to interactive multi-chart dashboard prototypes, supporting customization, narrative annotation, and export to visualization platforms.",
+      "primaryUser": "Academic Research Data Analyst",
+      "successMetrics": [
+        "Number of dashboards successfully created and exported",
+        "User satisfaction and perceived ease of use among researchers",
+        "Reduction in time from raw data upload to dashboard prototype",
+        "Diversity of data types and chart styles supported",
+        "Adoption rate of export features to popular visualization tools"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Data & Goals Upload UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload raw datasets, input research questions, audience descriptions, and optionally upload draft figures or specify preferred chart types.",
+          "dependsOn": [],
+          "notes": [
+            "Validate file formats and sizes",
+            "Provide feedback on data parsing success or errors",
+            "Ensure privacy by secure upload handling"
+          ]
+        },
+        {
+          "id": "api-analysis",
+          "name": "Dataset & Goals Analysis API",
+          "type": "api",
+          "responsibility": "Process uploaded datasets and research goals to generate initial multi-chart dashboard wireframe proposals including chart type recommendations and interaction ideas.",
+          "dependsOn": [
+            "data-datasets",
+            "data-goals"
+          ],
+          "notes": [
+            "Handle diverse data types and missing data gracefully",
+            "Detect data schema and suggest appropriate visualizations",
+            "Generate interaction design suggestions (filters, drill-downs)"
+          ]
+        },
+        {
+          "id": "ui-dashboardDesigner",
+          "name": "Dashboard Customization UI",
+          "type": "ui",
+          "responsibility": "Enable users to customize chart configurations, data filters, annotation text, and preview interactive dashboard mockups.",
+          "dependsOn": [
+            "api-analysis",
+            "data-dashboards"
+          ],
+          "notes": [
+            "Support iterative refinement and undo/redo",
+            "Keep interface intuitive to avoid overwhelming users",
+            "Allow saving and loading dashboard drafts"
+          ]
+        },
+        {
+          "id": "api-export",
+          "name": "Dashboard Export API",
+          "type": "api",
+          "responsibility": "Generate exportable dashboard prototype files or code snippets compatible with platforms like Tableau, Power BI, or web frameworks.",
+          "dependsOn": [
+            "data-dashboards"
+          ],
+          "notes": [
+            "Support multiple export formats",
+            "Validate export completeness and compatibility",
+            "Provide clear error messages on export failures"
+          ]
+        },
+        {
+          "id": "data-datasets",
+          "name": "Datasets Storage",
+          "type": "data",
+          "responsibility": "Persist uploaded raw datasets securely with metadata about upload time, user, and data schema.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive data at rest",
+            "Implement retention policies per privacy requirements"
+          ]
+        },
+        {
+          "id": "data-goals",
+          "name": "Research Goals Storage",
+          "type": "data",
+          "responsibility": "Store user inputs related to research questions, target audience, preferred chart types, and uploaded draft figures metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Link to corresponding dataset entries",
+            "Allow updates during iterative design"
+          ]
+        },
+        {
+          "id": "data-dashboards",
+          "name": "Dashboard Designs Storage",
+          "type": "data",
+          "responsibility": "Persist dashboard layout plans, chart specifications, interaction designs, annotations, and export metadata.",
+          "dependsOn": [
+            "data-datasets",
+            "data-goals"
+          ],
+          "notes": [
+            "Version dashboards for iterative refinement",
+            "Track export history and formats"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Dataset",
+          "purpose": "Store uploaded raw research datasets and metadata",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "dataSchema",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "encryptedDataLocation",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "ResearchGoal",
+          "purpose": "Store research questions, audience descriptions, preferred chart types, and draft figure metadata",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "researchQuestions",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetAudience",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preferredChartTypes",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "draftFiguresMetadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "datasetId"
+          ]
+        },
+        {
+          "name": "DashboardDesign",
+          "purpose": "Store dashboard layout, chart specs, interaction designs, annotations, and export info",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "layoutPlan",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "chartSpecifications",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "interactionDesign",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "annotations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "exportHistory",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastModified",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "datasetId",
+            "version"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Data & Define Goals",
+          "purpose": "Page for users to upload datasets, input research questions, audience info, and optionally upload draft figures or specify preferred charts.",
+          "inputs": [
+            "dataset files",
+            "research questions text",
+            "target audience description",
+            "preferred chart types",
+            "draft figures"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "data parsing feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard-proposal",
+          "title": "Dashboard Proposal",
+          "purpose": "Display the initial multi-chart dashboard wireframe with chart type and interaction recommendations based on uploaded data and goals.",
+          "inputs": [
+            "datasetId",
+            "researchGoalId"
+          ],
+          "outputs": [
+            "dashboard wireframe preview",
+            "chart recommendations",
+            "interaction ideas"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard-editor",
+          "title": "Dashboard Customization",
+          "purpose": "Allow users to customize charts, filters, annotations, and preview interactive dashboard mockups.",
+          "inputs": [
+            "dashboardDesignId"
+          ],
+          "outputs": [
+            "updated dashboard design",
+            "interactive preview"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/export",
+          "title": "Export Dashboard",
+          "purpose": "Provide options to export the dashboard design to various formats and platforms.",
+          "inputs": [
+            "dashboardDesignId",
+            "export format selection"
+          ],
+          "outputs": [
+            "export files or code snippets",
+            "export status"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/analyze",
+          "method": "POST",
+          "purpose": "Analyze uploaded dataset and research goals to generate initial dashboard proposal.",
+          "requestShape": "{ datasetId: string, researchGoalId: string }",
+          "responseShape": "{ dashboardProposal: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/saveDashboard",
+          "method": "POST",
+          "purpose": "Save or update a dashboard design with user customizations.",
+          "requestShape": "{ dashboardDesign: json }",
+          "responseShape": "{ success: boolean, dashboardDesignId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export",
+          "method": "POST",
+          "purpose": "Generate export files or code snippets for a dashboard design.",
+          "requestShape": "{ dashboardDesignId: string, format: string }",
+          "responseShape": "{ exportFileUrl: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/uploadDataset",
+          "method": "POST",
+          "purpose": "Upload raw dataset files securely.",
+          "requestShape": "multipart/form-data with file and metadata",
+          "responseShape": "{ datasetId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/saveResearchGoal",
+          "method": "POST",
+          "purpose": "Save research questions, audience, and preferences linked to a dataset.",
+          "requestShape": "{ researchGoal: json }",
+          "responseShape": "{ success: boolean, researchGoalId: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "DataSchemaExtraction",
+          "trigger": "On dataset upload",
+          "purpose": "Extract and validate data schema, detect data types and missing values to support visualization recommendations."
+        },
+        {
+          "name": "ExportFileGeneration",
+          "trigger": "On export request",
+          "purpose": "Generate export files or code snippets asynchronously and notify user upon completion."
+        },
+        {
+          "name": "DashboardVersionCleanup",
+          "trigger": "Scheduled (e.g., weekly)",
+          "purpose": "Archive or delete old dashboard versions according to retention policies to manage storage."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded datasets with inconsistent or missing data fields",
+        "Research questions or audience descriptions that are vague or conflicting",
+        "Users uploading unsupported file formats or corrupted files",
+        "Export failures due to unsupported chart types or platform limitations",
+        "Simultaneous edits causing dashboard version conflicts",
+        "Users abandoning incomplete dashboard drafts",
+        "Handling very large datasets that exceed processing limits"
+      ],
+      "nonGoals": [
+        "Performing advanced statistical analysis or data cleaning beyond basic schema extraction",
+        "Replacing domain expert interpretation of research data",
+        "Providing a full-featured visualization platform or runtime environment",
+        "Supporting non-academic or commercial dashboard use cases",
+        "Implementing real-time live data streaming or collaboration in initial phases"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses /upload page to submit dataset files and research goals.",
+        "UI-upload component sends multipart/form-data POST to /api/uploadDataset with file and metadata.",
+        "On successful upload, background job DataSchemaExtraction triggers to extract data schema and validate dataset.",
+        "User submits research goals via /api/saveResearchGoal linked to the uploaded dataset.",
+        "User navigates to /dashboard-proposal page, which fetches dashboard proposal by POSTing datasetId and researchGoalId to /api/analyze.",
+        "API-analysis processes dataset schema and research goals to generate initial dashboard wireframe proposals with chart and interaction recommendations.",
+        "User proceeds to /dashboard-editor page, loading dashboardDesignId to fetch and display current dashboard design.",
+        "UI-dashboardDesigner allows customization of charts, filters, annotations, and previews interactive mockups.",
+        "On save, UI-dashboardDesigner POSTs updated dashboardDesign JSON to /api/saveDashboard to persist changes and versioning.",
+        "User navigates to /export page, selects export format, and POSTs dashboardDesignId and format to /api/export.",
+        "API-export triggers ExportFileGeneration background job to asynchronously generate export files or code snippets.",
+        "Export status and downloadable links are provided to user upon completion.",
+        "DashboardVersionCleanup background job runs periodically to archive or delete old dashboard versions per retention policies."
+      ],
+      "validationRules": [
+        "Dataset upload: accept only supported file formats (e.g., CSV, XLSX, JSON), max file size limit enforced.",
+        "Dataset upload: validate file integrity and parseability before accepting.",
+        "Research goals: researchQuestions and targetAudience must be non-empty strings with reasonable length limits.",
+        "Preferred chart types and draft figures metadata must conform to predefined JSON schema if provided.",
+        "API-analyze: datasetId and researchGoalId must exist and belong to authenticated user.",
+        "Dashboard design JSON must conform to schema including layoutPlan, chartSpecifications, interactionDesign, and version number.",
+        "Export format must be one of supported platforms (e.g., Tableau, Power BI, Web).",
+        "Undo/redo operations in UI-dashboardDesigner must maintain consistent dashboard state.",
+        "Version conflicts on dashboard save must be detected and resolved (e.g., via optimistic locking)."
+      ],
+      "errorHandling": [
+        "Upload errors: return descriptive messages for unsupported formats, file size exceeded, or parse failures.",
+        "Authentication failures: return 401 Unauthorized with clear instructions to login.",
+        "Authorization errors: 403 Forbidden if user tries to access or modify data not owned by them.",
+        "API-analysis errors: handle missing or inconsistent data gracefully, return 400 with validation details.",
+        "Dashboard save conflicts: return 409 Conflict with version mismatch details and instructions to reload.",
+        "Export failures: return 500 with clear error messages indicating unsupported chart types or platform limitations.",
+        "Background job failures: log errors, notify users via UI status updates or notifications.",
+        "Network or server errors: return 500 with generic error message and retry options."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication and verify ownership of dataset, research goals, and dashboard designs.",
+        "Dataset files are stored encrypted at rest with access controls limiting to owning user.",
+        "File uploads sanitized to prevent injection or malware; scan files if possible.",
+        "Sensitive metadata and user inputs validated and sanitized to prevent XSS or injection attacks.",
+        "Use HTTPS for all data transmissions.",
+        "Implement rate limiting on upload and API endpoints to prevent abuse.",
+        "Background jobs run with least privilege and secure access to storage.",
+        "Retention policies ensure data is deleted or archived per privacy requirements."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on /upload page with a valid CSV dataset and research goals",
+          "when": "User uploads dataset and submits research goals",
+          "then": "System stores dataset and goals, triggers schema extraction, and returns upload confirmation with parsing feedback"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user with uploaded dataset and saved research goals",
+          "when": "User navigates to /dashboard-proposal and requests analysis",
+          "then": "System returns dashboard wireframe proposal with chart recommendations and interaction ideas"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /dashboard-editor with a dashboardDesignId",
+          "when": "User customizes charts, annotations, and saves dashboard design",
+          "then": "System persists updated dashboard design with incremented version and allows undo/redo"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user on /export page with a valid dashboardDesignId",
+          "when": "User selects export format and initiates export",
+          "then": "System triggers export job, eventually provides export file URL and status to user"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user attempts to upload unsupported file format or oversized file",
+          "when": "User submits upload",
+          "then": "System rejects upload with clear error message indicating the issue"
+        },
+        {
+          "id": "AT-006",
+          "given": "Two users attempt simultaneous edits on the same dashboard design version",
+          "when": "Second user tries to save outdated version",
+          "then": "System returns conflict error and prompts user to reload latest dashboard design"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user tries to access dashboard design or dataset not owned by them",
+          "when": "User requests data via API or UI",
+          "then": "System returns 403 Forbidden error"
+        }
+      ],
+      "buildOrder": [
+        "Implement Prisma models for Dataset, ResearchGoal, DashboardDesign with indexes and relations",
+        "Create API route /api/uploadDataset with file upload handling, validation, and storage encryption",
+        "Implement background job DataSchemaExtraction triggered on dataset upload",
+        "Create API route /api/saveResearchGoal to persist research goals linked to datasets",
+        "Develop /upload page UI with file upload and research goals input, integrating with uploadDataset and saveResearchGoal APIs",
+        "Create API route /api/analyze to generate dashboard proposals using dataset schema and research goals",
+        "Develop /dashboard-proposal page UI to display dashboard wireframe and recommendations",
+        "Create API route /api/saveDashboard to save and version dashboard designs with conflict detection",
+        "Develop /dashboard-editor page UI for dashboard customization, undo/redo, and preview",
+        "Create API route /api/export to initiate export jobs and return export status and URLs",
+        "Implement background job ExportFileGeneration for asynchronous export file creation",
+        "Develop /export page UI to select export formats and display export results",
+        "Implement background job DashboardVersionCleanup for retention policy enforcement",
+        "Add comprehensive validation and error handling across all APIs and UIs",
+        "Add authentication and authorization checks on all API routes and pages",
+        "Perform acceptance testing and edge case handling"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/dashboard-proposal",
+          "/dashboard-editor",
+          "/export"
+        ],
+        "apiFilesToCreate": [
+          "/api/uploadDataset.ts",
+          "/api/saveResearchGoal.ts",
+          "/api/analyze.ts",
+          "/api/saveDashboard.ts",
+          "/api/export.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Dataset { id String @id userId String filename String fileType String uploadDate DateTime dataSchema Json? encryptedDataLocation String @@index([userId]) @@index([uploadDate]) }",
+          "model ResearchGoal { id String @id datasetId String researchQuestions String targetAudience String preferredChartTypes Json? draftFiguresMetadata Json? lastUpdated DateTime @@index([datasetId]) }",
+          "model DashboardDesign { id String @id datasetId String layoutPlan Json chartSpecifications Json interactionDesign Json annotations Json? version Int exportHistory Json? lastModified DateTime @@index([datasetId]) @@index([version]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints, edge cases, and user needs for the academic research dashboard designer.",
+        "promptTemplate": "You are the Planner. Given the current blueprint and expanded specs: {{BLUEPRINT}}, {{EXPANDED}}, ask the user these questions to refine the requirements and constraints for the Academic Research Data Visualization Dashboard Designer. Include clarifications about data privacy, file size limits, user roles, and UX simplicity. Use user input: {{USER_INPUT}}."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define detailed page routes, API contracts, and database schemas for the dashboard designer application.",
+        "promptTemplate": "You are the Architect. Using the refined requirements: {{REFINED_REQUIREMENTS}}, finalize the multi-page app design including page routes, UI components, API endpoints, and data models for storing datasets, research goals, and dashboard designs. Reference blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial UI page and API route stubs for the dashboard designer application.",
+        "promptTemplate": "You are the Builder. Based on the finalized architecture: {{ARCHITECTURE}}, generate code stubs for the main pages (/upload, /dashboard-proposal, /dashboard-editor, /export) and API routes (/api/uploadDataset, /api/saveResearchGoal, /api/analyze, /api/saveDashboard, /api/export). Use placeholders for logic, include comments on validation and error handling."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages with backend APIs and database models ensuring authentication and data validation.",
+        "promptTemplate": "You are the Integrator. Using the page stubs and API definitions: {{BUILDER_OUTPUT}}, implement the wiring between frontend UI, backend API endpoints, and database models. Ensure authentication, authorization, input validation, error handling, and secure data storage. Follow security notes and acceptance tests from {{EXPANDED}}."
+      }
+    ]
+  }
+}

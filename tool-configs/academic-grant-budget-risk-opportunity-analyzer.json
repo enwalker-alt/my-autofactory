@@ -1,0 +1,470 @@
+{
+  "slug": "academic-grant-budget-risk-opportunity-analyzer",
+  "title": "Academic Research Grant Budget Risk & Opportunity Analyzer",
+  "description": "Upload multi-institutional grant budget drafts and funding rules to automatically detect financial risks, funding opportunity gaps, and optimization recommendations. Get structured reports and basic visualizations to support iterative budget planning and compliance.",
+  "inputLabel": "Upload Budget Drafts (CSV, Excel), Funding Rules (Text, PDF), and Optional Historical Data",
+  "outputLabel": "Risk & Opportunity Analysis Report with Visualizations",
+  "systemPrompt": "You are an expert assistant specialized in analyzing academic research grant budgets and funding rules. Given uploaded budget drafts and funder/institutional rules, parse and normalize the data, then generate a structured report highlighting financial risk areas (e.g., overspending risk, unallowable costs), funding opportunity gaps, and budget optimization recommendations. Provide clear, actionable insights without giving legal or compliance advice. Handle multi-institutional complexities and conflicting rules by including warnings and explanations. Refuse any requests unrelated to grant budget financial analysis or that attempt to solicit legal advice. Enforce strict validation of input file types and sizes. Output plain text report summaries with optional JSON structured details and visualization data conforming to expected schemas. Always include disclaimers about the non-legal advisory nature of the analysis.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Risk Focused Analysis",
+      "prompt": "Prioritize detection and explanation of financial risk areas, including overspending and unallowable costs in the uploaded budgets and rules."
+    },
+    {
+      "label": "Opportunity Focused Analysis",
+      "prompt": "Emphasize identification of overlooked funding opportunities and gaps in fund utilization based on the provided budgets and funding rules."
+    },
+    {
+      "label": "Optimization Recommendations",
+      "prompt": "Generate prioritized budget optimization recommendations to improve compliance and maximize fund utilization."
+    },
+    {
+      "label": "Balanced Report",
+      "prompt": "Provide a balanced report including financial risks, funding opportunities, and optimization recommendations with basic visualizations."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON fields: { riskAreas: array, opportunityGaps: array, optimizationRecommendations: array, visualizationData: object (charts data) }",
+  "clarifyPrompt": "Please upload your budget draft files (CSV or Excel), funding rule documents (text or PDF), and optionally historical spending data. Ensure files meet format and size requirements. Describe any specific focus areas or concerns for your analysis.",
+  "finalizePrompt": "Review the generated risk and opportunity analysis report and visualizations. Confirm if you want a downloadable summary report or further refinement of the analysis.",
+  "atlasBuildPlan": {
+    "level": "micro-tool",
+    "idea": {
+      "workingTitle": "Academic Research Grant Budget Risk & Opportunity Analyzer",
+      "niche": {
+        "role": "Academic Research Grant Financial Manager",
+        "scenario": "During multi-institutional grant budget planning and revision, financial managers need to identify potential financial risks, funding opportunities, and budget optimization possibilities to ensure compliance, maximize fund utilization, and reduce likelihood of audit issues."
+      },
+      "problem": "Current tools focus on budget compliance, consolidation, or scenario simulation but lack a specialized system to proactively analyze uploaded multi-institutional draft budgets and funding rules to automatically detect high-risk expense categories, overlooked funding opportunities, and optimization recommendations tailored to complex academic grant financial workflows.",
+      "inputs": [
+        "Multi-institutional grant budget draft tables (CSV, Excel)",
+        "Funder and institutional budget rules and constraints (text or document uploads)",
+        "Historical spending data or prior budget outcomes (optional upload)"
+      ],
+      "outputs": [
+        "Structured report highlighting financial risk areas with explanations (e.g., overspending risk, unallowable costs)",
+        "Identified funding opportunity gaps (e.g., eligible cost categories not fully utilized)",
+        "Budget optimization recommendations to improve compliance and maximize fund utilization",
+        "Visual dashboards summarizing risk and opportunity metrics per institution and cost category",
+        "Exportable summaries for stakeholder communication and audit preparation"
+      ],
+      "whyItWins": [
+        "Specialized focus on proactive financial risk and opportunity analysis beyond mere compliance or consolidation",
+        "Supports multi-institutional complexity typical in academic research grants",
+        "Combines quantitative budget data with qualitative funder/institutional rules",
+        "Provides actionable, prioritized recommendations rather than just raw data or rule checks",
+        "Designed for repeated iterative use during budget planning cycles",
+        "Clear upgrade path toward integrated multi-page budgeting, risk tracking, and collaboration system"
+      ],
+      "upgradePath": {
+        "today": "Single-page tool that accepts budget drafts and funding rules to produce initial risk and opportunity analysis reports with basic visualization charts.",
+        "in90Days": "Add interactive dashboards with drill-down filtering by institution, cost category, and risk level; enable side-by-side comparison across budget versions; support user annotations and export formats (PDF, Excel).",
+        "in12Months": "Develop a full multi-page app with collaborative budgeting workspace, dynamic budget revision tracking, automated alerts for emerging risks, integration with grant management systems, and scenario simulation to optimize funding allocations across multiple grants and institutions."
+      },
+      "riskNotes": [
+        "Ensure all uploaded budget and funding documents are handled securely and confidentially.",
+        "Avoid providing legal or compliance advice; focus on structured risk identification and recommendations.",
+        "Require user disclaimer that final budgeting decisions and compliance checks remain user responsibility.",
+        "Design careful parsing of funder rules to minimize false positives/negatives in risk detection."
+      ]
+    },
+    "blueprint": {
+      "level": "micro-tool",
+      "summary": "A single-page tool for academic research grant financial managers to upload multi-institutional draft budgets and funding rules, automatically analyze financial risks, funding opportunities, and optimization recommendations, and generate structured reports with basic visualizations.",
+      "primaryUser": "Academic Research Grant Financial Manager",
+      "successMetrics": [
+        "Number of budget analyses completed",
+        "User satisfaction with accuracy and usefulness of risk/opportunity reports",
+        "Reduction in overlooked funding opportunities in user budgets",
+        "User adoption rate for iterative budget planning cycles"
+      ],
+      "components": [
+        {
+          "id": "ui-upload-report",
+          "name": "Upload & Report UI",
+          "type": "ui",
+          "responsibility": "Provide interface for uploading budget drafts, funding rules, and optional historical data; display analysis results, risk/opportunity reports, and basic visualizations.",
+          "dependsOn": [
+            "api-analysis"
+          ],
+          "notes": [
+            "Must validate file formats and sizes.",
+            "Show clear error messages on upload/processing failures.",
+            "Display disclaimers about non-legal advisory nature."
+          ]
+        },
+        {
+          "id": "api-analysis",
+          "name": "Analysis API",
+          "type": "api",
+          "responsibility": "Accept uploaded data, parse and normalize budgets and rules, run risk/opportunity detection algorithms, generate structured reports and visualization data.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Implement modular parsers for CSV, Excel, and text documents.",
+            "Handle multi-institutional budget complexities.",
+            "Apply configurable rules engine to detect risks and opportunities.",
+            "Ensure secure handling of sensitive financial data."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage",
+          "type": "data",
+          "responsibility": "Persist uploaded budgets, funding rules, analysis reports, and user metadata securely for iterative use and audit trail.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive data at rest.",
+            "Design schema to link budgets with institutions and analysis results.",
+            "Support versioning for iterative budget uploads."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "BudgetUpload",
+          "purpose": "Store uploaded multi-institutional budget drafts with metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "FundingRule",
+          "purpose": "Store funder and institutional budget rules and constraints.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        },
+        {
+          "name": "AnalysisReport",
+          "purpose": "Store generated risk, opportunity, and optimization reports linked to uploads.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetUploadId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fundingRuleId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "riskAreas",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "opportunityGaps",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "optimizationRecommendations",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "visualizationData",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "budgetUploadId",
+            "generatedDate"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Grant Budget Risk & Opportunity Analyzer",
+          "purpose": "Single-page interface for uploading budgets and rules, viewing analysis results and visualizations.",
+          "inputs": [
+            "Budget draft files (CSV, Excel)",
+            "Funding rules documents (text, PDF)",
+            "Optional historical spending data"
+          ],
+          "outputs": [
+            "Structured risk and opportunity report",
+            "Basic visualization charts",
+            "Downloadable summary reports"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/analyze",
+          "method": "POST",
+          "purpose": "Receive uploaded files, run analysis, and return structured report and visualization data.",
+          "requestShape": "{ budgetFiles: File[], fundingRuleFiles: File[], historicalDataFiles?: File[] }",
+          "responseShape": "{ report: AnalysisReport, visualizations: json }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [],
+      "edgeCases": [
+        "Uploaded files with unsupported formats or corrupted content",
+        "Conflicting or ambiguous funding rules causing contradictory risk detection",
+        "Large multi-institutional budgets causing performance bottlenecks",
+        "Partial or missing data in budget drafts or funding rules",
+        "False positives/negatives in risk/opportunity detection due to parsing errors",
+        "User uploads sensitive data without encryption or secure transmission",
+        "Multiple uploads by same user requiring version control and report linking"
+      ],
+      "nonGoals": [
+        "Providing legal or compliance advice",
+        "Full collaborative budgeting workspace or multi-user editing",
+        "Real-time budget revision tracking or alerts",
+        "Integration with external grant management systems",
+        "Scenario simulation or advanced forecasting"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses the single-page UI at '/' to upload budget drafts, funding rules, and optional historical data files.",
+        "UI validates file formats (CSV, Excel for budgets; text, PDF for rules) and file sizes before submission.",
+        "On submission, UI sends a POST request to '/api/analyze' with the uploaded files in multipart/form-data.",
+        "API route '/api/analyze' receives files, authenticates request (public access but with rate limiting and validation).",
+        "API parses and normalizes budget files using modular parsers for CSV and Excel formats.",
+        "API parses funding rules documents (text and PDF) using dedicated parsers, extracting structured rules.",
+        "API optionally parses historical data files if provided.",
+        "API applies a configurable rules engine to detect financial risks, funding opportunities, and optimization recommendations, handling multi-institutional budget complexities.",
+        "API generates a structured AnalysisReport object including riskAreas, opportunityGaps, optimizationRecommendations, and visualizationData.",
+        "API persists BudgetUpload, FundingRule, and AnalysisReport entities in the database with encrypted sensitive data and versioning support.",
+        "API responds to UI with the AnalysisReport and visualization data.",
+        "UI displays structured reports, risk/opportunity summaries, basic visualizations (charts), and provides downloadable summary reports.",
+        "UI shows disclaimers about the non-legal advisory nature of the analysis.",
+        "User may iteratively upload new versions; system links reports to respective uploads and maintains audit trail."
+      ],
+      "validationRules": [
+        "Uploaded budget files must be CSV or Excel format; reject unsupported formats with clear error messages.",
+        "Funding rules must be text or PDF files; reject unsupported or corrupted files.",
+        "File size limits enforced (e.g., max 10MB per file) to prevent performance issues.",
+        "Uploaded files must contain required fields for budgets (e.g., institution, cost categories) and rules (e.g., constraints syntax).",
+        "API validates presence and correctness of required data fields after parsing; reject or flag incomplete or malformed data.",
+        "Version number auto-incremented or user-provided for multiple uploads by same user; must be unique per user upload sequence.",
+        "API enforces rate limiting and input sanitization to prevent injection or denial-of-service attacks.",
+        "Visualization data must conform to expected JSON schema for charts to prevent rendering errors.",
+        "User inputs and file metadata validated for length and character safety to prevent injection."
+      ],
+      "errorHandling": [
+        "UI displays user-friendly error messages for upload failures, including unsupported formats, file size exceeded, or corrupted files.",
+        "API returns HTTP 400 with detailed error messages for validation failures (e.g., missing required fields, parsing errors).",
+        "API returns HTTP 500 with generic error message for unexpected server errors; logs detailed error internally.",
+        "API handles conflicting or ambiguous funding rules by returning warnings in the report and highlighting contradictions.",
+        "Partial or missing data triggers warnings in the analysis report rather than full failure, allowing partial results.",
+        "Timeouts or performance bottlenecks return HTTP 503 with retry suggestions.",
+        "Sensitive data errors (e.g., encryption failures) cause API to reject upload with error and log incident.",
+        "UI shows disclaimers and error states clearly, preventing user confusion.",
+        "All errors logged with context for audit and debugging."
+      ],
+      "securityNotes": [
+        "All uploaded files and sensitive data encrypted at rest using database encryption features.",
+        "Secure transmission enforced via HTTPS for all API calls and UI interactions.",
+        "Input sanitization to prevent injection attacks on file content and metadata.",
+        "Rate limiting and request size limits to mitigate denial-of-service attacks.",
+        "Access control: API is public but should implement abuse detection and monitoring.",
+        "Sensitive financial data never logged in plaintext; logs redact sensitive fields.",
+        "Versioning and audit trail ensure traceability of uploads and reports.",
+        "No user authentication required, but consider optional user identification for audit and versioning.",
+        "Disclaimers inform users about data privacy and non-legal advisory nature.",
+        "Regular dependency and security patch updates for parsers and libraries."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "User is on the upload page with valid budget draft (CSV) and funding rule (text) files",
+          "when": "User uploads the files and submits for analysis",
+          "then": "The system accepts files, runs analysis, and displays structured risk and opportunity reports with visualizations"
+        },
+        {
+          "id": "AT-002",
+          "given": "User uploads a budget file in unsupported format (e.g., .exe)",
+          "when": "User attempts to submit files",
+          "then": "The UI rejects the upload and shows a clear error message about unsupported file format"
+        },
+        {
+          "id": "AT-003",
+          "given": "User uploads a corrupted funding rule PDF file",
+          "when": "User submits files for analysis",
+          "then": "API returns validation error; UI displays error message indicating corrupted file"
+        },
+        {
+          "id": "AT-004",
+          "given": "User uploads multiple budget drafts sequentially",
+          "when": "User submits each upload",
+          "then": "System stores each upload with incremented version numbers and links analysis reports accordingly"
+        },
+        {
+          "id": "AT-005",
+          "given": "Uploaded budget contains partial missing data fields",
+          "when": "Analysis runs",
+          "then": "System generates report with warnings about missing data but completes analysis and visualization"
+        },
+        {
+          "id": "AT-006",
+          "given": "Funding rules contain conflicting constraints",
+          "when": "Analysis runs",
+          "then": "System detects conflicts, includes warnings in report, and highlights contradictory rules"
+        },
+        {
+          "id": "AT-007",
+          "given": "User uploads files exceeding size limits",
+          "when": "User submits files",
+          "then": "UI rejects files with error messages about file size limits"
+        },
+        {
+          "id": "AT-008",
+          "given": "API encounters unexpected error during parsing",
+          "when": "User submits files",
+          "then": "API returns HTTP 500 with generic error; UI displays friendly error message"
+        },
+        {
+          "id": "AT-009",
+          "given": "User uploads valid files and receives analysis report",
+          "when": "User downloads summary report",
+          "then": "Downloaded report matches displayed analysis data and visualizations"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models for BudgetUpload, FundingRule, and AnalysisReport with encryption and versioning support",
+        "Implement modular parsers for budget files (CSV, Excel) and funding rules (text, PDF)",
+        "Develop API route '/api/analyze' to accept uploads, validate inputs, parse files, run rules engine, generate reports, and persist data",
+        "Create single-page React UI at '/' with file upload components, validation, error handling, and display of analysis results and visualizations",
+        "Integrate UI with API route, handling request/response contracts and error states",
+        "Implement visualization components for basic charts based on analysis data",
+        "Add disclaimers and user guidance in UI",
+        "Implement security measures: HTTPS enforcement, input sanitization, rate limiting, and encryption at rest",
+        "Write comprehensive acceptance tests and error handling scenarios",
+        "Perform performance testing and optimize for large multi-institutional budgets",
+        "Deploy and monitor system with logging and audit trails"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "pages/index.tsx"
+        ],
+        "apiFilesToCreate": [
+          "pages/api/analyze.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model BudgetUpload { id String @id @default(uuid()) userId String uploadDate DateTime fileName String fileType String content Json version Int? @@index([userId]) @@index([uploadDate]) }",
+          "model FundingRule { id String @id @default(uuid()) userId String uploadDate DateTime fileName String content String @@index([userId]) }",
+          "model AnalysisReport { id String @id @default(uuid()) budgetUploadId String fundingRuleId String generatedDate DateTime riskAreas Json opportunityGaps Json optimizationRecommendations Json visualizationData Json? @@index([budgetUploadId]) @@index([generatedDate]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, clarify user needs, and refine the detailed requirements for the tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease identify and ask questions about any missing functional or non-functional requirements, constraints, or edge cases to ensure a complete and safe tool design."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the list of pages, routes, API endpoints, and data models required for the tool.",
+        "promptTemplate": "Based on the refined requirements and blueprint: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease create a detailed specification of pages, API routes, and data models needed for implementation, ensuring security and safety."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffolded code stubs for the UI pages and components to start development.",
+        "promptTemplate": "Given the finalized page specs and data models: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease generate React page component stubs and UI scaffolds for the main user interface, including upload forms, validation, and display placeholders."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the integration between UI, API routes, and database models to enable full data flow and functionality.",
+        "promptTemplate": "With the UI page stubs, API routes, and data models defined: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease generate code and instructions to connect the front-end pages to backend API endpoints and database storage, including error handling and security measures."
+      }
+    ]
+  }
+}

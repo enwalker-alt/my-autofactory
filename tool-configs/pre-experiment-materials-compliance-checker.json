@@ -1,0 +1,720 @@
+{
+  "slug": "pre-experiment-materials-compliance-checker",
+  "title": "Pre-Experiment Materials Compliance & Readiness Checker",
+  "description": "Upload and analyze your pre-experiment documents to generate a compliance readiness report highlighting completeness, conformity with institutional guidelines, and risk flags before launching your study.",
+  "inputLabel": "Paste pre-experiment text or upload relevant documents (PDF, DOCX, XLSX, CSV, TXT)",
+  "outputLabel": "Compliance Readiness Report",
+  "systemPrompt": "You are an expert academic research compliance assistant. Accept uploaded files and text inputs describing pre-experiment materials including study protocols, consent forms, equipment logs, and institutional guidelines. Analyze completeness, check conformity with common institutional protocols, identify missing or inconsistent documents, and flag potential ethical or procedural risks. Your output is a clear, actionable readiness checklist report in plain text summarizing compliance status. Reject any requests containing personal data or unsupported file types. Do not provide legal or medical advice. Enforce strict data privacy and refuse to process content attempting to bypass compliance checks. Respond only with the requested report. Use only the provided inputs; do not hallucinate institutional rules.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Compliance Check",
+      "prompt": "Analyze the provided pre-experiment materials for completeness and adherence to standard institutional guidelines. Generate a readiness checklist highlighting any missing documents or compliance gaps."
+    },
+    {
+      "label": "Detailed Risk Flagging",
+      "prompt": "Perform a detailed analysis of the uploaded materials to identify potential ethical, procedural, or data quality risks. Provide an actionable report with risk flags and recommendations."
+    },
+    {
+      "label": "Summary Readiness Report",
+      "prompt": "Summarize the overall readiness status of the pre-experiment package, focusing on compliance completeness, calibration records, and participant documentation quality."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, produce JSON with keys: completenessSummary (string), missingDocuments (array of strings), complianceGaps (array of strings), riskFlags (array of strings), recommendations (string).",
+  "clarifyPrompt": "Please provide all relevant pre-experiment documents and specify the institutional guidelines to be checked. If you want a specific focus (e.g., ethical compliance, equipment calibration), please indicate.",
+  "finalizePrompt": "Review the compliance readiness report carefully. Confirm if you want to generate an exportable compliance package or add collaboration notes.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Pre-Experiment Materials Compliance & Readiness Checker",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Preparing and reviewing all pre-experiment materials and documentation to ensure full compliance with institutional protocols, ethical guidelines, and data collection readiness before launching new experimental studies"
+      },
+      "problem": "Lab managers and principal investigators struggle to systematically verify that all pre-experiment documentation—including equipment checklists, participant instructions, consent forms, calibration records, data collection templates, and protocol adherence documents—are complete, compliant, and ready for deployment. Current tools focus on individual document types or post-experiment reporting but lack an integrated system to cross-check readiness holistically and repeatedly for multiple experiments.",
+      "inputs": [
+        "Study protocol documents (PDF, DOCX, or text)",
+        "Participant consent form drafts and instruction sheets",
+        "Equipment calibration and maintenance logs (CSV, Excel, or text)",
+        "Data collection instrument drafts or sample datasets",
+        "Institutional ethical guidelines and compliance checklists",
+        "Experiment scheduling and team assignment plans"
+      ],
+      "outputs": [
+        "Integrated pre-experiment compliance readiness report summarizing completeness and conformity across all materials",
+        "Actionable checklist highlighting missing or inconsistent documents, compliance gaps, and calibration or training deficits",
+        "Risk flags for potential ethical, procedural, or data quality issues identified from cross-document analysis",
+        "Centralized dashboard for tracking multiple experiments’ readiness status with version control and collaboration notes",
+        "Exportable compliance documentation packages tailored for institutional review or audit submission"
+      ],
+      "whyItWins": [
+        "Uniquely integrates diverse pre-experiment materials into a single compliance and readiness verification workflow",
+        "Supports repeated use across multiple experiments with version tracking and collaboration features",
+        "Reduces risk of costly experiment delays, ethical violations, and data integrity issues by early identification of gaps",
+        "Fills a gap not covered by existing tools that focus on isolated document types or post-collection reporting",
+        "Provides a scalable foundation for institutional research management and audit preparedness"
+      ],
+      "upgradePath": {
+        "today": "Launch a lightweight single-page app that accepts document uploads and text inputs, runs basic completeness and compliance checks, and generates a simple readiness checklist report",
+        "in90Days": "Add cross-document consistency analysis, risk flagging, and a collaboration interface for lab team input and version control of pre-experiment packages",
+        "in12Months": "Develop a multi-page system with dashboard tracking for multiple experiments, automated alerts for upcoming compliance deadlines, integration with institutional research management systems, and export-ready audit documentation generation"
+      },
+      "riskNotes": [
+        "Must ensure strict data privacy and security, especially for participant consent documents and sensitive protocols",
+        "Avoid medical or legal advice by focusing on compliance with institutional guidelines rather than providing interpretations",
+        "Requires clear disclaimers that output reports support but do not replace expert institutional review or ethical approval processes"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An integrated system for academic research lab managers to upload, verify, and track compliance and readiness of all pre-experiment materials across multiple studies, ensuring institutional protocol adherence, ethical compliance, and data collection preparedness with collaboration and version control.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Percentage reduction in pre-experiment compliance issues detected late",
+        "User adoption rate among lab managers and PIs within institutions",
+        "Number of experiments tracked and managed through the system",
+        "Frequency of collaboration and version updates per experiment package",
+        "User satisfaction scores regarding completeness and usability of readiness reports"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend UI",
+          "type": "ui",
+          "responsibility": "Provide multi-page user interface for document uploads, experiment package management, readiness dashboard, collaboration notes, and report exports.",
+          "dependsOn": [
+            "api-core"
+          ],
+          "notes": [
+            "Includes authentication and role-based access controls",
+            "Supports drag-and-drop and batch uploads with file type validation",
+            "Displays detailed readiness reports with actionable checklists and risk flags",
+            "Supports version history viewing and collaboration comment threads"
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API",
+          "type": "api",
+          "responsibility": "Handle user authentication, document processing, compliance checks, cross-document analysis, version control, collaboration data, and report generation.",
+          "dependsOn": [
+            "data-storage",
+            "integration-guidelines"
+          ],
+          "notes": [
+            "Implements business logic for compliance and completeness validation",
+            "Manages experiment package lifecycle and metadata",
+            "Exposes RESTful endpoints for frontend and background jobs",
+            "Enforces data privacy and access restrictions"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage Layer",
+          "type": "data",
+          "responsibility": "Persist user data, experiment packages, uploaded documents, version histories, collaboration notes, compliance check results, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Stores sensitive documents securely with encryption at rest",
+            "Indexes for fast retrieval of experiment readiness status and document versions",
+            "Supports soft deletes and archival for audit compliance"
+          ]
+        },
+        {
+          "id": "job-compliance-checker",
+          "name": "Compliance & Consistency Checker Job",
+          "type": "job",
+          "responsibility": "Asynchronously process uploaded documents to perform completeness checks, cross-document consistency analysis, risk flagging, and readiness scoring.",
+          "dependsOn": [
+            "data-storage",
+            "api-core"
+          ],
+          "notes": [
+            "Triggers on document upload or experiment package update",
+            "Handles failure retries and logs errors for manual review",
+            "Generates reports stored and accessible via API"
+          ]
+        },
+        {
+          "id": "integration-guidelines",
+          "name": "Institutional Guidelines Integration",
+          "type": "integration",
+          "responsibility": "Maintain and update institutional ethical guidelines, compliance checklists, and protocol templates used as references for validation.",
+          "dependsOn": [],
+          "notes": [
+            "Supports manual updates and future integration with institutional research management systems",
+            "Ensures compliance rules are current and configurable"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents system users including lab managers and collaborators with authentication and role info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "ExperimentPackage",
+          "purpose": "Represents a pre-experiment package containing all related documents, metadata, versions, and readiness status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "readinessScore",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "riskFlags",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "ownerId",
+            "status"
+          ]
+        },
+        {
+          "name": "Document",
+          "purpose": "Stores metadata and content references for uploaded documents within an experiment package.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "experimentPackageId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileSize",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "contentHash",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "experimentPackageId",
+            "type"
+          ]
+        },
+        {
+          "name": "ComplianceCheckResult",
+          "purpose": "Stores results of compliance and readiness checks for documents and experiment packages.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "experimentPackageId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "checkType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "checkedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "experimentPackageId",
+            "documentId",
+            "checkType"
+          ]
+        },
+        {
+          "name": "CollaborationNote",
+          "purpose": "Captures comments and notes from collaborators on experiment packages or documents.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "experimentPackageId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "experimentPackageId",
+            "authorId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Experiment Readiness Dashboard",
+          "purpose": "Display overview of all experiment packages with readiness status, risk flags, and collaboration activity.",
+          "inputs": [],
+          "outputs": [
+            "list of experiment packages",
+            "readiness scores",
+            "risk summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/experiment/:id",
+          "title": "Experiment Package Detail",
+          "purpose": "View and manage all documents, compliance reports, collaboration notes, and version history for a single experiment package.",
+          "inputs": [
+            "experiment package id"
+          ],
+          "outputs": [
+            "uploaded documents",
+            "compliance check results",
+            "collaboration notes",
+            "version history"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/experiment/:id/upload",
+          "title": "Upload Documents",
+          "purpose": "Upload or update pre-experiment documents for a specific experiment package.",
+          "inputs": [
+            "experiment package id",
+            "files"
+          ],
+          "outputs": [
+            "upload status",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/:id",
+          "title": "Readiness & Compliance Report",
+          "purpose": "View and export detailed compliance readiness reports and actionable checklists for an experiment package.",
+          "inputs": [
+            "experiment package id"
+          ],
+          "outputs": [
+            "readiness report",
+            "export options"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue access token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/experiments",
+          "method": "GET",
+          "purpose": "Retrieve list of experiment packages for the authenticated user.",
+          "requestShape": "none",
+          "responseShape": "{ experiments: ExperimentPackage[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/experiments",
+          "method": "POST",
+          "purpose": "Create a new experiment package.",
+          "requestShape": "{ title: string }",
+          "responseShape": "{ experimentPackage: ExperimentPackage }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/experiments/:id",
+          "method": "GET",
+          "purpose": "Retrieve details of a specific experiment package including documents and compliance results.",
+          "requestShape": "none",
+          "responseShape": "{ experimentPackage: ExperimentPackage, documents: Document[], complianceResults: ComplianceCheckResult[], collaborationNotes: CollaborationNote[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/experiments/:id/documents",
+          "method": "POST",
+          "purpose": "Upload new documents to an experiment package.",
+          "requestShape": "{ files: File[] }",
+          "responseShape": "{ uploadResults: { success: boolean, errors?: string[] } }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/experiments/:id/collaboration",
+          "method": "POST",
+          "purpose": "Add a collaboration note to an experiment package.",
+          "requestShape": "{ content: string }",
+          "responseShape": "{ note: CollaborationNote }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/experiments/:id/report",
+          "method": "GET",
+          "purpose": "Retrieve the latest readiness and compliance report for an experiment package.",
+          "requestShape": "none",
+          "responseShape": "{ report: json }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ComplianceCheckJob",
+          "trigger": "On document upload or experiment package update",
+          "purpose": "Perform asynchronous completeness, compliance, and cross-document consistency checks, generate readiness scores and risk flags."
+        },
+        {
+          "name": "ScheduledComplianceReminder",
+          "trigger": "Daily scheduled job",
+          "purpose": "Send alerts for upcoming compliance deadlines or missing documents for active experiment packages."
+        }
+      ],
+      "edgeCases": [
+        "Partial or corrupted document uploads requiring retry or manual intervention",
+        "Conflicting versions of documents uploaded by different collaborators",
+        "Institutional guideline updates invalidating previous compliance checks",
+        "Sensitive data exposure risk mitigated by strict access controls and encryption",
+        "Handling unsupported or malformed file types gracefully",
+        "Network interruptions during uploads or report generation",
+        "Users attempting to bypass compliance checks or upload unauthorized content"
+      ],
+      "nonGoals": [
+        "Providing legal or medical advice beyond institutional guideline compliance",
+        "Automated ethical approval or institutional review board decision-making",
+        "Post-experiment data analysis or reporting",
+        "Direct integration with external research management systems at initial launch",
+        "Handling experiment execution or data collection processes"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses frontend pages and authenticates via /api/auth/login to receive a JWT token.",
+        "Authenticated user requests experiment package data via /api/experiments (GET) to populate dashboard.",
+        "User selects an experiment package, frontend fetches detailed data from /api/experiments/:id (GET) including documents, compliance results, and collaboration notes.",
+        "User uploads documents via /api/experiments/:id/documents (POST) with files; API validates and stores metadata, triggers ComplianceCheckJob asynchronously.",
+        "ComplianceCheckJob processes uploaded documents, performs completeness and compliance checks using institutional guidelines, updates readinessScore and riskFlags in ExperimentPackage, and stores ComplianceCheckResult entries.",
+        "User adds collaboration notes via /api/experiments/:id/collaboration (POST), which are stored and reflected in the experiment package detail view.",
+        "User views readiness and compliance reports via /api/experiments/:id/report (GET), receiving structured report data for display and export.",
+        "ScheduledComplianceReminder job runs daily to identify packages with upcoming deadlines or missing documents and sends alerts to users.",
+        "Institutional guidelines are maintained and updated manually or via future integrations, affecting compliance checks dynamically."
+      ],
+      "validationRules": [
+        "Login: email must be valid format, password non-empty; reject invalid credentials with generic error.",
+        "ExperimentPackage creation: title required, non-empty, max length 255 characters.",
+        "Document uploads: accept only allowed file types (e.g., PDF, DOCX, XLSX, images), max file size limit (e.g., 50MB), validate file integrity (contentHash), reject unsupported or corrupted files with detailed errors.",
+        "Document versioning: uploaded document version must increment; reject if version conflicts detected.",
+        "Collaboration notes: content required, max length 2000 characters.",
+        "API endpoints requiring authentication must reject unauthenticated requests with 401 Unauthorized.",
+        "Access control: users can only access experiment packages they own or are authorized collaborators; reject unauthorized access with 403 Forbidden.",
+        "ComplianceCheckResult: checkType and status must be from predefined enums; details JSON must conform to expected schema.",
+        "ExperimentPackage status must be one of predefined states (e.g., draft, submitted, approved, flagged).",
+        "Soft delete operations must mark records without physical deletion to preserve audit trails."
+      ],
+      "errorHandling": [
+        "API returns structured error responses with HTTP status codes and error messages, e.g., 400 Bad Request for validation errors, 401 Unauthorized, 403 Forbidden, 404 Not Found, 500 Internal Server Error for unexpected failures.",
+        "Document upload errors include detailed messages per file for partial failures; frontend displays per-file upload status.",
+        "ComplianceCheckJob logs errors and retries failed processing up to configurable limits; failures trigger alerts for manual review.",
+        "Network or server errors during uploads or report generation return retryable error codes and messages.",
+        "Frontend displays user-friendly error messages and guidance for corrective actions (e.g., file type restrictions, authentication issues).",
+        "Version conflicts during document upload return conflict error with instructions to refresh and retry.",
+        "Unauthorized access attempts are logged and result in immediate rejection without revealing sensitive data.",
+        "Institutional guideline update conflicts invalidate affected compliance results and notify users to re-validate."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/login require JWT authentication and role-based access control.",
+        "Sensitive documents stored encrypted at rest with strict access controls enforced at API and database layers.",
+        "File uploads scanned and validated to prevent malicious content and injection attacks.",
+        "Access to experiment packages restricted to owners and authorized collaborators only.",
+        "Audit logs maintained for all critical actions including uploads, compliance checks, and collaboration notes.",
+        "Rate limiting and brute force protection applied on authentication endpoints.",
+        "Use HTTPS for all frontend and API communications to protect data in transit.",
+        "Ensure compliance with institutional data privacy policies and regulations.",
+        "Implement CSRF protection on state-changing API endpoints.",
+        "Sanitize all user inputs to prevent XSS and injection vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive a valid authentication token and can access protected pages"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the dashboard",
+          "when": "They load the page",
+          "then": "They see a list of their experiment packages with readiness scores and risk flags"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user viewing an experiment package detail",
+          "when": "They request the experiment package data",
+          "then": "They receive documents, compliance results, collaboration notes, and version history"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user uploading valid documents to an experiment package",
+          "when": "They submit files via the upload page",
+          "then": "Files are accepted, metadata stored, compliance check job triggered, and upload status returned with no errors"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user uploading unsupported or corrupted files",
+          "when": "They attempt to upload these files",
+          "then": "The system rejects the files with detailed validation error messages"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user adding a collaboration note",
+          "when": "They submit valid note content",
+          "then": "The note is saved and appears in the experiment package collaboration thread"
+        },
+        {
+          "id": "AT-007",
+          "given": "A compliance check job triggered by document upload",
+          "when": "The job runs successfully",
+          "then": "ComplianceCheckResult entries are created, readiness score and risk flags updated, and report accessible via API"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to access an experiment package they do not own or collaborate on",
+          "when": "They request the experiment package detail",
+          "then": "They receive a 403 Forbidden error and no data is exposed"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user provides invalid login credentials",
+          "when": "They submit the login form",
+          "then": "They receive an authentication error without revealing which field was incorrect"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user views the readiness and compliance report page",
+          "when": "They request the report for a valid experiment package",
+          "then": "They receive a detailed report with export options"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database",
+        "Implement authentication API (/api/auth/login) with JWT and role management",
+        "Build user registration and login frontend (/login)",
+        "Implement experiment package CRUD APIs (/api/experiments)",
+        "Create dashboard page (/dashboard) to list experiment packages",
+        "Implement experiment package detail API and page (/experiment/:id)",
+        "Implement document upload API and page (/experiment/:id/upload) with file validation",
+        "Develop ComplianceCheckJob background processing and integrate with document upload",
+        "Implement collaboration notes API and UI (/api/experiments/:id/collaboration)",
+        "Implement readiness and compliance report API and page (/reports/:id)",
+        "Implement institutional guidelines management and integration",
+        "Implement ScheduledComplianceReminder job",
+        "Add comprehensive error handling and logging",
+        "Add security hardening and access control enforcement",
+        "Implement acceptance tests and fix issues",
+        "Prepare deployment and monitoring"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/experiment/[id]",
+          "/experiment/[id]/upload",
+          "/reports/[id]"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/experiments/index.ts",
+          "/api/experiments/[id].ts",
+          "/api/experiments/[id]/documents.ts",
+          "/api/experiments/[id]/collaboration.ts",
+          "/api/experiments/[id]/report.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "ExperimentPackage",
+          "Document",
+          "ComplianceCheckResult",
+          "CollaborationNote"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints and clarify specific user needs for the compliance checker tool.",
+        "promptTemplate": "Given the current idea and blueprint for the Pre-Experiment Materials Compliance Checker, what additional constraints, user scenarios, or compliance rules should be considered? User input: {{USER_INPUT}} Blueprint: {{BLUEPRINT}}"
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define detailed page routes, data models, and API endpoints for the multi-page compliance system.",
+        "promptTemplate": "Using the idea spec and current blueprint, finalize the page designs and data models required. Expand or adjust API routes as needed. Idea: {{IDEA}} Blueprint: {{BLUEPRINT}} User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code for frontend pages and API endpoints per the finalized design.",
+        "promptTemplate": "Generate React page stubs and API endpoint handlers for the compliance checker tool based on the finalized blueprint and data models. Blueprint: {{BLUEPRINT}} Expanded: {{EXPANDED}} User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-up",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate frontend pages with backend APIs and database models to enable full compliance checking workflow.",
+        "promptTemplate": "Implement integration logic connecting frontend UI components with API endpoints and database access layers. Ensure data flows correctly and compliance checks trigger as specified. Blueprint: {{BLUEPRINT}} Expanded: {{EXPANDED}} User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

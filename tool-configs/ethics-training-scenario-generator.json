@@ -1,0 +1,701 @@
+{
+  "slug": "ethics-training-scenario-generator",
+  "title": "Academic Research Ethics Training Scenario Generator",
+  "description": "Generate interactive branching outlines for academic research ethics training scenarios based on your research field, ethical topics, and typical dilemmas. Outputs include scenario decision trees and trainer guides to support ethics trainers in creating engaging, customizable training scenarios.",
+  "inputLabel": "Enter your research field, key ethical topics, typical dilemmas, training goals, and decision points",
+  "outputLabel": "Generated scenario outline and trainer guide",
+  "systemPrompt": "You are an academic research ethics training scenario generator. Given the user's input describing the research field, key ethical topics (e.g., data integrity, consent, conflict of interest), typical ethical dilemmas, training session goals, trainee roles, and customizable decision points with possible trainee responses, generate a structured branching scenario outline and a trainer guide explaining the rationale for each decision path. Do not provide medical or legal advice. Avoid sensitive or personally identifiable information. Ensure scenarios promote diverse and culturally sensitive ethical perspectives. Output a clear, concise plain-text branching scenario outline with decision points and rationale. If the input is disallowed or unsafe, refuse with a polite explanation. Only produce plain text output. Use a calm, professional tone suitable for academic trainers.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "presets"
+  ],
+  "presets": [
+    {
+      "label": "Focus on Data Integrity",
+      "prompt": "Create a branching ethics training scenario focused on data integrity issues in {{USER_INPUT}} research, including dilemmas like data fabrication, falsification, and proper data management practices."
+    },
+    {
+      "label": "Consent and Participant Rights",
+      "prompt": "Generate an interactive ethics training scenario centered on informed consent and participant rights for {{USER_INPUT}} research, incorporating typical dilemmas and decision points."
+    },
+    {
+      "label": "Conflict of Interest Scenarios",
+      "prompt": "Develop an ethics training scenario addressing conflicts of interest in {{USER_INPUT}} research, with branching decisions reflecting common challenges and best practices."
+    },
+    {
+      "label": "Comprehensive Ethical Challenges",
+      "prompt": "Design a multi-topic ethics training scenario for {{USER_INPUT}} research incorporating data integrity, consent, and conflict of interest dilemmas with customizable decision points."
+    }
+  ],
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Ethics Training Scenario Simulator",
+      "niche": {
+        "role": "Academic Research Ethics Trainer",
+        "scenario": "Designing and delivering interactive, scenario-based ethics training sessions for graduate students and research staff"
+      },
+      "problem": "Ethics trainers currently struggle to efficiently create realistic, diverse, and engaging case scenarios tailored to specific research fields and ethical challenges. Existing tools do not support interactive scenario simulation design that can adapt to trainee responses, limiting training effectiveness and repeat usage across sessions.",
+      "inputs": [
+        "Research field or discipline",
+        "Key ethical topics to cover (e.g., data integrity, consent, conflict of interest)",
+        "Typical ethical dilemmas and past case examples",
+        "Training session goals and trainee roles",
+        "Customizable scenario decision points and possible trainee responses"
+      ],
+      "outputs": [
+        "Structured, interactive ethics training scenarios with branching decision trees",
+        "Trainer guides with rationale for each decision path",
+        "Trainee feedback and assessment templates",
+        "Exportable session plans and scenario scripts"
+      ],
+      "whyItWins": [
+        "Fills a gap by enabling creation of interactive, adaptive ethics training simulations rather than static case studies",
+        "Supports repeated use and iterative improvement of scenarios based on trainee feedback",
+        "Tailors scenarios to specific research disciplines and ethical challenges for higher relevance",
+        "Enhances engagement and learning outcomes by simulating realistic decision-making processes"
+      ],
+      "upgradePath": {
+        "today": "A lightweight tool to input ethical topics and dilemmas and generate simple branching scenario outlines and trainer scripts",
+        "in90Days": "Add interactive simulation capabilities allowing trainers to customize trainee decision points and receive automated feedback templates and trainee assessment reports",
+        "in12Months": "Develop a full multi-page web platform supporting scenario versioning, trainee progress tracking, collaborative scenario authoring by multiple trainers, integration with learning management systems, and analytics on trainee performance and scenario effectiveness"
+      },
+      "riskNotes": [
+        "Ensure scenarios avoid sensitive or legally protected data to maintain privacy",
+        "Avoid medical or legal advice content; focus strictly on research ethics training as an educational tool",
+        "Provide disclaimers that tool output is for training use only and not formal ethics committee decisions",
+        "Guard against generating biased or culturally insensitive scenarios by including diverse ethical perspectives and review features"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web platform enabling academic research ethics trainers to design, simulate, and manage interactive, branching scenario-based ethics training tailored to specific research disciplines and ethical challenges, enhancing trainee engagement and learning outcomes.",
+      "primaryUser": "Academic Research Ethics Trainer",
+      "successMetrics": [
+        "Number of scenarios created and reused",
+        "Trainer satisfaction with scenario customization and simulation features",
+        "Trainee engagement and assessment scores",
+        "Frequency of scenario iteration based on feedback",
+        "Integration and usage within institutional training programs"
+      ],
+      "components": [
+        {
+          "id": "ui_scenario_designer",
+          "name": "Scenario Designer UI",
+          "type": "ui",
+          "responsibility": "Provide an interface for trainers to input ethical topics, dilemmas, and create branching decision trees with customizable trainee responses and rationale.",
+          "dependsOn": [
+            "api_scenario_management",
+            "data_scenario"
+          ],
+          "notes": [
+            "Supports drag-and-drop or form-based scenario creation",
+            "Includes validation to prevent logical inconsistencies in branching",
+            "Allows previewing scenario flow"
+          ]
+        },
+        {
+          "id": "ui_simulation_player",
+          "name": "Simulation Player UI",
+          "type": "ui",
+          "responsibility": "Enable trainers and trainees to run interactive simulations of scenarios, capturing trainee decisions and providing automated feedback templates.",
+          "dependsOn": [
+            "api_simulation",
+            "data_simulation_session"
+          ],
+          "notes": [
+            "Supports branching navigation based on trainee choices",
+            "Displays rationale and feedback dynamically",
+            "Tracks progress and assessment"
+          ]
+        },
+        {
+          "id": "api_scenario_management",
+          "name": "Scenario Management API",
+          "type": "api",
+          "responsibility": "Handle creation, retrieval, updating, versioning, and deletion of scenario data including branching logic and trainer notes.",
+          "dependsOn": [
+            "data_scenario"
+          ],
+          "notes": [
+            "Implements access control for collaborative authoring",
+            "Supports scenario export in multiple formats"
+          ]
+        },
+        {
+          "id": "api_simulation",
+          "name": "Simulation API",
+          "type": "api",
+          "responsibility": "Manage simulation sessions, record trainee responses, generate automated feedback and assessment templates, and provide progress tracking.",
+          "dependsOn": [
+            "data_simulation_session",
+            "data_trainee_assessment"
+          ],
+          "notes": [
+            "Ensures data privacy and anonymization",
+            "Supports session resume and multiple trainees"
+          ]
+        },
+        {
+          "id": "data_scenario",
+          "name": "Scenario Data Store",
+          "type": "data",
+          "responsibility": "Persist scenario definitions, branching decision trees, trainer guides, and version history.",
+          "dependsOn": [],
+          "notes": [
+            "Stores structured JSON representing branching logic",
+            "Includes metadata for research fields and ethical topics"
+          ]
+        },
+        {
+          "id": "data_simulation_session",
+          "name": "Simulation Session Data Store",
+          "type": "data",
+          "responsibility": "Persist trainee simulation sessions including decision paths taken, timestamps, and session metadata.",
+          "dependsOn": [
+            "data_scenario"
+          ],
+          "notes": [
+            "Supports anonymized trainee identifiers",
+            "Enables progress tracking and session resumption"
+          ]
+        },
+        {
+          "id": "data_trainee_assessment",
+          "name": "Trainee Assessment Data Store",
+          "type": "data",
+          "responsibility": "Store assessment results, feedback templates generated, and trainer notes on trainee performance.",
+          "dependsOn": [
+            "data_simulation_session"
+          ],
+          "notes": [
+            "Supports export for reporting",
+            "Allows iterative improvement of scenarios based on assessments"
+          ]
+        },
+        {
+          "id": "job_feedback_analysis",
+          "name": "Feedback Analysis Job",
+          "type": "job",
+          "responsibility": "Periodically analyze trainee feedback and assessment data to suggest scenario improvements and detect potential biases or cultural insensitivities.",
+          "dependsOn": [
+            "data_trainee_assessment",
+            "data_scenario"
+          ],
+          "notes": [
+            "Includes alerts for flagged content",
+            "Supports trainer notifications for scenario updates"
+          ]
+        },
+        {
+          "id": "integration_lms",
+          "name": "Learning Management System Integration",
+          "type": "integration",
+          "responsibility": "Enable scenario and trainee progress data exchange with external LMS platforms for institutional training workflows.",
+          "dependsOn": [
+            "api_scenario_management",
+            "api_simulation"
+          ],
+          "notes": [
+            "Supports standards like LTI or SCORM",
+            "Handles authentication and data privacy compliance"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Scenario",
+          "purpose": "Represents an ethics training scenario with branching decision points, rationale, and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "researchField",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ethicalTopics",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "branchingTree",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "trainerGuide",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "researchField",
+            "createdBy"
+          ]
+        },
+        {
+          "name": "SimulationSession",
+          "purpose": "Tracks a trainee's progress and decisions during a simulation run.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scenarioId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "traineeId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "decisionPath",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "startedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "completedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "scenarioId",
+            "traineeId"
+          ]
+        },
+        {
+          "name": "TraineeAssessment",
+          "purpose": "Stores assessment results and feedback related to a simulation session.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "simulationSessionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assessmentScore",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "feedbackTemplate",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "trainerNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "simulationSessionId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents trainers and trainees with authentication and role info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access scenario design and simulation features.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/scenarios",
+          "title": "Scenario Library",
+          "purpose": "List and search existing scenarios with filtering by research field and ethical topics.",
+          "inputs": [
+            "search query",
+            "filters"
+          ],
+          "outputs": [
+            "scenario summaries",
+            "pagination"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/scenarios/create",
+          "title": "Create Scenario",
+          "purpose": "Interface to create new branching ethics training scenarios.",
+          "inputs": [
+            "scenario metadata",
+            "branching decision points",
+            "trainer guides"
+          ],
+          "outputs": [
+            "scenario preview",
+            "validation feedback",
+            "save confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/scenarios/:id/edit",
+          "title": "Edit Scenario",
+          "purpose": "Modify existing scenarios with version control and collaboration features.",
+          "inputs": [
+            "scenario data"
+          ],
+          "outputs": [
+            "updated scenario",
+            "version history"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/simulate/:scenarioId",
+          "title": "Run Simulation",
+          "purpose": "Run an interactive simulation of a scenario for trainees or trainers.",
+          "inputs": [
+            "trainee decisions"
+          ],
+          "outputs": [
+            "dynamic scenario flow",
+            "feedback",
+            "assessment templates"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/assessments/:sessionId",
+          "title": "Assessment Review",
+          "purpose": "Review trainee performance and feedback for a completed simulation session.",
+          "inputs": [
+            "simulation session id"
+          ],
+          "outputs": [
+            "assessment scores",
+            "trainer notes",
+            "feedback templates"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/scenarios",
+          "method": "POST",
+          "purpose": "Create a new ethics training scenario.",
+          "requestShape": "JSON with scenario metadata and branching structure",
+          "responseShape": "Created scenario object with id and version",
+          "auth": "user"
+        },
+        {
+          "route": "/api/scenarios/:id",
+          "method": "GET",
+          "purpose": "Retrieve a scenario by id.",
+          "requestShape": "Scenario id in URL",
+          "responseShape": "Scenario object including branching tree and trainer guide",
+          "auth": "user"
+        },
+        {
+          "route": "/api/scenarios/:id",
+          "method": "POST",
+          "purpose": "Update an existing scenario with versioning.",
+          "requestShape": "Updated scenario JSON",
+          "responseShape": "Updated scenario object with new version",
+          "auth": "user"
+        },
+        {
+          "route": "/api/simulations",
+          "method": "POST",
+          "purpose": "Start a new simulation session for a trainee.",
+          "requestShape": "Scenario id and optional trainee id",
+          "responseShape": "Simulation session id and initial scenario node",
+          "auth": "user"
+        },
+        {
+          "route": "/api/simulations/:sessionId/decision",
+          "method": "POST",
+          "purpose": "Submit a trainee decision and get next scenario node and feedback.",
+          "requestShape": "Decision data",
+          "responseShape": "Next scenario node, feedback, and assessment updates",
+          "auth": "user"
+        },
+        {
+          "route": "/api/assessments/:sessionId",
+          "method": "GET",
+          "purpose": "Retrieve assessment and feedback for a simulation session.",
+          "requestShape": "Simulation session id",
+          "responseShape": "Assessment scores, feedback templates, trainer notes",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Scenario Feedback Analysis",
+          "trigger": "Scheduled (e.g., daily or weekly)",
+          "purpose": "Analyze trainee feedback and assessment data to identify scenario improvement opportunities and detect biased or insensitive content."
+        }
+      ],
+      "edgeCases": [
+        "Trainee abandons simulation mid-session and later resumes without data loss or corruption.",
+        "Conflicting branching logic causing dead ends or loops in scenario trees.",
+        "Multiple trainers editing the same scenario simultaneously leading to version conflicts.",
+        "Sensitive ethical topics triggering user discomfort; system provides disclaimers and opt-out options.",
+        "Exporting scenarios with incomplete or invalid branching data.",
+        "Handling anonymous trainees while preserving privacy and data integrity.",
+        "Integration failures with external LMS platforms gracefully degrade without data loss."
+      ],
+      "nonGoals": [
+        "Providing formal legal or medical advice through the tool.",
+        "Storing or processing sensitive personal or protected health information.",
+        "Replacing formal ethics committee decisions or institutional review boards.",
+        "Supporting non-research ethics training domains.",
+        "Real-time multi-user simulation participation (focus is on individual trainee simulation)."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits credentials; frontend calls /api/auth/login to authenticate and receive token.",
+        "Authenticated user accesses /scenarios to view scenario library; frontend calls GET /api/scenarios with optional filters and search query; API returns paginated scenario summaries.",
+        "User navigates to /scenarios/create to design a new scenario; Scenario Designer UI collects metadata, branching decision points, and trainer guides; on save, frontend calls POST /api/scenarios with scenario JSON.",
+        "Scenario Management API validates branching logic and scenario data, stores scenario in Scenario Data Store with versioning, and returns created scenario object with id and version.",
+        "User edits existing scenario at /scenarios/:id/edit; frontend fetches scenario via GET /api/scenarios/:id, allows modifications, and submits updates via POST /api/scenarios/:id; API handles version control and conflict detection.",
+        "User or trainee starts simulation at /simulate/:scenarioId; frontend calls POST /api/simulations with scenarioId and optional traineeId; API creates SimulationSession record and returns initial scenario node.",
+        "During simulation, trainee submits decisions via POST /api/simulations/:sessionId/decision; API records decision in SimulationSession, computes next node, generates feedback and assessment updates, and returns them to frontend.",
+        "User reviews assessment at /assessments/:sessionId; frontend calls GET /api/assessments/:sessionId; API returns assessment scores, feedback templates, and trainer notes from TraineeAssessment Data Store.",
+        "Background job 'Scenario Feedback Analysis' runs periodically, analyzing TraineeAssessment and Scenario data to detect biases, suggest improvements, and notify trainers.",
+        "Integration with external LMS platforms exchanges scenario metadata and trainee progress via API endpoints, adhering to LTI/SCORM standards and handling authentication and privacy compliance."
+      ],
+      "validationRules": [
+        "Scenario creation and update must include non-empty title, researchField, ethicalTopics (valid JSON), and branchingTree (valid JSON representing acyclic branching decision tree).",
+        "BranchingTree must be validated to prevent logical inconsistencies such as dead ends, loops, or unreachable nodes.",
+        "Scenario versioning requires incrementing version number on each update; concurrent edits must detect conflicts and prompt user resolution.",
+        "SimulationSession creation requires valid scenarioId referencing existing scenario; traineeId is optional but if provided must be valid user id or anonymized.",
+        "Decisions submitted during simulation must correspond to valid options in current scenario node; invalid or out-of-sequence decisions are rejected.",
+        "Assessment retrieval requires valid simulationSessionId referencing completed or in-progress session accessible by requesting user.",
+        "User authentication inputs must validate email format and password complexity; passwords are never stored or transmitted in plaintext.",
+        "All API inputs must be sanitized to prevent injection attacks and ensure data integrity."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Authorization failures (accessing resources without permission) return 403 Forbidden.",
+        "Validation errors return 400 Bad Request with detailed messages indicating invalid fields or logical errors.",
+        "Not found errors (e.g., scenario or session id not found) return 404 Not Found.",
+        "Conflict errors during scenario updates due to version mismatch return 409 Conflict with instructions to reload and merge changes.",
+        "Server errors return 500 Internal Server Error with generic message; detailed logs are recorded server-side.",
+        "Simulation decision submission errors due to invalid decision or session state return 400 with explanation.",
+        "Background job errors are logged and trigger alerts to system administrators; job retries are scheduled.",
+        "Integration failures with LMS degrade gracefully by logging errors and notifying users without data loss."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /login; tokens are validated on each request.",
+        "Role-based access control enforces that only trainers can create/edit scenarios and view assessments; trainees can only run simulations and view their own sessions.",
+        "Sensitive data such as passwords are stored hashed with strong algorithms; no sensitive personal or health information is stored.",
+        "Simulation sessions support anonymized trainee identifiers to preserve privacy.",
+        "Data exchanges with external LMS comply with data privacy regulations and use secure authentication protocols.",
+        "Input validation and sanitization prevent injection and cross-site scripting attacks.",
+        "Sessions and tokens have expiration and refresh mechanisms to reduce risk of unauthorized access.",
+        "Exported scenario data excludes sensitive trainer or trainee identifiers unless explicitly authorized."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated trainer on the /scenarios/create page",
+          "when": "They input valid scenario metadata and a branching decision tree and submit",
+          "then": "The system validates the input, saves the scenario with version 1, and returns a preview and save confirmation"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated trainer editing a scenario at /scenarios/:id/edit",
+          "when": "They submit an update with conflicting version number",
+          "then": "The system returns a 409 Conflict error prompting to reload and merge changes"
+        },
+        {
+          "id": "AT-003",
+          "given": "A trainee starting a simulation at /simulate/:scenarioId",
+          "when": "They submit a valid decision for the current scenario node",
+          "then": "The system records the decision, returns the next scenario node, feedback, and updates assessment progress"
+        },
+        {
+          "id": "AT-004",
+          "given": "A trainee abandons a simulation mid-session",
+          "when": "They later resume the simulation",
+          "then": "The system restores the session state without data loss or corruption"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user requests scenario export with incomplete branching data",
+          "when": "The export is triggered",
+          "then": "The system detects invalid branching, returns an error message, and prevents export"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthenticated user accesses /scenarios",
+          "when": "They attempt to view the scenario library",
+          "then": "The system redirects to /login with an appropriate message"
+        },
+        {
+          "id": "AT-007",
+          "given": "The background job runs",
+          "when": "It detects biased or insensitive content in scenarios",
+          "then": "It flags the content, logs alerts, and notifies trainers for review"
+        },
+        {
+          "id": "AT-008",
+          "given": "Integration with LMS fails during data exchange",
+          "when": "The failure occurs",
+          "then": "The system logs the error, notifies users, and continues operating without data loss"
+        }
+      ],
+      "buildOrder": [
+        "Implement User data model and authentication API with /login page",
+        "Implement Scenario data model and Scenario Management API (create, retrieve, update, delete) with validation and versioning",
+        "Develop Scenario Designer UI with scenario creation and editing pages including validation and preview",
+        "Implement SimulationSession and TraineeAssessment data models and Simulation API (start session, submit decisions, retrieve assessments)",
+        "Develop Simulation Player UI to run interactive simulations with branching navigation and feedback display",
+        "Implement Assessment Review page to display trainee performance and feedback",
+        "Implement background job for Scenario Feedback Analysis with alerting and notifications",
+        "Develop integration with external LMS platforms supporting LTI/SCORM and secure data exchange",
+        "Add comprehensive error handling, security enforcement, and input sanitization across all components",
+        "Conduct acceptance testing and edge case validation"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/scenarios",
+          "/scenarios/create",
+          "/scenarios/[id]/edit",
+          "/simulate/[scenarioId]",
+          "/assessments/[sessionId]"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.js",
+          "/api/scenarios/index.js",
+          "/api/scenarios/[id].js",
+          "/api/simulations/index.js",
+          "/api/simulations/[sessionId]/decision.js",
+          "/api/assessments/[sessionId].js"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Scenario",
+          "SimulationSession",
+          "TraineeAssessment"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Gather missing constraints and clarify ambiguous requirements for the ethics training scenario simulator.",
+        "promptTemplate": "Given the current blueprint and expanded specs for the Academic Research Ethics Training Scenario Simulator, identify any missing constraints, ambiguities, or open questions. Ask the user for clarifications or additional details needed to finalize the requirements.\n\nCurrent blueprint: {{BLUEPRINT}}\n\nUser input: {{USER_INPUT}}\n\nPlease provide your questions or refinement requests."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the detailed pages, data models, and API routes required to implement the ethics training simulator platform.",
+        "promptTemplate": "Using the refined requirements and blueprint, define the final set of pages with their routes and purposes, data models with fields and relationships, and API routes with methods and payloads. Ensure coverage of all key user flows and security considerations.\n\nBlueprint: {{BLUEPRINT}}\n\nRefined requirements: {{REFINED_REQUIREMENTS}}\n\nProvide a detailed design specification."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create code stubs for the front-end pages of the ethics training scenario simulator.",
+        "promptTemplate": "Based on the finalized design, generate boilerplate code stubs for each page route including placeholders for inputs, outputs, and authentication checks. Include comments describing each page's purpose and expected functionality.\n\nDesign spec: {{DESIGN_SPEC}}\n\nGenerate code stubs."
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect front-end pages with backend API routes and database models to implement full functionality.",
+        "promptTemplate": "Using the page stubs, API route specs, and data model definitions, generate integration code that connects UI components to backend endpoints and database queries. Include error handling, authentication enforcement, and validation logic.\n\nPage stubs: {{PAGE_STUBS}}\nAPI specs: {{API_SPECS}}\nData models: {{DATA_MODELS}}\n\nProduce integration code and instructions."
+      }
+    ]
+  }
+}

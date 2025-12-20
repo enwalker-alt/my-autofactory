@@ -1,0 +1,767 @@
+{
+  "slug": "academic-impact-tracker",
+  "title": "Academic Research Publication Impact Tracker",
+  "description": "A lightweight web app for academic principal investigators to input publication lists and receive consolidated multi-metric impact summaries and basic trend insights, with actionable dissemination strategy suggestions.",
+  "inputLabel": "Enter your list of research publications (DOIs, titles) and optional profile or goals JSON",
+  "outputLabel": "Consolidated impact summary, trend overview, and strategic dissemination recommendations",
+  "systemPrompt": "You are an expert assistant for academic researchers managing publication impact. Given a list of research articles (DOIs and/or titles) optionally accompanied by profile info or dissemination goals, provide a clear, concise, and accurate summary of their impact metrics including citation counts, altmetrics, policy and media mentions, and basic trend insights. Then, generate strategic recommendations for dissemination tailored to the input data. Refuse any requests that include disallowed content or violate user privacy. Output must be plain text. Validate inputs for format and duplication. Avoid overpromising impact or guaranteeing metric accuracy. If data is incomplete or partial, clearly note limitations. Do not access external APIs yourself; synthesize based on input data only.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Focus",
+      "prompt": "Summarize the impact metrics and trends for the provided publications in a clear and concise manner."
+    },
+    {
+      "label": "Strategy Focus",
+      "prompt": "Based on the publication impact data and researcher goals, provide tailored dissemination strategy recommendations."
+    },
+    {
+      "label": "Full Report",
+      "prompt": "Generate a combined impact summary, trend overview, and strategic dissemination plan for the input publications."
+    }
+  ],
+  "clarifyPrompt": "Please provide a list of your publications (DOIs or titles). Optionally, include your researcher profile details or target dissemination goals. Avoid sharing sensitive personal data.",
+  "finalizePrompt": "Review the impact summary and strategic recommendations. Confirm if you want a detailed exportable report or further refinement.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Publication Impact Tracker & Strategy Planner",
+      "niche": {
+        "role": "Academic Research Principal Investigator",
+        "scenario": "Tracking and strategizing the impact of published research articles across various platforms and planning future dissemination activities"
+      },
+      "problem": "Academic researchers often struggle to comprehensively track the real-world and scholarly impact of their published work, including citations, social media mentions, policy citations, and media coverage. Existing tools focus on single metrics or platforms. Researchers lack an integrated, actionable dashboard that consolidates impact data and guides strategic planning for enhancing dissemination and maximizing visibility over time.",
+      "inputs": [
+        "List of published research articles (e.g., DOIs, titles)",
+        "Optional: Researcher profile information",
+        "Optional: Target dissemination goals or audiences",
+        "Optional: URLs or identifiers for tracking social media, news, policy databases"
+      ],
+      "outputs": [
+        "Consolidated multi-metric impact dashboard combining citation counts, altmetrics (social media, news), policy references, and academic mentions",
+        "Trend visualizations over time per article and aggregated portfolio",
+        "Strategic recommendations for dissemination activities tailored to article performance and target audiences",
+        "Exportable reports summarizing impact for grant reporting or annual reviews"
+      ],
+      "whyItWins": [
+        "Integrates diverse impact metrics from multiple sources into a unified, researcher-friendly interface, avoiding fragmented tracking",
+        "Supports repeated use over time with dynamic updates to monitor ongoing impact and progress",
+        "Offers actionable dissemination strategy guidance, not just raw metrics, helping researchers optimize outreach efforts",
+        "Designed specifically for academic PIs managing multiple publications, filling a gap left by single-metric or single-platform tools"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app where users input a list of publications and receive consolidated impact summaries and basic trend charts from public APIs",
+        "in90Days": "Add user accounts, historical tracking, and customizable impact goals with tailored dissemination strategy checklists and alerts",
+        "in12Months": "Full multi-page system with integration of multiple data sources (citations, altmetrics, policy databases), collaborative features for research teams, automated periodic reporting, and AI-driven personalized strategy planning based on article performance and researcher goals"
+      },
+      "riskNotes": [
+        "Relies on external APIs for impact data which may change or have access limitations; requires careful API management",
+        "Must carefully handle researcher data privacy and publication metadata appropriately",
+        "Impact metrics can be noisy or misleading; recommendations must avoid overpromising or biasing dissemination choices",
+        "System should clearly disclaim limitations of impact data and avoid incentivizing gaming of metrics"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web application for academic principal investigators to track, analyze, and strategize the impact of their research publications by consolidating diverse metrics from multiple sources into actionable insights and reports.",
+      "primaryUser": "Academic Research Principal Investigator",
+      "successMetrics": [
+        "Number of active users regularly tracking publication impact",
+        "User engagement with strategic recommendations and dissemination planning features",
+        "Accuracy and freshness of integrated impact metrics from external sources",
+        "User satisfaction measured via feedback on dashboard usability and report exports"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Impact Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display consolidated impact metrics, trend visualizations, and strategic recommendations in a researcher-friendly interface.",
+          "dependsOn": [
+            "api-impact-data",
+            "api-strategy",
+            "data-publications",
+            "data-userProfiles"
+          ],
+          "notes": [
+            "Must handle empty or partial data gracefully.",
+            "Supports export functionality for reports.",
+            "Responsive design for desktop and tablet use."
+          ]
+        },
+        {
+          "id": "ui-auth",
+          "name": "Authentication & User Profile UI",
+          "type": "ui",
+          "responsibility": "Manage user sign-up, login, profile editing, and settings related to dissemination goals and tracked publications.",
+          "dependsOn": [
+            "api-auth",
+            "data-userProfiles"
+          ],
+          "notes": [
+            "Supports secure password management and session handling.",
+            "Allows linking of researcher profile info and target audiences."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication API",
+          "type": "api",
+          "responsibility": "Handle user authentication, authorization, session management, and profile data persistence.",
+          "dependsOn": [
+            "data-userProfiles"
+          ],
+          "notes": [
+            "Must enforce strong security and privacy measures.",
+            "Supports password reset and account recovery."
+          ]
+        },
+        {
+          "id": "api-impact-data",
+          "name": "Impact Data Aggregation API",
+          "type": "api",
+          "responsibility": "Fetch, aggregate, and normalize impact metrics from external APIs (citation databases, altmetrics, policy databases) and serve consolidated data to UI.",
+          "dependsOn": [
+            "integration-external-apis",
+            "data-publications",
+            "data-impactMetrics"
+          ],
+          "notes": [
+            "Implements caching and rate limiting to handle external API constraints.",
+            "Handles partial failures and missing data gracefully."
+          ]
+        },
+        {
+          "id": "api-strategy",
+          "name": "Strategy Recommendation API",
+          "type": "api",
+          "responsibility": "Generate tailored dissemination strategy recommendations based on publication performance, researcher goals, and target audiences.",
+          "dependsOn": [
+            "data-userGoals",
+            "data-impactMetrics"
+          ],
+          "notes": [
+            "Starts with rule-based recommendations; potential for AI-driven enhancements.",
+            "Includes disclaimers about metric limitations."
+          ]
+        },
+        {
+          "id": "data-userProfiles",
+          "name": "User Profiles Data Store",
+          "type": "data",
+          "responsibility": "Persist user account information, researcher profiles, and dissemination goals.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive data must be encrypted and access-controlled."
+          ]
+        },
+        {
+          "id": "data-publications",
+          "name": "Publications Data Store",
+          "type": "data",
+          "responsibility": "Store user-linked publication metadata including DOIs, titles, and identifiers for tracking.",
+          "dependsOn": [
+            "data-userProfiles"
+          ],
+          "notes": [
+            "Supports updates and corrections to publication info."
+          ]
+        },
+        {
+          "id": "data-impactMetrics",
+          "name": "Impact Metrics Data Store",
+          "type": "data",
+          "responsibility": "Cache aggregated impact metrics over time for publications to enable trend analysis and historical tracking.",
+          "dependsOn": [
+            "data-publications"
+          ],
+          "notes": [
+            "Stores timestamped metric snapshots for trend visualization."
+          ]
+        },
+        {
+          "id": "data-userGoals",
+          "name": "User Dissemination Goals Data Store",
+          "type": "data",
+          "responsibility": "Persist user-defined target audiences, dissemination objectives, and custom alerts.",
+          "dependsOn": [
+            "data-userProfiles"
+          ],
+          "notes": [
+            "Enables personalized strategy recommendations."
+          ]
+        },
+        {
+          "id": "integration-external-apis",
+          "name": "External Impact Data Integrations",
+          "type": "integration",
+          "responsibility": "Interface with external APIs for citation counts, altmetrics, policy citations, and media mentions.",
+          "dependsOn": [],
+          "notes": [
+            "Must monitor API changes and handle access limitations.",
+            "Implements retries and fallback mechanisms."
+          ]
+        },
+        {
+          "id": "job-periodic-metrics-update",
+          "name": "Periodic Impact Metrics Update Job",
+          "type": "job",
+          "responsibility": "Regularly fetch and update impact metrics from external sources to keep data current.",
+          "dependsOn": [
+            "integration-external-apis",
+            "data-publications",
+            "data-impactMetrics"
+          ],
+          "notes": [
+            "Schedules updates to respect external API rate limits.",
+            "Logs failures and alerts admins on persistent issues."
+          ]
+        },
+        {
+          "id": "job-report-generation",
+          "name": "Automated Report Generation Job",
+          "type": "job",
+          "responsibility": "Generate exportable impact summary reports periodically or on demand for grant reporting or reviews.",
+          "dependsOn": [
+            "data-impactMetrics",
+            "data-userProfiles",
+            "data-publications"
+          ],
+          "notes": [
+            "Supports multiple export formats (PDF, CSV).",
+            "Handles large portfolios efficiently."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "UserProfile",
+          "purpose": "Store user authentication and profile details including dissemination goals.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "disseminationGoals",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "email"
+          ]
+        },
+        {
+          "name": "Publication",
+          "purpose": "Store metadata for research publications linked to users.",
+          "fields": [
+            {
+              "name": "publicationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "doi",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "identifiers",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "addedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "publicationId",
+            "userId",
+            "doi"
+          ]
+        },
+        {
+          "name": "ImpactMetricSnapshot",
+          "purpose": "Store timestamped snapshots of impact metrics per publication.",
+          "fields": [
+            {
+              "name": "snapshotId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "publicationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "citationCount",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "altmetrics",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "policyMentions",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "mediaMentions",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "publicationId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "UserDisseminationGoal",
+          "purpose": "Store user-defined dissemination targets and alert preferences.",
+          "fields": [
+            {
+              "name": "goalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetAudience",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "goalDescription",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "alertThresholds",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "goalId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Allow users to authenticate and access their personalized data.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/register",
+          "title": "Register",
+          "purpose": "Enable new users to create accounts and set up profiles.",
+          "inputs": [
+            "email",
+            "password",
+            "name"
+          ],
+          "outputs": [
+            "confirmation",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Impact Dashboard",
+          "purpose": "Display consolidated impact metrics, trends, and strategic recommendations for user's publications.",
+          "inputs": [
+            "user session"
+          ],
+          "outputs": [
+            "impact metrics",
+            "trend charts",
+            "strategy recommendations",
+            "export options"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/publications",
+          "title": "Manage Publications",
+          "purpose": "Allow users to add, edit, and remove tracked publications.",
+          "inputs": [
+            "publication identifiers",
+            "metadata"
+          ],
+          "outputs": [
+            "publication list",
+            "status messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings & Goals",
+          "purpose": "Enable users to manage profile info, dissemination goals, and alert preferences.",
+          "inputs": [
+            "profile data",
+            "dissemination goals"
+          ],
+          "outputs": [
+            "confirmation",
+            "error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Impact Reports",
+          "purpose": "Provide interface to generate and download exportable impact summary reports.",
+          "inputs": [
+            "report parameters",
+            "date ranges"
+          ],
+          "outputs": [
+            "report files",
+            "status messages"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/register",
+          "method": "POST",
+          "purpose": "Register new user account.",
+          "requestShape": "{ email: string, password: string, name?: string }",
+          "responseShape": "{ userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/publications",
+          "method": "POST",
+          "purpose": "Add or update user publications.",
+          "requestShape": "{ publications: [{ doi?: string, title: string, identifiers?: json }] }",
+          "responseShape": "{ success: boolean, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/impact-metrics",
+          "method": "GET",
+          "purpose": "Retrieve consolidated impact metrics and trends for user's publications.",
+          "requestShape": "{ userId: string }",
+          "responseShape": "{ metrics: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/strategy-recommendations",
+          "method": "GET",
+          "purpose": "Get tailored dissemination strategy recommendations based on current impact data and user goals.",
+          "requestShape": "{ userId: string }",
+          "responseShape": "{ recommendations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/user/goals",
+          "method": "POST",
+          "purpose": "Set or update dissemination goals and alert preferences.",
+          "requestShape": "{ goals: json }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Generate exportable impact summary reports.",
+          "requestShape": "{ userId: string, parameters: json }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Periodic Impact Metrics Update",
+          "trigger": "Scheduled (e.g., daily or weekly)",
+          "purpose": "Fetch latest impact data from external APIs and update cached metrics."
+        },
+        {
+          "name": "Automated Report Generation",
+          "trigger": "On user request or scheduled intervals",
+          "purpose": "Generate and store exportable impact summary reports for users."
+        }
+      ],
+      "edgeCases": [
+        "External APIs may return incomplete or inconsistent data; system must handle partial data gracefully without crashing.",
+        "API rate limits or outages require caching and retry strategies to avoid data gaps.",
+        "Users may input invalid or duplicate publication identifiers; validation and deduplication needed.",
+        "Users with large publication portfolios may experience performance delays; pagination and batching required.",
+        "Privacy breaches must be prevented by strict access controls and encryption of sensitive data.",
+        "Recommendations may not apply equally across disciplines; disclaimers and user feedback mechanisms are necessary.",
+        "Users may delete publications or accounts; system must cascade deletes or archive data appropriately."
+      ],
+      "nonGoals": [
+        "Providing full-text access or hosting of publications.",
+        "Replacing specialized citation or altmetric platforms with comprehensive data coverage.",
+        "Guaranteeing absolute accuracy or predictive validity of impact metrics or recommendations.",
+        "Supporting non-academic users or non-research content types.",
+        "Real-time social media monitoring or sentiment analysis beyond periodic updates."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI pages (/login, /register, /dashboard, /publications, /settings, /reports).",
+        "UI-auth pages (/login, /register) send credentials to /api/auth/login and /api/auth/register respectively; receive authentication tokens and userId.",
+        "Authenticated UI pages include user session token in requests to protected API routes.",
+        "/dashboard page fetches consolidated impact metrics from /api/impact-metrics using userId from session.",
+        "/dashboard page fetches strategy recommendations from /api/strategy-recommendations using userId.",
+        "/publications page sends publication add/update requests to /api/publications with publication metadata.",
+        "/settings page sends user profile and dissemination goal updates to /api/user/goals.",
+        "/reports page sends report generation requests to /api/reports/generate with parameters and userId.",
+        "Background job 'Periodic Impact Metrics Update' fetches latest impact data from external APIs via integration-external-apis, updates data-impactMetrics store.",
+        "Background job 'Automated Report Generation' generates reports based on data-impactMetrics, data-userProfiles, and data-publications, stores report files accessible via URLs.",
+        "Data stores (userProfiles, publications, impactMetrics, userGoals) persist and serve data to APIs and UI components.",
+        "APIs enforce authentication, authorization, and data validation before processing requests."
+      ],
+      "validationRules": [
+        "Email must be valid format and unique during registration.",
+        "Password must meet strength requirements (min length, complexity).",
+        "Publication titles are required; DOI and identifiers are optional but if provided must follow standard formats.",
+        "Duplicate publications (by DOI or title) per user must be detected and prevented.",
+        "User dissemination goals must include valid targetAudience strings; alertThresholds if provided must be valid JSON with expected schema.",
+        "API requests must include required fields and reject malformed or missing data with clear error messages.",
+        "Authentication tokens must be validated on each protected API request.",
+        "Report generation parameters must be validated for supported formats and date ranges.",
+        "All inputs must be sanitized to prevent injection attacks."
+      ],
+      "errorHandling": [
+        "API responses include standardized error objects with codes and human-readable messages.",
+        "Authentication failures return 401 Unauthorized with message.",
+        "Validation errors return 400 Bad Request with details of invalid fields.",
+        "External API failures during impact data aggregation trigger retries with exponential backoff; partial data is returned with warnings.",
+        "Rate limit exceedance returns 429 Too Many Requests with retry-after header.",
+        "Background jobs log errors and alert admins on persistent failures via monitoring tools.",
+        "UI displays user-friendly error messages and fallback states for empty or partial data.",
+        "Export/report generation failures return status messages with retry options.",
+        "Sensitive error details are logged server-side but not exposed to clients."
+      ],
+      "securityNotes": [
+        "All sensitive data (passwords, personal info) must be encrypted at rest and in transit (HTTPS).",
+        "Passwords stored using strong hashing algorithms (e.g., bcrypt).",
+        "Authentication tokens must be securely generated, stored (e.g., HttpOnly cookies or secure storage), and validated.",
+        "Access controls enforce that users can only access and modify their own data.",
+        "API routes validate user identity and permissions before data access.",
+        "Sessions expire after inactivity; support secure logout.",
+        "Implement CSRF protection on state-changing API endpoints.",
+        "Audit logging for critical actions (login, data changes, report generation).",
+        "Regular security reviews and dependency updates to mitigate vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A new user with valid email and strong password",
+          "when": "They register via /register page",
+          "then": "The system creates a user profile, returns userId, and allows login"
+        },
+        {
+          "id": "AT-002",
+          "given": "A registered user with valid credentials",
+          "when": "They login via /login page",
+          "then": "They receive an authentication token and access to protected pages"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user",
+          "when": "They add a new publication with valid metadata via /publications",
+          "then": "The publication is saved, duplicates are prevented, and confirmation is returned"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with publications",
+          "when": "They access /dashboard",
+          "then": "They see consolidated impact metrics, trend charts, and strategy recommendations"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user",
+          "when": "They update dissemination goals via /settings",
+          "then": "Goals are validated, saved, and confirmation is returned"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user",
+          "when": "They request report generation with valid parameters",
+          "then": "A report is generated, stored, and a download URL is provided"
+        },
+        {
+          "id": "AT-007",
+          "given": "External APIs are partially unavailable",
+          "when": "Impact data aggregation runs",
+          "then": "Partial data is returned with warnings, system remains stable"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to access another user's data",
+          "when": "They call protected API routes with another userId",
+          "then": "Access is denied with 403 Forbidden error"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user inputs invalid publication identifiers",
+          "when": "They submit via /publications",
+          "then": "Validation errors are returned and no data is saved"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user with a large publication portfolio",
+          "when": "They view publications or reports",
+          "then": "Data is paginated or batched to maintain performance"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database (UserProfile, Publication, ImpactMetricSnapshot, UserDisseminationGoal).",
+        "Implement Authentication API (/api/auth/login, /api/auth/register) with password hashing and token issuance.",
+        "Build Authentication & User Profile UI (/login, /register) with validation and session management.",
+        "Implement User Profiles Data Store and access control logic.",
+        "Develop Publications API (/api/publications) with validation, deduplication, and persistence.",
+        "Build Manage Publications UI (/publications) with add/edit/delete features and pagination.",
+        "Implement External Impact Data Integrations module with retry and caching logic.",
+        "Develop Impact Data Aggregation API (/api/impact-metrics) to fetch and consolidate metrics.",
+        "Build Impact Dashboard UI (/dashboard) to display metrics, trends, and export options.",
+        "Implement User Dissemination Goals API (/api/user/goals) and persistence.",
+        "Build User Settings & Goals UI (/settings) for profile and goal management.",
+        "Develop Strategy Recommendation API (/api/strategy-recommendations) with rule-based logic and disclaimers.",
+        "Implement Automated Report Generation API (/api/reports/generate) supporting multiple formats.",
+        "Build Impact Reports UI (/reports) with report request and download capabilities.",
+        "Create background jobs for Periodic Impact Metrics Update and Automated Report Generation with scheduling and logging.",
+        "Integrate comprehensive error handling, security measures, and monitoring.",
+        "Perform acceptance testing and iterate based on feedback."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/register",
+          "/dashboard",
+          "/publications",
+          "/settings",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.js",
+          "/api/auth/register.js",
+          "/api/publications.js",
+          "/api/impact-metrics.js",
+          "/api/strategy-recommendations.js",
+          "/api/user/goals.js",
+          "/api/reports/generate.js"
+        ],
+        "prismaModelsToAdd": [
+          "model UserProfile { userId String @id @unique email String @unique hashedPassword String name String? disseminationGoals Json? createdAt DateTime updatedAt DateTime }",
+          "model Publication { publicationId String @id @unique userId String doi String? title String identifiers Json? addedAt DateTime @@index([userId]) @@index([doi]) }",
+          "model ImpactMetricSnapshot { snapshotId String @id @unique publicationId String timestamp DateTime citationCount Int? altmetrics Json? policyMentions Int? mediaMentions Int? @@index([publicationId, timestamp]) }",
+          "model UserDisseminationGoal { goalId String @id @unique userId String targetAudience String goalDescription String? alertThresholds Json? @@index([userId]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user to specify missing constraints, clarify input/output details, and confirm priorities for the impact tracker tool.",
+        "promptTemplate": "You are an expert planner refining the Academic Impact Tracker requirements. Given the existing blueprint and idea: {{BLUEPRINT}}, {{IDEA}}, ask the user for any missing constraints, preferences on input formats, desired output details, and any special handling needed. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design and confirm the UI pages, API routes, and data models needed to implement the impact tracker system.",
+        "promptTemplate": "You are an architect finalizing the design for the Academic Impact Tracker. Based on the refined requirements: {{REFINED_REQUIREMENTS}}, and blueprint: {{BLUEPRINT}}, propose and confirm the final set of UI pages, API endpoints, and database models. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for UI pages and API routes to scaffold the development of the impact tracker.",
+        "promptTemplate": "You are a builder generating code stubs for the Academic Impact Tracker. Using the finalized architecture: {{ARCHITECTURE}}, write starter code for each UI page and API endpoint, including placeholders for validation and data handling. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages with API routes and database operations, implementing authentication, data fetching, and persistence.",
+        "promptTemplate": "You are an integrator wiring the Academic Impact Tracker components. Based on the built page stubs and API definitions: {{BUILT_STUBS}}, implement the data flow from UI to API to database with security, validation, and error handling. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

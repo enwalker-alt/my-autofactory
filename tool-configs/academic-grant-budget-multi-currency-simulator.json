@@ -1,0 +1,802 @@
+{
+  "slug": "academic-grant-budget-multi-currency-simulator",
+  "title": "Academic Grant Budget Multi-Currency & Exchange Rate Impact Simulator",
+  "description": "A lightweight single-page app allowing academic research grant financial managers to upload multi-institutional budget CSVs, input exchange rates manually, and generate consolidated multi-currency budget summaries with exchange rate impact annotations and basic risk insights.",
+  "inputLabel": "Upload your multi-institutional budget CSV file or paste budget line items here (include amounts, currencies, institutions, and timelines). Optionally, provide exchange rate data in JSON format.",
+  "outputLabel": "Consolidated budget summary in base currency with exchange rate impact notes and risk highlights.",
+  "systemPrompt": "You are a financial simulation assistant specialized in academic research grant budgets involving multiple currencies and institutions. Accept user-uploaded CSV budget data and optional manual exchange rate inputs. Validate all currency codes against ISO 4217 and ensure planned amounts are positive numbers. Consolidate all budget line items into a single base currency chosen by the user, applying provided exchange rates. Annotate the output with impact notes describing how currency fluctuations affect the budget totals. Include basic risk highlights related to currency volatility. Refuse any request that attempts to solicit financial advice or violates data privacy principles. Output the results as plain text summary. If structured-output feature is enabled, produce JSON with consolidated budget, exchange rate summary, and risk annotations. Enforce validation strictly and provide clear error messages for malformed inputs. Do not proceed if required fields are missing or invalid. Always prioritize safety, compliance, and accuracy.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Consolidate Budgets",
+      "prompt": "Consolidate the uploaded budget line items into the specified base currency applying the given exchange rates. Provide a summary table with total planned amounts per institution and currency, plus annotations on exchange rate impact.",
+      "hint": "Use this preset to get a consolidated budget overview with exchange rate impact notes."
+    },
+    {
+      "label": "Simulate Exchange Rate Scenario",
+      "prompt": "Using the uploaded budget data and the provided exchange rate scenario JSON, simulate the impact of currency fluctuations on the consolidated budget. Highlight potential risk areas and compliance considerations.",
+      "hint": "Use this preset to explore how different exchange rate scenarios affect your budget."
+    },
+    {
+      "label": "Validate Budget Data",
+      "prompt": "Validate the uploaded budget CSV and manual exchange rate inputs for correctness. Check for valid ISO currency codes, positive amounts, coherent timelines, and completeness. Return detailed error messages if issues found.",
+      "hint": "Use this preset to check your input data before running simulations."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with keys: consolidatedBudget (array of institutions with totals), exchangeRateSummary (object with currency pairs and rates), riskAnnotations (array of risk notes).",
+  "clarifyPrompt": "Please provide your multi-institutional budget data as a CSV file or text input including amounts, currencies, institutions, and timelines. Optionally, include exchange rate data in JSON. Specify a base currency for consolidation. If unclear or incomplete, ask clarifying questions before proceeding.",
+  "finalizePrompt": "Generate a consolidated multi-currency budget summary in the chosen base currency. Annotate the results with notes on exchange rate impacts and highlight any potential financial risks related to currency fluctuations. Ensure all inputs are validated and compliant with academic funder rules. Output in plain text or JSON based on user preference.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Grant Budget Multi-Currency & Exchange Rate Impact Simulator",
+      "niche": {
+        "role": "Academic Research Grant Financial Manager",
+        "scenario": "Managing multi-institutional grant budgets with expenses in multiple currencies and fluctuating exchange rates"
+      },
+      "problem": "Current academic grant budget tools typically assume a single currency and static exchange rates, making it difficult for grant financial managers to accurately project budgets, forecast financial risks, and prepare compliant reports when expenses occur across different countries with variable currency exchange conditions.",
+      "inputs": [
+        "Multi-institutional budget line items with planned amounts and currencies",
+        "Historical and current exchange rate data or manual exchange rate inputs",
+        "Funder-imposed currency usage rules and constraints",
+        "Projected timelines for budget expenditure",
+        "Institutional overhead rates and conditional cost sharing terms"
+      ],
+      "outputs": [
+        "Dynamic multi-currency consolidated budget tables converted to a base currency with exchange rate impact annotations",
+        "Scenario simulations showing budget variations under different exchange rate trends",
+        "Risk assessment reports highlighting potential budget shortfalls or compliance issues due to currency fluctuations",
+        "Visualizations of budget exposure by currency and institution",
+        "Compliance-ready exportable summaries and audit trail reports"
+      ],
+      "whyItWins": [
+        "Fills a critical gap in multi-currency budget management for international academic collaborations",
+        "Enables proactive financial risk management through exchange rate scenario simulations",
+        "Supports funder and institutional compliance by integrating currency-specific rules",
+        "Reduces manual calculation errors and time-consuming spreadsheet juggling",
+        "Lays foundation for deeper integrations with grant financial systems and real-time currency data feeds"
+      ],
+      "upgradePath": {
+        "today": "A lightweight single-page app allowing manual upload of budget CSVs, manual exchange rate input, and basic consolidated budget and risk summary generation",
+        "in90Days": "Add integration with live exchange rate APIs, multi-institution user roles with permission controls, and interactive scenario simulation dashboards",
+        "in12Months": "Develop a full multi-page system supporting automated budget updates from institutional finance systems, deep compliance rule engines, collaborative negotiation tools, alerting workflows for currency risks, and detailed forecasting analytics"
+      },
+      "riskNotes": [
+        "Must ensure no financial advice is given, only simulation and compliance support",
+        "Data privacy for institutional budget details requires secure handling and user authentication",
+        "Exchange rate data should be sourced from reputable providers with clear disclaimers about forecast certainty",
+        "Complex funder rules require careful interpretation to avoid compliance misguidance"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page application designed for academic research grant financial managers to manage and simulate multi-institutional, multi-currency grant budgets. It consolidates budgets with dynamic exchange rates, simulates currency fluctuation impacts, assesses financial risks, ensures compliance with funder currency rules, and provides exportable audit-ready reports.",
+      "primaryUser": "Academic Research Grant Financial Manager",
+      "successMetrics": [
+        "Accuracy and usability of multi-currency budget consolidation",
+        "User adoption rate among multi-institutional grant teams",
+        "Reduction in manual spreadsheet errors and time spent on currency calculations",
+        "Number of scenario simulations run and risk assessments generated",
+        "Positive user feedback on compliance support and reporting features"
+      ],
+      "components": [
+        {
+          "id": "ui-budget-management",
+          "name": "Budget Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload, view, edit, and manage multi-institutional budget line items with currency and timeline details.",
+          "dependsOn": [
+            "api-budget",
+            "api-exchange-rates",
+            "data-budget"
+          ],
+          "notes": [
+            "Supports CSV upload and manual entry.",
+            "Validates currency codes and budget constraints.",
+            "Handles institution-specific overhead and cost sharing inputs."
+          ]
+        },
+        {
+          "id": "ui-simulation-dashboard",
+          "name": "Simulation & Risk Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide interactive visualizations and scenario simulation controls for exchange rate trends, budget exposure, and risk assessments.",
+          "dependsOn": [
+            "api-simulation",
+            "api-budget",
+            "api-exchange-rates"
+          ],
+          "notes": [
+            "Includes charts for currency exposure by institution.",
+            "Allows users to define and run exchange rate scenarios.",
+            "Displays risk reports and compliance alerts."
+          ]
+        },
+        {
+          "id": "api-budget",
+          "name": "Budget Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for budgets, line items, institutions, and related financial parameters.",
+          "dependsOn": [
+            "data-budget",
+            "data-institutions",
+            "data-funder-rules"
+          ],
+          "notes": [
+            "Enforces funder-imposed currency rules on input.",
+            "Supports data validation and audit trail logging."
+          ]
+        },
+        {
+          "id": "api-exchange-rates",
+          "name": "Exchange Rate API",
+          "type": "api",
+          "responsibility": "Provide current, historical, and scenario-based exchange rate data, supporting manual input and live API integrations.",
+          "dependsOn": [
+            "data-exchange-rates",
+            "integration-exchange-rate-providers"
+          ],
+          "notes": [
+            "Supports fallback to manual rates if live data unavailable.",
+            "Includes disclaimers about forecast uncertainty."
+          ]
+        },
+        {
+          "id": "api-simulation",
+          "name": "Simulation & Risk Assessment API",
+          "type": "api",
+          "responsibility": "Execute budget consolidation calculations, simulate currency fluctuation impacts, generate risk assessments, and prepare compliance reports.",
+          "dependsOn": [
+            "api-budget",
+            "api-exchange-rates",
+            "data-funder-rules"
+          ],
+          "notes": [
+            "Performs scenario-based recalculations.",
+            "Generates annotations on exchange rate impact.",
+            "Produces exportable audit trail and compliance summaries."
+          ]
+        },
+        {
+          "id": "data-budget",
+          "name": "Budget Data Store",
+          "type": "data",
+          "responsibility": "Persist multi-institutional budget line items, institutions, overhead rates, cost sharing terms, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Stores currency codes and planned expenditure timelines.",
+            "Maintains versioning for audit trails."
+          ]
+        },
+        {
+          "id": "data-exchange-rates",
+          "name": "Exchange Rate Data Store",
+          "type": "data",
+          "responsibility": "Store historical, current, and scenario exchange rate data with timestamps and source metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Supports manual and automated data entry.",
+            "Includes data provenance information."
+          ]
+        },
+        {
+          "id": "data-funder-rules",
+          "name": "Funder Currency Rules Data Store",
+          "type": "data",
+          "responsibility": "Persist funder-imposed currency usage rules, constraints, and compliance parameters.",
+          "dependsOn": [],
+          "notes": [
+            "Rules are versioned and editable by authorized users.",
+            "Supports complex conditional logic for compliance."
+          ]
+        },
+        {
+          "id": "integration-exchange-rate-providers",
+          "name": "Exchange Rate Provider Integration",
+          "type": "integration",
+          "responsibility": "Integrate with external live exchange rate APIs to fetch reliable currency data.",
+          "dependsOn": [],
+          "notes": [
+            "Includes error handling and fallback strategies.",
+            "Manages API keys and rate limits."
+          ]
+        },
+        {
+          "id": "job-exchange-rate-sync",
+          "name": "Exchange Rate Sync Job",
+          "type": "job",
+          "responsibility": "Periodically fetch and update exchange rate data from external providers.",
+          "dependsOn": [
+            "integration-exchange-rate-providers",
+            "data-exchange-rates"
+          ],
+          "notes": [
+            "Runs on schedule with retry and alerting on failure.",
+            "Ensures data freshness for simulations."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "BudgetLineItem",
+          "purpose": "Represents a single budget line with amount, currency, institution, timeline, and overhead details.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "plannedAmount",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "currencyCode",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "overheadRate",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "costSharingTerms",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "institutionId",
+            "currencyCode"
+          ]
+        },
+        {
+          "name": "Institution",
+          "purpose": "Stores institution details involved in the grant budget.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "country",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "overheadRate",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "ExchangeRate",
+          "purpose": "Stores exchange rate data for currency pairs at specific timestamps.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "baseCurrency",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetCurrency",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rate",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "baseCurrency",
+            "targetCurrency",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "FunderRule",
+          "purpose": "Defines funder-imposed currency usage rules and compliance constraints.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "currencyConstraints",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "complianceNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName",
+            "version"
+          ]
+        },
+        {
+          "name": "AuditLog",
+          "purpose": "Tracks changes and actions on budgets and simulations for compliance and traceability.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to securely access budget data and simulations.",
+          "inputs": [
+            "username",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/budgets",
+          "title": "Budget Management",
+          "purpose": "View, upload, and edit multi-institutional multi-currency budget line items.",
+          "inputs": [
+            "CSV upload",
+            "manual budget line inputs",
+            "institution selection"
+          ],
+          "outputs": [
+            "budget line item list",
+            "validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/simulation",
+          "title": "Simulation & Risk Dashboard",
+          "purpose": "Run exchange rate scenarios, view consolidated budgets, risk assessments, and compliance alerts.",
+          "inputs": [
+            "exchange rate scenarios",
+            "simulation parameters"
+          ],
+          "outputs": [
+            "consolidated budget tables",
+            "risk reports",
+            "visual charts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Compliance & Audit Reports",
+          "purpose": "Generate and export compliance-ready summaries and audit trails for funders and institutions.",
+          "inputs": [
+            "date ranges",
+            "report types",
+            "export format"
+          ],
+          "outputs": [
+            "exportable reports (PDF, CSV)"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "Settings & Rules Management",
+          "purpose": "Manage funder currency rules, user roles, and integration settings.",
+          "inputs": [
+            "funder rule edits",
+            "user permissions",
+            "API keys"
+          ],
+          "outputs": [
+            "confirmation messages",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/budgets",
+          "method": "GET",
+          "purpose": "Retrieve all budget line items for the authenticated user's institutions.",
+          "requestShape": "none",
+          "responseShape": "Array of BudgetLineItem objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets",
+          "method": "POST",
+          "purpose": "Create or update budget line items.",
+          "requestShape": "BudgetLineItem or Array of BudgetLineItem",
+          "responseShape": "Success status and updated BudgetLineItem(s)",
+          "auth": "user"
+        },
+        {
+          "route": "/api/exchange-rates",
+          "method": "GET",
+          "purpose": "Fetch current or historical exchange rates for requested currency pairs and dates.",
+          "requestShape": "{ baseCurrency: string, targetCurrency: string, dateRange?: {start: date, end: date} }",
+          "responseShape": "Array of ExchangeRate objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/simulations/run",
+          "method": "POST",
+          "purpose": "Run a budget consolidation and risk simulation based on provided exchange rate scenarios and budget data.",
+          "requestShape": "{ budgetIds: string[], exchangeRateScenario: json, simulationParameters: json }",
+          "responseShape": "{ consolidatedBudget: json, riskAssessment: json, annotations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funder-rules",
+          "method": "GET",
+          "purpose": "Retrieve funder currency usage rules applicable to the user's budgets.",
+          "requestShape": "none",
+          "responseShape": "Array of FunderRule objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funder-rules",
+          "method": "POST",
+          "purpose": "Create or update funder currency rules.",
+          "requestShape": "FunderRule object",
+          "responseShape": "Success status and updated FunderRule",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Exchange Rate Sync Job",
+          "trigger": "Scheduled (e.g., hourly or daily)",
+          "purpose": "Automatically fetch and update exchange rate data from external providers to keep simulations accurate."
+        }
+      ],
+      "edgeCases": [
+        "Missing or incomplete exchange rate data for requested currency pairs or dates.",
+        "Conflicting or ambiguous funder currency rules leading to compliance uncertainty.",
+        "User uploads malformed or inconsistent CSV budget files.",
+        "Simulations run on budgets with overlapping or missing timeline data.",
+        "Network failures or API rate limits when fetching live exchange rates.",
+        "Unauthorized access attempts or data leakage between institutions.",
+        "Manual exchange rate inputs conflicting with live data.",
+        "Handling currencies with unusual decimal or rounding rules."
+      ],
+      "nonGoals": [
+        "Providing financial or investment advice beyond simulation and compliance support.",
+        "Real-time currency trading or hedging functionalities.",
+        "Full ERP or institutional finance system replacement.",
+        "Automated negotiation or approval workflows beyond basic collaboration tools.",
+        "Support for non-academic or commercial grant types."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page and receives an authentication token.",
+        "Authenticated user accesses /budgets page to upload CSV or enter budget line items manually.",
+        "Budget Management UI (/budgets) sends GET requests to /api/budgets to fetch existing budget line items filtered by user's institutions.",
+        "Budget Management UI validates inputs locally (currency codes, date ranges, overhead rates) before sending POST requests to /api/budgets to create or update budget line items.",
+        "/api/budgets enforces funder currency rules by querying /api/funder-rules and validates inputs server-side, logs audit trail entries in AuditLog data store.",
+        "Exchange Rate Sync Job periodically fetches live exchange rates from external providers via integration-exchange-rate-providers and updates data-exchange-rates store.",
+        "Simulation & Risk Dashboard UI (/simulation) fetches budget data from /api/budgets and exchange rates from /api/exchange-rates.",
+        "User defines exchange rate scenarios and simulation parameters on /simulation page and submits them to /api/simulations/run.",
+        "/api/simulations/run consolidates budgets using exchange rates and funder rules, performs risk assessments, generates annotations, and returns consolidated budget and risk reports.",
+        "Compliance & Audit Reports page (/reports) requests exportable reports by date range and type, fetching data from budgets, simulations, and audit logs via appropriate APIs.",
+        "Settings & Rules Management page (/settings) allows authorized users to retrieve and update funder rules via /api/funder-rules endpoints and manage API keys and user permissions.",
+        "AuditLog entries are created for all create/update/delete actions on budgets, simulations, and funder rules to ensure traceability."
+      ],
+      "validationRules": [
+        "BudgetLineItem.currencyCode must be a valid ISO 4217 currency code.",
+        "BudgetLineItem.plannedAmount must be a positive number greater than zero.",
+        "BudgetLineItem.startDate and endDate, if provided, must be valid dates with startDate <= endDate.",
+        "Institution.overheadRate, if provided, must be a number between 0 and 1 representing a percentage.",
+        "CostSharingTerms JSON must conform to predefined schema specifying sharing percentages and involved parties.",
+        "FunderRule.currencyConstraints JSON must follow schema defining allowed currencies, limits, and conditional logic.",
+        "API inputs must be sanitized to prevent injection attacks and ensure type correctness.",
+        "CSV uploads must be parsed and validated for required columns, consistent currency codes, and no duplicate line items.",
+        "ExchangeRate.rate must be a positive decimal number.",
+        "Simulation input parameters must include valid budgetIds belonging to the user and well-formed exchangeRateScenario JSON.",
+        "Authentication tokens must be validated on all protected API routes.",
+        "User permissions must be checked for funder rule edits and settings management."
+      ],
+      "errorHandling": [
+        "API endpoints return standardized error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 404 for not found, 500 for server errors).",
+        "Validation errors include detailed messages specifying the invalid fields and reasons.",
+        "CSV upload errors provide line number and error details to the user.",
+        "Fallback to manual exchange rates if live data fetch fails, with user notification about data freshness and reliability.",
+        "Rate limit errors from external exchange rate providers trigger retries with exponential backoff and alerting via logs.",
+        "Unauthorized access attempts result in 401 responses and logging of the event.",
+        "Conflicting funder rules detected during validation cause rejection of updates with clear messages to user.",
+        "Simulations run with missing or incomplete timeline data return warnings and partial results with annotations.",
+        "Network or integration failures during background jobs are retried and alert administrators on repeated failures.",
+        "All errors are logged with context for audit and debugging purposes."
+      ],
+      "securityNotes": [
+        "All API routes except /login require authentication tokens validated via middleware.",
+        "User access is scoped to their authorized institutions to prevent data leakage.",
+        "Sensitive data such as API keys for exchange rate providers are stored securely and not exposed to frontend.",
+        "Audit logs track user actions for compliance and forensic analysis.",
+        "Input validation and sanitization prevent injection and malformed data attacks.",
+        "Rate limiting and monitoring on APIs to prevent abuse.",
+        "Use HTTPS for all client-server communication.",
+        "Role-based access control enforced for funder rules and settings management.",
+        "Ensure proper CORS policies to restrict API access to authorized frontend origins.",
+        "Secure storage of passwords and authentication tokens following best practices."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user with budget line items in multiple currencies and institutions",
+          "when": "The user uploads a valid CSV file with new budget line items",
+          "then": "The system validates, saves the items, updates the budget list, and logs audit entries without errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user attempts to create a budget line item with an invalid currency code",
+          "when": "The user submits the budget line item via the UI",
+          "then": "The system rejects the input with a clear validation error message and does not save the item"
+        },
+        {
+          "id": "AT-003",
+          "given": "Exchange Rate Sync Job runs on schedule",
+          "when": "The job fetches live exchange rates successfully",
+          "then": "Exchange rates are stored in the data store with correct timestamps and source metadata"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user runs a simulation with defined exchange rate scenarios",
+          "when": "The simulation API receives the request",
+          "then": "It returns consolidated budgets, risk assessments, and annotations reflecting currency fluctuation impacts"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user tries to access /budgets without authentication",
+          "when": "The user navigates to the page",
+          "then": "The system redirects to /login or returns 401 unauthorized error"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user edits funder currency rules with conflicting constraints",
+          "when": "The user submits the changes",
+          "then": "The system rejects the update with detailed compliance conflict messages"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user requests exportable compliance reports for a date range",
+          "when": "The user submits the request",
+          "then": "The system generates and returns the report in the selected format (PDF or CSV) including audit trails"
+        },
+        {
+          "id": "AT-008",
+          "given": "Network failure occurs when fetching live exchange rates",
+          "when": "The system attempts to retrieve rates",
+          "then": "It falls back to manual rates if available and notifies the user of potential data freshness issues"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user uploads a malformed CSV file with missing columns",
+          "when": "The system processes the upload",
+          "then": "It returns an error indicating the missing columns and rejects the upload"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user with insufficient permissions attempts to edit funder rules",
+          "when": "The user submits changes",
+          "then": "The system denies the request with a 403 forbidden error"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for BudgetLineItem, Institution, ExchangeRate, FunderRule, AuditLog",
+        "Implement authentication system and /login page with token issuance",
+        "Develop API routes for /api/budgets GET and POST with validation and audit logging",
+        "Create Budget Management UI (/budgets) with CSV upload and manual entry, integrating with /api/budgets",
+        "Implement integration with external exchange rate providers and data-exchange-rates store",
+        "Build Exchange Rate Sync Job to periodically update exchange rates",
+        "Develop /api/exchange-rates GET endpoint supporting date range queries",
+        "Create Simulation & Risk Assessment API (/api/simulations/run) with consolidation and risk logic",
+        "Build Simulation & Risk Dashboard UI (/simulation) with scenario controls and visualizations",
+        "Develop /api/funder-rules GET and POST endpoints with validation and versioning",
+        "Create Settings & Rules Management UI (/settings) for funder rules and API keys",
+        "Implement Compliance & Audit Reports page (/reports) with export functionality",
+        "Add comprehensive validation and error handling across all inputs and APIs",
+        "Implement role-based access control and security middleware",
+        "Write acceptance tests and perform end-to-end testing",
+        "Deploy background jobs and monitoring for exchange rate sync and error alerts"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/budgets",
+          "/simulation",
+          "/reports",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "/api/budgets.ts",
+          "/api/exchange-rates.ts",
+          "/api/simulations/run.ts",
+          "/api/funder-rules.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model BudgetLineItem { id String @id; institutionId String; description String; plannedAmount Float; currencyCode String; startDate DateTime?; endDate DateTime?; overheadRate Float?; costSharingTerms Json?; createdAt DateTime; updatedAt DateTime; @@index([institutionId]); @@index([currencyCode]); }",
+          "model Institution { id String @id; name String; country String?; overheadRate Float?; createdAt DateTime; updatedAt DateTime; @@index([name]); }",
+          "model ExchangeRate { id String @id; baseCurrency String; targetCurrency String; rate Float; timestamp DateTime; source String?; @@index([baseCurrency]); @@index([targetCurrency]); @@index([timestamp]); }",
+          "model FunderRule { id String @id; funderName String; currencyConstraints Json; complianceNotes String?; version String; effectiveDate DateTime; createdAt DateTime; updatedAt DateTime; @@index([funderName]); @@index([version]); }",
+          "model AuditLog { id String @id; userId String?; action String; targetType String; targetId String; timestamp DateTime; details Json?; @@index([userId]); @@index([timestamp]); }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, preferences, or clarifications about multi-currency budget management and exchange rate simulation.",
+        "promptTemplate": "You are refining the requirements for the Academic Grant Budget Multi-Currency & Exchange Rate Impact Simulator. Given the current blueprint: {{BLUEPRINT}}, and the user's input: {{USER_INPUT}}, list any missing constraints, preferred features, or clarifications needed to ensure the tool meets academic financial management needs."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design final UI pages and database models needed for the multi-institutional multi-currency grant budget system.",
+        "promptTemplate": "Using the refined requirements and blueprint: {{BLUEPRINT}}, define the final set of UI pages, their inputs and outputs, and the detailed data models including fields and relationships needed to support the academic grant budget multi-currency simulation."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create starter code stubs for frontend pages and API endpoints to enable early development and testing.",
+        "promptTemplate": "Based on the finalized pages and data models: {{DATA_MODELS}}, generate code stubs for the frontend pages (e.g., /budgets, /simulation) and API routes (e.g., /api/budgets, /api/simulations/run) that handle basic input validation and placeholder responses."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring connecting frontend UI, API backend, and database for end-to-end functionality.",
+        "promptTemplate": "Using the page stubs and data models: {{DATA_MODELS}}, integrate the frontend pages with backend API routes and persist data in the database. Ensure authentication, validation, and error handling are in place for the Academic Grant Budget Multi-Currency Simulator."
+      }
+    ]
+  }
+}

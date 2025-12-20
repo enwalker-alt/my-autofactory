@@ -1,0 +1,775 @@
+{
+  "slug": "grant-compliance-tracker-lite",
+  "title": "Academic Research Grant Compliance & Renewal Tracker (Lite)",
+  "description": "A lightweight single-page web app for academic research grant managers to upload key grant and compliance documents, manually track compliance checklist items and renewal deadlines, and receive alerts for upcoming tasks and overdue items. Supports file uploads (PDF/DOCX) and text inputs with consolidated compliance status output. Designed for secure, manual tracking today with a scalable foundation for future automation and collaboration.",
+  "inputLabel": "Upload grant or compliance documents (PDF/DOCX) or enter manual compliance updates",
+  "outputLabel": "Integrated compliance checklist summary, renewal deadlines, risk flags, and communication briefs",
+  "systemPrompt": "You are an assistant helping academic research grant managers track multi-institutional grant compliance and renewal deadlines. Accept only PDF or DOCX files for upload, and/or manual compliance update text in a safe, privacy-preserving manner. Refuse any requests that attempt to provide legal advice or interpret compliance rules. Extract and consolidate compliance checklist items, renewal milestones, and communication logs from the inputs provided. Output a clear, plain-text summary with status flags for overdue or upcoming deadlines. If structured-output feature is enabled, output valid JSON with compliance items, renewal milestones, and risk flags. Enforce strict validation: reject unsupported file types, malformed inputs, or disallowed content. Do not store or share sensitive data beyond session scope. Keep all output concise, actionable, and focused only on tracking and alerts. Do not speculate or assume compliance rules beyond given inputs.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Compliance Summary",
+      "prompt": "Summarize the compliance checklist items and their current statuses based on the uploaded documents and manual inputs. Highlight any overdue or upcoming deadlines.",
+      "hint": "Use this to get a clear overview of compliance status."
+    },
+    {
+      "label": "Renewal Milestones Overview",
+      "prompt": "List all renewal milestone deadlines extracted from the inputs, including status flags for upcoming or overdue milestones.",
+      "hint": "Focus on renewal deadline tracking."
+    },
+    {
+      "label": "Communication Brief",
+      "prompt": "Generate a concise communication brief summarizing recent compliance queries, approvals, or updates mentioned in the inputs.",
+      "hint": "Use for stakeholder updates."
+    },
+    {
+      "label": "Full Compliance Report (JSON)",
+      "prompt": "Provide a detailed JSON report of compliance items, renewal milestones, risk flags, and communication logs extracted from the inputs. Include status and due dates where applicable.",
+      "hint": "Use when structured data is needed for further processing."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output JSON must include arrays of complianceItems, renewalMilestones, communicationLogs, each with id, description/content, status, dueDate (ISO 8601 string if applicable), and riskFlags for overdue or upcoming deadlines.",
+  "clarifyPrompt": "Please provide any missing details about the grant, compliance items, or renewal deadlines you want to track, or upload relevant documents.",
+  "finalizePrompt": "Review the summarized compliance checklist and renewal milestones. Confirm if all key data is captured or provide additional inputs or corrections.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Compliance & Renewal Tracker",
+      "niche": {
+        "role": "Academic Research Grant Managers",
+        "scenario": "Tracking multi-institutional grant compliance milestones and upcoming renewal deadlines across complex projects"
+      },
+      "problem": "Grant managers struggle to maintain timely awareness of diverse and evolving compliance requirements and renewal deadlines for multi-institutional academic research grants, risking missed renewals or non-compliance penalties due to fragmented data sources and manual tracking.",
+      "inputs": [
+        "Multi-institutional grant award documents (PDF/DOCX)",
+        "Funder compliance requirement documents",
+        "Renewal milestone schedules",
+        "Institutional policy files",
+        "Manual compliance status updates",
+        "Communication logs regarding compliance queries or approvals"
+      ],
+      "outputs": [
+        "Integrated grant compliance checklist with dynamic status tracking",
+        "Automated alerts for upcoming renewal deadlines and compliance tasks",
+        "Risk flags for overdue or missing compliance items",
+        "Consolidated communication briefs for stakeholder updates",
+        "Exportable compliance and renewal status dashboards"
+      ],
+      "whyItWins": [
+        "Addresses a real, repetitive pain point for grant managers juggling multiple complex grants across institutions",
+        "Integrates diverse document types and manual inputs into a single actionable compliance and renewal management system",
+        "Provides proactive deadline alerting reducing risk of missed renewals or compliance failures",
+        "Supports collaboration via communication briefs simplifying stakeholder coordination",
+        "Starts lightweight but designed for scalable multi-project and multi-user management as grants and institutions grow"
+      ],
+      "upgradePath": {
+        "today": "A lightweight single-page app allowing grant managers to upload key documents and manually track compliance checklist items and renewal dates with simple alerts",
+        "in90Days": "Add automated document parsing to extract compliance rules and deadlines, plus integration with institutional calendars and email reminders",
+        "in12Months": "Develop a multi-page collaboration platform with role-based access, detailed audit trails, compliance analytics, renewal scenario simulations, and integration with funder reporting systems"
+      },
+      "riskNotes": [
+        "Must maintain strict data privacy and security for sensitive grant and institutional documents",
+        "Avoid offering legal or formal compliance advice; tool supports tracking and alerts only",
+        "User manual updates require clear UI to avoid inaccurate compliance statuses",
+        "System must handle diverse funder and institutional rule formats without erroneous interpretations"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A scalable platform for academic research grant managers to track multi-institutional grant compliance milestones and renewal deadlines by integrating diverse documents and manual inputs into a unified system with alerts, communication briefs, and exportable dashboards.",
+      "primaryUser": "Academic Research Grant Managers",
+      "successMetrics": [
+        "Reduction in missed renewal deadlines across managed grants",
+        "Decrease in overdue compliance items reported",
+        "User engagement measured by frequency of compliance checklist updates",
+        "Timely delivery of automated alerts and notifications",
+        "Positive user feedback on collaboration and communication features"
+      ],
+      "components": [
+        {
+          "id": "ui-portal",
+          "name": "User Interface Portal",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for grant managers to upload documents, view and update compliance checklists, monitor renewal deadlines, manage communications, and export dashboards.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Includes authentication and role-based access controls in future upgrades",
+            "Must provide clear UI for manual compliance status updates to reduce errors",
+            "Pages designed for scalability from single-page to multi-page collaboration"
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API Layer",
+          "type": "api",
+          "responsibility": "Serve as backend API for data CRUD operations, document uploads, compliance tracking, alerts management, communication logs, and export functions.",
+          "dependsOn": [
+            "data-storage",
+            "integration-docparser",
+            "integration-calendar"
+          ],
+          "notes": [
+            "Handles authentication and authorization",
+            "Implements business logic for compliance status and renewal deadline calculations",
+            "Supports extensibility for future integrations and analytics"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage and Persistence",
+          "type": "data",
+          "responsibility": "Persist all grant data including uploaded documents, parsed compliance requirements, manual status updates, renewal schedules, communication logs, user profiles, and audit trails.",
+          "dependsOn": [],
+          "notes": [
+            "Must ensure encryption and strict access controls for sensitive data",
+            "Indexes to optimize queries on grants, deadlines, and compliance items",
+            "Supports versioning or history for audit trail requirements"
+          ]
+        },
+        {
+          "id": "integration-docparser",
+          "name": "Document Parsing Integration",
+          "type": "integration",
+          "responsibility": "Automate extraction of compliance rules and renewal deadlines from uploaded grant and funder documents using OCR and NLP techniques.",
+          "dependsOn": [
+            "api-core"
+          ],
+          "notes": [
+            "Initial version is manual upload only; parsing added in 90-day upgrade",
+            "Must handle diverse document formats and avoid erroneous interpretations",
+            "Outputs structured compliance and milestone data for persistence"
+          ]
+        },
+        {
+          "id": "integration-calendar",
+          "name": "Institutional Calendar & Notification Integration",
+          "type": "integration",
+          "responsibility": "Integrate with institutional calendar systems and email services to synchronize renewal deadlines and send automated alerts and reminders.",
+          "dependsOn": [
+            "api-core"
+          ],
+          "notes": [
+            "Planned for 90-day upgrade",
+            "Supports configurable alert thresholds and notification preferences",
+            "Ensures privacy compliance in communication"
+          ]
+        },
+        {
+          "id": "background-alerts",
+          "name": "Background Alerting Jobs",
+          "type": "job",
+          "responsibility": "Periodically scan compliance and renewal data to generate risk flags, overdue alerts, and trigger notifications to users.",
+          "dependsOn": [
+            "data-storage",
+            "integration-calendar"
+          ],
+          "notes": [
+            "Runs daily or configurable intervals",
+            "Handles edge cases like conflicting deadlines or incomplete data",
+            "Logs alert delivery status for audit and troubleshooting"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Grant",
+          "purpose": "Represents a multi-institutional academic research grant with associated metadata and documents.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "funder",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "awardDocuments",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "funder"
+          ]
+        },
+        {
+          "name": "ComplianceItem",
+          "purpose": "Tracks individual compliance requirements and their status for a grant.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "manualOverride",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "dueDate",
+            "status"
+          ]
+        },
+        {
+          "name": "RenewalMilestone",
+          "purpose": "Represents renewal deadlines and milestone schedules for a grant.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "milestoneName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "dueDate"
+          ]
+        },
+        {
+          "name": "CommunicationLog",
+          "purpose": "Stores communication entries related to compliance queries or approvals for grants.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "author",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents a user of the system with authentication and role information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "AuditTrail",
+          "purpose": "Records changes and updates to compliance items and grant data for accountability.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "changedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "changeType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "changeDetails",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "entityType",
+            "entityId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Grant Compliance Dashboard",
+          "purpose": "Overview of all managed grants with compliance status summaries, upcoming renewal deadlines, and risk flags.",
+          "inputs": [],
+          "outputs": [
+            "grant list",
+            "compliance summaries",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grant/:grantId",
+          "title": "Grant Detail View",
+          "purpose": "Detailed view of a single grant including compliance checklist, renewal milestones, communication logs, and document uploads.",
+          "inputs": [
+            "grantId"
+          ],
+          "outputs": [
+            "compliance items",
+            "renewal milestones",
+            "communications",
+            "documents"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grant/:grantId/compliance/edit",
+          "title": "Edit Compliance Status",
+          "purpose": "Interface for manual updates to compliance item statuses and notes.",
+          "inputs": [
+            "grantId",
+            "complianceItemId",
+            "status updates"
+          ],
+          "outputs": [
+            "confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/communications",
+          "title": "Communication Briefs",
+          "purpose": "View and manage consolidated communication logs related to compliance and renewals.",
+          "inputs": [],
+          "outputs": [
+            "communication entries",
+            "filters"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/exports",
+          "title": "Export Compliance Reports",
+          "purpose": "Generate and download exportable compliance and renewal status dashboards and reports.",
+          "inputs": [
+            "grant selection",
+            "report format"
+          ],
+          "outputs": [
+            "export file",
+            "generation status"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/login",
+          "method": "POST",
+          "purpose": "Authenticate user credentials and return auth token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/grants",
+          "method": "GET",
+          "purpose": "Retrieve list of grants accessible by the user.",
+          "requestShape": "none",
+          "responseShape": "Array<Grant>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId",
+          "method": "GET",
+          "purpose": "Retrieve detailed data for a specific grant.",
+          "requestShape": "{ grantId: string }",
+          "responseShape": "Grant with ComplianceItems, RenewalMilestones, CommunicationLogs",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:grantId/compliance",
+          "method": "POST",
+          "purpose": "Update compliance item status or add manual compliance updates.",
+          "requestShape": "{ complianceItemId: string, status: string, notes?: string }",
+          "responseShape": "{ success: boolean, updatedItem: ComplianceItem }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents/upload",
+          "method": "POST",
+          "purpose": "Upload grant or funder documents for parsing and storage.",
+          "requestShape": "{ grantId: string, file: binary }",
+          "responseShape": "{ success: boolean, parsedData?: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/communications",
+          "method": "GET",
+          "purpose": "Retrieve communication logs filtered by grant or date.",
+          "requestShape": "{ grantId?: string, dateRange?: {start: date, end: date} }",
+          "responseShape": "Array<CommunicationLog>",
+          "auth": "user"
+        },
+        {
+          "route": "/api/exports/compliance-report",
+          "method": "POST",
+          "purpose": "Generate exportable compliance and renewal reports.",
+          "requestShape": "{ grantIds: string[], format: string }",
+          "responseShape": "{ fileUrl: string, status: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "DailyComplianceAlertJob",
+          "trigger": "Scheduled daily at configurable time",
+          "purpose": "Scan compliance and renewal data to identify overdue items and upcoming deadlines, generate risk flags, and send alerts to users."
+        },
+        {
+          "name": "DocumentParsingJob",
+          "trigger": "Triggered on document upload",
+          "purpose": "Process uploaded documents with OCR/NLP to extract compliance rules and deadlines for integration into compliance tracking."
+        },
+        {
+          "name": "AuditTrailRecordingJob",
+          "trigger": "Triggered on data changes",
+          "purpose": "Record detailed audit trails for compliance item updates and grant data modifications."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or ambiguous compliance requirements extracted from diverse document formats",
+        "Conflicting deadlines or overlapping renewal milestones across multiple institutions",
+        "Manual overrides that conflict with automated parsing results",
+        "User errors in manual status updates leading to inaccurate compliance tracking",
+        "Data privacy breaches or unauthorized access to sensitive grant documents",
+        "System downtime during critical alert delivery windows",
+        "Scaling performance with increasing number of grants and users"
+      ],
+      "nonGoals": [
+        "Providing legal or formal compliance advice or interpretation",
+        "Automated resolution of compliance issues without user intervention",
+        "Direct integration with funder financial or payment systems (planned for long term)",
+        "Replacing institutional calendar systems entirely",
+        "Handling grant proposal submissions or initial funding applications"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI portal pages; if authentication required, user logs in via /login API to receive token.",
+        "Authenticated user requests grant lists (/api/grants) and grant details (/api/grants/:grantId) to populate dashboard and detail views.",
+        "User uploads documents via /api/documents/upload; files stored in data storage, triggering DocumentParsingJob to extract compliance and milestone data.",
+        "Compliance items and renewal milestones are persisted in data storage and linked to grants.",
+        "Users manually update compliance statuses via /api/grants/:grantId/compliance POST endpoint; updates trigger AuditTrailRecordingJob.",
+        "Communication logs are retrieved and managed via /api/communications GET endpoint.",
+        "BackgroundAlertJob runs daily, scanning compliance and renewal data to generate alerts and notifications via integration-calendar.",
+        "Users generate export reports via /api/exports/compliance-report POST endpoint; exports generated and file URLs returned.",
+        "AuditTrailRecordingJob records all changes for accountability and traceability."
+      ],
+      "validationRules": [
+        "Login: Validate email format and password presence; reject invalid credentials with error.",
+        "Grant retrieval: Validate user authorization for requested grants; return 403 if unauthorized.",
+        "Compliance update: Validate complianceItemId exists and belongs to grantId; status must be one of predefined statuses (e.g., 'Pending', 'Complete', 'Overdue'); notes optional but max length enforced.",
+        "Document upload: Validate grantId exists; file must be non-empty and of allowed types (PDF, DOCX, etc.); reject unsupported formats.",
+        "Communication retrieval: Validate optional filters (grantId exists if provided; dateRange start <= end).",
+        "Export report generation: Validate grantIds array non-empty and user authorized for each; format must be supported (e.g., PDF, CSV).",
+        "All date fields must be valid ISO 8601 dates; dueDate cannot be in the past when creating new milestones.",
+        "ManualOverride flag on ComplianceItem must be boolean if provided."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request for validation failures with descriptive error messages.",
+        "Return 401 Unauthorized if authentication token missing or invalid for protected endpoints.",
+        "Return 403 Forbidden if user lacks permission for requested resource or action.",
+        "Return 404 Not Found if requested grant, compliance item, or communication log does not exist.",
+        "Return 500 Internal Server Error for unexpected failures with logging for diagnostics.",
+        "API responses include error codes and messages in a consistent JSON structure.",
+        "File upload errors (e.g., size limit exceeded) return 413 Payload Too Large or 415 Unsupported Media Type as appropriate.",
+        "Background jobs log errors and retry transient failures; alert system administrators on repeated failures."
+      ],
+      "securityNotes": [
+        "All API routes except /api/login require authentication via JWT tokens.",
+        "Sensitive data such as grant documents and compliance details are encrypted at rest in data storage.",
+        "Access controls enforced at API layer to restrict data to authorized users only.",
+        "AuditTrail records user identity and timestamps for all data modifications.",
+        "File uploads scanned for malware and restricted by file type and size.",
+        "Communication integrations comply with privacy regulations; no sensitive data exposed in notifications.",
+        "Rate limiting and brute force protections applied on /api/login to prevent credential stuffing.",
+        "Future role-based access control planned to restrict actions by user roles."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials",
+          "when": "They submit correct login details on /login",
+          "then": "They receive an authentication token and user profile data"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user",
+          "when": "They request /dashboard data",
+          "then": "They receive a list of grants with compliance summaries and alerts"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user viewing a grant detail page",
+          "when": "They fetch /api/grants/:grantId",
+          "then": "They receive grant details including compliance items, milestones, communications, and documents"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user",
+          "when": "They update a compliance item status with valid data",
+          "then": "The system saves the update, returns success, and records an audit trail entry"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user",
+          "when": "They upload a valid document file for a grant",
+          "then": "The file is stored, DocumentParsingJob is triggered, and parsed data is returned if available"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user",
+          "when": "They request communication logs with filters",
+          "then": "They receive filtered communication entries relevant to their grants"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user",
+          "when": "They request export of compliance reports with valid grant selections and format",
+          "then": "They receive a file URL and status indicating report generation success"
+        },
+        {
+          "id": "AT-008",
+          "given": "An unauthenticated user",
+          "when": "They attempt to access protected API routes",
+          "then": "They receive 401 Unauthorized errors"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user submits invalid input data",
+          "when": "They call any API endpoint",
+          "then": "They receive 400 Bad Request with descriptive validation error messages"
+        },
+        {
+          "id": "AT-010",
+          "given": "Background jobs run as scheduled",
+          "when": "DailyComplianceAlertJob executes",
+          "then": "Overdue and upcoming compliance alerts are generated and notifications sent"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database",
+        "Implement authentication system and /api/login route",
+        "Build core API routes for grants, compliance, communications, and exports with validation and error handling",
+        "Develop UI portal pages with data fetching and state management",
+        "Implement document upload API and storage integration",
+        "Develop background jobs for document parsing, audit trail recording, and compliance alerting",
+        "Integrate calendar and notification systems (planned 90-day upgrade)",
+        "Add audit trail recording on data changes",
+        "Implement security features: encryption, access control, rate limiting",
+        "Write acceptance tests and perform end-to-end testing",
+        "Optimize indexing and query performance",
+        "Prepare for role-based access control and multi-user collaboration features"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/grant/[grantId]",
+          "/grant/[grantId]/compliance/edit",
+          "/communications",
+          "/exports"
+        ],
+        "apiFilesToCreate": [
+          "/api/login.js",
+          "/api/grants/index.js",
+          "/api/grants/[grantId].js",
+          "/api/grants/[grantId]/compliance.js",
+          "/api/documents/upload.js",
+          "/api/communications.js",
+          "/api/exports/compliance-report.js"
+        ],
+        "prismaModelsToAdd": [
+          "Grant",
+          "ComplianceItem",
+          "RenewalMilestone",
+          "CommunicationLog",
+          "User",
+          "AuditTrail"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, clarifications, or additional details about grant types, compliance nuances, or user roles.",
+        "promptTemplate": "You are the planner. Given the current blueprint:\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nList key missing requirements or constraints needed to fully specify the grant compliance tracker."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define final page routes, UI components, and detailed data models based on refined requirements.",
+        "promptTemplate": "You are the architect. Using the refined requirements:\n{{REFINED_REQUIREMENTS}}\n\nBlueprint:\n{{BLUEPRINT}}\n\nDesign final pages and data models needed for the application."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create code stubs and UI skeletons for the defined pages and components.",
+        "promptTemplate": "You are the builder. Based on the finalized pages and data models:\n{{FINAL_PAGES_AND_MODELS}}\n\nGenerate code stubs for each page and UI component."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages with backend APIs and database models, implementing data flow and validation.",
+        "promptTemplate": "You are the integrator. Given the page stubs and API definitions:\n{{PAGE_STUBS}}\n\nBlueprint:\n{{BLUEPRINT}}\n\nIntegrate frontend pages with backend APIs and database layers with proper validation and error handling."
+      }
+    ]
+  }
+}

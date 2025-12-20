@@ -1,0 +1,921 @@
+{
+  "slug": "academic-equipment-conflict-resolver",
+  "title": "Academic Research Equipment Usage & Calibration Conflict Resolver",
+  "description": "Upload equipment booking schedules, calibration logs, and maintenance data from multiple research groups to receive a consolidated conflict report and optimized tentative equipment usage calendar with alerts and communication briefs.",
+  "inputLabel": "Paste or upload combined equipment bookings, calibration, and maintenance schedules JSON",
+  "outputLabel": "Conflict resolution report and optimized equipment usage calendar recommendations",
+  "systemPrompt": "You are an expert lab equipment scheduling assistant. Given uploaded JSON data containing equipment metadata, multi-group booking schedules, calibration records, and maintenance logs, analyze for scheduling conflicts, calibration and maintenance overlaps, and group priority conflicts. Produce a detailed plain-text report of detected conflicts, tentative rescheduling suggestions to minimize downtime, and communication briefs for affected research groups. Refuse any input that is not valid JSON containing required fields: equipment metadata, bookings, calibrations, maintenance, and group priorities. Ensure no sensitive user data is output. Output must be in plain text. Do not generate any code or unrelated content. If input is incomplete or malformed, respond with a clear rejection message.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Conflict Detection Summary",
+      "prompt": "Analyze the uploaded equipment bookings, calibration, and maintenance schedules JSON data. Identify all conflicts including overlapping bookings, calibration overlaps with usage, and maintenance conflicts. Summarize conflicts in plain text with affected equipment, groups, and time frames.",
+      "hint": "Use this to quickly find all schedule conflicts."
+    },
+    {
+      "label": "Optimized Tentative Schedule",
+      "prompt": "Given the uploaded JSON data with equipment metadata, bookings, calibrations, and maintenance logs, generate an optimized tentative multi-group equipment usage calendar that resolves conflicts and aligns calibration and maintenance schedules to minimize downtime. Provide recommendations in plain text.",
+      "hint": "Use this to get a recommended conflict-resolved schedule."
+    },
+    {
+      "label": "Communication Briefs for Groups",
+      "prompt": "Based on the uploaded schedules and detected conflicts, generate clear communication briefs and notifications for affected research groups explaining conflicts, proposed schedule changes, and compliance reminders. Output in plain text.",
+      "hint": "Use this to prepare notifications for research groups."
+    },
+    {
+      "label": "Usage and Compliance Summary Report",
+      "prompt": "From the uploaded data, produce a summary report for lab management detailing equipment usage, calibration compliance status, upcoming maintenance, and any critical issues or alerts. Output in plain text.",
+      "hint": "Use this for management overview reports."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output detailed conflict reports, optimized schedules, communication briefs, or summary reports in plain text. Input must be valid JSON containing equipment, bookings, calibrations, maintenance, and group priority data.",
+  "clarifyPrompt": "Please provide the equipment metadata, booking schedules, calibration records, and maintenance logs in valid JSON format. Include group priorities and access permissions. Upload a file or paste the JSON below.",
+  "finalizePrompt": "Review the conflict resolution report and scheduling recommendations carefully. If you need more detailed analysis or specific communication briefs, select a preset or provide additional instructions.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Equipment Usage & Calibration Conflict Resolver",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Managing shared lab equipment across multiple research groups with overlapping usage schedules and calibration requirements"
+      },
+      "problem": "Lab managers struggle to coordinate equipment bookings, calibration schedules, and maintenance across multiple research groups, often leading to booking conflicts, unplanned equipment downtime, and compliance issues. Existing tools focus on booking optimization or calibration scheduling separately, but lack an integrated system that resolves conflicts, synchronizes calibration with usage, and supports communication between groups.",
+      "inputs": [
+        "Equipment metadata (type, ID, location)",
+        "Existing equipment booking schedules from multiple groups",
+        "Calibration records and upcoming calibration due dates",
+        "Maintenance logs and schedules",
+        "Research group priorities and access permissions"
+      ],
+      "outputs": [
+        "Conflict-resolved, optimized multi-group equipment usage calendar",
+        "Integrated calibration and maintenance schedule aligned with usage to minimize downtime",
+        "Alerts for impending calibration/maintenance conflicts with bookings",
+        "Communication briefs and notifications for affected research groups",
+        "Usage and compliance summary reports for lab management"
+      ],
+      "whyItWins": [
+        "Integrates booking, calibration, and maintenance management into a single workflow to prevent scheduling conflicts and downtime",
+        "Facilitates multi-group coordination with priority-aware conflict resolution and clear communication",
+        "Supports compliance by ensuring calibration is performed timely without disrupting research schedules",
+        "Reduces manual coordination overhead for lab managers and research groups",
+        "Lays foundation for a scalable system adaptable to larger institutions with complex shared equipment ecosystems"
+      ],
+      "upgradePath": {
+        "today": "Provide a simple single-page tool where lab managers upload booking schedules, calibration logs, and maintenance dates to receive a consolidated conflict report and optimized tentative calendar recommendations",
+        "in90Days": "Develop an interactive multi-user calendar interface with permission controls, automated conflict detection, and messaging capabilities to coordinate booking adjustments and calibration scheduling collaboratively",
+        "in12Months": "Expand into a full multi-page equipment lifecycle management system including predictive calibration forecasting, usage analytics, maintenance workflow integration, compliance documentation generation, and multi-institution coordination support"
+      },
+      "riskNotes": [
+        "Requires careful data privacy and permission management since multiple research groups access shared equipment data",
+        "Must handle varying calibration and maintenance protocols across equipment types safely",
+        "Dependence on accurate, timely input data from multiple groups to function effectively",
+        "Potential resistance to adoption if existing booking or calendar tools are entrenched; seamless integration or import/export needed"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive system to manage shared academic research equipment usage, calibration, and maintenance schedules across multiple research groups, resolving conflicts, optimizing bookings, and facilitating communication to ensure compliance and minimize downtime.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Reduction in equipment booking conflicts across research groups",
+        "Decrease in unplanned equipment downtime due to calibration or maintenance",
+        "User adoption rate among lab managers and research groups",
+        "Timely completion of calibrations and maintenance as per schedule",
+        "Positive feedback on communication and coordination features"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard & Calendar UI",
+          "type": "ui",
+          "responsibility": "Provide interactive multi-user calendar views for equipment bookings, calibration, and maintenance schedules; display conflict alerts, notifications, and summary reports; enable communication between groups.",
+          "dependsOn": [
+            "api-schedule",
+            "api-communication",
+            "data-equipment",
+            "data-bookings",
+            "data-calibrations",
+            "data-maintenance",
+            "api-auth"
+          ],
+          "notes": [
+            "Must support permission-based views depending on user roles and group affiliations.",
+            "Should allow manual adjustments and conflict resolution proposals.",
+            "Needs responsive design for desktop and tablet use."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Manage user authentication, session management, and enforce access permissions based on research group roles and equipment access rights.",
+          "dependsOn": [
+            "data-users",
+            "data-groups"
+          ],
+          "notes": [
+            "Critical for data privacy and multi-group access control.",
+            "Supports role-based access and group-specific permissions."
+          ]
+        },
+        {
+          "id": "api-schedule",
+          "name": "Scheduling & Conflict Resolution API",
+          "type": "api",
+          "responsibility": "Handle equipment booking submissions, calibration and maintenance schedule updates, detect and resolve conflicts considering group priorities, and generate optimized usage calendars.",
+          "dependsOn": [
+            "data-bookings",
+            "data-calibrations",
+            "data-maintenance",
+            "data-equipment",
+            "data-groups"
+          ],
+          "notes": [
+            "Core logic for integrating multiple schedule types and resolving overlaps.",
+            "Must handle edge cases like overlapping calibration and booking requests.",
+            "Should provide tentative schedules and allow manual overrides."
+          ]
+        },
+        {
+          "id": "api-communication",
+          "name": "Communication & Notification API",
+          "type": "api",
+          "responsibility": "Generate and send alerts, notifications, and communication briefs to affected research groups about conflicts, schedule changes, and compliance reminders.",
+          "dependsOn": [
+            "data-notifications",
+            "data-users",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports email and in-app notifications.",
+            "Tracks notification history and read status."
+          ]
+        },
+        {
+          "id": "data-equipment",
+          "name": "Equipment Metadata Store",
+          "type": "data",
+          "responsibility": "Persist equipment details including type, unique ID, location, calibration protocols, and maintenance requirements.",
+          "dependsOn": [],
+          "notes": [
+            "Supports varying calibration and maintenance protocols per equipment type.",
+            "Must be extensible for future lifecycle management data."
+          ]
+        },
+        {
+          "id": "data-bookings",
+          "name": "Equipment Booking Records",
+          "type": "data",
+          "responsibility": "Store booking schedules submitted by research groups including time slots, equipment IDs, group IDs, and booking status.",
+          "dependsOn": [
+            "data-equipment",
+            "data-groups"
+          ],
+          "notes": [
+            "Includes booking history and tentative vs confirmed states.",
+            "Supports priority flags for conflict resolution."
+          ]
+        },
+        {
+          "id": "data-calibrations",
+          "name": "Calibration Records",
+          "type": "data",
+          "responsibility": "Persist calibration logs, upcoming due dates, calibration protocols, and calibration status per equipment.",
+          "dependsOn": [
+            "data-equipment"
+          ],
+          "notes": [
+            "Tracks calibration compliance and overdue alerts.",
+            "Supports different calibration intervals and types."
+          ]
+        },
+        {
+          "id": "data-maintenance",
+          "name": "Maintenance Logs and Schedules",
+          "type": "data",
+          "responsibility": "Store maintenance history, scheduled maintenance windows, and maintenance protocols per equipment.",
+          "dependsOn": [
+            "data-equipment"
+          ],
+          "notes": [
+            "Supports integration with external maintenance workflow systems in future.",
+            "Tracks maintenance completion and downtime."
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User Profiles",
+          "type": "data",
+          "responsibility": "Persist user account information, roles, authentication credentials, and group memberships.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multi-factor authentication and password policies.",
+            "Stores user preferences for notifications."
+          ]
+        },
+        {
+          "id": "data-groups",
+          "name": "Research Groups Metadata",
+          "type": "data",
+          "responsibility": "Store information about research groups, their priorities, access permissions, and contact info.",
+          "dependsOn": [],
+          "notes": [
+            "Used for permission enforcement and priority-aware conflict resolution."
+          ]
+        },
+        {
+          "id": "data-notifications",
+          "name": "Notification Records",
+          "type": "data",
+          "responsibility": "Persist sent notifications, their content, recipients, timestamps, and read status.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Enables audit trail and user notification management."
+          ]
+        },
+        {
+          "id": "job-conflictDetection",
+          "name": "Conflict Detection & Optimization Job",
+          "type": "job",
+          "responsibility": "Periodically scan all bookings, calibrations, and maintenance schedules to detect conflicts and generate optimized tentative schedules.",
+          "dependsOn": [
+            "data-bookings",
+            "data-calibrations",
+            "data-maintenance",
+            "data-equipment",
+            "data-groups"
+          ],
+          "notes": [
+            "Runs on schedule or triggered by data updates.",
+            "Feeds results to scheduling API and notification system."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Equipment",
+          "purpose": "Store metadata and protocols for each piece of lab equipment.",
+          "fields": [
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "calibrationProtocol",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "maintenanceProtocol",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "type"
+          ]
+        },
+        {
+          "name": "Booking",
+          "purpose": "Record equipment booking requests and statuses.",
+          "fields": [
+            {
+              "name": "bookingId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "groupId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "priority",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "isTentative",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "bookingId",
+            "equipmentId",
+            "groupId",
+            "startTime",
+            "endTime"
+          ]
+        },
+        {
+          "name": "Calibration",
+          "purpose": "Track calibration events and schedules for equipment.",
+          "fields": [
+            {
+              "name": "calibrationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "performedDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "calibrationId",
+            "equipmentId",
+            "dueDate"
+          ]
+        },
+        {
+          "name": "Maintenance",
+          "purpose": "Log maintenance activities and schedules for equipment.",
+          "fields": [
+            {
+              "name": "maintenanceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scheduledDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "completedDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "maintenanceId",
+            "equipmentId",
+            "scheduledDate"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represent system users with roles and group memberships.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "groupIds",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "email"
+          ]
+        },
+        {
+          "name": "Group",
+          "purpose": "Metadata for research groups including priorities and permissions.",
+          "fields": [
+            {
+              "name": "groupId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "priority",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "accessPermissions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "contactInfo",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "groupId",
+            "priority"
+          ]
+        },
+        {
+          "name": "Notification",
+          "purpose": "Store notifications sent to users/groups.",
+          "fields": [
+            {
+              "name": "notificationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "recipientUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sentAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "read",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "notificationId",
+            "recipientUserId",
+            "sentAt"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Equipment Usage Dashboard",
+          "purpose": "Provide an overview of equipment bookings, calibration, and maintenance schedules with conflict alerts and summary reports.",
+          "inputs": [],
+          "outputs": [
+            "calendar view",
+            "conflict alerts",
+            "summary reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/equipment/:equipmentId",
+          "title": "Equipment Detail Page",
+          "purpose": "Show detailed metadata, booking history, calibration and maintenance records for a specific equipment item.",
+          "inputs": [
+            "equipmentId"
+          ],
+          "outputs": [
+            "equipment metadata",
+            "booking list",
+            "calibration logs",
+            "maintenance logs"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/bookings",
+          "title": "Manage Bookings",
+          "purpose": "Allow users to create, edit, and cancel equipment bookings with conflict detection and tentative scheduling.",
+          "inputs": [
+            "booking details"
+          ],
+          "outputs": [
+            "booking confirmation",
+            "conflict warnings"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/calibrations",
+          "title": "Calibration Management",
+          "purpose": "View and update calibration schedules and logs; receive alerts for upcoming or overdue calibrations.",
+          "inputs": [
+            "calibration updates"
+          ],
+          "outputs": [
+            "calibration status",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/maintenance",
+          "title": "Maintenance Management",
+          "purpose": "View and manage maintenance schedules and history; coordinate maintenance windows to minimize downtime.",
+          "inputs": [
+            "maintenance updates"
+          ],
+          "outputs": [
+            "maintenance status",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/notifications",
+          "title": "Notifications Center",
+          "purpose": "Display alerts, messages, and communication briefs related to scheduling conflicts and compliance.",
+          "inputs": [],
+          "outputs": [
+            "notification list"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/admin/users",
+          "title": "User & Group Administration",
+          "purpose": "Manage user accounts, roles, group memberships, and access permissions.",
+          "inputs": [
+            "user/group data"
+          ],
+          "outputs": [
+            "user/group lists",
+            "permission settings"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and create session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/equipment",
+          "method": "GET",
+          "purpose": "Retrieve list of equipment with metadata.",
+          "requestShape": "{}",
+          "responseShape": "Equipment[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/bookings",
+          "method": "GET",
+          "purpose": "Fetch bookings for specified equipment or groups.",
+          "requestShape": "{ equipmentId?: string, groupId?: string }",
+          "responseShape": "Booking[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/bookings",
+          "method": "POST",
+          "purpose": "Create or update a booking request.",
+          "requestShape": "Booking",
+          "responseShape": "{ success: boolean, conflicts?: Booking[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/calibrations",
+          "method": "GET",
+          "purpose": "Retrieve calibration records and schedules.",
+          "requestShape": "{ equipmentId?: string }",
+          "responseShape": "Calibration[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/calibrations",
+          "method": "POST",
+          "purpose": "Update calibration logs or schedules.",
+          "requestShape": "Calibration",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/maintenance",
+          "method": "GET",
+          "purpose": "Fetch maintenance logs and schedules.",
+          "requestShape": "{ equipmentId?: string }",
+          "responseShape": "Maintenance[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/maintenance",
+          "method": "POST",
+          "purpose": "Create or update maintenance records.",
+          "requestShape": "Maintenance",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/notifications",
+          "method": "GET",
+          "purpose": "Retrieve notifications for the authenticated user.",
+          "requestShape": "{}",
+          "responseShape": "Notification[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users",
+          "method": "GET",
+          "purpose": "List users and their group memberships (admin only).",
+          "requestShape": "{}",
+          "responseShape": "User[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/groups",
+          "method": "GET",
+          "purpose": "Retrieve research group metadata and priorities.",
+          "requestShape": "{}",
+          "responseShape": "Group[]",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Conflict Detection & Optimization",
+          "trigger": "Scheduled (e.g., every hour) or on data update",
+          "purpose": "Detect booking, calibration, and maintenance conflicts; generate optimized tentative schedules; trigger notifications for affected groups."
+        }
+      ],
+      "edgeCases": [
+        "Simultaneous booking requests for the same equipment with overlapping times and equal priority groups.",
+        "Calibration or maintenance due dates falling within active booking windows requiring rescheduling.",
+        "Incomplete or delayed input data from research groups causing stale or inaccurate conflict detection.",
+        "Users attempting unauthorized access to equipment or group data outside their permissions.",
+        "Equipment with irregular or custom calibration/maintenance protocols that do not fit standard intervals.",
+        "Handling cancellations or emergency maintenance that require immediate rescheduling and notifications.",
+        "Conflicts arising from imported data from external booking or calendar tools with differing formats."
+      ],
+      "nonGoals": [
+        "Replacing existing institutional calendar or booking systems entirely.",
+        "Automated predictive maintenance beyond scheduling based on existing protocols (reserved for future upgrades).",
+        "Direct integration with hardware sensors or IoT devices for equipment status monitoring.",
+        "Financial or billing management related to equipment usage.",
+        "Support for non-academic or non-research equipment outside the lab context."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses frontend pages which require authentication; frontend requests user session token from /api/auth/login or session cookie.",
+        "Authenticated frontend fetches equipment metadata from /api/equipment to populate dashboard and detail pages.",
+        "Dashboard UI fetches bookings, calibrations, and maintenance schedules via /api/bookings, /api/calibrations, and /api/maintenance respectively, filtered by user permissions and group affiliations.",
+        "User submits booking requests or updates via POST /api/bookings; API validates, detects conflicts using scheduling logic, and returns conflicts or confirmation.",
+        "Calibration and maintenance updates are submitted via POST /api/calibrations and /api/maintenance; APIs update records and trigger conflict detection if necessary.",
+        "Conflict Detection & Optimization Job runs periodically or on data updates, scans bookings, calibrations, maintenance, and equipment data to detect conflicts and generate tentative optimized schedules.",
+        "Conflict detection results feed into Scheduling API and Communication API to update tentative bookings and send notifications to affected users/groups.",
+        "Communication API sends notifications via email and in-app, storing notification records for audit and read tracking.",
+        "Dashboard UI subscribes or polls /api/notifications to display alerts and messages to users.",
+        "Admin users manage users and groups via /api/users and /api/groups endpoints, updating roles, permissions, and memberships.",
+        "All API routes enforce authentication and authorization, validating user roles and group access before returning data or accepting updates."
+      ],
+      "validationRules": [
+        "Authentication API validates email format, password strength, and user existence before issuing tokens.",
+        "Booking creation/update validates required fields: equipmentId, groupId, startTime, endTime, status; startTime < endTime; no overlapping confirmed bookings for same equipment unless priority or tentative flags apply.",
+        "Calibration and maintenance updates validate equipmentId existence, status values (e.g., pending, completed), and date fields consistency (performedDate <= dueDate, completedDate <= scheduledDate).",
+        "User input on pages is sanitized and validated for correct types and required fields before API submission.",
+        "API enforces user permissions: users can only view or modify bookings, calibrations, maintenance, and notifications related to their groups or equipment they have access to.",
+        "Conflict detection logic validates overlapping time intervals, group priorities, and tentative flags to determine conflicts and resolutions.",
+        "Notification content is validated for length and presence before sending and storing.",
+        "Admin APIs validate role assignments and group membership changes against allowed roles and existing groups.",
+        "All date/time inputs are validated for ISO 8601 format and timezone consistency."
+      ],
+      "errorHandling": [
+        "API returns 401 Unauthorized for unauthenticated requests requiring authentication.",
+        "API returns 403 Forbidden for authenticated users attempting unauthorized access or modifications.",
+        "Validation errors return 400 Bad Request with detailed messages about missing or invalid fields.",
+        "Conflict detection during booking returns 409 Conflict with list of conflicting bookings and suggestions for resolution.",
+        "Server errors return 500 Internal Server Error with generic message; detailed errors logged internally.",
+        "Frontend displays user-friendly error messages based on API error codes and messages.",
+        "Communication API logs failures in sending notifications and retries or flags for manual intervention.",
+        "Background job logs errors and alerts admins if conflict detection or optimization fails.",
+        "Edge cases such as simultaneous booking requests are handled with transactional locking or optimistic concurrency controls to avoid race conditions.",
+        "APIs handle missing or stale data gracefully, returning empty lists or warnings as appropriate."
+      ],
+      "securityNotes": [
+        "All API routes except login require valid authentication tokens or session cookies.",
+        "Role-based access control enforced on all data access and modification endpoints.",
+        "User passwords stored hashed with strong algorithms and salted.",
+        "Multi-factor authentication support implemented for user login flows.",
+        "Sensitive data such as hashed passwords never exposed in API responses.",
+        "Input validation and sanitization prevent injection attacks and malformed data.",
+        "Notification content and communication channels secured to prevent unauthorized access or spoofing.",
+        "Audit trails maintained for user actions, especially for admin changes and booking modifications.",
+        "Rate limiting and throttling applied to authentication and booking APIs to mitigate abuse.",
+        "Data access scoped strictly to user’s groups and equipment permissions to prevent data leakage."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated lab manager user with access to multiple research groups",
+          "when": "They view the Equipment Usage Dashboard",
+          "then": "They see calendar views with bookings, calibration, and maintenance schedules filtered by their groups, with conflict alerts and summary reports displayed"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user submits a booking request for equipment with overlapping time to an existing confirmed booking from a higher priority group",
+          "when": "The booking request is processed",
+          "then": "The API returns a conflict response with details of conflicting bookings and the booking is marked tentative or rejected based on priority rules"
+        },
+        {
+          "id": "AT-003",
+          "given": "A calibration due date falls within an active booking window",
+          "when": "The conflict detection job runs",
+          "then": "A conflict is detected and tentative rescheduling suggestions are generated and notifications sent to affected groups"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user attempts to access booking data for a group they do not belong to",
+          "when": "They request the bookings via API",
+          "then": "The API returns 403 Forbidden and no data is exposed"
+        },
+        {
+          "id": "AT-005",
+          "given": "An admin user updates a user’s roles and group memberships",
+          "when": "The update is submitted",
+          "then": "The changes are saved, and the user’s permissions are updated accordingly; subsequent access reflects new permissions"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user receives a notification about a schedule conflict",
+          "when": "They view the Notifications Center",
+          "then": "The notification is listed with correct content, timestamp, and read status; marking it read updates the status in the backend"
+        },
+        {
+          "id": "AT-007",
+          "given": "Multiple simultaneous booking requests for the same equipment and time slot with equal priority",
+          "when": "The requests are processed concurrently",
+          "then": "The system resolves conflicts deterministically (e.g., first-come-first-served or manual override) and informs users accordingly"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user submits invalid booking data missing required fields",
+          "when": "The API receives the request",
+          "then": "The API returns 400 Bad Request with detailed validation error messages"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for all data entities: Equipment, Booking, Calibration, Maintenance, User, Group, Notification",
+        "Implement Authentication & Authorization API with user login, session management, and role-based access control",
+        "Develop data access layers and APIs for Equipment, Bookings, Calibrations, Maintenance, Users, Groups, and Notifications with validation and permission checks",
+        "Implement Scheduling & Conflict Resolution API including core logic for booking submissions, conflict detection, tentative scheduling, and manual overrides",
+        "Create Communication & Notification API for sending and tracking notifications via email and in-app",
+        "Build frontend pages starting with Equipment Usage Dashboard and Equipment Detail Page, integrating calendar views and data fetching",
+        "Develop booking management UI with conflict warnings and booking confirmation flows",
+        "Implement calibration and maintenance management pages with update capabilities and alert displays",
+        "Create Notifications Center UI to display alerts and messages to users",
+        "Build Admin UI for user and group management with role and permission editing",
+        "Implement background job for Conflict Detection & Optimization with scheduling and event triggers",
+        "Add comprehensive validation, error handling, and security enforcement across all APIs and frontend components",
+        "Perform integration testing and acceptance testing to validate workflows and edge cases",
+        "Deploy and monitor system with logging, audit trails, and notification tracking"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/equipment/[equipmentId]",
+          "/bookings",
+          "/calibrations",
+          "/maintenance",
+          "/notifications",
+          "/admin/users"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/equipment/index.ts",
+          "api/bookings/index.ts",
+          "api/calibrations/index.ts",
+          "api/maintenance/index.ts",
+          "api/notifications/index.ts",
+          "api/users/index.ts",
+          "api/groups/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Equipment",
+          "Booking",
+          "Calibration",
+          "Maintenance",
+          "User",
+          "Group",
+          "Notification"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask missing constraints and clarify details about equipment usage, calibration, maintenance, and group coordination.",
+        "promptTemplate": "Given the current blueprint and idea for the Academic Research Equipment Usage & Calibration Conflict Resolver, please specify any missing constraints or additional requirements you want addressed. Provide details about equipment types, calibration protocols, maintenance needs, group priorities, or communication preferences. Your input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final set of pages, data models, and APIs needed for the full multi-page application.",
+        "promptTemplate": "Using the blueprint and expanded specs, finalize the detailed page routes, data models, and API endpoints for the Academic Research Equipment Usage & Calibration Conflict Resolver. Include authorization rules and edge case handling. Reference: {{BLUEPRINT}} and {{EXPANDED}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create starter code stubs for frontend pages and components based on the finalized architecture.",
+        "promptTemplate": "Generate code stubs for all frontend pages and components defined in the blueprint for the Academic Research Equipment Usage & Calibration Conflict Resolver. Use best practices for authentication and data fetching. Include comments for next implementation steps. Input: {{ARCHITECT_OUTPUT}}"
+      },
+      {
+        "id": "integrator-wireup",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages with backend APIs and database models, ensuring validation and security.",
+        "promptTemplate": "Provide detailed instructions and code examples to wire the frontend pages to the backend APIs and database models for the Academic Research Equipment Usage & Calibration Conflict Resolver. Include validation rules, error handling, and permission checks. Use the finalized data models and API specs: {{DATA_MODELS}}, {{API_ROUTES}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,737 @@
+{
+  "slug": "academic-lab-safety-training-scenario-simulator",
+  "title": "Academic Lab Safety Training Scenario Simulator",
+  "description": "Generate customized, role-specific lab safety training scenarios, trainer guides, and exportable session plans from your lab policies, hazards, personnel roles, incident reports, and training objectives. Designed for academic research lab managers to create engaging, compliant, and interactive safety training materials in a single-page app.",
+  "inputLabel": "Paste or upload your lab safety policies, hazards, personnel roles, incident reports, and training objectives",
+  "outputLabel": "Generated scenario outlines, trainer guides, and exportable training session plans",
+  "systemPrompt": "You are a specialized assistant for academic research lab managers. Given lab safety policies and protocols, hazard descriptions, personnel roles, incident reports, and training objectives, generate detailed, role-specific interactive safety training scenario outlines, branching decision trees, trainer guides with scripts and discussion prompts, and exportable training session plans including assessment question banks. Always include disclaimers that these outputs are advisory and do not replace formal regulatory training or legal advice. Refuse any requests for medical, legal, or emergency response advice. Validate that inputs are complete and consistent. Ensure all outputs promote realistic and engaging lab safety education tailored to the specific lab environment and personnel roles. Output plain text summary of scenario outlines, and optionally JSON if structured output is enabled.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Make it clearer",
+      "prompt": "Rewrite/produce the output with maximum clarity. Reduce ambiguity, define terms briefly, and avoid jargon unless necessary.",
+      "hint": "Improve clarity"
+    },
+    {
+      "label": "More structured",
+      "prompt": "Use a clean structure with headings and bullet points. Make the output scannable and logically ordered.",
+      "hint": "Add structure"
+    },
+    {
+      "label": "More critical",
+      "prompt": "Be more rigorous. Identify weak spots, missing assumptions, contradictions, and any risks or limitations.",
+      "hint": "Pressure-test"
+    },
+    {
+      "label": "More actionable",
+      "prompt": "Add concrete next steps, checklists, or recommendations. Prioritize what to do first and why.",
+      "hint": "Make it usable"
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, produce JSON with keys: scenarioOutline, decisionTrees, trainerGuide, assessmentQuestions, disclaimers.",
+  "clarifyPrompt": "Please provide detailed lab policies, hazard descriptions, personnel roles with experience levels, incident reports (optional), and training objectives to generate tailored safety training scenarios. Upload relevant documents or paste text inputs.",
+  "finalizePrompt": "Review the generated training scenario outlines and trainer guides carefully. Confirm all role-specific branches and assessment questions meet your lab's needs. Remember these materials are advisory and complement formal safety training.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Lab Safety Training Scenario Simulator",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Preparing and conducting recurring lab safety training sessions for new and existing lab personnel"
+      },
+      "problem": "Lab managers must repeatedly develop engaging, realistic, and role-specific safety training scenarios to effectively prepare diverse lab members for potential hazards, but existing tools focus mainly on static checklists or compliance documentation without interactive scenario generation tailored to specific lab environments and personnel roles.",
+      "inputs": [
+        "Lab safety policies and protocols documents (upload or text input)",
+        "Lab-specific hazard descriptions and equipment lists",
+        "Personnel role descriptions and experience levels",
+        "Previous incident reports or near-miss summaries",
+        "Training session objectives and constraints"
+      ],
+      "outputs": [
+        "Interactive branching safety training scenario outlines customized per personnel role",
+        "Role-specific decision trees illustrating potential hazard responses",
+        "Trainer guides with scenario scripts, discussion prompts, and debrief checklists",
+        "Exportable training session plans with assessment question banks"
+      ],
+      "whyItWins": [
+        "Fills a niche gap by generating dynamic, role-tailored safety training scenarios rather than static content",
+        "Supports repeated, iterative use for diverse lab teams and evolving safety challenges",
+        "Reduces time and expertise required by lab managers to develop engaging, compliant training materials",
+        "Facilitates effective risk awareness and decision-making skills in lab personnel through interactive simulation",
+        "Can integrate lab-specific data to ensure relevance and realism"
+      ],
+      "upgradePath": {
+        "today": "Single-page app where lab managers input lab policies, hazard info, and roles to generate printable scenario outlines and trainer scripts",
+        "in90Days": "Add interactive web-based scenario simulations with role-based branching, quizzes, and user progress tracking for training sessions",
+        "in12Months": "Develop a multi-page system including collaborative scenario authoring, analytics dashboard on training effectiveness, incident integration for scenario updates, and multi-lab management features"
+      },
+      "riskNotes": [
+        "Ensure generated scenarios are advisory and do not replace formal regulatory training requirements",
+        "Avoid medical or legal advice; focus solely on general lab safety education",
+        "Maintain data privacy and security for uploaded sensitive lab incident reports",
+        "Clearly disclaim that simulation outputs are for training preparation only and not incident response protocols"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An Academic Lab Safety Training Scenario Simulator that enables lab managers to create dynamic, role-specific interactive safety training scenarios, trainer guides, and session plans, evolving from a single-page scenario generator to a collaborative multi-lab management platform with analytics and incident integration.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Number of training scenarios created and used",
+        "User engagement with interactive scenario simulations",
+        "Reduction in time spent preparing training materials",
+        "Positive user feedback on scenario relevance and usability",
+        "Improved training effectiveness measured via assessments and analytics"
+      ],
+      "components": [
+        {
+          "id": "ui-input",
+          "name": "Input & Scenario Generation UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for lab managers to input lab policies, hazards, personnel roles, incident reports, and training objectives; generate printable scenario outlines and trainer scripts.",
+          "dependsOn": [
+            "api-scenario-generation",
+            "data-labData"
+          ],
+          "notes": [
+            "Initial single-page app evolving into multi-page input forms",
+            "Supports file uploads and rich text inputs",
+            "Includes validation and feedback on inputs"
+          ]
+        },
+        {
+          "id": "ui-interactive-simulation",
+          "name": "Interactive Scenario Simulation UI",
+          "type": "ui",
+          "responsibility": "Deliver web-based interactive branching scenarios with role-specific decision trees, quizzes, and progress tracking for trainees.",
+          "dependsOn": [
+            "api-simulation",
+            "data-trainingSessions",
+            "api-auth"
+          ],
+          "notes": [
+            "Added in 90-day upgrade",
+            "Supports role-based branching logic and user progress persistence",
+            "Includes quiz components with scoring"
+          ]
+        },
+        {
+          "id": "api-scenario-generation",
+          "name": "Scenario Generation API",
+          "type": "api",
+          "responsibility": "Process input data to generate customized interactive scenario outlines, trainer guides, and exportable session plans with assessment banks.",
+          "dependsOn": [
+            "data-labData",
+            "data-scenarios"
+          ],
+          "notes": [
+            "Handles scenario branching logic generation",
+            "Ensures scenario outputs are advisory and disclaimers included",
+            "Scalable for iterative scenario refinement"
+          ]
+        },
+        {
+          "id": "api-simulation",
+          "name": "Simulation & Progress API",
+          "type": "api",
+          "responsibility": "Manage interactive scenario sessions, track trainee progress, quiz results, and provide data for analytics.",
+          "dependsOn": [
+            "data-trainingSessions",
+            "data-userProgress",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports session start, resume, and completion",
+            "Handles role-based branching and decision tracking"
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Handle user authentication, authorization, and multi-lab access control for lab managers and trainees.",
+          "dependsOn": [],
+          "notes": [
+            "Supports role-based access (manager vs trainee)",
+            "Secures sensitive data such as incident reports"
+          ]
+        },
+        {
+          "id": "data-labData",
+          "name": "Lab Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded lab policies, hazard info, personnel roles, incident reports, and training objectives.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive data encrypted at rest",
+            "Supports versioning for iterative updates"
+          ]
+        },
+        {
+          "id": "data-scenarios",
+          "name": "Scenario Models Store",
+          "type": "data",
+          "responsibility": "Store generated scenario outlines, branching logic, trainer guides, and assessment question banks.",
+          "dependsOn": [
+            "data-labData"
+          ],
+          "notes": [
+            "Supports scenario versioning and role-specific variants"
+          ]
+        },
+        {
+          "id": "data-trainingSessions",
+          "name": "Training Sessions & Progress Store",
+          "type": "data",
+          "responsibility": "Persist interactive session states, trainee progress, quiz results, and session metadata.",
+          "dependsOn": [
+            "data-scenarios"
+          ],
+          "notes": [
+            "Enables progress tracking and analytics"
+          ]
+        },
+        {
+          "id": "background-incidentIntegration",
+          "name": "Incident Report Integration Job",
+          "type": "job",
+          "responsibility": "Periodically analyze new incident reports to suggest scenario updates or new hazard considerations.",
+          "dependsOn": [
+            "data-labData",
+            "data-scenarios"
+          ],
+          "notes": [
+            "Supports continuous scenario relevance and improvement",
+            "Runs asynchronously to avoid blocking user actions"
+          ]
+        },
+        {
+          "id": "background-analyticsProcessing",
+          "name": "Training Effectiveness Analytics Job",
+          "type": "job",
+          "responsibility": "Aggregate and analyze training session data to provide insights on scenario effectiveness and user performance.",
+          "dependsOn": [
+            "data-trainingSessions"
+          ],
+          "notes": [
+            "Feeds analytics dashboard for lab managers",
+            "Supports data-driven scenario refinement"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "LabData",
+          "purpose": "Stores lab-specific input data including policies, hazards, personnel roles, incident reports, and training objectives.",
+          "fields": [
+            {
+              "name": "labId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "policies",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "hazards",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "personnelRoles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "incidentReports",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "trainingObjectives",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "labId"
+          ]
+        },
+        {
+          "name": "Scenario",
+          "purpose": "Represents generated training scenarios including branching logic, trainer guides, and assessment questions.",
+          "fields": [
+            {
+              "name": "scenarioId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "labId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roleSpecificBranches",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "trainerGuide",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "assessmentQuestions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "scenarioId",
+            "labId"
+          ]
+        },
+        {
+          "name": "TrainingSession",
+          "purpose": "Tracks interactive training sessions, including trainee progress and quiz results.",
+          "fields": [
+            {
+              "name": "sessionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scenarioId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "traineeId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "currentState",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "quizResults",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "startedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "completedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "sessionId",
+            "traineeId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Stores user authentication and authorization data for lab managers and trainees.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "labIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Lab Data Input & Scenario Generation",
+          "purpose": "Allow lab managers to input lab data and generate printable scenario outlines and trainer guides.",
+          "inputs": [
+            "Lab policies and protocols (file upload or text)",
+            "Hazard descriptions and equipment lists",
+            "Personnel roles and experience levels",
+            "Incident reports or near-miss summaries",
+            "Training objectives and constraints"
+          ],
+          "outputs": [
+            "Generated scenario outlines",
+            "Trainer guides",
+            "Exportable training session plans"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/simulation",
+          "title": "Interactive Scenario Simulation",
+          "purpose": "Enable trainees to participate in role-specific interactive safety training scenarios with branching decisions and quizzes.",
+          "inputs": [
+            "Selected scenario",
+            "Trainee role",
+            "User decisions during simulation"
+          ],
+          "outputs": [
+            "Dynamic scenario progression",
+            "Quiz questions and scoring",
+            "Progress tracking"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Lab Manager Analytics Dashboard",
+          "purpose": "Provide lab managers with analytics on training session effectiveness, user progress, and scenario usage.",
+          "inputs": [
+            "Training session data",
+            "User performance metrics"
+          ],
+          "outputs": [
+            "Visual analytics",
+            "Scenario effectiveness reports",
+            "Recommendations for scenario updates"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/admin/labs",
+          "title": "Multi-Lab Management",
+          "purpose": "Allow lab managers to manage multiple labs, users, and access controls.",
+          "inputs": [
+            "Lab details",
+            "User roles and permissions"
+          ],
+          "outputs": [
+            "Lab and user management interfaces"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Authentication",
+          "purpose": "Authenticate users and manage access to the system.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Auth tokens or session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/scenarios/generate",
+          "method": "POST",
+          "purpose": "Generate customized training scenarios from lab data inputs.",
+          "requestShape": "JSON with lab data inputs and training objectives",
+          "responseShape": "JSON with generated scenario outlines, branching logic, and trainer guides",
+          "auth": "user"
+        },
+        {
+          "route": "/api/simulation/start",
+          "method": "POST",
+          "purpose": "Start a new interactive training session for a trainee.",
+          "requestShape": "JSON with scenarioId and traineeId",
+          "responseShape": "JSON with initial scenario state and quiz questions",
+          "auth": "user"
+        },
+        {
+          "route": "/api/simulation/progress",
+          "method": "POST",
+          "purpose": "Submit user decisions and quiz answers to progress simulation.",
+          "requestShape": "JSON with sessionId, user decisions, and quiz answers",
+          "responseShape": "JSON with updated scenario state and next quiz questions",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return access token.",
+          "requestShape": "JSON with email and password",
+          "responseShape": "JSON with auth token and user info",
+          "auth": "public"
+        },
+        {
+          "route": "/api/labs/manage",
+          "method": "POST",
+          "purpose": "Manage labs and user permissions for multi-lab access.",
+          "requestShape": "JSON with lab and user management data",
+          "responseShape": "JSON with success/failure status",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Incident Report Integration Job",
+          "trigger": "Scheduled (e.g., daily or weekly)",
+          "purpose": "Analyze new incident reports to suggest updates to scenarios and hazards to maintain relevance."
+        },
+        {
+          "name": "Training Effectiveness Analytics Job",
+          "trigger": "Scheduled (e.g., nightly)",
+          "purpose": "Aggregate training session data to generate analytics and reports for lab managers."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded incident reports contain sensitive or personally identifiable information requiring encryption and access controls.",
+        "Incomplete or inconsistent input data causing scenario generation failures or low-quality outputs.",
+        "User interruptions during interactive simulations requiring session state persistence and resume capability.",
+        "Multiple users editing or generating scenarios simultaneously leading to version conflicts.",
+        "Handling users with multiple roles or lab affiliations in multi-lab management.",
+        "Ensuring disclaimers and advisory notices are always presented with generated scenarios to avoid misuse as formal training or legal advice."
+      ],
+      "nonGoals": [
+        "Replacing formal regulatory or compliance training requirements.",
+        "Providing medical, legal, or emergency response advice.",
+        "Real-time incident response or emergency alerting.",
+        "Offline or mobile-first native app support in initial phases.",
+        "Automated hazard detection from raw lab equipment without user input."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User logs in via /login page, authenticates through /api/auth/login, receives auth token.",
+        "Lab manager accesses '/' route to input lab data (policies, hazards, roles, incidents, objectives).",
+        "Input UI validates and submits data to /api/scenarios/generate to create scenario outlines and guides.",
+        "Scenario Generation API processes lab data, generates branching logic, trainer guides, and assessment banks, stores in Scenario data store.",
+        "Lab manager views generated scenarios, exports session plans.",
+        "Trainees access /simulation route, select scenario and role, start session via /api/simulation/start.",
+        "Simulation API initializes session state, returns initial scenario state and quiz questions.",
+        "Trainees submit decisions and quiz answers to /api/simulation/progress, which updates session state and returns next steps.",
+        "Training session data and progress stored in TrainingSessions data store.",
+        "Lab managers access /dashboard to view analytics; dashboard fetches aggregated data from TrainingSessions and Scenario stores.",
+        "Multi-lab management via /admin/labs allows lab managers to manage labs and user roles through /api/labs/manage.",
+        "Background jobs run asynchronously: Incident Report Integration Job analyzes new incident reports to suggest scenario updates, updating LabData and Scenario stores.",
+        "Training Effectiveness Analytics Job aggregates session data nightly to produce reports for dashboard."
+      ],
+      "validationRules": [
+        "Authentication inputs: email must be valid format, password minimum length 8, hashed securely.",
+        "Lab data inputs: policies, hazards, personnelRoles, trainingObjectives must be valid JSON and non-empty; incidentReports optional but if present must be sanitized and encrypted.",
+        "File uploads: accept only allowed file types (e.g., PDF, DOCX, TXT), max size limits enforced.",
+        "Scenario generation request must include valid labId and training objectives; reject if lab data incomplete or inconsistent.",
+        "Simulation start request must include valid scenarioId and traineeId; verify user authorization and lab membership.",
+        "Simulation progress requests must include valid sessionId, user decisions matching scenario branching logic, and quiz answers conforming to assessment schema.",
+        "Multi-lab management requests must include valid lab and user data; enforce role-based permissions.",
+        "All JSON inputs validated against schema to prevent injection or malformed data.",
+        "Date fields must be valid ISO 8601 strings.",
+        "Versioning fields incremented correctly to prevent conflicts."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with generic error messages to avoid information leakage.",
+        "Input validation errors return 400 Bad Request with detailed field-level error messages.",
+        "Scenario generation failures due to incomplete or inconsistent data return 422 Unprocessable Entity with guidance for correction.",
+        "Simulation API returns 404 Not Found if session or scenario not found, 403 Forbidden if user unauthorized.",
+        "Concurrency conflicts during scenario version updates return 409 Conflict with instructions to refresh data.",
+        "File upload errors return 413 Payload Too Large or 415 Unsupported Media Type as appropriate.",
+        "Background job errors logged with alerting but do not block user actions.",
+        "All API errors include unique error codes for support and troubleshooting.",
+        "Sensitive error details never exposed to clients; logged securely server-side.",
+        "Timeouts and unexpected errors return 500 Internal Server Error with generic message."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /api/auth/login.",
+        "Role-based access control enforced on all routes: lab managers vs trainees.",
+        "Sensitive data such as incident reports encrypted at rest and access restricted to authorized users.",
+        "User sessions managed securely with HTTP-only, secure cookies or JWT tokens with expiration.",
+        "Input sanitization to prevent XSS, SQL injection, and other injection attacks.",
+        "File uploads scanned for malware and restricted by type and size.",
+        "Multi-lab access controls ensure users only access labs they belong to.",
+        "Disclaimers included in scenario outputs to prevent misuse as formal advice.",
+        "Audit logging of critical actions such as scenario generation and lab management.",
+        "Background jobs run with least privilege and isolated from user-facing services."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A lab manager is authenticated and on the '/' input page",
+          "when": "They upload valid lab policies, hazards, personnel roles, incident reports, and training objectives and submit",
+          "then": "The system generates scenario outlines, trainer guides, and exportable session plans, displaying success confirmation"
+        },
+        {
+          "id": "AT-002",
+          "given": "A trainee is authenticated and accesses '/simulation'",
+          "when": "They select a scenario and role and start a simulation session",
+          "then": "The system initializes the session, returns initial scenario state and quiz questions, and tracks progress"
+        },
+        {
+          "id": "AT-003",
+          "given": "A trainee is in an active simulation session",
+          "when": "They submit decisions and quiz answers via the progress API",
+          "then": "The system updates the session state accordingly and returns the next scenario state and quiz questions"
+        },
+        {
+          "id": "AT-004",
+          "given": "A lab manager accesses the '/dashboard' page",
+          "when": "They request analytics data",
+          "then": "The system displays visual analytics, scenario effectiveness reports, and recommendations based on training session data"
+        },
+        {
+          "id": "AT-005",
+          "given": "A lab manager accesses '/admin/labs'",
+          "when": "They add a new lab and assign users with roles",
+          "then": "The system updates lab and user permissions and reflects changes in multi-lab access controls"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user attempts to access a protected API route without authentication",
+          "when": "They make any API request other than login",
+          "then": "The system returns 401 Unauthorized and denies access"
+        },
+        {
+          "id": "AT-007",
+          "given": "A lab manager uploads incident reports containing sensitive data",
+          "when": "The data is stored",
+          "then": "The system encrypts sensitive fields at rest and restricts access to authorized users only"
+        },
+        {
+          "id": "AT-008",
+          "given": "Multiple lab managers attempt to update the same scenario simultaneously",
+          "when": "They submit conflicting updates",
+          "then": "The system detects version conflicts and returns 409 Conflict with instructions to refresh"
+        },
+        {
+          "id": "AT-009",
+          "given": "A trainee interrupts a simulation session and later resumes",
+          "when": "They return to the simulation",
+          "then": "The system restores the last saved session state allowing continuation without data loss"
+        }
+      ],
+      "buildOrder": [
+        "Implement User data model and Authentication API (/api/auth/login).",
+        "Implement LabData data model with encryption and versioning support.",
+        "Build Input & Scenario Generation UI (/) with validation and file upload support.",
+        "Develop Scenario Generation API (/api/scenarios/generate) integrating LabData and Scenario stores.",
+        "Implement Scenario data model with versioning and role-specific branches.",
+        "Build Simulation & Progress API (/api/simulation/start and /api/simulation/progress) with TrainingSession data model.",
+        "Develop Interactive Scenario Simulation UI (/simulation) with branching logic and quiz components.",
+        "Implement TrainingSession data model for progress tracking and quiz results.",
+        "Build Multi-Lab Management UI (/admin/labs) and API (/api/labs/manage) with User and LabData access controls.",
+        "Develop Lab Manager Analytics Dashboard (/dashboard) aggregating data from TrainingSessions and Scenarios.",
+        "Implement background jobs for Incident Report Integration and Training Effectiveness Analytics.",
+        "Add comprehensive validation, error handling, and security enforcement across all components.",
+        "Perform acceptance testing and iterate based on feedback."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/simulation",
+          "/dashboard",
+          "/admin/labs",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/scenarios/generate.ts",
+          "api/simulation/start.ts",
+          "api/simulation/progress.ts",
+          "api/labs/manage.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "LabData",
+          "Scenario",
+          "TrainingSession"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, clarifications, or additional needs from the user to improve the design and scope.",
+        "promptTemplate": "You are the planner refining the requirements for the Academic Lab Safety Training Scenario Simulator. Given the current blueprint and expanded specs:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nPlease ask any clarifying questions or request missing constraints to ensure the requirements are complete and clear."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final page routes, UI components, and data models needed to fulfill the refined requirements.",
+        "promptTemplate": "You are the architect finalizing the pages and data models for the Academic Lab Safety Training Scenario Simulator. Based on the refined requirements and blueprint:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nPlease produce a detailed design of pages, their purposes, inputs and outputs, and data models to implement."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create stubs and scaffolds for the defined pages and UI components to begin implementation.",
+        "promptTemplate": "You are the builder generating page stubs for the Academic Lab Safety Training Scenario Simulator. Based on the finalized pages design:\n\n{{PAGES}}\n\nUser input:\n{{USER_INPUT}}\n\nPlease produce code or markup stubs for each page and UI component."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to backend APIs and data stores, ensuring data flows correctly and security is enforced.",
+        "promptTemplate": "You are the integrator wiring the pages to APIs and databases for the Academic Lab Safety Training Scenario Simulator. Using the API routes, data models, and page stubs:\n\n{{API_ROUTES}}\n\n{{DATA_MODELS}}\n\nUser input:\n{{USER_INPUT}}\n\nPlease produce integration plans, code snippets, or instructions to connect frontend and backend with secure data flow."
+      }
+    ]
+  }
+}

@@ -1,0 +1,815 @@
+{
+  "slug": "academic-research-seminar-planner",
+  "title": "Academic Research Seminar Content & Engagement Planner",
+  "description": "A lightweight single-page app to input seminar theme, speaker abstracts, and bios, generating an optimized session agenda and speaker briefing summary to assist academic research seminar organizers in planning and coordination.",
+  "inputLabel": "Enter seminar details and speaker information",
+  "outputLabel": "Generated agenda and speaker briefing summary",
+  "systemPrompt": "You are an expert assistant for academic research seminar organizers. Given the seminar theme, objectives, and detailed speaker abstracts and bios, generate a logically ordered seminar session agenda and concise speaker briefing summary that align with the seminar's goals. Reject any requests lacking required seminar theme or speaker abstracts/bios. Ensure data privacy by refusing to process any personally identifiable information without explicit consent. Output the agenda and briefing clearly in plain text format. Do not generate or modify speaker talk content beyond summarizing provided abstracts. Do not include any scheduling or calendar integration features in this version. Maintain a professional, clear, and safe response.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "presets",
+    "structured-output",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Agenda Focus",
+      "prompt": "Generate an optimized seminar session agenda from the provided seminar theme and speaker abstracts, focusing on logical flow and thematic alignment."
+    },
+    {
+      "label": "Speaker Briefing Summary",
+      "prompt": "Create a concise briefing summary for speakers highlighting key points and alignment with the seminar theme based on their abstracts and bios."
+    },
+    {
+      "label": "Combined Agenda & Briefing",
+      "prompt": "Produce both the seminar session agenda and speaker briefing summary integrating all provided inputs for a comprehensive planning output."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Outputs a JSON object with 'agenda' as an ordered list of talks and 'briefingSummary' as a string summary for speakers.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Seminar Content & Engagement Planner",
+      "niche": {
+        "role": "Academic Research Seminar Organizer",
+        "scenario": "Planning and preparing research seminar sessions including speaker coordination, content structuring, and attendee engagement strategies"
+      },
+      "problem": "Organizers of academic research seminars struggle to efficiently coordinate speaker topics, structure session content for clarity and flow, and design engagement activities that encourage audience interaction and knowledge retention. Current tools focus on scheduling or basic logistics but lack integrated support for content alignment, speaker prep, and engagement planning.",
+      "inputs": [
+        "Seminar theme and objectives",
+        "Proposed speaker abstracts or talk summaries",
+        "Speaker bios and availability",
+        "Previous seminar feedback or attendee survey data (optional)",
+        "Attendee demographics and interests (optional)"
+      ],
+      "outputs": [
+        "Optimized seminar session agenda with logically ordered talks",
+        "Structured speaker briefing documents highlighting key points and alignment with seminar theme",
+        "Tailored audience engagement strategy including Q&A formats, discussion prompts, and interactive activities",
+        "Summary report with speaker coordination checklist and timeline reminders"
+      ],
+      "whyItWins": [
+        "Addresses a real, repeated workflow gap not covered by existing tools that focus only on scheduling or broad conference management",
+        "Combines content curation, speaker prep, and audience engagement into one coherent workflow",
+        "Improves seminar quality and participant satisfaction by making planning more systematic and data-driven",
+        "Allows organizers to easily customize based on seminar type, audience, and feedback history"
+      ],
+      "upgradePath": {
+        "today": "A lightweight single-page app that inputs seminar theme, speaker abstracts, and bios to generate a session agenda and speaker briefing summary",
+        "in90Days": "Add attendee profile input and previous feedback upload to tailor engagement strategies and optimize session flow; introduce calendar integration with reminder notifications for organizers and speakers",
+        "in12Months": "Develop a multi-page system integrating speaker communication tools, dynamic agenda building with drag-and-drop reordering, attendee interactive features (live polls, Q&A management), and analytics dashboard for post-seminar feedback and improvement tracking"
+      },
+      "riskNotes": [
+        "Ensure privacy and secure handling of any uploaded attendee data or speaker personal information",
+        "Avoid collecting or inferring sensitive data without explicit consent",
+        "Focus on advisory and planning support only; no automated content generation that may misrepresent speaker work",
+        "Provide clear disclaimers that engagement strategies are recommendations to be adapted by organizers"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An integrated platform for academic research seminar organizers to plan and prepare seminar sessions by coordinating speaker content, structuring agendas, and designing audience engagement strategies, evolving from a lightweight agenda generator to a comprehensive seminar management and analytics system.",
+      "primaryUser": "Academic Research Seminar Organizer",
+      "successMetrics": [
+        "Reduction in time spent planning seminar sessions",
+        "Improved participant satisfaction scores post-seminar",
+        "Increased usage of engagement features (Q&A, polls) during seminars",
+        "Positive feedback from speakers on briefing documents and coordination",
+        "Adoption rate of calendar reminders and communication tools"
+      ],
+      "components": [
+        {
+          "id": "ui_pages",
+          "name": "User Interface Pages",
+          "type": "ui",
+          "responsibility": "Provide interactive pages for seminar input, agenda building, speaker briefing generation, engagement strategy design, communication, and analytics visualization.",
+          "dependsOn": [
+            "api_routes",
+            "data_models"
+          ],
+          "notes": [
+            "Pages evolve from single-page input and output to multi-page with drag-and-drop agenda builder and engagement tools.",
+            "Requires authentication for organizer-specific data access.",
+            "Includes error handling for invalid inputs and file uploads."
+          ]
+        },
+        {
+          "id": "api_routes",
+          "name": "API Routes",
+          "type": "api",
+          "responsibility": "Handle data CRUD operations, agenda optimization logic, briefing and engagement strategy generation, calendar integration, notifications, and analytics data retrieval.",
+          "dependsOn": [
+            "data_models",
+            "integration_services"
+          ],
+          "notes": [
+            "Must enforce authentication and authorization.",
+            "Validate inputs thoroughly to prevent malformed data.",
+            "Expose endpoints for file uploads (feedback, attendee data) with privacy safeguards."
+          ]
+        },
+        {
+          "id": "data_models",
+          "name": "Data Models and Storage",
+          "type": "data",
+          "responsibility": "Persist seminar themes, speaker profiles, abstracts, agendas, engagement plans, attendee profiles, feedback data, communication logs, and analytics metrics.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive data encrypted at rest.",
+            "Support versioning or history for agenda changes and briefing documents.",
+            "Indexes on seminar ID and speaker ID for efficient queries."
+          ]
+        },
+        {
+          "id": "background_jobs",
+          "name": "Background Jobs and Notifications",
+          "type": "job",
+          "responsibility": "Send calendar reminders and notifications to organizers and speakers, process uploaded feedback data for analytics, and generate periodic summary reports.",
+          "dependsOn": [
+            "data_models",
+            "integration_services"
+          ],
+          "notes": [
+            "Retry logic on notification failures.",
+            "Respect user notification preferences and privacy settings."
+          ]
+        },
+        {
+          "id": "integration_services",
+          "name": "Third-Party Integrations",
+          "type": "integration",
+          "responsibility": "Integrate with calendar services (e.g., Google Calendar), email/SMS providers for notifications, and optionally polling/Q&A platforms for live engagement.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure secure OAuth flows for calendar access.",
+            "Fallback modes if integrations fail or are unavailable."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Seminar",
+          "purpose": "Stores core seminar information including theme, objectives, and organizer association.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "theme",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "objectives",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "organizerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "organizerId"
+          ]
+        },
+        {
+          "name": "Speaker",
+          "purpose": "Contains speaker bios, availability, and associated abstracts for a seminar.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "bio",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "availability",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "abstract",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contactEmail",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "seminarId"
+          ]
+        },
+        {
+          "name": "Agenda",
+          "purpose": "Represents the ordered session agenda with talks and timing.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "talks",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "seminarId"
+          ]
+        },
+        {
+          "name": "EngagementPlan",
+          "purpose": "Stores tailored audience engagement strategies including Q&A formats and interactive activities.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "strategyDetails",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "seminarId"
+          ]
+        },
+        {
+          "name": "AttendeeProfile",
+          "purpose": "Optional attendee demographics and interests data to tailor engagement strategies.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "demographics",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "interests",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "seminarId"
+          ]
+        },
+        {
+          "name": "Feedback",
+          "purpose": "Stores previous seminar feedback or survey data for analytics and planning improvements.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "feedbackData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "seminarId"
+          ]
+        },
+        {
+          "name": "CommunicationLog",
+          "purpose": "Tracks messages, reminders, and notifications sent to speakers and organizers.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "recipient",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "messageType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sentAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "seminarId",
+            "recipient"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Stores organizer user credentials and preferences.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notificationPreferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Seminar Input & Agenda Generation",
+          "purpose": "Input seminar theme, speaker abstracts, and bios to generate an initial session agenda and speaker briefing summary.",
+          "inputs": [
+            "Seminar theme",
+            "Speaker abstracts",
+            "Speaker bios"
+          ],
+          "outputs": [
+            "Generated agenda",
+            "Speaker briefing summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/engagement-planner",
+          "title": "Audience Engagement Strategy",
+          "purpose": "Design tailored engagement strategies using attendee profiles and previous feedback to optimize interaction during seminars.",
+          "inputs": [
+            "Attendee profiles (optional)",
+            "Previous feedback (optional)"
+          ],
+          "outputs": [
+            "Engagement plan details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/agenda-builder",
+          "title": "Dynamic Agenda Builder",
+          "purpose": "Interactive drag-and-drop interface to reorder talks, adjust timing, and finalize seminar agenda.",
+          "inputs": [
+            "Current agenda data"
+          ],
+          "outputs": [
+            "Updated agenda"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/speaker-communication",
+          "title": "Speaker Coordination & Communication",
+          "purpose": "Manage speaker contact information, send briefing documents, and track communication history.",
+          "inputs": [
+            "Speaker contact info",
+            "Briefing documents"
+          ],
+          "outputs": [
+            "Communication logs",
+            "Sent notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/analytics",
+          "title": "Post-Seminar Analytics Dashboard",
+          "purpose": "Visualize feedback metrics, engagement statistics, and improvement suggestions based on collected data.",
+          "inputs": [
+            "Feedback data",
+            "Engagement metrics"
+          ],
+          "outputs": [
+            "Analytics charts and reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate seminar organizers to access their seminar data and planning tools.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token/session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/seminars",
+          "method": "POST",
+          "purpose": "Create a new seminar with theme and objectives.",
+          "requestShape": "{ theme: string, objectives?: string }",
+          "responseShape": "{ seminarId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/speakers",
+          "method": "POST",
+          "purpose": "Add or update speaker information including abstracts and availability.",
+          "requestShape": "{ seminarId: string, name: string, bio?: string, availability?: json, abstract: string, contactEmail?: string }",
+          "responseShape": "{ speakerId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/agenda/generate",
+          "method": "POST",
+          "purpose": "Generate optimized seminar agenda based on speaker abstracts and seminar theme.",
+          "requestShape": "{ seminarId: string }",
+          "responseShape": "{ agenda: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/agenda/update",
+          "method": "POST",
+          "purpose": "Update the seminar agenda with reordered talks or timing adjustments.",
+          "requestShape": "{ seminarId: string, talks: json }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/engagement-plan",
+          "method": "POST",
+          "purpose": "Generate or update audience engagement strategy using optional attendee profiles and feedback.",
+          "requestShape": "{ seminarId: string, attendeeProfiles?: json, feedbackData?: json }",
+          "responseShape": "{ engagementPlan: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/feedback/upload",
+          "method": "POST",
+          "purpose": "Upload previous seminar feedback or survey data for analytics.",
+          "requestShape": "{ seminarId: string, feedbackData: json }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/communication/send",
+          "method": "POST",
+          "purpose": "Send briefing documents or notifications to speakers.",
+          "requestShape": "{ seminarId: string, speakerId: string, messageType: string, content: string }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/analytics",
+          "method": "GET",
+          "purpose": "Retrieve analytics data for a seminar.",
+          "requestShape": "{ seminarId: string }",
+          "responseShape": "{ analyticsData: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/calendar/integrate",
+          "method": "POST",
+          "purpose": "Connect organizer or speaker calendars for reminders and scheduling.",
+          "requestShape": "{ userId: string, oauthToken: string }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "SendReminderNotifications",
+          "trigger": "Scheduled times before seminar events",
+          "purpose": "Send calendar reminders and notifications to organizers and speakers about upcoming deadlines and sessions."
+        },
+        {
+          "name": "ProcessFeedbackData",
+          "trigger": "On feedback upload or scheduled intervals",
+          "purpose": "Analyze feedback data to generate insights and update analytics dashboard."
+        },
+        {
+          "name": "GenerateSummaryReports",
+          "trigger": "Post seminar completion or on demand",
+          "purpose": "Create summary reports including speaker coordination checklists and timeline reminders."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded attendee or feedback data contains personally identifiable information without consent.",
+        "Speaker availability conflicts that prevent agenda optimization.",
+        "Failures or delays in third-party calendar or notification integrations.",
+        "Incomplete or malformed speaker abstracts or bios.",
+        "Organizer attempts to access or modify seminars they do not own.",
+        "Network interruptions during file uploads or background job executions.",
+        "Organizer disables notifications but critical reminders are still needed."
+      ],
+      "nonGoals": [
+        "Automated generation of speaker talk content or abstracts.",
+        "Full conference or event logistics management beyond seminar content and engagement planning.",
+        "Collection or inference of sensitive personal data without explicit consent.",
+        "Live streaming or video hosting capabilities.",
+        "Replacing human judgment in engagement strategy adaptation."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving session token.",
+        "Authenticated user creates seminar via POST /api/seminars with theme and objectives.",
+        "User adds or updates speakers via POST /api/speakers with speaker details linked to seminarId.",
+        "User requests agenda generation via POST /api/agenda/generate using seminarId; server returns optimized agenda JSON.",
+        "User views or edits agenda on /agenda-builder page; updates sent via POST /api/agenda/update with reordered talks.",
+        "User optionally uploads attendee profiles and previous feedback on /engagement-planner page; POST /api/engagement-plan generates engagement strategy.",
+        "User manages speaker communication on /speaker-communication page; sends briefing or notifications via POST /api/communication/send.",
+        "User views analytics on /analytics page; GET /api/analytics returns aggregated metrics and charts data.",
+        "Background jobs process uploaded feedback data, send scheduled reminders, and generate summary reports using stored data and integration services.",
+        "Calendar integration performed via POST /api/calendar/integrate with OAuth tokens for organizers or speakers.",
+        "All data persisted in Prisma models with encryption for sensitive fields; versioning maintained for agendas and briefing documents."
+      ],
+      "validationRules": [
+        "All API routes require authentication except /login; verify user session and ownership for seminar-related operations.",
+        "Seminar creation: 'theme' required non-empty string; 'objectives' optional string.",
+        "Speaker data: 'seminarId', 'name', and 'abstract' required; 'bio', 'availability' (valid JSON), and 'contactEmail' (valid email format) optional.",
+        "Agenda generation and update: 'seminarId' required; 'talks' must be valid JSON array with talk details including timing and speaker references.",
+        "Engagement plan: 'seminarId' required; 'attendeeProfiles' and 'feedbackData' if provided must be valid JSON arrays/objects.",
+        "Feedback upload: 'seminarId' and 'feedbackData' required; 'feedbackData' validated for expected survey schema.",
+        "Communication send: 'seminarId', 'speakerId', 'messageType' (predefined types), and 'content' non-empty string required.",
+        "Analytics retrieval: 'seminarId' required and user must own seminar.",
+        "Calendar integration: 'userId' must match authenticated user; 'oauthToken' must be valid OAuth token format.",
+        "File uploads (feedback, attendee data) must be scanned for PII and sanitized; reject if consent missing.",
+        "Speaker abstracts and bios must be non-empty strings; reject malformed or incomplete data.",
+        "All IDs validated as UUID strings or database ID format.",
+        "Input JSON fields must be parsed and schema-validated to prevent injection or malformed data."
+      ],
+      "errorHandling": [
+        "Return 401 Unauthorized if user not authenticated or not authorized to access/modify resource.",
+        "Return 400 Bad Request with detailed validation error messages for malformed inputs.",
+        "Return 404 Not Found if seminar, speaker, or other resource does not exist or does not belong to user.",
+        "Return 500 Internal Server Error for unexpected failures with logging for diagnostics.",
+        "For file uploads containing PII without consent, reject with 403 Forbidden and clear error message.",
+        "Handle third-party integration failures gracefully with fallback modes and user notifications.",
+        "Background jobs implement retry logic with exponential backoff on transient failures.",
+        "Network interruptions during uploads or API calls prompt client retry with idempotency keys where applicable.",
+        "Client-side UI displays user-friendly error messages and guides for corrective actions.",
+        "Log all errors with context for monitoring and alerting."
+      ],
+      "securityNotes": [
+        "Enforce authentication on all seminar-related API routes; verify user owns seminar before allowing modifications.",
+        "Encrypt sensitive data at rest, including user credentials, contact emails, and feedback data.",
+        "Use secure OAuth flows with token storage for calendar integrations; refresh tokens securely.",
+        "Sanitize all inputs to prevent injection attacks (SQL, XSS).",
+        "Implement rate limiting on API endpoints to prevent abuse.",
+        "Ensure file uploads are scanned for malware and PII; require explicit user consent for sensitive data.",
+        "Use HTTPS for all client-server communications.",
+        "Store hashed passwords using strong algorithms (e.g., bcrypt).",
+        "Respect user notification preferences; allow disabling non-critical notifications but enforce critical reminders with explicit override.",
+        "Audit logs for communication sent and data access for compliance.",
+        "Implement CORS policies restricting API access to trusted origins."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated organizer on the seminar input page",
+          "when": "They submit valid seminar theme and optional objectives",
+          "then": "A new seminar is created and seminarId is returned"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated organizer with a seminar created",
+          "when": "They add a speaker with valid name, abstract, and optional bio and availability",
+          "then": "Speaker is saved and speakerId is returned"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated organizer with speakers added",
+          "when": "They request agenda generation for the seminar",
+          "then": "An optimized agenda JSON is returned containing ordered talks"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated organizer viewing the agenda builder page",
+          "when": "They reorder talks and submit updated agenda",
+          "then": "Agenda is updated successfully and success=true is returned"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated organizer with attendee profiles and feedback data",
+          "when": "They generate an engagement plan",
+          "then": "A tailored engagement plan JSON is returned"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated organizer uploading feedback data with PII without consent",
+          "when": "They submit the feedback upload",
+          "then": "Upload is rejected with 403 Forbidden and error message about consent"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated organizer on speaker communication page",
+          "when": "They send a briefing document to a speaker",
+          "then": "Communication log is created and success=true is returned"
+        },
+        {
+          "id": "AT-008",
+          "given": "An authenticated organizer viewing analytics page",
+          "when": "They request analytics data for their seminar",
+          "then": "Analytics data JSON is returned with charts and metrics"
+        },
+        {
+          "id": "AT-009",
+          "given": "An unauthenticated user attempts to access seminar data",
+          "when": "They call any protected API route",
+          "then": "Request is rejected with 401 Unauthorized"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user attempts to modify a seminar they do not own",
+          "when": "They submit update requests",
+          "then": "Request is rejected with 403 Forbidden"
+        },
+        {
+          "id": "AT-011",
+          "given": "Background job runs to send reminders",
+          "when": "Scheduled time triggers job",
+          "then": "Reminders are sent respecting user preferences and failures are retried"
+        },
+        {
+          "id": "AT-012",
+          "given": "Calendar integration is initiated",
+          "when": "User provides valid OAuth token",
+          "then": "Calendar is connected and success=true is returned"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models with encryption and indexes",
+        "Implement user authentication and session management (/login API and page)",
+        "Build API routes for seminar creation and speaker management with validation and auth",
+        "Develop seminar input & agenda generation page and corresponding API endpoints",
+        "Implement agenda builder page with drag-and-drop UI and agenda update API",
+        "Create engagement planner page and API for generating engagement strategies",
+        "Build speaker communication page and communication send API",
+        "Implement feedback upload API with PII consent checks and background job for processing",
+        "Develop analytics dashboard page and analytics retrieval API",
+        "Integrate calendar services with secure OAuth flows and calendar integration API",
+        "Implement background jobs for reminders, feedback processing, and summary reports",
+        "Add error handling, logging, and retry mechanisms across API and background jobs",
+        "Add comprehensive validation and security checks on all inputs and outputs",
+        "Test all pages and APIs with acceptance tests and edge case scenarios",
+        "Deploy with HTTPS, environment variables for secrets, and monitoring"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/engagement-planner",
+          "/agenda-builder",
+          "/speaker-communication",
+          "/analytics",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "/api/seminars.js",
+          "/api/speakers.js",
+          "/api/agenda/generate.js",
+          "/api/agenda/update.js",
+          "/api/engagement-plan.js",
+          "/api/feedback/upload.js",
+          "/api/communication/send.js",
+          "/api/analytics.js",
+          "/api/calendar/integrate.js"
+        ],
+        "prismaModelsToAdd": [
+          "Seminar",
+          "Speaker",
+          "Agenda",
+          "EngagementPlan",
+          "AttendeeProfile",
+          "Feedback",
+          "CommunicationLog",
+          "User"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints or clarifications about the seminar planning workflow and inputs/outputs.",
+        "promptTemplate": "I am working on an Academic Research Seminar Content & Engagement Planner. Based on the current blueprint and expanded specs:\n\n{{BLUEPRINT}}\n\nPlease provide any missing requirements, constraints, or clarifications needed to better capture the core workflow and organizer needs. Your input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the detailed pages, API routes, and data models required to implement the seminar planner platform.",
+        "promptTemplate": "Given the idea and blueprint for the Academic Research Seminar Planner:\n\n{{IDEA}}\n\n{{BLUEPRINT}}\n\nPlease finalize the page routes, API endpoints, and data model schemas needed to build a secure, scalable system. Include validation and security considerations. Your input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code stubs for the key UI pages of the seminar planner, focusing on input forms and display of generated agenda and briefing.",
+        "promptTemplate": "Using the finalized design for the Academic Research Seminar Planner:\n\n{{BLUEPRINT}}\n\nGenerate code stubs for the main UI pages including input forms for seminar theme and speakers, and output display of agenda and briefing summary. Your input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Create integration code to connect UI pages with backend API routes and persist data in the database models securely.",
+        "promptTemplate": "With the completed UI pages and API routes for the Academic Research Seminar Planner:\n\n{{BLUEPRINT}}\n\nGenerate integration code to connect the frontend pages to backend APIs and database models. Include error handling, authentication, and data validation. Your input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

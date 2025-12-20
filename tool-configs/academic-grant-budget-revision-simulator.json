@@ -1,0 +1,812 @@
+{
+  "slug": "academic-grant-budget-revision-simulator",
+  "title": "Academic Research Grant Collaborative Budget Revision Simulator",
+  "description": "Upload multiple institutional budget drafts and funder/institutional budget rules to simulate consolidated budgets with revision proposals and compliance alerts. Supports CSV, Excel, PDF, and DOCX uploads with multi-currency normalization. Outputs consolidated budget summaries and revision impact feedback in plain text.",
+  "inputLabel": "Upload budget draft files (CSV, Excel), rule documents (PDF, DOCX), and enter revision proposals or comments",
+  "outputLabel": "Consolidated budget summary with revision impact and compliance alerts",
+  "systemPrompt": "You are a secure assistant for academic research grant finance coordinators. Accept budget draft files (CSV or Excel) and budget rule documents (PDF or DOCX) along with revision proposals or comments. Validate all inputs for correct format and compliance with upload constraints. Refuse disallowed requests or files exceeding size limits. Consolidate budgets with currency normalization using exchange rates. Generate a textual summary of the consolidated budget draft, highlight any revision proposals, and flag compliance alerts. Output only plain text by default. Enforce strict data privacy and do not expose sensitive data beyond the user's permissions. Do not process requests missing required information or containing invalid data. Respond with clear error messages for invalid inputs or conflicts. Do not perform multi-user collaboration or real-time updates in this version. Maintain a straightforward and safe interaction for single-user scenario simulation.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Consolidate Budgets",
+      "prompt": "Please upload institutional budget draft files (CSV or Excel) and provide current exchange rates in JSON format if applicable. I will consolidate and normalize currencies, then summarize the combined budget.",
+      "hint": "Upload multiple budget files and optionally provide exchange rates for currency normalization."
+    },
+    {
+      "label": "Upload Budget Rules",
+      "prompt": "Please upload funder and institutional budget rule documents (PDF or DOCX). I will parse and validate the rules for compliance evaluation.",
+      "hint": "Upload rule documents to enable compliance checks on consolidated budgets."
+    },
+    {
+      "label": "Propose Revision",
+      "prompt": "Provide the consolidated budget ID and detailed revision proposal changes in JSON format along with a rationale comment. I will validate and record the revision proposal for impact simulation.",
+      "hint": "Submit structured revision proposals referencing a consolidated budget."
+    },
+    {
+      "label": "View Compliance Alerts",
+      "prompt": "Request the current compliance alerts for your consolidated budgets. I will list active alerts with severity and message details.",
+      "hint": "Retrieve compliance risk and funding gap notifications."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Structured output includes consolidatedBudgetSummary, revisionProposals, complianceAlerts arrays with detailed budget line items, change descriptions, and alert metadata.",
+  "clarifyPrompt": "Please specify which files you want to upload or what revision proposal details you want to submit. Include exchange rates if you want currency normalization.",
+  "finalizePrompt": "Confirm that all budget files, rules, and revision proposals are included and valid before consolidation and compliance evaluation.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Budget Revision Simulator",
+      "niche": {
+        "role": "Academic research grant finance coordinators",
+        "scenario": "During multi-institutional academic grant negotiations, coordinators need to collaboratively revise budget drafts to resolve conflicts, optimize allocations, and ensure compliance with complex funder and institutional rules."
+      },
+      "problem": "Current tools focus on static budget consolidation or compliance checking but lack an interactive collaborative environment that allows multiple coordinators to propose, simulate, and visualize budget revisions in real-time, facilitating transparent negotiation and consensus building.",
+      "inputs": [
+        "Multiple institutional budget draft files (CSV, Excel)",
+        "Funder and institutional budget rule documents (PDF, DOCX)",
+        "Revision proposals and comments from collaborators",
+        "Exchange rates and multi-currency parameters"
+      ],
+      "outputs": [
+        "Dynamic, version-controlled consolidated budget drafts incorporating collaborative revisions",
+        "Conflict and compliance impact visualizations for each revision scenario",
+        "Detailed revision history with contributor attribution and rationales",
+        "Automated alerts for emerging compliance risks or funding gaps"
+      ],
+      "whyItWins": [
+        "Enables transparent, real-time collaboration among geographically dispersed finance teams",
+        "Reduces negotiation time by providing instant impact feedback on proposed budget changes",
+        "Supports complex multi-currency and multi-rule scenarios in an integrated interface",
+        "Lays foundation for audit-ready documentation and funder reporting"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web app supporting upload of budgets and rules with simple scenario simulation and revision tracking, outputting consolidated budget tables and compliance flags.",
+        "in90Days": "Add multi-user collaboration with comment threads, live revision proposals, and interactive compliance impact visualizations; support export of negotiation summaries.",
+        "in12Months": "Develop a full multi-page system with role-based access, workflow automation for approval routing, integration with institutional finance systems, detailed audit trails, and predictive funding risk analytics."
+      },
+      "riskNotes": [
+        "Must ensure secure handling of sensitive financial data with appropriate access controls",
+        "Compliance with institutional data sharing policies and funder confidentiality agreements is required",
+        "Complex rule parsing may require manual validation to avoid erroneous compliance alerts",
+        "User interface complexity must be managed to ensure usability for finance professionals with varying technical skills"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative web platform enabling academic research grant finance coordinators to upload, consolidate, simulate, and revise multi-institutional budgets in real-time with compliance and conflict visualization, version control, and audit-ready documentation.",
+      "primaryUser": "Academic research grant finance coordinators",
+      "successMetrics": [
+        "Reduction in negotiation time for multi-institutional grant budgets",
+        "User adoption rate among target finance coordinator teams",
+        "Number of collaborative revision scenarios created and resolved",
+        "Accuracy and completeness of compliance alerts and risk notifications",
+        "User satisfaction scores regarding usability and collaboration features"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard & Collaboration UI",
+          "type": "ui",
+          "responsibility": "Provide multi-page user interface for uploading budgets and rules, viewing consolidated budgets, proposing revisions, commenting, visualizing compliance impacts, and tracking revision history.",
+          "dependsOn": [
+            "api-budget",
+            "api-rules",
+            "api-revisions",
+            "data-budgets",
+            "data-rules",
+            "data-revisions"
+          ],
+          "notes": [
+            "Must support role-based access and session management",
+            "UI complexity should be managed for finance professionals with varying technical skills",
+            "Includes real-time updates for multi-user collaboration"
+          ]
+        },
+        {
+          "id": "api-budget",
+          "name": "Budget Management API",
+          "type": "api",
+          "responsibility": "Handle upload, parsing, validation, consolidation, versioning, and retrieval of institutional budget drafts including multi-currency support.",
+          "dependsOn": [
+            "data-budgets",
+            "integration-exchangeRates"
+          ],
+          "notes": [
+            "Supports CSV and Excel file formats for budget uploads",
+            "Performs currency normalization using exchange rates",
+            "Stores consolidated budget versions with attribution"
+          ]
+        },
+        {
+          "id": "api-rules",
+          "name": "Budget Rules & Compliance API",
+          "type": "api",
+          "responsibility": "Manage upload, parsing, storage, and evaluation of funder and institutional budget rules; generate compliance alerts and flags based on budget revisions.",
+          "dependsOn": [
+            "data-rules",
+            "data-budgets"
+          ],
+          "notes": [
+            "Supports PDF and DOCX uploads for rule documents",
+            "Rule parsing may require manual validation workflows",
+            "Generates automated alerts for compliance risks and funding gaps"
+          ]
+        },
+        {
+          "id": "api-revisions",
+          "name": "Revision Proposals & History API",
+          "type": "api",
+          "responsibility": "Manage collaborative revision proposals, comments, version control, contributor attribution, and revision rationale tracking.",
+          "dependsOn": [
+            "data-revisions",
+            "data-users"
+          ],
+          "notes": [
+            "Supports real-time collaboration with conflict detection",
+            "Stores detailed revision history for audit purposes"
+          ]
+        },
+        {
+          "id": "integration-exchangeRates",
+          "name": "Exchange Rates Integration",
+          "type": "integration",
+          "responsibility": "Provide up-to-date exchange rate data to normalize multi-currency budget values during consolidation and simulation.",
+          "dependsOn": [],
+          "notes": [
+            "Can integrate with third-party financial APIs or accept manual rate uploads",
+            "Must handle rate update failures gracefully"
+          ]
+        },
+        {
+          "id": "job-complianceEvaluation",
+          "name": "Compliance Evaluation Background Job",
+          "type": "job",
+          "responsibility": "Periodically or on-demand evaluate budget revisions against rules to update compliance alerts and risk flags.",
+          "dependsOn": [
+            "data-budgets",
+            "data-rules",
+            "data-revisions"
+          ],
+          "notes": [
+            "Runs asynchronously to avoid blocking user operations",
+            "Handles partial failures with retry mechanisms"
+          ]
+        },
+        {
+          "id": "job-notificationDispatcher",
+          "name": "Notification Dispatcher Job",
+          "type": "job",
+          "responsibility": "Send automated alerts and notifications to users regarding compliance risks, funding gaps, and revision updates.",
+          "dependsOn": [
+            "data-revisions",
+            "data-users"
+          ],
+          "notes": [
+            "Supports email and in-app notifications",
+            "Manages notification preferences and throttling"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents finance coordinators and system users with roles and access permissions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "role"
+          ]
+        },
+        {
+          "name": "BudgetDraft",
+          "purpose": "Stores uploaded institutional budget drafts, including parsed line items, currency, and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "currency",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lineItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "institution",
+            "uploadDate",
+            "version"
+          ]
+        },
+        {
+          "name": "BudgetRuleDocument",
+          "purpose": "Stores uploaded funder and institutional budget rule documents and parsed rules.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "rawDocument",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "parsedRules",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "source",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "ConsolidatedBudget",
+          "purpose": "Represents the merged budget draft combining multiple institutional drafts with applied revisions and currency normalization.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "lineItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "currency",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "version",
+            "createdDate"
+          ]
+        },
+        {
+          "name": "RevisionProposal",
+          "purpose": "Tracks proposed budget revisions, comments, contributor attribution, and rationale for collaborative negotiation.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "consolidatedBudgetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "changes",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "comments",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rationale",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "consolidatedBudgetId",
+            "proposedBy",
+            "status"
+          ]
+        },
+        {
+          "name": "ComplianceAlert",
+          "purpose": "Stores alerts generated from compliance evaluation indicating risks or funding gaps.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedBudgetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alertType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "severity",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "relatedBudgetId",
+            "alertType",
+            "severity"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users and establish session for access control.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "user profile"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Dashboard",
+          "purpose": "Landing page showing overview of budgets, revisions, compliance alerts, and collaboration status.",
+          "inputs": [],
+          "outputs": [
+            "budget summaries",
+            "revision notifications",
+            "compliance alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/budgets/upload",
+          "title": "Upload Budgets & Rules",
+          "purpose": "Allow users to upload institutional budget drafts and budget rule documents.",
+          "inputs": [
+            "budget files (CSV, Excel)",
+            "rule documents (PDF, DOCX)"
+          ],
+          "outputs": [
+            "upload status",
+            "parsed data previews",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/budgets/consolidated",
+          "title": "Consolidated Budget View",
+          "purpose": "Display consolidated budget drafts with versioning, currency normalization, and line item details.",
+          "inputs": [
+            "selected consolidated budget version"
+          ],
+          "outputs": [
+            "budget line items",
+            "currency conversions",
+            "revision history summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/revisions",
+          "title": "Revision Proposals & Collaboration",
+          "purpose": "Interface for proposing budget revisions, commenting, viewing revision history, and conflict resolution.",
+          "inputs": [
+            "selected consolidated budget",
+            "revision proposals",
+            "comments"
+          ],
+          "outputs": [
+            "updated revision list",
+            "conflict indicators",
+            "compliance impact visualizations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/alerts",
+          "title": "Compliance Alerts & Notifications",
+          "purpose": "View and manage automated compliance alerts, funding gap warnings, and notification settings.",
+          "inputs": [],
+          "outputs": [
+            "alert list",
+            "alert details",
+            "notification preferences"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/budgets/upload",
+          "method": "POST",
+          "purpose": "Upload and parse institutional budget draft files.",
+          "requestShape": "{ institution: string, files: [file], uploadedBy: string }",
+          "responseShape": "{ success: boolean, errors: [string], parsedDataPreview: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/rules/upload",
+          "method": "POST",
+          "purpose": "Upload and parse funder and institutional budget rule documents.",
+          "requestShape": "{ source: string, files: [file], uploadedBy: string }",
+          "responseShape": "{ success: boolean, errors: [string], parsedRules: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets/consolidate",
+          "method": "POST",
+          "purpose": "Consolidate multiple budget drafts into a single version-normalized budget.",
+          "requestShape": "{ budgetDraftIds: [string], exchangeRates: json }",
+          "responseShape": "{ consolidatedBudgetId: string, version: number, errors: [string] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/revisions/propose",
+          "method": "POST",
+          "purpose": "Submit a new revision proposal with changes and rationale.",
+          "requestShape": "{ consolidatedBudgetId: string, proposedBy: string, changes: json, rationale: string }",
+          "responseShape": "{ success: boolean, revisionId: string, errors: [string] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/revisions/list",
+          "method": "GET",
+          "purpose": "Retrieve all revision proposals and comments for a consolidated budget.",
+          "requestShape": "{ consolidatedBudgetId: string }",
+          "responseShape": "{ revisions: [json] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts/list",
+          "method": "GET",
+          "purpose": "Fetch current compliance alerts and funding gap notifications.",
+          "requestShape": "{}",
+          "responseShape": "{ alerts: [json] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/exchangeRates/latest",
+          "method": "GET",
+          "purpose": "Retrieve latest exchange rates for currency normalization.",
+          "requestShape": "{}",
+          "responseShape": "{ rates: json, timestamp: date }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Compliance Evaluation",
+          "trigger": "On budget or revision update, scheduled periodic runs",
+          "purpose": "Evaluate consolidated budgets against rules to generate or update compliance alerts."
+        },
+        {
+          "name": "Notification Dispatcher",
+          "trigger": "On new compliance alerts or revision activity",
+          "purpose": "Send notifications to users about compliance risks, funding gaps, and revision updates."
+        }
+      ],
+      "edgeCases": [
+        "Conflicting simultaneous revision proposals causing merge conflicts",
+        "Parsing errors or incomplete extraction from complex rule documents",
+        "Currency exchange rate unavailability or stale data during consolidation",
+        "Unauthorized access attempts to sensitive budget data",
+        "Large budget files causing upload or processing timeouts",
+        "Partial failures in background compliance evaluation jobs",
+        "Users with limited technical skills struggling with complex UI elements",
+        "Data sharing restrictions preventing cross-institutional budget visibility"
+      ],
+      "nonGoals": [
+        "Full automatic parsing and interpretation of all complex funder rules without manual validation",
+        "Replacing institutional finance systems or performing actual fund disbursement",
+        "Supporting grant types beyond academic research grants initially",
+        "Providing financial forecasting or predictive analytics beyond basic risk alerts in initial versions",
+        "Offline or mobile-first native app support in initial releases"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User visits /login and submits email and password to /api/auth/login; server authenticates and returns token and user profile.",
+        "Authenticated user accesses /dashboard; frontend fetches budget summaries, revision notifications, and compliance alerts from respective APIs.",
+        "User uploads budget files (CSV, Excel) and rule documents (PDF, DOCX) via /budgets/upload page; frontend sends files and metadata to /api/budgets/upload and /api/rules/upload endpoints.",
+        "API endpoints parse files, validate content, store parsed data in BudgetDraft and BudgetRuleDocument models, and return parsed data previews or validation errors.",
+        "User selects multiple budget drafts to consolidate on /budgets/consolidated page; frontend calls /api/budgets/consolidate with selected draft IDs and current exchange rates.",
+        "Budget Management API normalizes currencies using exchange rates from integration-exchangeRates, merges line items, creates a new ConsolidatedBudget version, and returns consolidatedBudgetId and version.",
+        "User navigates to /revisions to propose revisions; frontend sends revision proposals with changes and rationale to /api/revisions/propose.",
+        "Revision Proposals API stores revision data with contributor attribution and status; real-time updates propagate to other users via WebSocket or polling.",
+        "Compliance Evaluation Background Job runs asynchronously on budget or revision updates or scheduled intervals; evaluates consolidated budgets against rules and updates ComplianceAlert records.",
+        "Notification Dispatcher Job triggers on new alerts or revision activity; sends email and in-app notifications respecting user preferences and throttling.",
+        "Users view compliance alerts and notification settings on /alerts page; frontend fetches alert list and preferences from /api/alerts/list."
+      ],
+      "validationRules": [
+        "Login: Validate email format and password presence; reject invalid credentials with generic error.",
+        "Budget Upload: Validate file type (CSV, Excel), file size limits, required fields in parsed line items (e.g., amount, category, currency), and institution presence.",
+        "Rule Upload: Validate file type (PDF, DOCX), file size limits; parsed rules must have mandatory fields or flag for manual validation.",
+        "Consolidation: Validate all budgetDraftIds exist and belong to user’s accessible institutions; exchangeRates must be current and contain required currency pairs.",
+        "Revision Proposal: Validate consolidatedBudgetId exists; changes JSON conforms to expected schema; rationale is non-empty string; user has permission to propose revisions.",
+        "API Requests: Enforce authentication and role-based access control on protected routes.",
+        "Compliance Alerts: Validate alertType and severity against predefined enums; resolved flag must be boolean.",
+        "File Uploads: Enforce maximum file size and scan for malicious content."
+      ],
+      "errorHandling": [
+        "Return HTTP 401 Unauthorized for unauthenticated or unauthorized API requests.",
+        "Return HTTP 400 Bad Request with detailed error messages for validation failures.",
+        "Return HTTP 500 Internal Server Error for unexpected exceptions with generic user-facing message; log detailed error for diagnostics.",
+        "For file parsing errors, return partial success with list of parsing errors and preview of successfully parsed data.",
+        "For currency exchange rate unavailability, fallback to last known rates and warn user; if none available, reject consolidation with error.",
+        "Handle simultaneous revision proposal conflicts by detecting overlapping changes; return conflict error with details for client-side merge resolution.",
+        "Background jobs log errors and retry partial failures with exponential backoff; alert admins on repeated failures.",
+        "Timeouts on large file uploads return 413 Payload Too Large or 504 Gateway Timeout with instructions to reduce file size or retry.",
+        "Gracefully handle missing or stale exchange rate data by notifying users and preventing inaccurate consolidations."
+      ],
+      "securityNotes": [
+        "Implement secure session management with HTTP-only, secure cookies or token-based authentication (e.g., JWT).",
+        "Enforce role-based access control on all API endpoints and UI pages; restrict sensitive data by user role and institution.",
+        "Sanitize and validate all file uploads to prevent injection attacks or malware.",
+        "Use HTTPS for all client-server communications.",
+        "Limit file upload sizes and scan files for viruses.",
+        "Implement rate limiting on authentication and upload endpoints to prevent brute force and denial of service attacks.",
+        "Ensure audit logging of user actions including uploads, revisions, and access to sensitive data.",
+        "Store sensitive data encrypted at rest where applicable.",
+        "Use parameterized queries with Prisma to prevent SQL injection.",
+        "Validate and sanitize all user inputs on both client and server sides."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A finance coordinator with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and user profile, and can access protected pages"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /budgets/upload",
+          "when": "They upload valid CSV and Excel budget files with institution info",
+          "then": "The system parses files, stores BudgetDraft records, and returns parsed data previews without errors"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /budgets/upload",
+          "when": "They upload invalid or corrupted budget files",
+          "then": "The system returns validation errors indicating parsing issues and does not store invalid data"
+        },
+        {
+          "id": "AT-004",
+          "given": "Multiple budget drafts uploaded for different institutions",
+          "when": "User requests consolidation with current exchange rates",
+          "then": "The system creates a new ConsolidatedBudget version with normalized currencies and merged line items"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on /revisions",
+          "when": "They submit a revision proposal with valid changes and rationale",
+          "then": "The system stores the revision, attributes it to the user, and updates the revision list in real-time"
+        },
+        {
+          "id": "AT-006",
+          "given": "Multiple users propose conflicting revisions simultaneously",
+          "when": "The system detects conflicts during proposal submission",
+          "then": "It returns conflict errors with details to enable client-side resolution"
+        },
+        {
+          "id": "AT-007",
+          "given": "Compliance Evaluation job runs after budget or revision updates",
+          "when": "It evaluates consolidated budgets against rules",
+          "then": "It generates or updates ComplianceAlert records reflecting current risks"
+        },
+        {
+          "id": "AT-008",
+          "given": "New compliance alerts are generated",
+          "when": "Notification Dispatcher job runs",
+          "then": "Users receive email and in-app notifications respecting their preferences and throttling rules"
+        },
+        {
+          "id": "AT-009",
+          "given": "An unauthenticated user attempts to access /dashboard",
+          "when": "They navigate to the page",
+          "then": "They are redirected to /login"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user uploads a budget file exceeding size limits",
+          "when": "They submit the file",
+          "then": "The system rejects the upload with a clear error message about file size"
+        }
+      ],
+      "buildOrder": [
+        "Implement User model and authentication system with role-based access control.",
+        "Develop API endpoints for user login and session management.",
+        "Create BudgetDraft and BudgetRuleDocument models with file upload and parsing APIs.",
+        "Implement Exchange Rates Integration with caching and fallback logic.",
+        "Build Budget Management API including upload, parsing, validation, and consolidation logic.",
+        "Develop UI pages for login, dashboard, and budget upload with integration to APIs.",
+        "Create ConsolidatedBudget model and API for consolidation with currency normalization.",
+        "Implement RevisionProposal model and Revisions API with real-time collaboration support.",
+        "Build UI for revision proposals, comments, conflict visualization, and revision history.",
+        "Develop ComplianceAlert model and Compliance Evaluation background job.",
+        "Implement Notification Dispatcher job with email and in-app notification support.",
+        "Create UI pages for consolidated budget view, compliance alerts, and notification settings.",
+        "Integrate real-time updates and conflict detection mechanisms.",
+        "Perform comprehensive validation, error handling, and security hardening.",
+        "Conduct acceptance testing and usability testing with target users."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/budgets/upload",
+          "/budgets/consolidated",
+          "/revisions",
+          "/alerts"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/budgets/upload.ts",
+          "api/budgets/consolidate.ts",
+          "api/rules/upload.ts",
+          "api/revisions/propose.ts",
+          "api/revisions/list.ts",
+          "api/alerts/list.ts",
+          "api/exchangeRates/latest.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "BudgetDraft",
+          "BudgetRuleDocument",
+          "ConsolidatedBudget",
+          "RevisionProposal",
+          "ComplianceAlert"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the client for any missing constraints, clarifications, or additional details needed to finalize the tool requirements.",
+        "promptTemplate": "Please provide any additional constraints, specific workflows, or use case details for the Academic Research Grant Collaborative Budget Revision Simulator. Include any missing requirements or preferences you have: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages and data models necessary to support the collaborative budget revision workflow.",
+        "promptTemplate": "Based on the current blueprint and idea, please finalize the set of UI pages and data models for the tool. Consider user roles, data flow, and integration points: {{BLUEPRINT}} {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial page stubs and skeletons for the UI routes to scaffold the web app.",
+        "promptTemplate": "Create the initial page stubs for the routes needed in the Academic Research Grant Budget Revision Simulator. Include basic layout and placeholders for required inputs and outputs: {{SCHEMA}} {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the integration wiring between UI pages, backend API endpoints, and database models.",
+        "promptTemplate": "Provide detailed integration code or plan to connect UI pages with backend API endpoints and database models for data persistence and retrieval. Include authentication and authorization considerations: {{API_ROUTES}} {{DATA_MODELS}} {{USER_INPUT}}"
+      }
+    ]
+  }
+}

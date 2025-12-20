@@ -1,0 +1,869 @@
+{
+  "slug": "academic-research-equipment-lifecycle-manager",
+  "title": "Academic Research Equipment Lifecycle & Depreciation Manager",
+  "description": "Single-page app for academic lab managers to input equipment metadata and usage logs, and receive lifecycle and depreciation status reports to support budgeting and replacement planning.",
+  "inputLabel": "Enter equipment metadata and usage logs as JSON or plain text (see examples below). Optionally upload a JSON file with multiple records.",
+  "outputLabel": "Lifecycle & Depreciation Status Report",
+  "systemPrompt": "You are an assistant specialized in managing academic research lab equipment lifecycle and depreciation. Accept only valid equipment metadata and usage log inputs with required fields: model, serial number, acquisition date, cost, and usage hours. Validate inputs strictly: serial number must be unique and non-empty, acquisition date must be a valid past or present date, cost and usage hours must be non-negative numbers. Reject any requests containing medical, legal, or unauthorized financial advice. Generate a plain text report summarizing each equipment's lifecycle status, depreciation estimate using straight-line method assuming 5 years useful life if no policy provided, and highlight any missing or invalid data. Do not provide any output other than the report. Do not execute code or access external systems. Refuse disallowed requests with clear error messages. Enforce data privacy and security principles strictly.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Lifecycle Report",
+      "prompt": "Generate a lifecycle and depreciation status report for the provided equipment metadata and usage logs. Use straight-line depreciation over 5 years if no policy specified. Highlight missing or invalid fields.",
+      "hint": "Use this to get a summary report from raw input data."
+    },
+    {
+      "label": "Validate Equipment Data",
+      "prompt": "Validate the provided equipment metadata and usage logs for completeness and correctness. Return detailed errors for missing or invalid fields, including duplicate serial numbers.",
+      "hint": "Use this to check input data quality before analysis."
+    },
+    {
+      "label": "Depreciation Calculation with Policy",
+      "prompt": "Calculate depreciation and remaining useful life for the provided equipment using the specified depreciation policy if included. Provide warnings for missing acquisition dates or inconsistent data.",
+      "hint": "Use this to apply institutional depreciation rules."
+    },
+    {
+      "label": "Budget Forecast Summary",
+      "prompt": "Based on the equipment lifecycle and depreciation status, summarize replacement needs and link them to funding sources for budget forecasting. Include alerts for upcoming replacements.",
+      "hint": "Use this to prepare budget and grant justification inputs."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, return JSON array of equipment reports with fields: serialNumber (string), model (string), acquisitionDate (string ISO), cost (number), usageHours (number), depreciationStatus (string), remainingLifeYears (number), alerts (array of strings).",
+  "clarifyPrompt": "Please provide equipment metadata and usage logs in JSON or plain text format. Include all required fields: model, serial number, acquisition date, cost, and usage hours. You may upload a JSON file with multiple records.",
+  "finalizePrompt": "Review the generated lifecycle and depreciation report carefully to ensure accuracy. Use the provided alerts to plan equipment maintenance and replacement budgeting.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Equipment Lifecycle & Depreciation Manager",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Managing lifecycle, depreciation, and replacement planning for lab equipment across multiple projects and funding sources"
+      },
+      "problem": "Lab managers struggle to accurately track equipment acquisition dates, usage intensity, maintenance history, and depreciation schedules across diverse funding sources, leading to suboptimal budgeting for equipment replacement and difficulty justifying funding requests for new purchases.",
+      "inputs": [
+        "Equipment metadata (model, serial number, acquisition date, vendor, cost)",
+        "Usage logs (hours of active use per device)",
+        "Maintenance and calibration records",
+        "Funding source and grant association per equipment item",
+        "Institutional depreciation policies or schedules",
+        "Projected research project timelines and equipment needs"
+      ],
+      "outputs": [
+        "Dynamic equipment lifecycle dashboard showing current depreciation status and remaining useful life estimates",
+        "Automated alerts for upcoming equipment replacement or end-of-life based on depreciation and usage",
+        "Consolidated budget forecast reports linking equipment replacement needs to active and upcoming grants",
+        "Maintenance impact analytics correlating upkeep with equipment longevity",
+        "Exportable justifications and cost-benefit analyses for grant proposals and institutional budgeting"
+      ],
+      "whyItWins": [
+        "Fills a gap beyond simple equipment booking or maintenance scheduling by integrating financial depreciation and lifecycle management tailored to academic research labs",
+        "Supports strategic budgeting and grant planning by linking equipment status directly to funding sources and project timelines",
+        "Reduces risk of unexpected equipment failures or funding shortfalls through proactive lifecycle visibility",
+        "Provides lab managers with data-driven insights to justify equipment investments in competitive grant environments",
+        "Scalable from simple tracking dashboards to comprehensive multi-project, multi-institution asset management"
+      ],
+      "upgradePath": {
+        "today": "Lightweight single-page app to input equipment acquisition and usage data, generating simple lifecycle and depreciation status reports",
+        "in90Days": "Add grant association tracking, usage analytics, automated replacement alerts, and exportable budgeting reports to support grant proposal preparation",
+        "in12Months": "Develop multi-user system with project-level role permissions, integration with institutional finance and procurement systems, predictive maintenance scheduling, and scenario-based budgeting simulations for optimized lab equipment investment planning across institutions"
+      },
+      "riskNotes": [
+        "Must ensure data privacy and security since equipment and funding data can be sensitive",
+        "Avoid medical or legal advice; purely financial and asset management focus",
+        "Requires clear user guidance to correctly input depreciation policies and usage data to ensure accurate output",
+        "Complex integrations with institutional systems may require phased implementation to avoid data inconsistencies"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An Academic Research Equipment Lifecycle & Depreciation Manager designed to help lab managers track equipment metadata, usage, maintenance, and depreciation linked to funding sources and projects, enabling strategic budgeting, replacement planning, and grant justification.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Accuracy and completeness of equipment lifecycle and depreciation data entered",
+        "Reduction in unexpected equipment failures or funding shortfalls",
+        "User adoption rate among lab managers and research projects",
+        "Frequency and usefulness of generated budget forecast reports and alerts",
+        "Positive user feedback on grant proposal justification support"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Equipment Lifecycle Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide interactive views of equipment status, depreciation, usage analytics, maintenance impact, and alerts for replacement planning.",
+          "dependsOn": [
+            "api-equipment",
+            "api-usage",
+            "api-maintenance",
+            "api-funding",
+            "api-depreciation"
+          ],
+          "notes": [
+            "Needs to support filtering by project, funding source, and equipment status.",
+            "Should visualize depreciation curves and remaining useful life clearly.",
+            "Must handle empty or incomplete data gracefully."
+          ]
+        },
+        {
+          "id": "ui-data-entry",
+          "name": "Data Entry & Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to input and update equipment metadata, usage logs, maintenance records, funding associations, and depreciation policies.",
+          "dependsOn": [
+            "api-equipment",
+            "api-usage",
+            "api-maintenance",
+            "api-funding",
+            "api-depreciation"
+          ],
+          "notes": [
+            "Include validation and guidance for depreciation policy inputs.",
+            "Support bulk import/export for equipment and usage data.",
+            "Must enforce authentication and role-based access controls in future phases."
+          ]
+        },
+        {
+          "id": "api-equipment",
+          "name": "Equipment Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for equipment metadata, including model, serial number, acquisition date, vendor, and cost.",
+          "dependsOn": [
+            "data-equipment",
+            "data-funding"
+          ],
+          "notes": [
+            "Ensure data integrity and uniqueness of serial numbers.",
+            "Support linking equipment to funding sources and projects."
+          ]
+        },
+        {
+          "id": "api-usage",
+          "name": "Usage Logging API",
+          "type": "api",
+          "responsibility": "Accept and provide usage logs (hours of active use per device) for equipment items.",
+          "dependsOn": [
+            "data-usage"
+          ],
+          "notes": [
+            "Support time-based aggregation for analytics.",
+            "Validate usage data to prevent erroneous entries."
+          ]
+        },
+        {
+          "id": "api-maintenance",
+          "name": "Maintenance & Calibration API",
+          "type": "api",
+          "responsibility": "Manage maintenance and calibration records linked to equipment, tracking dates, types, and outcomes.",
+          "dependsOn": [
+            "data-maintenance"
+          ],
+          "notes": [
+            "Enable correlation of maintenance frequency with equipment longevity.",
+            "Support alerts for upcoming calibration schedules."
+          ]
+        },
+        {
+          "id": "api-funding",
+          "name": "Funding & Grant Association API",
+          "type": "api",
+          "responsibility": "Manage funding sources, grant associations, and link them to equipment and projects.",
+          "dependsOn": [
+            "data-funding",
+            "data-projects"
+          ],
+          "notes": [
+            "Support multiple funding sources per equipment item.",
+            "Enable budget forecasting based on grant timelines."
+          ]
+        },
+        {
+          "id": "api-depreciation",
+          "name": "Depreciation & Lifecycle Calculation API",
+          "type": "api",
+          "responsibility": "Calculate depreciation schedules, remaining useful life estimates, and generate alerts for replacement based on usage and institutional policies.",
+          "dependsOn": [
+            "data-equipment",
+            "data-usage",
+            "data-maintenance",
+            "data-funding"
+          ],
+          "notes": [
+            "Must support configurable depreciation policies per institution or project.",
+            "Handle edge cases such as missing acquisition dates or irregular usage."
+          ]
+        },
+        {
+          "id": "data-equipment",
+          "name": "Equipment Data Store",
+          "type": "data",
+          "responsibility": "Persist equipment metadata and associations with funding and projects.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure strong consistency and audit trails for changes.",
+            "Sensitive financial data must be encrypted at rest."
+          ]
+        },
+        {
+          "id": "data-usage",
+          "name": "Usage Logs Data Store",
+          "type": "data",
+          "responsibility": "Persist time-stamped usage logs for each equipment item.",
+          "dependsOn": [],
+          "notes": [
+            "Optimize for time-series queries and aggregations.",
+            "Retention policies may be needed for large datasets."
+          ]
+        },
+        {
+          "id": "data-maintenance",
+          "name": "Maintenance Records Data Store",
+          "type": "data",
+          "responsibility": "Store maintenance and calibration history linked to equipment.",
+          "dependsOn": [],
+          "notes": [
+            "Include fields for maintenance type, date, technician, and results.",
+            "Support querying for maintenance impact analytics."
+          ]
+        },
+        {
+          "id": "data-funding",
+          "name": "Funding Sources & Grants Data Store",
+          "type": "data",
+          "responsibility": "Persist funding sources, grant details, and their associations with equipment and projects.",
+          "dependsOn": [],
+          "notes": [
+            "Include grant timelines and budget allocations.",
+            "Support multi-institutional funding scenarios."
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Research Projects Data Store",
+          "type": "data",
+          "responsibility": "Store project timelines, equipment needs, and role permissions for future multi-user support.",
+          "dependsOn": [],
+          "notes": [
+            "Enable linking equipment and funding to projects.",
+            "Support role-based access in later phases."
+          ]
+        },
+        {
+          "id": "job-alerts",
+          "name": "Replacement & Maintenance Alert Job",
+          "type": "job",
+          "responsibility": "Periodically evaluate equipment status to generate alerts for upcoming replacement or maintenance based on depreciation and usage thresholds.",
+          "dependsOn": [
+            "api-depreciation",
+            "data-equipment"
+          ],
+          "notes": [
+            "Must handle missed runs and duplicate alert prevention.",
+            "Alerts should be deliverable via UI notifications and exportable reports."
+          ]
+        },
+        {
+          "id": "integration-finance",
+          "name": "Institutional Finance & Procurement Integration",
+          "type": "integration",
+          "responsibility": "Integrate with institutional finance and procurement systems to synchronize equipment acquisition and funding data.",
+          "dependsOn": [
+            "api-equipment",
+            "api-funding"
+          ],
+          "notes": [
+            "Phased implementation recommended due to complexity.",
+            "Must ensure data consistency and handle partial failures."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Equipment",
+          "purpose": "Store detailed metadata about each piece of lab equipment.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "model",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "serialNumber",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "acquisitionDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "vendor",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "cost",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "fundingSourceIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "projectIds",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "serialNumber",
+            "acquisitionDate"
+          ]
+        },
+        {
+          "name": "UsageLog",
+          "purpose": "Record usage hours per equipment over time.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "date",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "hoursUsed",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "date"
+          ]
+        },
+        {
+          "name": "MaintenanceRecord",
+          "purpose": "Track maintenance and calibration events for equipment.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "date",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "technician",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "date"
+          ]
+        },
+        {
+          "name": "FundingSource",
+          "purpose": "Represent grants and funding sources linked to equipment and projects.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantNumber",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "budget",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name",
+            "grantNumber"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Store research project details and associated equipment needs.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "equipmentIds",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "DepreciationPolicy",
+          "purpose": "Define institutional depreciation rules and schedules.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "method",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "usefulLifeYears",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "salvageValue",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "institution"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Equipment Lifecycle Dashboard",
+          "purpose": "Visualize current equipment status, depreciation, usage, maintenance impact, and replacement alerts.",
+          "inputs": [
+            "filter by project",
+            "filter by funding source",
+            "filter by equipment status"
+          ],
+          "outputs": [
+            "depreciation charts",
+            "usage analytics",
+            "maintenance impact reports",
+            "replacement alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/equipment",
+          "title": "Equipment Management",
+          "purpose": "Input and manage equipment metadata and associations.",
+          "inputs": [
+            "equipment details",
+            "funding associations",
+            "project links"
+          ],
+          "outputs": [
+            "equipment list",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/usage",
+          "title": "Usage Logging",
+          "purpose": "Enter and review equipment usage logs.",
+          "inputs": [
+            "date",
+            "hours used",
+            "equipment selection"
+          ],
+          "outputs": [
+            "usage history",
+            "validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/maintenance",
+          "title": "Maintenance Records",
+          "purpose": "Record and view maintenance and calibration history.",
+          "inputs": [
+            "maintenance type",
+            "date",
+            "technician",
+            "notes"
+          ],
+          "outputs": [
+            "maintenance history",
+            "upcoming calibration alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/funding",
+          "title": "Funding & Grants Management",
+          "purpose": "Manage funding sources and grant associations.",
+          "inputs": [
+            "funding source details",
+            "grant timelines",
+            "budget allocations"
+          ],
+          "outputs": [
+            "funding list",
+            "budget forecasts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Budget Forecast & Grant Justification Reports",
+          "purpose": "Generate and export budget forecasts and cost-benefit analyses for grant proposals.",
+          "inputs": [
+            "report parameters",
+            "date ranges",
+            "project selection"
+          ],
+          "outputs": [
+            "exportable reports",
+            "alert summaries"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/equipment",
+          "method": "GET",
+          "purpose": "Retrieve equipment metadata and associations.",
+          "requestShape": "query parameters for filtering by project, funding, status",
+          "responseShape": "list of equipment objects with metadata",
+          "auth": "user"
+        },
+        {
+          "route": "/api/equipment",
+          "method": "POST",
+          "purpose": "Create or update equipment metadata.",
+          "requestShape": "equipment object with metadata fields",
+          "responseShape": "confirmation and updated equipment object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/usage",
+          "method": "POST",
+          "purpose": "Submit usage logs for equipment.",
+          "requestShape": "usage log object with equipmentId, date, hoursUsed",
+          "responseShape": "confirmation and stored usage log",
+          "auth": "user"
+        },
+        {
+          "route": "/api/maintenance",
+          "method": "POST",
+          "purpose": "Add maintenance or calibration record.",
+          "requestShape": "maintenance record object",
+          "responseShape": "confirmation and stored maintenance record",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funding",
+          "method": "GET",
+          "purpose": "Retrieve funding sources and grant details.",
+          "requestShape": "optional filters",
+          "responseShape": "list of funding source objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funding",
+          "method": "POST",
+          "purpose": "Create or update funding source or grant information.",
+          "requestShape": "funding source object",
+          "responseShape": "confirmation and updated funding source",
+          "auth": "user"
+        },
+        {
+          "route": "/api/depreciation/calculate",
+          "method": "POST",
+          "purpose": "Calculate depreciation status and remaining useful life for equipment.",
+          "requestShape": "equipmentId and optional date",
+          "responseShape": "depreciation calculation results with alerts",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/budget-forecast",
+          "method": "POST",
+          "purpose": "Generate budget forecast reports linking equipment replacement needs to grants.",
+          "requestShape": "report parameters including project and date range",
+          "responseShape": "budget forecast report data and export links",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Replacement & Maintenance Alert Generation",
+          "trigger": "Scheduled daily job",
+          "purpose": "Evaluate equipment depreciation and usage data to generate alerts for upcoming replacement or maintenance needs."
+        }
+      ],
+      "edgeCases": [
+        "Missing or incorrect acquisition dates leading to inaccurate depreciation calculations.",
+        "Equipment with multiple funding sources requiring allocation of costs and depreciation.",
+        "Irregular or missing usage logs causing skewed lifecycle analytics.",
+        "Maintenance records entered late or inconsistently impacting maintenance impact analytics.",
+        "Partial failures or data inconsistencies during integration with institutional finance systems.",
+        "User errors in inputting depreciation policies causing incorrect lifecycle estimates.",
+        "Handling equipment retired early or disposed of before end-of-life."
+      ],
+      "nonGoals": [
+        "Providing medical or legal advice related to equipment use or compliance.",
+        "Replacing comprehensive institutional finance or procurement systems.",
+        "Handling equipment booking or scheduling functionality.",
+        "Directly managing research project tasks beyond equipment and funding associations.",
+        "Real-time predictive maintenance based on sensor data (planned for future phases)."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI pages (Dashboard, Equipment, Usage, Maintenance, Funding, Reports) with authentication enforced.",
+        "UI pages send requests to respective API routes with necessary filters or payloads.",
+        "API routes validate inputs, interact with Prisma models to query or mutate data stores.",
+        "API routes return structured JSON responses with data or validation errors.",
+        "Dashboard UI aggregates data from multiple APIs (equipment, usage, maintenance, funding, depreciation) for visualization.",
+        "Depreciation API calculates schedules and alerts based on equipment metadata, usage logs, maintenance records, and funding data.",
+        "Background job runs daily to evaluate equipment status and generate replacement/maintenance alerts, storing or pushing alerts for UI consumption.",
+        "Reports API generates budget forecasts by linking equipment replacement needs with grants and funding timelines.",
+        "Integration with institutional finance systems synchronizes acquisition and funding data, updating internal stores and handling partial failures gracefully."
+      ],
+      "validationRules": [
+        "Equipment serialNumber must be unique and non-empty.",
+        "Equipment acquisitionDate must be a valid past or present date.",
+        "Cost fields must be positive numbers.",
+        "UsageLog hoursUsed must be a non-negative number; date must not be in the future.",
+        "MaintenanceRecord date must not be in the future; type is required and non-empty.",
+        "FundingSource startDate must be before endDate if endDate is provided; budget must be positive.",
+        "DepreciationPolicy usefulLifeYears must be a positive integer; method must be one of predefined methods (e.g., straight-line, declining balance).",
+        "API request payloads must conform to expected shapes; reject requests with missing required fields or invalid data types.",
+        "Bulk import data must be validated per record with detailed error reporting.",
+        "Filters on API GET routes must be validated for allowed values and formats.",
+        "Report parameters must include valid date ranges and existing project IDs."
+      ],
+      "errorHandling": [
+        "API routes return HTTP 400 for validation errors with detailed messages per field.",
+        "API routes return HTTP 404 when requested resources (e.g., equipment by ID) are not found.",
+        "API routes return HTTP 500 for unexpected server errors with generic error messages; log detailed errors internally.",
+        "Background job logs errors and retries failed alert generation runs; prevents duplicate alerts by idempotent checks.",
+        "UI gracefully handles empty or incomplete data by showing informative placeholders or messages.",
+        "Bulk import errors report line-specific issues without aborting entire import unless critical.",
+        "Integration failures with finance systems are logged and partial updates are rolled back or flagged for manual review.",
+        "Authentication failures return HTTP 401; authorization failures return HTTP 403.",
+        "Depreciation calculation API returns warnings for missing or inconsistent data but attempts best-effort calculations."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user context; implement authentication middleware.",
+        "Role-based access control to be implemented in future phases; currently restrict sensitive operations to authenticated users.",
+        "Sensitive financial data (e.g., cost, budget) must be encrypted at rest in the database.",
+        "Validate and sanitize all inputs to prevent injection attacks.",
+        "Use HTTPS for all client-server communications.",
+        "Implement rate limiting on APIs to prevent abuse.",
+        "Audit trails for equipment metadata changes must record user identity and timestamps.",
+        "Background jobs and integrations must authenticate with external systems securely and handle credentials safely.",
+        "Ensure CORS policies restrict API access to authorized front-end origins."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A logged-in lab manager on the Equipment Management page",
+          "when": "They submit a new equipment entry with valid metadata and unique serial number",
+          "then": "The equipment is saved successfully and appears in the equipment list without errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "A logged-in user attempts to create equipment with a duplicate serial number",
+          "when": "They submit the equipment form",
+          "then": "The API returns a validation error indicating serial number must be unique"
+        },
+        {
+          "id": "AT-003",
+          "given": "A logged-in user submits a usage log with negative hoursUsed",
+          "when": "They post the usage log",
+          "then": "The API rejects the request with a validation error for hoursUsed"
+        },
+        {
+          "id": "AT-004",
+          "given": "A logged-in user views the Dashboard with filters applied",
+          "when": "They select a project and funding source filter",
+          "then": "The dashboard displays equipment status, depreciation charts, usage analytics, and alerts relevant to the filters"
+        },
+        {
+          "id": "AT-005",
+          "given": "The background alert job runs daily",
+          "when": "It processes equipment data with depreciation and usage thresholds exceeded",
+          "then": "Replacement and maintenance alerts are generated without duplicates and are available in the UI"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user requests a budget forecast report with valid parameters",
+          "when": "They submit the report request",
+          "then": "The API returns a report with cost-benefit analyses and export links"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user submits a depreciation calculation request for equipment missing acquisitionDate",
+          "when": "The API processes the request",
+          "then": "The API returns a warning about missing data and provides best-effort depreciation estimates"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user accesses any API route without authentication",
+          "when": "They send a request",
+          "then": "The API returns HTTP 401 Unauthorized"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database",
+        "Implement API routes for Equipment, Usage, Maintenance, Funding with validation and error handling",
+        "Develop Data Entry & Management UI pages with forms and validation",
+        "Implement Dashboard UI aggregating data from multiple APIs",
+        "Develop Depreciation Calculation API with configurable policies",
+        "Implement Reports API for budget forecasts",
+        "Create background job for Replacement & Maintenance Alert Generation",
+        "Integrate institutional finance & procurement systems (phased)",
+        "Add authentication middleware and enforce on all API routes and pages",
+        "Implement encryption for sensitive data at rest",
+        "Add bulk import/export features with validation",
+        "Implement UI error handling and empty state displays",
+        "Add audit trails and logging",
+        "Plan and implement role-based access control in future phases"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/equipment",
+          "/usage",
+          "/maintenance",
+          "/funding",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "/api/equipment/index.ts",
+          "/api/usage/index.ts",
+          "/api/maintenance/index.ts",
+          "/api/funding/index.ts",
+          "/api/depreciation/calculate.ts",
+          "/api/reports/budget-forecast.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Equipment",
+          "UsageLog",
+          "MaintenanceRecord",
+          "FundingSource",
+          "Project",
+          "DepreciationPolicy"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner_refine",
+        "title": "Planner: refine requirements",
+        "purpose": "Tighten constraints and clarify missing requirements.",
+        "promptTemplate": "You are Atlas Planner. Given {{USER_INPUT}} and {{IDEA}}, ask up to 5 clarifying questions. Then output a refined requirements JSON with constraints, data sources, and success criteria."
+      },
+      {
+        "id": "architect_finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Finalize architecture boundaries (pages, APIs, data).",
+        "promptTemplate": "You are Atlas Architect. Using {{REQUIREMENTS}} and {{BLUEPRINT}}, output a finalized pages list, api contracts, and prisma-style data models."
+      },
+      {
+        "id": "builder_stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create Next.js route stubs and UI flows.",
+        "promptTemplate": "You are Atlas Builder. Using {{FINAL_ARCH}}, generate minimal Next.js route component stubs (TSX) for each page route, with TODOs for wiring and validation."
+      },
+      {
+        "id": "integrator_wire",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI to API and DB with safe validation and error handling.",
+        "promptTemplate": "You are Atlas Integrator. Using {{FINAL_ARCH}} and {{STUBS}}, produce wiring steps and code snippets for API routes and Prisma calls with error handling. Do not invent environment secrets."
+      }
+    ]
+  }
+}

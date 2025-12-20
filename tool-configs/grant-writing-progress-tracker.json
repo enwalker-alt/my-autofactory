@@ -1,0 +1,648 @@
+{
+  "slug": "grant-writing-progress-tracker",
+  "title": "Academic Research Grant Collaborative Writing Progress Tracker",
+  "description": "Track and manage progress of multi-institutional academic research grant writing sections with collaborator assignments, deadlines, and status updates in a single-page app.",
+  "inputLabel": "Enter grant section progress updates, collaborator assignments, or upload draft documents (DOCX, PDF, text).",
+  "outputLabel": "Grant writing progress summary, ownership info, deadlines, and alerts.",
+  "systemPrompt": "You are a secure, single-page grant writing progress tracker assistant. Accept only authenticated user inputs for updating grant section statuses, assigning collaborators, and uploading draft documents (DOCX, PDF, or text). Validate all inputs strictly: file types, status enums, user permissions, and date formats. Reject any unauthorized, invalid, or unsafe requests with clear error messages. Provide plain text summaries of current progress, ownership, deadlines, and active alerts. Use concise, professional language. Do not provide legal or financial advice. Enforce role-based access controls and data privacy. Output is plain text unless structured-output enabled, then output valid JSON with progress details. Refuse any disallowed or malformed inputs. Keep responses focused on collaborative grant writing progress tracking.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "View Progress Summary",
+      "prompt": "Show me a summary of all grant sections with their current progress status, assigned collaborators, deadlines, and any active alerts."
+    },
+    {
+      "label": "Update Section Status",
+      "prompt": "Update the progress status of section titled '{{SECTION_TITLE}}' to '{{STATUS}}' assigned to '{{COLLABORATOR}}'. Include last updated timestamp."
+    },
+    {
+      "label": "Upload Draft Document",
+      "prompt": "Upload a draft document file for section titled '{{SECTION_TITLE}}'. File must be DOCX, PDF, or text format."
+    },
+    {
+      "label": "List Alerts",
+      "prompt": "List all active alerts for delayed or incomplete grant sections with relevant deadlines and messages."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output enabled, output JSON array with grant sections: {id, title, assignedUser, status, deadline, alerts}. Dates in ISO 8601 format.",
+  "clarifyPrompt": "Please provide the grant section title, the collaborator assigned, the progress status (e.g., Not Started, In Progress, Completed), or upload a valid draft document file (DOCX, PDF, text).",
+  "finalizePrompt": "Confirm the grant writing progress update or document upload details. Specify any deadlines or alerts to highlight.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Writing Progress Tracker",
+      "niche": {
+        "role": "Academic research grant writing teams",
+        "scenario": "During multi-institutional grant proposal development, teams collaboratively draft different sections of a complex grant application with overlapping deadlines and interdependent content."
+      },
+      "problem": "Grant writing teams struggle to track real-time progress, section ownership, version statuses, and deadline compliance across multiple collaborators and institutions, often resulting in missed deadlines, inconsistent writing quality, and inefficient coordination.",
+      "inputs": [
+        "Uploaded draft grant document sections (DOCX, PDF, or text)",
+        "Collaborator assignment metadata (who is responsible for which sections)",
+        "Deadline schedules and milestone dates",
+        "Manual progress updates or status flags from collaborators"
+      ],
+      "outputs": [
+        "Dynamic visual dashboard showing section-by-section progress and ownership",
+        "Automated alerts for delayed or incomplete sections relative to deadlines",
+        "Summary reports highlighting sections needing urgent attention or review",
+        "Downloadable consolidated writing timeline and responsibility matrix"
+      ],
+      "whyItWins": [
+        "Fills a critical gap in collaborative grant writing by providing a centralized, structured workflow management system specialized for multi-institutional academic grants",
+        "Reduces coordination overhead and risk of missed deadlines through real-time visual progress tracking and actionable alerts",
+        "Supports accountability and clarity of roles with structured ownership metadata and progress summaries",
+        "Lightweight initial version can integrate easily with common document formats and evolve into a comprehensive multi-page collaboration platform"
+      ],
+      "upgradePath": {
+        "today": "Single-page app for uploading grant section drafts, assigning collaborators, and manually updating progress status with a summary progress dashboard and alert emails.",
+        "in90Days": "Add version control integration, automated progress inference from document updates, deadline calendar sync, and basic comment/collaboration threads per section.",
+        "in12Months": "Develop a full multi-page web system with real-time collaborative editing, integrated chat, milestone workflows, customizable templates, AI-assisted writing suggestions, and funder-specific compliance tracking dashboards."
+      },
+      "riskNotes": [
+        "Does not provide legal or financial advice, only progress tracking and coordination support.",
+        "Maintains user privacy by storing documents and metadata securely with clear access controls.",
+        "Dependent on user diligence in updating progress data; automated inference mitigates but does not eliminate this risk."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative progress tracking system for academic research grant writing teams to manage section ownership, deadlines, and version statuses across multiple institutions, providing real-time dashboards, alerts, and reports to improve coordination and accountability.",
+      "primaryUser": "Academic research grant writing teams including principal investigators, co-investigators, and administrative coordinators",
+      "successMetrics": [
+        "Percentage reduction in missed grant writing deadlines",
+        "User adoption and active usage rates within grant writing teams",
+        "Frequency of real-time progress updates and alert acknowledgments",
+        "User satisfaction with clarity of ownership and progress visibility"
+      ],
+      "components": [
+        {
+          "id": "ui_dashboard",
+          "name": "Progress Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display dynamic visualizations of section progress, ownership, deadlines, and alerts; provide interfaces for uploading documents, assigning collaborators, and updating statuses.",
+          "dependsOn": [
+            "api_progress",
+            "api_alerts",
+            "data_sections",
+            "data_users"
+          ],
+          "notes": [
+            "Initial version is a single-page app; planned to evolve into multi-page with detailed views per section and reports.",
+            "Must handle real-time updates and reflect alert statuses clearly."
+          ]
+        },
+        {
+          "id": "api_progress",
+          "name": "Progress Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for grant sections, collaborator assignments, progress statuses, deadlines, and document uploads; provide data for dashboard and reports.",
+          "dependsOn": [
+            "data_sections",
+            "data_users",
+            "data_documents",
+            "data_deadlines"
+          ],
+          "notes": [
+            "Endpoints must validate user permissions and enforce access controls.",
+            "Supports manual progress updates and metadata management."
+          ]
+        },
+        {
+          "id": "api_alerts",
+          "name": "Alerts & Notifications API",
+          "type": "api",
+          "responsibility": "Generate and serve alerts for delayed or incomplete sections relative to deadlines; manage alert subscriptions and delivery via email or in-app notifications.",
+          "dependsOn": [
+            "data_sections",
+            "data_deadlines",
+            "data_alerts",
+            "job_alert_generator"
+          ],
+          "notes": [
+            "Must handle edge cases like overlapping deadlines and partial completions.",
+            "Supports escalation rules and alert dismissal tracking."
+          ]
+        },
+        {
+          "id": "data_management",
+          "name": "Data Storage & Models",
+          "type": "data",
+          "responsibility": "Persist all core data including grant sections, collaborator assignments, progress statuses, deadlines, uploaded documents metadata, and alerts.",
+          "dependsOn": [],
+          "notes": [
+            "Documents themselves may be stored in secure file storage with metadata in DB.",
+            "Access controls and audit trails are critical for compliance and privacy."
+          ]
+        },
+        {
+          "id": "job_alert_generator",
+          "name": "Background Alert Generation Job",
+          "type": "job",
+          "responsibility": "Periodically scan progress data against deadlines to identify delayed or at-risk sections and generate alerts accordingly.",
+          "dependsOn": [
+            "data_sections",
+            "data_deadlines",
+            "data_alerts"
+          ],
+          "notes": [
+            "Runs on a schedule (e.g., hourly or daily) to keep alerts current.",
+            "Handles edge cases such as sections with no updates or ambiguous ownership."
+          ]
+        },
+        {
+          "id": "integration_doc_parser",
+          "name": "Document Upload & Parsing Integration",
+          "type": "integration",
+          "responsibility": "Process uploaded DOCX, PDF, or text documents to extract metadata and enable version tracking; prepare data for progress inference in future upgrades.",
+          "dependsOn": [
+            "data_documents"
+          ],
+          "notes": [
+            "Initial version supports basic upload and metadata extraction.",
+            "Future versions will integrate automated progress inference from document changes."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents a collaborator or team member with access to grant projects.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "institution"
+          ]
+        },
+        {
+          "name": "GrantSection",
+          "purpose": "Represents a discrete section of the grant proposal with ownership and progress metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedUserId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "deadline",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "assignedUserId",
+            "status",
+            "deadline"
+          ]
+        },
+        {
+          "name": "Document",
+          "purpose": "Metadata about uploaded draft documents linked to grant sections.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sectionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "sectionId",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "Deadline",
+          "purpose": "Represents milestone or final deadlines relevant to grant sections or the overall proposal.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sectionId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "milestoneName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "sectionId",
+            "dueDate"
+          ]
+        },
+        {
+          "name": "Alert",
+          "purpose": "Tracks alerts generated for delayed or incomplete sections relative to deadlines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sectionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alertType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "dismissed",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "sectionId",
+            "alertType",
+            "dismissed"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Grant Writing Progress Dashboard",
+          "purpose": "Landing page showing overall progress visualization, section ownership, deadlines, and alerts summary.",
+          "inputs": [],
+          "outputs": [
+            "Section progress status",
+            "Ownership info",
+            "Deadline alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/upload",
+          "title": "Upload Grant Section Draft",
+          "purpose": "Page for uploading draft documents and assigning collaborators to sections.",
+          "inputs": [
+            "Document files (DOCX, PDF, text)",
+            "Section metadata",
+            "Collaborator assignments"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Parsed metadata"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/section/:id",
+          "title": "Section Detail & Progress Update",
+          "purpose": "Detailed view for a specific grant section with progress status updates, comments (future), and version info.",
+          "inputs": [
+            "Progress status updates",
+            "Comments (future)",
+            "Version uploads"
+          ],
+          "outputs": [
+            "Current status",
+            "Version history",
+            "Deadline info"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Summary Reports & Exports",
+          "purpose": "Generate and download consolidated writing timelines, responsibility matrices, and alert summaries.",
+          "inputs": [
+            "Report parameters",
+            "Date ranges"
+          ],
+          "outputs": [
+            "PDF/CSV reports",
+            "Exported timelines"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/sections",
+          "method": "GET",
+          "purpose": "Fetch list of grant sections with progress and ownership data.",
+          "requestShape": "None",
+          "responseShape": "Array of GrantSection objects with metadata",
+          "auth": "user"
+        },
+        {
+          "route": "/api/sections",
+          "method": "POST",
+          "purpose": "Create or update grant section metadata including assignments and deadlines.",
+          "requestShape": "GrantSection object",
+          "responseShape": "Updated GrantSection object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents/upload",
+          "method": "POST",
+          "purpose": "Upload a draft document file linked to a grant section.",
+          "requestShape": "{ sectionId: string, file: binary }",
+          "responseShape": "Document metadata object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts",
+          "method": "GET",
+          "purpose": "Retrieve current alerts for delayed or incomplete sections.",
+          "requestShape": "None",
+          "responseShape": "Array of Alert objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/progress/update",
+          "method": "POST",
+          "purpose": "Submit manual progress status updates for a grant section.",
+          "requestShape": "{ sectionId: string, status: string, updatedBy: string }",
+          "responseShape": "Updated GrantSection object",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Alert Generation Job",
+          "trigger": "Scheduled (e.g., hourly or daily)",
+          "purpose": "Evaluate grant sections against deadlines to generate alerts for delays or incomplete statuses."
+        }
+      ],
+      "edgeCases": [
+        "Sections with no assigned collaborator or multiple collaborators",
+        "Overlapping or conflicting deadlines across sections",
+        "Uploaded documents in unsupported or corrupted formats",
+        "Users failing to update progress leading to stale data",
+        "Dismissed alerts that reoccur due to unresolved delays",
+        "Partial completion of sections with ambiguous status",
+        "Access attempts by unauthorized users or institutions"
+      ],
+      "nonGoals": [
+        "Providing legal, financial, or compliance advice beyond status tracking",
+        "Full document editing or real-time collaborative writing in initial versions",
+        "Automated content quality assessment or AI writing generation initially",
+        "Integration with external calendar systems or version control beyond basic upload metadata in first 90 days"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses the dashboard page (/) which fetches grant sections and alerts via /api/sections (GET) and /api/alerts (GET).",
+        "Dashboard UI displays progress, ownership, deadlines, and alert summaries with real-time updates via polling or WebSocket.",
+        "User navigates to /upload to submit draft documents and assign collaborators; uploads are sent to /api/documents/upload (POST) with file binary and sectionId.",
+        "Uploaded documents metadata is stored; document parser integration extracts metadata asynchronously.",
+        "User views or updates a specific grant section at /section/:id, fetching section details and documents via /api/sections (GET) and submits progress updates via /api/progress/update (POST).",
+        "Progress updates trigger database updates and may trigger alert reevaluation.",
+        "Alerts API (/api/alerts) provides current alerts; alerts can be dismissed by users (future extension).",
+        "Background job runs periodically to scan grant sections and deadlines, generating alerts for delayed or incomplete sections, storing them in the Alert model.",
+        "Reports page (/reports) fetches aggregated data from APIs to generate downloadable PDF/CSV reports."
+      ],
+      "validationRules": [
+        "All API endpoints require authenticated users; verify user identity and roles before processing.",
+        "GrantSection POST: Validate required fields (id, title, status), optional fields (assignedUserId, deadline) must reference existing users and valid dates.",
+        "Document upload: Validate file type (DOCX, PDF, text), file size limits, and presence of sectionId referencing existing GrantSection.",
+        "Progress update: Validate sectionId exists, status is within allowed status enum (e.g., 'Not Started', 'In Progress', 'Completed'), updatedBy matches authenticated user or authorized delegate.",
+        "Alert generation job handles missing or ambiguous data gracefully, e.g., sections without assigned users or deadlines.",
+        "Reject unsupported or corrupted document uploads with clear error messages.",
+        "Ensure date fields (deadlines, uploadDate, createdAt) are valid ISO 8601 dates.",
+        "Prevent unauthorized access to sections or documents not assigned to user's institution or role."
+      ],
+      "errorHandling": [
+        "API responses use consistent JSON error format with HTTP status codes (400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors).",
+        "Client displays user-friendly error messages based on API error responses.",
+        "File upload errors (invalid format, size, corrupted) return 400 with descriptive messages.",
+        "Background job logs errors and continues processing other sections; alerts generation failures do not block other system operations.",
+        "API endpoints validate inputs and return detailed error messages for missing or invalid fields.",
+        "Unauthorized access attempts return 401 or 403 with no sensitive data leakage.",
+        "Dismissed alerts that reoccur are flagged and logged for audit; users notified accordingly."
+      ],
+      "securityNotes": [
+        "All API routes require authentication; implement session or token-based auth.",
+        "Enforce role-based access control: only assigned collaborators or admins can update sections or upload documents.",
+        "Validate user institution matches data ownership to prevent cross-institution data leaks.",
+        "Store documents securely, preferably in encrypted file storage; only metadata stored in DB.",
+        "Audit trails for all updates and alert dismissals to support compliance.",
+        "Sanitize all inputs to prevent injection attacks.",
+        "Use HTTPS for all client-server communication.",
+        "Limit file upload size and scan files for malware before processing."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user with assigned sections",
+          "when": "User visits the dashboard page",
+          "then": "The dashboard displays all assigned grant sections with current progress, ownership, deadlines, and active alerts"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the upload page",
+          "when": "User uploads a valid DOCX file linked to a grant section",
+          "then": "The system stores the document metadata, extracts metadata, and confirms upload success"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user viewing a grant section detail",
+          "when": "User submits a progress status update with valid data",
+          "then": "The system updates the section status, updates lastUpdated timestamp, and returns updated section data"
+        },
+        {
+          "id": "AT-004",
+          "given": "The background alert generation job runs",
+          "when": "There are grant sections past their deadlines or incomplete",
+          "then": "The system generates appropriate alerts and stores them in the database"
+        },
+        {
+          "id": "AT-005",
+          "given": "An unauthenticated user attempts to access /api/sections",
+          "when": "The request is made without valid authentication",
+          "then": "The API returns 401 Unauthorized error"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user uploads a corrupted or unsupported file format",
+          "when": "The file upload is submitted",
+          "then": "The API rejects the upload with a 400 error and descriptive message"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user tries to update a section not assigned to their institution",
+          "when": "The update request is submitted",
+          "then": "The API returns 403 Forbidden error"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user views the reports page",
+          "when": "User requests report generation with date range parameters",
+          "then": "The system generates and provides downloadable PDF/CSV reports matching parameters"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models for User, GrantSection, Document, Deadline, Alert",
+        "Implement authentication and role-based access control middleware",
+        "Develop API routes for sections (GET, POST), documents upload, alerts (GET), and progress updates",
+        "Implement document upload handling and integration with document parser",
+        "Build dashboard UI page with data fetching and real-time updates",
+        "Build upload page with file upload and collaborator assignment UI",
+        "Build section detail page with progress update UI",
+        "Build reports page with report generation and export functionality",
+        "Implement background alert generation job with scheduling",
+        "Add error handling, validation, and security enforcement across APIs",
+        "Add acceptance tests and perform end-to-end testing"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/pages/index.tsx",
+          "/pages/upload.tsx",
+          "/pages/section/[id].tsx",
+          "/pages/reports.tsx"
+        ],
+        "apiFilesToCreate": [
+          "/pages/api/sections/index.ts",
+          "/pages/api/sections/[id].ts (optional for detail)",
+          "/pages/api/documents/upload.ts",
+          "/pages/api/alerts/index.ts",
+          "/pages/api/progress/update.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { id String @id @default(uuid()) name String email String role String institution String? @@index([email]) @@index([institution]) }",
+          "model GrantSection { id String @id @default(uuid()) title String assignedUserId String? status String lastUpdated DateTime? version Int? deadline DateTime? @@index([assignedUserId]) @@index([status]) @@index([deadline]) }",
+          "model Document { id String @id @default(uuid()) sectionId String fileName String fileType String uploadDate DateTime version Int? @@index([sectionId]) @@index([uploadDate]) }",
+          "model Deadline { id String @id @default(uuid()) sectionId String? milestoneName String dueDate DateTime @@index([sectionId]) @@index([dueDate]) }",
+          "model Alert { id String @id @default(uuid()) sectionId String alertType String message String createdAt DateTime dismissed Boolean? @@index([sectionId]) @@index([alertType]) @@index([dismissed]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify missing constraints or edge cases for the grant writing progress tracker.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}}\nReview the idea and identify any missing or unclear requirements for the Academic Research Grant Collaborative Writing Progress Tracker. Ask targeted questions to clarify constraints, workflows, user roles, or security considerations. Use the user input: {{USER_INPUT}} to guide your inquiries."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Refine and finalize the page routes, UI components, and data models for the grant writing progress tracker app.",
+        "promptTemplate": "Using the idea spec and blueprint: {{BLUEPRINT}}\nAnd the expanded details: {{EXPANDED}}\nPropose a finalized design for the pages, API routes, and Prisma data models needed for the grant writing progress tracker. Incorporate validation, security, and edge cases. Provide a detailed specification suitable for builder handoff. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for React pages and API endpoints based on the finalized blueprint.",
+        "promptTemplate": "Given the finalized blueprint and data models: {{BLUEPRINT}}\nGenerate code stubs for the Next.js pages and API routes needed for the grant writing progress tracker single-page app. Focus on structure, route handlers, and placeholder UI components. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring connecting UI pages to API endpoints and database models with authentication.",
+        "promptTemplate": "Using the built page stubs and API routes from: {{BLUEPRINT}}\nImplement the integration layer wiring UI components to API endpoints and Prisma database models. Ensure authentication, role-based access control, input validation, and error handling are enforced. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

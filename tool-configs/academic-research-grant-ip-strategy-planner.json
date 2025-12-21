@@ -1,0 +1,875 @@
+{
+  "slug": "academic-research-grant-ip-strategy-planner",
+  "title": "Academic Research Grant IP Strategy Planner",
+  "description": "A single-page web app to help academic research principal investigators and grant coordinators plan and summarize intellectual property (IP) ownership, risks, and compliance for multi-institutional grant projects. Users input project details, collaborator IP policies, and upload IP-related documents to generate a structured IP ownership matrix, risk-annotated strategy summary, and basic compliance checklist advisory. The tool enforces strict disclaimers to avoid legal advice and respects collaborator consent for data sharing.",
+  "inputLabel": "Enter grant project description, objectives, collaborator IP policies, funder IP guidelines, and optionally upload invention disclosures or agreements (PDF, DOCX).",
+  "outputLabel": "Generated IP ownership summary, risk annotations, compliance checklist, and collaboration communication brief. Advisory only; consult IP legal experts for decisions.",
+  "systemPrompt": "You are a specialized assistant for academic research grant principal investigators and coordinators to generate a structured intellectual property (IP) strategy summary for multi-institutional projects. Given the user's detailed input including grant description, collaborator IP policies, uploaded invention disclosures or agreements, and funder IP guidelines, produce a clear, structured IP ownership matrix, highlight potential IP risks with patent and licensing considerations, provide a compliance checklist referencing funder and institutional policies, and create a concise communication brief for team alignment. Always include advisory disclaimers that outputs are not legal advice and recommend consulting IP legal experts. Enforce privacy by omitting any collaborator IP policy details if consent to share was not given. Refuse to generate legal contracts or advice. Output must be plain text summarizing the above, or valid JSON if structured-output is enabled. Validate inputs and refuse unsafe or disallowed requests.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Focused",
+      "prompt": "Generate a concise IP ownership matrix and risk summary for the provided grant details and collaborator data, emphasizing clear ownership and key risk flags."
+    },
+    {
+      "label": "Risk Detailed",
+      "prompt": "Produce a detailed IP risk annotation including patent timelines, licensing considerations, and data/material sharing constraints, along with ownership matrix."
+    },
+    {
+      "label": "Compliance Checklist",
+      "prompt": "Create a comprehensive compliance checklist referencing funder and institutional IP policies based on the input grant and collaborator information."
+    },
+    {
+      "label": "Communication Brief",
+      "prompt": "Generate a clear, concise communication brief summarizing IP terms and ownership for team alignment and negotiation support."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with keys: ownershipMatrix (json), riskAnnotations (json), complianceChecklist (json), communicationBrief (string), and advisoryDisclaimer (string).",
+  "clarifyPrompt": "Please provide detailed grant project description, collaborator institution IP policies (noting consent to share), any preliminary IP disclosures or agreements (upload files), and funder IP guidelines. Specify your primary focus: ownership summary, risk details, compliance, or communication briefs.",
+  "finalizePrompt": "Review the generated IP strategy summary carefully. Remember this is advisory only and not legal advice. Consult your institution's IP legal experts before making decisions or agreements.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Intellectual Property (IP) Strategy Planner",
+      "niche": {
+        "role": "Academic Research Principal Investigator and Grant Coordinator",
+        "scenario": "Planning and managing multi-institutional academic research grant projects with complex intellectual property considerations"
+      },
+      "problem": "Academic research teams collaborating across institutions often face complex and unclear intellectual property (IP) management challenges, including defining ownership, usage rights, patent strategies, and data sharing restrictions. Existing tools focus largely on budget, compliance, or collaboration logistics but do not systematically support early-stage IP strategy planning and ongoing IP risk tracking tailored for academic grant projects, leading to costly disputes, delays, and lost opportunities.",
+      "inputs": [
+        "Grant project description and objectives",
+        "Collaborator institution profiles and IP policies",
+        "Preliminary invention disclosures or IP documentation",
+        "Data sharing and material transfer agreements (drafts or templates)",
+        "Funder IP guidelines and compliance requirements"
+      ],
+      "outputs": [
+        "Structured IP ownership and rights matrix across collaborators",
+        "Risk-annotated IP strategy plan including patent filing timelines, licensing considerations, and data/material sharing constraints",
+        "Compliance checklist for funder and institutional IP policies",
+        "Automated alerts on IP milestones and potential conflict flags",
+        "Collaboration communication briefs summarizing IP terms for team alignment"
+      ],
+      "whyItWins": [
+        "Addresses a critical, underserved challenge in multi-institution academic grant projects that is not covered by existing budget or compliance tools",
+        "Reduces costly IP conflicts and compliance risks by providing structured, clear IP strategy documentation early in the grant lifecycle",
+        "Facilitates smoother collaboration and negotiation by clarifying IP ownership and use rights upfront",
+        "Enables repeated and evolving use as projects mature, supporting ongoing IP risk management and milestone tracking",
+        "Lays foundation for integration with grant compliance, reporting, and negotiation workflows"
+      ],
+      "upgradePath": {
+        "today": "Lightweight web app where users manually input grant details, collaborator IP policies, and upload relevant documents to generate a clear IP ownership and risk summary report with basic compliance checklist",
+        "in90Days": "Add collaboration workspace features allowing multiple team members to input or review IP data; implement automated extraction of IP-relevant terms from uploaded agreements; introduce milestone tracking with alerts and simple negotiation support",
+        "in12Months": "Develop into a full multi-page system integrating with institutional IP offices, supporting version-controlled IP agreements, automated risk assessment with machine learning on uploaded documents, and dashboards for monitoring IP compliance and patent progress throughout the grant lifecycle"
+      },
+      "riskNotes": [
+        "Must avoid providing legal advice; outputs should be advisory and recommend consulting IP legal experts",
+        "Ensure secure handling of sensitive IP and agreement documents with strict access controls",
+        "Careful to not expose confidential collaborator data without consent",
+        "Avoid automating complex legal contract generation to prevent misuse or liability"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative web platform tailored for academic research principal investigators and grant coordinators to plan, document, and manage intellectual property (IP) strategies across multi-institutional grant projects. It provides structured IP ownership matrices, risk-annotated strategy plans, compliance checklists, milestone tracking with alerts, and communication briefs to reduce IP conflicts and facilitate smooth collaboration.",
+      "primaryUser": "Academic Research Principal Investigators and Grant Coordinators managing multi-institutional academic research grants",
+      "successMetrics": [
+        "Reduction in reported IP conflicts or disputes among collaborating institutions",
+        "User adoption rate and active collaboration sessions per grant project",
+        "Timely completion and acknowledgement of IP milestone alerts",
+        "User satisfaction scores regarding clarity and usefulness of IP strategy outputs",
+        "Number of generated IP strategy plans and compliance checklists per project"
+      ],
+      "components": [
+        {
+          "id": "ui-grant-ip-planner",
+          "name": "Grant IP Planning UI",
+          "type": "ui",
+          "responsibility": "Provide multi-page user interface for inputting grant details, collaborator profiles, IP policies, uploading documents, reviewing generated IP ownership matrices, risk plans, compliance checklists, milestone alerts, and communication briefs.",
+          "dependsOn": [
+            "api-grant-ip-service",
+            "data-grant-ip-db"
+          ],
+          "notes": [
+            "Pages include grant project setup, collaborator management, IP documentation upload, strategy visualization, milestone dashboard, and communication briefs.",
+            "Supports role-based access controls to restrict sensitive data visibility.",
+            "Designed for incremental feature rollout from manual input to collaboration workspace."
+          ]
+        },
+        {
+          "id": "api-grant-ip-service",
+          "name": "Grant IP Strategy API",
+          "type": "api",
+          "responsibility": "Handle business logic for creating and managing grant projects, collaborators, IP policies, document uploads, generating IP ownership matrices, risk annotations, compliance checklists, milestone tracking, and communication briefs.",
+          "dependsOn": [
+            "data-grant-ip-db",
+            "integration-ip-term-extractor",
+            "integration-notification-service"
+          ],
+          "notes": [
+            "Enforces security and access controls on all data operations.",
+            "Provides endpoints for document upload and metadata extraction.",
+            "Implements advisory disclaimers on outputs to avoid legal advice.",
+            "Supports versioning of IP documents and strategy plans."
+          ]
+        },
+        {
+          "id": "data-grant-ip-db",
+          "name": "Grant IP Data Store",
+          "type": "data",
+          "responsibility": "Persist grant projects, collaborator profiles, institutional IP policies, uploaded documents metadata, generated IP ownership matrices, risk annotations, compliance checklists, milestone data, and communication briefs.",
+          "dependsOn": [],
+          "notes": [
+            "Stores sensitive IP and agreement documents securely with encryption at rest.",
+            "Supports audit trails and version control for IP-related documents and plans.",
+            "Indexes on grant IDs, collaborator institutions, and milestone dates for efficient querying."
+          ]
+        },
+        {
+          "id": "integration-ip-term-extractor",
+          "name": "IP Term Extraction Integration",
+          "type": "integration",
+          "responsibility": "Automate extraction of IP-relevant terms and clauses from uploaded agreements and documents to assist in generating risk annotations and compliance checklists.",
+          "dependsOn": [],
+          "notes": [
+            "Initial implementation may rely on third-party NLP services or rule-based extraction.",
+            "Outputs are advisory and require user validation to avoid incorrect legal interpretations.",
+            "Handles document format variations and extraction failure gracefully."
+          ]
+        },
+        {
+          "id": "integration-notification-service",
+          "name": "Notification and Alert Service",
+          "type": "integration",
+          "responsibility": "Send automated alerts and notifications to users regarding IP milestones, potential conflicts, and upcoming deadlines.",
+          "dependsOn": [],
+          "notes": [
+            "Supports email and in-app notifications.",
+            "Allows users to configure alert preferences and escalation rules.",
+            "Ensures notifications do not expose confidential information inadvertently."
+          ]
+        },
+        {
+          "id": "job-ip-milestone-tracker",
+          "name": "IP Milestone Tracking Job",
+          "type": "job",
+          "responsibility": "Periodically scan milestone data to identify upcoming or overdue IP-related deadlines and trigger notifications or flag potential risks.",
+          "dependsOn": [
+            "data-grant-ip-db",
+            "integration-notification-service"
+          ],
+          "notes": [
+            "Runs daily or configurable intervals.",
+            "Handles edge cases such as missing milestone dates or ambiguous deadlines.",
+            "Logs execution results and failures for monitoring."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "GrantProject",
+          "purpose": "Represents an academic research grant project with associated metadata and IP strategy data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "objectives",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "funderIPGuidelines",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "createdByUserId"
+          ]
+        },
+        {
+          "name": "Collaborator",
+          "purpose": "Stores information about collaborating institutions and their IP policies.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProjectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contactInfo",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "ipPolicy",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "consentToShareData",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantProjectId",
+            "institutionName"
+          ]
+        },
+        {
+          "name": "IPDocument",
+          "purpose": "Metadata and storage references for uploaded IP-related documents such as invention disclosures, agreements, and templates.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProjectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documentType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileReference",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "extractedIPTerms",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantProjectId",
+            "documentType"
+          ]
+        },
+        {
+          "name": "IPOwnershipMatrix",
+          "purpose": "Structured representation of IP ownership and usage rights across collaborators for a grant project.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProjectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "matrixData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantProjectId",
+            "version"
+          ]
+        },
+        {
+          "name": "IPRiskAnnotation",
+          "purpose": "Annotations highlighting risks, patent timelines, licensing considerations, and sharing constraints.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProjectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "annotations",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantProjectId"
+          ]
+        },
+        {
+          "name": "ComplianceChecklist",
+          "purpose": "Checklist items to ensure adherence to funder and institutional IP policies.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProjectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "items",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantProjectId"
+          ]
+        },
+        {
+          "name": "IPMilestone",
+          "purpose": "Tracks IP-related milestones, deadlines, and their statuses.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProjectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "milestoneType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "grantProjectId",
+            "dueDate"
+          ]
+        },
+        {
+          "name": "CommunicationBrief",
+          "purpose": "Summarized IP terms and collaboration notes for team alignment and communication.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantProjectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "grantProjectId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Dashboard",
+          "purpose": "Overview of user's grant projects, recent IP milestones, alerts, and quick access to projects.",
+          "inputs": [],
+          "outputs": [
+            "List of grant projects",
+            "Upcoming milestones",
+            "Recent alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grant/new",
+          "title": "Create New Grant Project",
+          "purpose": "Form to input grant project details, objectives, and funder IP guidelines.",
+          "inputs": [
+            "Grant title",
+            "Description",
+            "Objectives",
+            "Funder IP guidelines"
+          ],
+          "outputs": [
+            "Created grant project summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grant/:id/collaborators",
+          "title": "Manage Collaborators",
+          "purpose": "Add, edit, and view collaborator institutions and their IP policies with consent management.",
+          "inputs": [
+            "Institution name",
+            "Contact info",
+            "IP policy details",
+            "Consent to share data"
+          ],
+          "outputs": [
+            "List of collaborators with IP policies"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grant/:id/documents",
+          "title": "IP Document Upload and Review",
+          "purpose": "Upload invention disclosures, agreements, and templates; view extracted IP terms.",
+          "inputs": [
+            "File upload",
+            "Document type"
+          ],
+          "outputs": [
+            "Uploaded documents list",
+            "Extracted IP terms summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grant/:id/ip-strategy",
+          "title": "IP Ownership and Risk Strategy",
+          "purpose": "View and edit IP ownership matrix, risk annotations, and compliance checklist.",
+          "inputs": [
+            "IP ownership matrix edits",
+            "Risk annotation inputs",
+            "Compliance checklist updates"
+          ],
+          "outputs": [
+            "Structured IP ownership matrix",
+            "Risk-annotated strategy plan",
+            "Compliance checklist"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grant/:id/milestones",
+          "title": "IP Milestone Tracking",
+          "purpose": "View, add, and update IP-related milestones with alert settings.",
+          "inputs": [
+            "Milestone type",
+            "Due date",
+            "Status",
+            "Notes"
+          ],
+          "outputs": [
+            "Milestone list with statuses",
+            "Upcoming alert notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/grant/:id/communication",
+          "title": "Collaboration Communication Briefs",
+          "purpose": "Create and view summarized IP terms and collaboration notes for team alignment.",
+          "inputs": [
+            "Brief content"
+          ],
+          "outputs": [
+            "Communication briefs list"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/grants",
+          "method": "POST",
+          "purpose": "Create a new grant project with initial details.",
+          "requestShape": "{ title: string, description?: string, objectives?: string, funderIPGuidelines?: json }",
+          "responseShape": "{ grantProjectId: string, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id/collaborators",
+          "method": "POST",
+          "purpose": "Add or update collaborator information and IP policies.",
+          "requestShape": "{ institutionName: string, contactInfo?: json, ipPolicy?: json, consentToShareData: boolean }",
+          "responseShape": "{ collaboratorId: string, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id/documents",
+          "method": "POST",
+          "purpose": "Upload IP-related documents and trigger IP term extraction.",
+          "requestShape": "multipart/form-data with file and documentType string",
+          "responseShape": "{ documentId: string, extractedIPTerms?: json, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id/ip-ownership-matrix",
+          "method": "GET",
+          "purpose": "Retrieve the current IP ownership matrix for the grant.",
+          "requestShape": "None",
+          "responseShape": "{ matrixData: json, version: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id/ip-ownership-matrix",
+          "method": "POST",
+          "purpose": "Update the IP ownership matrix.",
+          "requestShape": "{ matrixData: json }",
+          "responseShape": "{ version: number, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id/ip-risk-annotations",
+          "method": "GET",
+          "purpose": "Retrieve risk annotations for the grant's IP strategy.",
+          "requestShape": "None",
+          "responseShape": "{ annotations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id/compliance-checklist",
+          "method": "GET",
+          "purpose": "Retrieve compliance checklist items.",
+          "requestShape": "None",
+          "responseShape": "{ items: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id/milestones",
+          "method": "GET",
+          "purpose": "List IP milestones for the grant.",
+          "requestShape": "None",
+          "responseShape": "{ milestones: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id/milestones",
+          "method": "POST",
+          "purpose": "Add or update an IP milestone.",
+          "requestShape": "{ milestoneType: string, dueDate: date, status: string, notes?: string }",
+          "responseShape": "{ milestoneId: string, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id/communication-briefs",
+          "method": "GET",
+          "purpose": "Retrieve communication briefs for the grant.",
+          "requestShape": "None",
+          "responseShape": "{ briefs: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/grants/:id/communication-briefs",
+          "method": "POST",
+          "purpose": "Create a new communication brief.",
+          "requestShape": "{ content: string }",
+          "responseShape": "{ briefId: string, message: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "IP Milestone Tracking Job",
+          "trigger": "Scheduled daily",
+          "purpose": "Scan IP milestones to identify upcoming or overdue deadlines and send alerts to users."
+        }
+      ],
+      "edgeCases": [
+        "Collaborator declines consent to share IP policy data, limiting visibility and requiring UI to handle partial data gracefully.",
+        "Uploaded documents have unsupported formats or poor scan quality causing extraction failures; system must allow manual override or input.",
+        "Conflicting IP ownership claims detected in matrix inputs requiring user resolution and advisory warnings.",
+        "Missing or ambiguous milestone dates that prevent accurate alerting; system flags for user review.",
+        "Users attempt to input or upload data that could be interpreted as legal advice; system enforces disclaimers and limits output language.",
+        "Access attempts by unauthorized users to sensitive IP documents or collaborator data; system enforces strict access control and audit logging.",
+        "Network or service failures during document upload or term extraction; system retries and provides clear error messages."
+      ],
+      "nonGoals": [
+        "Providing legally binding IP contracts or automated legal advice.",
+        "Replacing institutional or funder legal compliance offices.",
+        "Handling budget management, grant financials, or general project collaboration unrelated to IP strategy.",
+        "Full automation of complex legal risk assessment beyond advisory support.",
+        "Exposing confidential collaborator data without explicit consent."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses dashboard to view their grant projects and recent IP milestones.",
+        "User creates a new grant project via /grant/new page, submitting grant details to POST /api/grants.",
+        "User navigates to /grant/:id/collaborators to add or update collaborator institutions and IP policies, sending data to POST /api/grants/:id/collaborators.",
+        "User uploads IP-related documents on /grant/:id/documents; files are sent via multipart/form-data to POST /api/grants/:id/documents, triggering IP term extraction via integration-ip-term-extractor.",
+        "Extracted IP terms are stored with documents metadata in data-grant-ip-db and presented to the user for validation.",
+        "User views and edits IP ownership matrix, risk annotations, and compliance checklist on /grant/:id/ip-strategy, fetching data via GET endpoints and submitting updates via POST where applicable.",
+        "User manages IP milestones on /grant/:id/milestones, adding or updating milestones via POST /api/grants/:id/milestones; milestone data is stored and indexed for efficient querying.",
+        "Background job 'IP Milestone Tracking Job' runs daily, scanning milestone data for upcoming or overdue deadlines, triggering notifications via integration-notification-service.",
+        "Users receive alerts and notifications in-app and via email based on their preferences configured in the notification service.",
+        "Communication briefs are created and retrieved via POST and GET /api/grants/:id/communication-briefs, supporting team alignment.",
+        "All data operations enforce role-based access control and consent checks to ensure sensitive information is only visible to authorized users."
+      ],
+      "validationRules": [
+        "GrantProject creation requires non-empty title and valid user authentication.",
+        "Collaborator data requires institutionName (non-empty string) and explicit consentToShareData boolean; contactInfo and ipPolicy are optional JSON objects.",
+        "Document uploads must include a valid file and documentType string; supported file formats validated server-side; file size limits enforced.",
+        "IP ownership matrix updates require valid JSON structure conforming to defined schema; versioning enforced to prevent conflicts.",
+        "Risk annotations and compliance checklist inputs must be valid JSON and adhere to expected schema.",
+        "Milestone entries require milestoneType (non-empty string), dueDate (valid ISO date string, not in the past for new milestones), status (from predefined set e.g. 'pending', 'completed', 'overdue'), and optional notes string.",
+        "Communication briefs require non-empty content string with length limits to prevent abuse.",
+        "All API endpoints require authenticated user context; authorization checks confirm user access to the specified grantProjectId.",
+        "Consent flags must be respected: if consentToShareData is false, restrict visibility of related IP policy data in UI and API responses."
+      ],
+      "errorHandling": [
+        "API responses use consistent JSON error format with HTTP status codes (e.g., 400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors).",
+        "Document upload failures due to unsupported formats or extraction errors return clear messages with suggestions for manual input.",
+        "Conflicting IP ownership matrix inputs trigger advisory warnings in API responses and UI prompts for user resolution.",
+        "Missing or ambiguous milestone dates cause warnings and flag entries for user review; alerts are suppressed until corrected.",
+        "Unauthorized access attempts log audit events and return 403 Forbidden with generic error messages to avoid information leakage.",
+        "Network or service failures during integration calls (e.g., IP term extraction) trigger retries with exponential backoff; persistent failures notify users with actionable messages.",
+        "All user inputs are sanitized to prevent injection attacks; file uploads scanned for malware per security policies.",
+        "Advisory disclaimers included in API outputs and UI to clarify that outputs are not legal advice."
+      ],
+      "securityNotes": [
+        "Enforce authentication on all pages and API routes requiring user context.",
+        "Implement role-based access control to restrict sensitive data visibility based on user roles and collaborator consent flags.",
+        "Encrypt sensitive data at rest in the data-grant-ip-db, including uploaded documents and IP policies.",
+        "Audit all access and modification events on sensitive IP data for traceability.",
+        "Validate and sanitize all inputs to prevent injection and cross-site scripting attacks.",
+        "Limit file upload types and sizes; scan uploaded files for malware.",
+        "Ensure notification service does not expose confidential information in alerts or emails.",
+        "Use secure transport (HTTPS) for all client-server and integration communications.",
+        "Apply rate limiting and monitoring on API endpoints to detect and prevent abuse."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the dashboard page",
+          "when": "The user views the dashboard",
+          "then": "They see a list of their grant projects, upcoming milestones, and recent alerts relevant to their projects"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the create grant page",
+          "when": "The user submits a new grant with valid title and optional details",
+          "then": "A new grant project is created, stored in the database, and a confirmation message with grantProjectId is returned"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on the collaborators management page for a grant",
+          "when": "The user adds a collaborator with consentToShareData set to false",
+          "then": "The collaborator is saved, but IP policy data is hidden in UI and API responses for unauthorized users"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user uploading a supported document type",
+          "when": "The user uploads a file with documentType",
+          "then": "The file is stored securely, IP term extraction is triggered, and extracted terms are returned for user validation"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user updating the IP ownership matrix with conflicting claims",
+          "when": "The user submits the matrix data",
+          "then": "The system returns an advisory warning about conflicts and requires user resolution before acceptance"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user adding an IP milestone with a past dueDate",
+          "when": "The user submits the milestone data",
+          "then": "The system accepts the entry but flags it as overdue and triggers an alert notification"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user attempts to access a grant's sensitive data API",
+          "when": "The user sends a request without valid authentication",
+          "then": "The system responds with 401 Unauthorized and no data is disclosed"
+        },
+        {
+          "id": "AT-008",
+          "given": "The IP Milestone Tracking Job runs daily",
+          "when": "There are upcoming or overdue milestones",
+          "then": "Relevant users receive notifications via email and in-app alerts according to their preferences"
+        },
+        {
+          "id": "AT-009",
+          "given": "A document upload fails due to unsupported format",
+          "when": "The user attempts to upload the file",
+          "then": "The system rejects the upload with a clear error message and suggests manual input options"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user creates a communication brief with valid content",
+          "when": "The user submits the brief",
+          "then": "The brief is saved and appears in the list of communication briefs for the grant"
+        }
+      ],
+      "buildOrder": [
+        "Set up authentication and role-based access control framework.",
+        "Implement data-grant-ip-db Prisma models and migrations.",
+        "Develop API routes for grant projects creation and retrieval.",
+        "Build dashboard page with grant project listing and milestone summaries.",
+        "Implement collaborator management API and UI with consent handling.",
+        "Develop document upload API with integration to IP term extraction service.",
+        "Create IP ownership matrix API endpoints and UI for viewing/editing with conflict detection.",
+        "Implement risk annotation and compliance checklist retrieval and update APIs and UI.",
+        "Develop milestone tracking API and UI with status management.",
+        "Integrate notification service for alerts and user preferences.",
+        "Build communication briefs API and UI.",
+        "Implement background job for IP milestone tracking and notification triggering.",
+        "Add comprehensive validation, error handling, and security enforcement across all layers.",
+        "Conduct acceptance testing and edge case handling refinements.",
+        "Roll out incremental feature releases with monitoring and user feedback."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/grant/new",
+          "/grant/[id]/collaborators",
+          "/grant/[id]/documents",
+          "/grant/[id]/ip-strategy",
+          "/grant/[id]/milestones",
+          "/grant/[id]/communication"
+        ],
+        "apiFilesToCreate": [
+          "/api/grants/index.ts",
+          "/api/grants/[id]/collaborators.ts",
+          "/api/grants/[id]/documents.ts",
+          "/api/grants/[id]/ip-ownership-matrix.ts",
+          "/api/grants/[id]/ip-risk-annotations.ts",
+          "/api/grants/[id]/compliance-checklist.ts",
+          "/api/grants/[id]/milestones.ts",
+          "/api/grants/[id]/communication-briefs.ts"
+        ],
+        "prismaModelsToAdd": [
+          "GrantProject",
+          "Collaborator",
+          "IPDocument",
+          "IPOwnershipMatrix",
+          "IPRiskAnnotation",
+          "ComplianceChecklist",
+          "IPMilestone",
+          "CommunicationBrief"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user to clarify missing constraints, priorities, or inputs for the IP strategy planner tool.",
+        "promptTemplate": "You are helping to refine the requirements of the Academic Research Grant IP Strategy Planner. Given the current blueprint:\n\n{{BLUEPRINT}}\n\nPlease ask the user for any missing constraints, specific input formats, focus areas (ownership, risk, compliance, communication), or concerns about data privacy and consent.\n\nUser input so far:\n{{USER_INPUT}}\n\nYour questions:"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages and data models needed for the full multi-page app beyond the current single-page tool.",
+        "promptTemplate": "You are the architect for the Academic Research Grant IP Strategy Planner. Based on the idea and current blueprint:\n\n{{IDEA}}\n\n{{BLUEPRINT}}\n\nRefine and finalize the list of UI pages, their purposes, inputs and outputs, and the data models with fields and indexes. Consider access control and collaboration features.\n\nUser notes or questions:\n{{USER_INPUT}}\n\nProvide detailed page and data model definitions."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code stubs for the UI pages and API routes to scaffold the multi-page app.",
+        "promptTemplate": "You are the builder for the Academic Research Grant IP Strategy Planner. Given the finalized pages and API routes:\n\n{{PAGES}}\n\n{{API_ROUTES}}\n\nGenerate code stubs and file structure for each page and API endpoint. Include comments on inputs, outputs, and integration points.\n\nUser instructions or customizations:\n{{USER_INPUT}}\n\nStart generating code."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to API endpoints and database models, implementing business logic and security.",
+        "promptTemplate": "You are the integrator for the Academic Research Grant IP Strategy Planner. Using the UI pages, API routes, and data models:\n\n{{PAGES}}\n\n{{API_ROUTES}}\n\n{{DATA_MODELS}}\n\nImplement the wiring between UI actions, API calls, and database operations. Include validation, error handling, and role-based access control as per security notes.\n\nUser notes or constraints:\n{{USER_INPUT}}\n\nStart integration implementation."
+      }
+    ]
+  }
+}

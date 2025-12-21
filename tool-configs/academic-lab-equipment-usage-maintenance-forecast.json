@@ -1,0 +1,932 @@
+{
+  "slug": "academic-lab-equipment-usage-maintenance-forecast",
+  "title": "Academic Research Lab Equipment Usage & Maintenance Forecast",
+  "description": "A lightweight single-page app for academic research lab managers to manually input equipment metadata, usage logs, and maintenance records to generate basic utilization dashboards and maintenance alerts, enabling proactive equipment management and procurement planning.",
+  "inputLabel": "Enter equipment, usage, and maintenance data in JSON or plain text format. Optionally upload a JSON file with your data.",
+  "outputLabel": "Generated utilization summary, maintenance alerts, and procurement insights.",
+  "systemPrompt": "You are an expert assistant helping academic research lab managers manage lab equipment usage, maintenance schedules, and procurement planning. Accept input describing equipment metadata, usage logs, and maintenance records in JSON or plain text. Validate input for required fields and logical consistency. Detect and flag overlapping usage logs for the same equipment. Generate an integrated summary including current equipment utilization rates, upcoming or overdue maintenance alerts, and prioritized procurement recommendations based on usage trends and equipment lifecycle. Refuse any input containing disallowed content or requests unrelated to lab equipment management. Respond only in plain text summarizing findings and recommendations. If asked for structured output, respond in valid JSON with usage, maintenance, and procurement sections. Always enforce data integrity, safety, and user privacy.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Overview",
+      "prompt": "Summarize the current equipment utilization, maintenance status, and procurement priorities based on the provided data."
+    },
+    {
+      "label": "Maintenance Alert Focus",
+      "prompt": "Analyze the maintenance records and usage logs to identify upcoming or overdue maintenance tasks and generate alerts."
+    },
+    {
+      "label": "Procurement Recommendations",
+      "prompt": "Evaluate equipment usage trends and lifecycle data to provide prioritized procurement recommendations."
+    },
+    {
+      "label": "Validate Input Data",
+      "prompt": "Check the provided equipment, usage, and maintenance data for completeness, correctness, and conflicts such as overlapping usage logs."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is requested, respond with JSON containing 'utilization', 'maintenanceAlerts', and 'procurementRecommendations' sections, each appropriately structured with relevant fields.",
+  "clarifyPrompt": "Please provide the equipment metadata, usage logs, and maintenance records you want to analyze. You can input data as JSON or plain text, or upload a JSON file. Make sure required fields are included and date formats are ISO 8601.",
+  "finalizePrompt": "Confirm you want to generate a summary report including equipment utilization, maintenance alerts, and procurement recommendations based on the provided data.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Equipment Usage & Maintenance Forecast System",
+      "niche": {
+        "role": "Academic research lab manager",
+        "scenario": "Managing and forecasting equipment usage, maintenance schedules, and procurement planning for multiple labs within an academic department or institution"
+      },
+      "problem": "Academic research lab managers struggle to efficiently track real-time equipment usage, anticipate maintenance needs, and plan procurement across multiple labs, leading to underutilization, unexpected downtime, and budget misallocations. Existing tools either handle booking conflicts or maintenance records separately but do not integrate usage forecasting, maintenance scheduling, and procurement planning in a single system.",
+      "inputs": [
+        "Lab equipment metadata (type, model, purchase date, warranty)",
+        "Equipment usage logs (manual entry or integration from booking systems)",
+        "Maintenance and calibration records",
+        "Lab project schedules and resource demand forecasts",
+        "Budget constraints and procurement policies"
+      ],
+      "outputs": [
+        "Integrated equipment utilization dashboards showing current and forecasted usage",
+        "Predictive maintenance and calibration scheduling with alerts",
+        "Procurement planning recommendations prioritizing replacements, upgrades, or new purchases based on utilization trends and equipment lifecycle",
+        "Conflict and downtime risk alerts based on maintenance and usage forecasts",
+        "Customizable reports for department heads and finance teams"
+      ],
+      "whyItWins": [
+        "Combines equipment usage tracking, maintenance forecasting, and procurement planning in one unified system tailored for academic research environments",
+        "Enables proactive management reducing unexpected equipment downtime and improving lab productivity",
+        "Supports multi-lab and multi-project coordination with data-driven resource allocation",
+        "Provides actionable insights for budgeting and grant proposal justification",
+        "Lightweight entry with manual data input but scalable to integrate sensors, booking systems, and financial software for automation"
+      ],
+      "upgradePath": {
+        "today": "Start with a lightweight single-page app allowing manual input of equipment metadata, usage logs, and maintenance records to generate basic utilization dashboards and maintenance alerts.",
+        "in90Days": "Add forecasting models for equipment usage and maintenance needs based on historical data; introduce procurement prioritization and customizable reporting features; enable multi-lab user roles and permissions.",
+        "in12Months": "Develop integrations with lab booking systems, IoT device sensors, and institutional financial software; implement automated real-time usage tracking; incorporate machine learning to improve maintenance and procurement predictions; expand to multi-institution collaboration and benchmarking."
+      },
+      "riskNotes": [
+        "Requires careful handling of sensitive lab equipment data to protect institutional privacy and security",
+        "Forecasting accuracy depends on quality and completeness of usage and maintenance data",
+        "User adoption may be challenged if manual data entry is burdensome; phased automation can mitigate",
+        "Must ensure the system does not replace but augments human judgment in procurement decisions to avoid over-reliance on automated recommendations"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A unified system for academic research lab managers to track equipment usage, forecast maintenance, and plan procurement across multiple labs, integrating manual input with future automation and predictive analytics.",
+      "primaryUser": "Academic research lab manager",
+      "successMetrics": [
+        "Reduction in unexpected equipment downtime",
+        "Increase in equipment utilization rates",
+        "Accuracy and timeliness of maintenance alerts",
+        "User adoption and frequency of usage",
+        "Improved budgeting and procurement decision quality"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display integrated equipment utilization, maintenance forecasts, procurement recommendations, and alerts in an intuitive interface.",
+          "dependsOn": [
+            "api-equipment",
+            "api-usage",
+            "api-maintenance",
+            "api-forecast",
+            "api-procurement"
+          ],
+          "notes": [
+            "Supports multi-lab views and user role-based data access",
+            "Must handle empty or incomplete data gracefully",
+            "Expandable with customizable reporting features"
+          ]
+        },
+        {
+          "id": "ui-data-entry",
+          "name": "Data Entry UI",
+          "type": "ui",
+          "responsibility": "Provide forms for manual input and editing of equipment metadata, usage logs, maintenance records, and project schedules.",
+          "dependsOn": [
+            "api-equipment",
+            "api-usage",
+            "api-maintenance",
+            "api-projects"
+          ],
+          "notes": [
+            "Includes validation to minimize data entry errors",
+            "Supports bulk upload or CSV import as a future enhancement"
+          ]
+        },
+        {
+          "id": "api-equipment",
+          "name": "Equipment Management API",
+          "type": "api",
+          "responsibility": "CRUD operations for equipment metadata and lifecycle data.",
+          "dependsOn": [
+            "data-equipment"
+          ],
+          "notes": [
+            "Enforces data integrity and validation",
+            "Supports querying by lab, type, and status"
+          ]
+        },
+        {
+          "id": "api-usage",
+          "name": "Usage Logs API",
+          "type": "api",
+          "responsibility": "Manage equipment usage logs, including manual entries and future integrations.",
+          "dependsOn": [
+            "data-usage"
+          ],
+          "notes": [
+            "Handles time ranges, usage conflicts, and overlapping entries",
+            "Supports aggregation queries for dashboards and forecasting"
+          ]
+        },
+        {
+          "id": "api-maintenance",
+          "name": "Maintenance Records API",
+          "type": "api",
+          "responsibility": "Manage maintenance and calibration records, schedules, and alerts.",
+          "dependsOn": [
+            "data-maintenance"
+          ],
+          "notes": [
+            "Tracks maintenance history and warranty status",
+            "Supports alert generation for upcoming or overdue maintenance"
+          ]
+        },
+        {
+          "id": "api-forecast",
+          "name": "Forecasting API",
+          "type": "api",
+          "responsibility": "Provide predictive models for equipment usage, maintenance needs, and downtime risk.",
+          "dependsOn": [
+            "data-usage",
+            "data-maintenance",
+            "data-projects"
+          ],
+          "notes": [
+            "Starts with simple heuristics, evolves to ML models",
+            "Handles missing or sparse data gracefully",
+            "Exposes forecast data for dashboards and alerts"
+          ]
+        },
+        {
+          "id": "api-procurement",
+          "name": "Procurement Planning API",
+          "type": "api",
+          "responsibility": "Generate procurement recommendations based on utilization, lifecycle, budget constraints, and policies.",
+          "dependsOn": [
+            "data-equipment",
+            "data-usage",
+            "data-maintenance",
+            "data-budget"
+          ],
+          "notes": [
+            "Supports prioritization and scenario analysis",
+            "Outputs actionable recommendations without overriding human decisions"
+          ]
+        },
+        {
+          "id": "data-equipment",
+          "name": "Equipment Data Store",
+          "type": "data",
+          "responsibility": "Persist equipment metadata, lifecycle info, and warranty details.",
+          "dependsOn": [],
+          "notes": [
+            "Indexed by equipment ID, lab, and type",
+            "Must support historical data retention for forecasting"
+          ]
+        },
+        {
+          "id": "data-usage",
+          "name": "Usage Logs Data Store",
+          "type": "data",
+          "responsibility": "Persist equipment usage logs with timestamps and user/project associations.",
+          "dependsOn": [],
+          "notes": [
+            "Supports time-range queries and aggregation",
+            "Must handle partial or manual entry corrections"
+          ]
+        },
+        {
+          "id": "data-maintenance",
+          "name": "Maintenance Records Data Store",
+          "type": "data",
+          "responsibility": "Persist maintenance and calibration records, schedules, and alert history.",
+          "dependsOn": [],
+          "notes": [
+            "Tracks status and outcomes of maintenance events",
+            "Supports warranty and service contract data"
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Project Schedules & Resource Demand Data Store",
+          "type": "data",
+          "responsibility": "Store lab project timelines and forecasted resource demands.",
+          "dependsOn": [],
+          "notes": [
+            "Enables correlation of project needs with equipment usage"
+          ]
+        },
+        {
+          "id": "data-budget",
+          "name": "Budget & Procurement Policies Data Store",
+          "type": "data",
+          "responsibility": "Persist budget constraints, procurement policies, and historical spending data.",
+          "dependsOn": [],
+          "notes": [
+            "Supports configurable budget periods and limits"
+          ]
+        },
+        {
+          "id": "job-maintenance-alerts",
+          "name": "Maintenance Alert Job",
+          "type": "job",
+          "responsibility": "Periodically analyze maintenance schedules and usage forecasts to generate alerts for upcoming or overdue maintenance.",
+          "dependsOn": [
+            "api-maintenance",
+            "api-forecast"
+          ],
+          "notes": [
+            "Runs daily or configurable frequency",
+            "Handles missed alerts and alert escalation"
+          ]
+        },
+        {
+          "id": "job-procurement-recommendations",
+          "name": "Procurement Recommendation Job",
+          "type": "job",
+          "responsibility": "Regularly evaluate equipment lifecycle and usage trends to update procurement recommendations.",
+          "dependsOn": [
+            "api-procurement"
+          ],
+          "notes": [
+            "Runs weekly or on-demand",
+            "Supports notification triggers for lab managers"
+          ]
+        },
+        {
+          "id": "integration-booking-systems",
+          "name": "Lab Booking Systems Integration",
+          "type": "integration",
+          "responsibility": "Integrate with external lab booking systems to import usage data automatically.",
+          "dependsOn": [
+            "api-usage"
+          ],
+          "notes": [
+            "Planned for future phases",
+            "Must handle data synchronization and conflict resolution"
+          ]
+        },
+        {
+          "id": "integration-iot-sensors",
+          "name": "IoT Sensors Integration",
+          "type": "integration",
+          "responsibility": "Collect real-time equipment usage data from IoT sensors and devices.",
+          "dependsOn": [
+            "api-usage"
+          ],
+          "notes": [
+            "Future enhancement for automation",
+            "Requires secure data ingestion and validation"
+          ]
+        },
+        {
+          "id": "integration-financial-software",
+          "name": "Institutional Financial Software Integration",
+          "type": "integration",
+          "responsibility": "Sync budget and procurement data with institutional financial systems.",
+          "dependsOn": [
+            "api-procurement",
+            "data-budget"
+          ],
+          "notes": [
+            "Enables automated budget updates and spending tracking",
+            "Requires secure authentication and data privacy compliance"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Equipment",
+          "purpose": "Store metadata and lifecycle information for each piece of lab equipment.",
+          "fields": [
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "labId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "model",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "purchaseDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "warrantyExpiry",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "labId",
+            "type"
+          ]
+        },
+        {
+          "name": "UsageLog",
+          "purpose": "Record usage events for equipment including time, user, and project context.",
+          "fields": [
+            {
+              "name": "usageId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "startTime",
+            "endTime"
+          ]
+        },
+        {
+          "name": "MaintenanceRecord",
+          "purpose": "Track maintenance and calibration events and schedules for equipment.",
+          "fields": [
+            {
+              "name": "maintenanceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "maintenanceDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "performedBy",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "equipmentId",
+            "maintenanceDate"
+          ]
+        },
+        {
+          "name": "ProjectSchedule",
+          "purpose": "Store lab project timelines and forecasted equipment demand.",
+          "fields": [
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "labId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "equipmentDemand",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "labId"
+          ]
+        },
+        {
+          "name": "BudgetPolicy",
+          "purpose": "Persist budget constraints and procurement policies per lab or department.",
+          "fields": [
+            {
+              "name": "policyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "labId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetPeriodStart",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "budgetPeriodEnd",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "budgetLimit",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "procurementRules",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "policyId",
+            "labId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Equipment Utilization & Maintenance Dashboard",
+          "purpose": "Provide an overview of current and forecasted equipment usage, maintenance alerts, and procurement recommendations.",
+          "inputs": [],
+          "outputs": [
+            "Utilization charts",
+            "Maintenance alerts",
+            "Procurement priority lists",
+            "Downtime risk notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/equipment",
+          "title": "Equipment Management",
+          "purpose": "View, add, edit, and delete equipment metadata and lifecycle information.",
+          "inputs": [
+            "Equipment metadata forms"
+          ],
+          "outputs": [
+            "Equipment list",
+            "Equipment detail view"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/usage-logs",
+          "title": "Equipment Usage Logs",
+          "purpose": "Enter and review equipment usage logs manually or via integrations.",
+          "inputs": [
+            "Usage log entry forms",
+            "Filters by equipment, date, project"
+          ],
+          "outputs": [
+            "Usage log lists",
+            "Usage summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/maintenance",
+          "title": "Maintenance Records & Scheduling",
+          "purpose": "Manage maintenance and calibration records and view upcoming maintenance schedules.",
+          "inputs": [
+            "Maintenance record forms"
+          ],
+          "outputs": [
+            "Maintenance history",
+            "Upcoming maintenance alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/procurement",
+          "title": "Procurement Planning & Budgeting",
+          "purpose": "Review procurement recommendations, budget constraints, and configure procurement policies.",
+          "inputs": [
+            "Budget and policy forms"
+          ],
+          "outputs": [
+            "Procurement priority lists",
+            "Budget utilization reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Custom Reports",
+          "purpose": "Generate and export customizable reports for department heads and finance teams.",
+          "inputs": [
+            "Report filters and parameters"
+          ],
+          "outputs": [
+            "PDF/CSV reports"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/equipment",
+          "method": "GET",
+          "purpose": "Retrieve list or details of equipment metadata.",
+          "requestShape": "Query params: labId?, equipmentId?",
+          "responseShape": "JSON array or object of equipment data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/equipment",
+          "method": "POST",
+          "purpose": "Create or update equipment metadata.",
+          "requestShape": "JSON equipment object",
+          "responseShape": "Success status and updated equipment data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/usage",
+          "method": "GET",
+          "purpose": "Retrieve usage logs filtered by equipment, date range, or project.",
+          "requestShape": "Query params: equipmentId?, startDate?, endDate?, projectId?",
+          "responseShape": "JSON array of usage logs",
+          "auth": "user"
+        },
+        {
+          "route": "/api/usage",
+          "method": "POST",
+          "purpose": "Add or update usage log entries.",
+          "requestShape": "JSON usage log object",
+          "responseShape": "Success status and updated usage log data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/maintenance",
+          "method": "GET",
+          "purpose": "Retrieve maintenance records and schedules.",
+          "requestShape": "Query params: equipmentId?, dateRange?",
+          "responseShape": "JSON array of maintenance records",
+          "auth": "user"
+        },
+        {
+          "route": "/api/maintenance",
+          "method": "POST",
+          "purpose": "Create or update maintenance records.",
+          "requestShape": "JSON maintenance record object",
+          "responseShape": "Success status and updated maintenance data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/forecast/usage",
+          "method": "GET",
+          "purpose": "Get forecasted equipment usage data.",
+          "requestShape": "Query params: equipmentId, forecastPeriod",
+          "responseShape": "JSON forecast data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/forecast/maintenance",
+          "method": "GET",
+          "purpose": "Get predictive maintenance schedules and risk alerts.",
+          "requestShape": "Query params: equipmentId",
+          "responseShape": "JSON maintenance forecast and alerts",
+          "auth": "user"
+        },
+        {
+          "route": "/api/procurement/recommendations",
+          "method": "GET",
+          "purpose": "Get procurement recommendations based on usage and lifecycle.",
+          "requestShape": "Query params: labId, budgetPeriod?",
+          "responseShape": "JSON list of prioritized procurement items",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budget",
+          "method": "GET",
+          "purpose": "Retrieve budget constraints and procurement policies.",
+          "requestShape": "Query params: labId",
+          "responseShape": "JSON budget and policy data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budget",
+          "method": "POST",
+          "purpose": "Create or update budget constraints and procurement policies.",
+          "requestShape": "JSON budget policy object",
+          "responseShape": "Success status and updated policy data",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Maintenance Alert Job",
+          "trigger": "Scheduled daily",
+          "purpose": "Analyze maintenance schedules and usage forecasts to generate alerts for upcoming or overdue maintenance."
+        },
+        {
+          "name": "Procurement Recommendation Job",
+          "trigger": "Scheduled weekly",
+          "purpose": "Evaluate equipment lifecycle and usage trends to update procurement recommendations and notify lab managers."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or missing usage or maintenance data leading to inaccurate forecasts",
+        "Conflicting usage logs or overlapping bookings causing utilization errors",
+        "Late or missed maintenance entries causing alert delays",
+        "Budget constraints changing mid-period requiring re-prioritization of procurement",
+        "User errors during manual data entry causing data integrity issues",
+        "Handling equipment decommissioning or unexpected failures outside scheduled maintenance",
+        "Data synchronization conflicts when integrating with external booking or sensor systems"
+      ],
+      "nonGoals": [
+        "Replacing human decision-making in procurement with fully automated decisions",
+        "Providing detailed equipment booking or reservation management",
+        "Managing lab personnel schedules or non-equipment resources",
+        "Handling financial transactions or purchase order processing",
+        "Supporting real-time sensor data ingestion in the initial release"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages (Dashboard, Equipment, Usage Logs, Maintenance, Procurement, Reports).",
+        "UI pages request data from respective API routes with appropriate query parameters (e.g., labId, equipmentId).",
+        "API routes validate input, enforce authorization, and query Prisma-managed data stores (Equipment, UsageLog, MaintenanceRecord, ProjectSchedule, BudgetPolicy).",
+        "API routes return JSON data to UI for rendering charts, lists, forms, and alerts.",
+        "Users submit forms for creating/updating equipment, usage logs, maintenance records, and budget policies; UI sends POST requests to APIs with JSON payloads.",
+        "APIs validate payloads, update data stores, and return success status with updated data.",
+        "Background jobs (Maintenance Alert Job, Procurement Recommendation Job) run on schedule, querying APIs and data stores to analyze data and generate alerts or recommendations.",
+        "Generated alerts and recommendations are stored or pushed to relevant APIs for UI consumption.",
+        "Future integrations (Lab Booking Systems, IoT Sensors, Financial Software) will push or sync data into APIs and data stores, requiring conflict resolution and validation.",
+        "Dashboard aggregates data from multiple APIs (equipment, usage, maintenance, forecast, procurement) to provide unified views and alerts."
+      ],
+      "validationRules": [
+        "Equipment: equipmentId, labId, type, and status are required; purchaseDate and warrantyExpiry must be valid dates if provided; status must be one of predefined enums (e.g., active, inactive, decommissioned).",
+        "UsageLog: usageId, equipmentId, startTime, and endTime required; startTime must be before endTime; overlapping usage logs for same equipment must be detected and flagged; optional userId and projectId must reference existing users/projects if provided.",
+        "MaintenanceRecord: maintenanceId, equipmentId, maintenanceDate, type, and status required; maintenanceDate must be a valid date; status must be from allowed values (e.g., scheduled, completed, overdue).",
+        "ProjectSchedule: projectId, labId, startDate, and endDate required; startDate must be before endDate; equipmentDemand if provided must be valid JSON mapping equipment types to quantities.",
+        "BudgetPolicy: policyId, labId, budgetPeriodStart, budgetPeriodEnd, and budgetLimit required; budgetPeriodStart must be before budgetPeriodEnd; procurementRules if provided must be valid JSON.",
+        "API request query parameters must be validated for correct types and formats (e.g., dates in ISO 8601).",
+        "All POST payloads must be validated for required fields, types, and business rules before database operations.",
+        "User input forms must enforce client-side validation matching API rules to minimize errors.",
+        "Bulk or CSV import (future) must include schema validation and error reporting."
+      ],
+      "errorHandling": [
+        "API routes return standardized error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 404 for not found, 500 for server errors).",
+        "Validation errors include detailed messages specifying invalid fields and reasons.",
+        "APIs handle missing or incomplete data gracefully by returning empty arrays or default values rather than errors.",
+        "Overlapping usage logs or conflicting data submissions return 409 Conflict with explanation.",
+        "Background jobs log errors and retry failed operations; critical failures trigger notifications to admins.",
+        "UI displays user-friendly error messages and guidance for corrective actions.",
+        "APIs enforce authorization and return 403 Forbidden if access is denied.",
+        "Integration endpoints (future) include conflict resolution strategies and error logging.",
+        "Fallbacks in UI for missing data or failed API calls include placeholders and retry options."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user sessions; enforce role-based access control to restrict data by lab and user permissions.",
+        "Validate and sanitize all inputs to prevent injection attacks.",
+        "Use HTTPS for all client-server communications.",
+        "Implement rate limiting on APIs to prevent abuse.",
+        "Secure background jobs with limited permissions and audit logging.",
+        "Sensitive data such as budget and procurement policies are accessible only to authorized roles.",
+        "Future integrations require secure authentication (e.g., OAuth, API keys) and encrypted data transfer.",
+        "Store sensitive data encrypted at rest where applicable.",
+        "Log access and changes for audit trails."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated lab manager accesses the /dashboard page",
+          "when": "The page loads",
+          "then": "The dashboard displays current equipment utilization charts, maintenance alerts, procurement priority lists, and downtime risk notifications without errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user submits a new equipment metadata form with all required fields correctly filled",
+          "when": "The form is submitted",
+          "then": "The equipment is created in the data store, and the user receives a success confirmation with updated equipment details"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user attempts to create a usage log with overlapping time range for the same equipment",
+          "when": "The usage log is submitted",
+          "then": "The API returns a 409 Conflict error indicating overlapping usage logs, and the UI displays an appropriate error message"
+        },
+        {
+          "id": "AT-004",
+          "given": "A maintenance record is created with a maintenanceDate in the future",
+          "when": "The record is saved",
+          "then": "The maintenance record is stored with status 'scheduled', and it appears in upcoming maintenance alerts"
+        },
+        {
+          "id": "AT-005",
+          "given": "The Maintenance Alert Job runs daily",
+          "when": "It detects overdue maintenance based on schedules and usage forecasts",
+          "then": "It generates alerts accessible via the maintenance API and visible on the dashboard"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user updates budget constraints via the procurement page",
+          "when": "The updated budget policy is submitted",
+          "then": "The budget policy is saved, and procurement recommendations adjust accordingly on next retrieval"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user attempts to access /equipment page or API",
+          "when": "The request is made",
+          "then": "The system returns a 401 Unauthorized error and redirects to login"
+        },
+        {
+          "id": "AT-008",
+          "given": "The dashboard API receives a request with missing labId parameter",
+          "when": "The request is processed",
+          "then": "The API returns data scoped to the user's accessible labs or an empty result if none"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user enters invalid data types in a maintenance record form (e.g., string in date field)",
+          "when": "The form is submitted",
+          "then": "Client-side validation prevents submission and displays error messages; if bypassed, API returns 400 with validation errors"
+        },
+        {
+          "id": "AT-010",
+          "given": "The Procurement Recommendation Job runs weekly",
+          "when": "It evaluates equipment lifecycle and usage trends",
+          "then": "It updates procurement recommendations and triggers notifications to lab managers"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database",
+        "Implement authentication and role-based authorization middleware",
+        "Develop Equipment Management API (GET, POST) with validation and error handling",
+        "Build Equipment Management UI page with forms and list views",
+        "Implement Usage Logs API (GET, POST) with conflict detection and aggregation",
+        "Develop Usage Logs UI page with entry forms and filters",
+        "Create Maintenance Records API (GET, POST) with scheduling and status management",
+        "Build Maintenance UI page with record forms and alert displays",
+        "Implement Budget & Procurement Policies API (GET, POST)",
+        "Develop Procurement Planning UI page with budget forms and recommendation lists",
+        "Create Forecasting APIs for usage and maintenance with simple heuristics",
+        "Build Dashboard UI integrating data from multiple APIs",
+        "Implement background jobs for Maintenance Alerts and Procurement Recommendations",
+        "Develop Reports UI and API endpoints for customizable exports",
+        "Add comprehensive validation and error handling across all APIs and UIs",
+        "Implement security measures (input sanitization, HTTPS enforcement, rate limiting)",
+        "Prepare for future integrations with external booking systems, IoT sensors, and financial software"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/equipment",
+          "/usage-logs",
+          "/maintenance",
+          "/procurement",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "/api/equipment.js",
+          "/api/usage.js",
+          "/api/maintenance.js",
+          "/api/forecast/usage.js",
+          "/api/forecast/maintenance.js",
+          "/api/procurement/recommendations.js",
+          "/api/budget.js"
+        ],
+        "prismaModelsToAdd": [
+          "Equipment",
+          "UsageLog",
+          "MaintenanceRecord",
+          "ProjectSchedule",
+          "BudgetPolicy"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints, clarifications, or additional details about the equipment management and forecasting system.",
+        "promptTemplate": "You are the Planner refining the requirements for the Academic Research Equipment Usage & Maintenance Forecast System. Given the current blueprint:\n\n{{BLUEPRINT}}\n\nPlease ask the user for any missing constraints, clarifications, or additional details needed to finalize the requirements.\n\nUser Input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages, data models, and API routes for the system based on refined requirements.",
+        "promptTemplate": "You are the Architect tasked with finalizing the UI pages and data models for the Academic Research Equipment Usage & Maintenance Forecast System. Using the idea and refined requirements:\n\nIdea: {{IDEA}}\nBlueprint: {{BLUEPRINT}}\nUser Input: {{USER_INPUT}}\n\nPlease produce a detailed plan of pages, data models, and API endpoints."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs and scaffolding for the UI pages and API endpoints as defined by the architect.",
+        "promptTemplate": "You are the Builder generating page and API stubs for the Academic Research Equipment Usage & Maintenance Forecast System based on the architect's blueprint:\n\n{{BLUEPRINT}}\n\nUser Input: {{USER_INPUT}}\n\nGenerate code scaffolds and stub implementations for pages and APIs."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate UI pages with API routes and database models, ensuring data flow and validation are properly connected.",
+        "promptTemplate": "You are the Integrator wiring the UI pages to API routes and database models for the Academic Research Equipment Usage & Maintenance Forecast System. Given the blueprint and scaffolds:\n\n{{BLUEPRINT}}\n\nUser Input: {{USER_INPUT}}\n\nProvide a detailed integration plan and sample code snippets to connect frontend, backend, and database layers."
+      }
+    ]
+  }
+}

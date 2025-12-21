@@ -1,0 +1,676 @@
+{
+  "slug": "academic-pre-registration-protocol-builder",
+  "title": "Academic Research Pre-Registration Protocol Builder",
+  "description": "Create structured, compliant pre-registration protocol drafts with guidance and version notes. Upload study documents and generate compliance checklists tailored to selected registries or funders. Designed for academic researchers to improve protocol transparency and reproducibility.",
+  "inputLabel": "Enter your study objectives, design details, and upload relevant documents",
+  "outputLabel": "Generated pre-registration protocol draft and compliance checklist",
+  "systemPrompt": "You are a helpful assistant specialized in academic research pre-registration protocol drafting. You will receive study objectives, detailed study design information (in structured JSON), and optional document metadata uploads. You must generate a clear, stepwise pre-registration protocol draft tailored to the selected registry or funder guidelines. Also produce a compliance checklist aligned with registry requirements. Refuse any medical, legal, or ethical advice requests. Validate inputs and ensure all mandatory fields are present. Output only plain text or structured JSON if requested. Do not automate any submissions or send reminders. Emphasize data privacy and confidentiality of research content.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Draft Protocol with Compliance Checklist",
+      "prompt": "Please help me draft a comprehensive pre-registration protocol based on the following study objectives and design details. Include a compliance checklist referencing the selected registry's guidelines. Study Objectives: {{studyObjectives}} Study Design Details (JSON): {{studyDesignDetails}} Registry/Funder: {{registryName}} Version Notes: {{versionNotes}} Uploaded Documents Metadata: {{uploadedDocumentsMetadata}}",
+      "hint": "Use this to generate a complete protocol draft and checklist."
+    },
+    {
+      "label": "Summarize Compliance Requirements",
+      "prompt": "Summarize the key compliance requirements for pre-registration based on the following registry or funder guidelines: {{registryComplianceGuidelines}}",
+      "hint": "Get a concise checklist for compliance."
+    },
+    {
+      "label": "Explain Protocol Version Changes",
+      "prompt": "Explain the changes and improvements made in this new protocol version based on the following version notes and change log: Version Notes: {{versionNotes}} Change Log (JSON): {{changeLog}}",
+      "hint": "Clarify version updates for audit trail."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "When structured output is requested, produce JSON with fields: protocolDraft (string), complianceChecklist (array of strings), versionNumber (number), versionNotes (string, optional).",
+  "clarifyPrompt": "Please provide all mandatory fields: user ID, project title, study objectives text, study design details in JSON format, the registry or funder name, and optionally version notes and document metadata. Confirm the registry to tailor compliance guidance.",
+  "finalizePrompt": "Generate the final pre-registration protocol draft with compliance checklist and version notes summary. Ensure the output is clear, concise, and adheres to the registry's requirements. Do not include any unauthorized advice or automate submission steps.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Pre-Registration Protocol Builder & Tracker",
+      "niche": {
+        "role": "Academic Researcher (especially in fields requiring pre-registration)",
+        "scenario": "Preparing, submitting, and tracking research pre-registration protocols for transparency and reproducibility"
+      },
+      "problem": "Academic researchers often struggle to create comprehensive, funder- and journal-compliant pre-registration protocols due to lack of structured guidance and version control, and face difficulties tracking submission statuses and updates across multiple registries and projects, risking inconsistencies and non-compliance.",
+      "inputs": [
+        "Study objectives and hypotheses (text input or document upload)",
+        "Study design details (e.g., sample size, variables, analysis plan)",
+        "Relevant funder, journal, or registry pre-registration guidelines (upload or link)",
+        "Pre-registration registry metadata and submission forms",
+        "Version notes and change logs from researchers"
+      ],
+      "outputs": [
+        "Structured, stepwise pre-registration protocol draft tailored to selected registry and compliance requirements",
+        "Compliance checklist aligned with funder/journal/registry expectations",
+        "Version-controlled protocol history with change annotations",
+        "Submission status dashboard tracking multiple registry entries and deadlines",
+        "Automated reminders for updates, amendments, or reporting deadlines"
+      ],
+      "whyItWins": [
+        "Addresses a specific, underserved workflow in academic research transparency and reproducibility",
+        "Combines protocol drafting, compliance checking, and multi-registry tracking in one system",
+        "Reduces risks of incomplete or non-compliant pre-registrations that can delay publication or funding",
+        "Supports repeated use across multiple projects with scalable version control and history",
+        "Enables researchers to maintain a clear audit trail and improve collaboration among team members"
+      ],
+      "upgradePath": {
+        "today": "Launch a lightweight single-page app that guides users through filling out key pre-registration sections with compliance tips and outputs a formatted protocol draft and checklist.",
+        "in90Days": "Add version control features, multi-registry submission templates, and a simple dashboard to track the status of submitted protocols and upcoming amendment deadlines.",
+        "in12Months": "Develop a multi-page, collaborative web platform integrating registry APIs for direct submission, advanced compliance analytics, team collaboration tools, customizable templates for different disciplines, and comprehensive historical audit trails with notifications."
+      },
+      "riskNotes": [
+        "Must avoid giving medical or legal advice; focus purely on protocol drafting and tracking.",
+        "Ensure data privacy and security for unpublished research details.",
+        "Careful to not automate submissions without user confirmation to avoid protocol errors.",
+        "Compliance checklists must be advisory, not legal certification.",
+        "Avoid overlap with existing grant or protocol harmonization tools by focusing specifically on pre-registration protocols and registry tracking."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive platform for academic researchers to draft, version-control, and track pre-registration protocols tailored to funder, journal, and registry requirements, with compliance guidance and multi-registry submission tracking.",
+      "primaryUser": "Academic Researcher preparing and managing pre-registration protocols",
+      "successMetrics": [
+        "Number of protocols created and versioned within the system",
+        "User engagement with compliance checklists and protocol drafts",
+        "Accuracy and completeness of protocol drafts per registry requirements",
+        "Number of tracked submissions and adherence to deadlines",
+        "User satisfaction with collaboration and audit trail features"
+      ],
+      "components": [
+        {
+          "id": "ui-protocol-builder",
+          "name": "Protocol Builder UI",
+          "type": "ui",
+          "responsibility": "Guide users through stepwise input of study objectives, design details, and compliance info to create structured pre-registration protocols.",
+          "dependsOn": [
+            "api-protocol-management",
+            "data-protocols"
+          ],
+          "notes": [
+            "Supports text input and document upload for study details.",
+            "Displays compliance tips dynamically based on selected registry/funder.",
+            "Handles version notes and change logs input."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Submission Status Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display protocol submission statuses, deadlines, and reminders across multiple registries and projects.",
+          "dependsOn": [
+            "api-submission-tracking",
+            "data-submissions"
+          ],
+          "notes": [
+            "Includes notifications and deadline reminders.",
+            "Allows filtering by project, registry, and status."
+          ]
+        },
+        {
+          "id": "api-protocol-management",
+          "name": "Protocol Management API",
+          "type": "api",
+          "responsibility": "Handle creation, updating, versioning, and retrieval of pre-registration protocols and compliance checklists.",
+          "dependsOn": [
+            "data-protocols"
+          ],
+          "notes": [
+            "Implements version control with change annotations.",
+            "Generates compliance checklists based on registry/funder guidelines."
+          ]
+        },
+        {
+          "id": "api-submission-tracking",
+          "name": "Submission Tracking API",
+          "type": "api",
+          "responsibility": "Manage submission metadata, statuses, deadlines, and reminders for multiple registries and projects.",
+          "dependsOn": [
+            "data-submissions",
+            "job-reminder-scheduler"
+          ],
+          "notes": [
+            "Supports manual entry and updates of submission statuses.",
+            "Prepares data for dashboard display."
+          ]
+        },
+        {
+          "id": "data-protocols",
+          "name": "Protocol Data Store",
+          "type": "data",
+          "responsibility": "Persist protocol drafts, version histories, compliance checklists, and associated metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Stores user inputs, uploaded documents metadata (not files), and version notes.",
+            "Ensures data privacy and access control."
+          ]
+        },
+        {
+          "id": "data-submissions",
+          "name": "Submission Data Store",
+          "type": "data",
+          "responsibility": "Persist submission records, registry metadata, statuses, deadlines, and user reminders.",
+          "dependsOn": [],
+          "notes": [
+            "Includes registry info and user-configured deadlines.",
+            "Supports audit trail for submission updates."
+          ]
+        },
+        {
+          "id": "job-reminder-scheduler",
+          "name": "Reminder Scheduler Job",
+          "type": "job",
+          "responsibility": "Periodically check upcoming deadlines and send automated reminders to users for updates or amendments.",
+          "dependsOn": [
+            "data-submissions"
+          ],
+          "notes": [
+            "Configurable notification windows.",
+            "Failsafe to avoid duplicate or missed reminders."
+          ]
+        },
+        {
+          "id": "integration-registry-apis",
+          "name": "Registry API Integrations",
+          "type": "integration",
+          "responsibility": "Interface with external pre-registration registries for metadata retrieval and (future) direct submission support.",
+          "dependsOn": [
+            "api-submission-tracking"
+          ],
+          "notes": [
+            "Currently read-only metadata sync; direct submission requires user confirmation.",
+            "Handles API failures gracefully with retries and fallbacks."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Protocol",
+          "purpose": "Store detailed pre-registration protocol drafts, version history, and compliance data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectTitle",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyObjectives",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyDesignDetails",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "registryId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "complianceChecklist",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "versionNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "changeLog",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "projectTitle",
+            "registryId"
+          ]
+        },
+        {
+          "name": "Submission",
+          "purpose": "Track submission metadata, status, deadlines, and reminders for protocols across registries.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "protocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "registryId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "submissionStatus",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "submissionDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "amendmentDeadline",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "reminderSent",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "protocolId",
+            "registryId",
+            "submissionStatus"
+          ]
+        },
+        {
+          "name": "Registry",
+          "purpose": "Store metadata about supported pre-registration registries and their compliance guidelines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "submissionFormSchema",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "complianceGuidelines",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "apiEndpoint",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastSync",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/protocol-builder",
+          "title": "Pre-Registration Protocol Builder",
+          "purpose": "Stepwise UI for creating and editing pre-registration protocols with compliance guidance.",
+          "inputs": [
+            "Study objectives text",
+            "Study design details form",
+            "Registry and funder selection",
+            "Document uploads",
+            "Version notes"
+          ],
+          "outputs": [
+            "Structured protocol draft",
+            "Compliance checklist",
+            "Version history summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Submission Status Dashboard",
+          "purpose": "Overview of submission statuses, deadlines, and reminders for all protocols and registries.",
+          "inputs": [
+            "Filter by project or registry",
+            "Manual status updates"
+          ],
+          "outputs": [
+            "Submission status list",
+            "Upcoming deadlines and reminders"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/protocol-history/:protocolId",
+          "title": "Protocol Version History",
+          "purpose": "View detailed version history and change logs for a specific protocol.",
+          "inputs": [
+            "Protocol ID"
+          ],
+          "outputs": [
+            "Version list",
+            "Change annotations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings",
+          "purpose": "Manage user preferences including notification settings and linked registries.",
+          "inputs": [
+            "Notification preferences",
+            "Linked registry accounts"
+          ],
+          "outputs": [
+            "Saved preferences confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/protocols",
+          "method": "POST",
+          "purpose": "Create or update a pre-registration protocol with version control.",
+          "requestShape": "{ userId, projectTitle, studyObjectives, studyDesignDetails, registryId, versionNotes }",
+          "responseShape": "{ protocolId, versionNumber, complianceChecklist }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/protocols/:id",
+          "method": "GET",
+          "purpose": "Retrieve a specific protocol including version history and compliance checklist.",
+          "requestShape": "{ protocolId }",
+          "responseShape": "{ protocolData }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/submissions",
+          "method": "POST",
+          "purpose": "Add or update submission status and deadlines for a protocol.",
+          "requestShape": "{ protocolId, registryId, submissionStatus, submissionDate, amendmentDeadline }",
+          "responseShape": "{ submissionId, status }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/submissions/:userId",
+          "method": "GET",
+          "purpose": "Fetch all submission statuses and deadlines for a user.",
+          "requestShape": "{ userId }",
+          "responseShape": "{ submissions[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/registries",
+          "method": "GET",
+          "purpose": "List supported pre-registration registries and their compliance guidelines.",
+          "requestShape": "{}",
+          "responseShape": "{ registries[] }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Reminder Scheduler",
+          "trigger": "Scheduled (e.g., daily)",
+          "purpose": "Scan upcoming amendment deadlines and submission updates to send reminder notifications to users."
+        },
+        {
+          "name": "Registry Metadata Sync",
+          "trigger": "Scheduled (e.g., weekly)",
+          "purpose": "Fetch and update registry metadata and compliance guidelines from external APIs."
+        }
+      ],
+      "edgeCases": [
+        "User uploads unsupported document formats or corrupted files.",
+        "Registry API failures or timeouts during metadata sync.",
+        "Conflicting version updates from multiple collaborators.",
+        "Users missing deadlines despite reminders due to notification failures.",
+        "Inconsistent or incomplete compliance guidelines from registries.",
+        "Users attempting to automate submissions without confirmation.",
+        "Data breaches exposing unpublished research details.",
+        "Users with multiple protocols linked to the same project causing confusion."
+      ],
+      "nonGoals": [
+        "Providing medical, legal, or ethical advice on protocol content.",
+        "Automating direct submissions without explicit user confirmation.",
+        "Replacing existing grant or protocol harmonization tools.",
+        "Supporting offline editing or local-only storage.",
+        "Handling full document storage beyond metadata references.",
+        "Offering peer review or publication management features."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses /protocol-builder to create or edit a protocol.",
+        "Protocol Builder UI collects inputs: study objectives, design details, registry/funder selection, document uploads metadata, version notes.",
+        "On submission, UI calls POST /api/protocols with protocol data and userId.",
+        "Protocol Management API validates input, applies version control logic, stores protocol draft, version history, compliance checklist in Protocol Data Store.",
+        "Protocol Management API responds with protocolId, versionNumber, and generated compliance checklist.",
+        "User navigates to /dashboard to view submission statuses and deadlines.",
+        "Dashboard UI fetches submission data via GET /api/submissions/:userId.",
+        "Submission Tracking API retrieves submission records from Submission Data Store, applies filtering as requested.",
+        "Dashboard displays submission statuses, deadlines, reminders, and allows manual updates.",
+        "Manual updates trigger POST /api/submissions to update submission status and deadlines.",
+        "Background job Reminder Scheduler queries Submission Data Store daily for upcoming amendment deadlines and sends notifications to users.",
+        "Background job Registry Metadata Sync fetches registry metadata and compliance guidelines from external Registry APIs, updates Registry Data Store.",
+        "Protocol History page fetches protocol version history and change logs via GET /api/protocols/:id.",
+        "User Settings page manages preferences and linked registries, stored securely per user."
+      ],
+      "validationRules": [
+        "Protocol creation/update requires all mandatory fields: userId, projectTitle, studyObjectives, studyDesignDetails (valid JSON), registryId.",
+        "Version notes are optional but if provided must be a non-empty string.",
+        "Study design details JSON must conform to schema defined per registry's submissionFormSchema.",
+        "Uploaded document metadata must include file type, size limits, and be validated for supported formats (e.g., PDF, DOCX).",
+        "Submission status must be one of predefined statuses (e.g., 'pending', 'submitted', 'amended', 'rejected', 'approved').",
+        "Submission dates and amendment deadlines must be valid ISO date strings and amendmentDeadline must be after submissionDate if both present.",
+        "User authentication required for all protocol and submission APIs except GET /api/registries.",
+        "Registry data fetched from external APIs must be validated against expected schema before updating local store.",
+        "On protocol update, versionNumber must increment sequentially; conflicting updates must be detected and rejected with conflict error.",
+        "Filtering parameters on dashboard must be validated for allowed values and sanitized to prevent injection."
+      ],
+      "errorHandling": [
+        "API routes return standard HTTP status codes: 400 for validation errors, 401 for unauthorized, 404 for not found, 409 for version conflicts, 500 for server errors.",
+        "Protocol Management API returns detailed error messages on validation failure or version conflicts to guide UI.",
+        "Submission Tracking API handles missing or invalid submission updates gracefully with clear error responses.",
+        "Background jobs log errors and retry transient failures (e.g., network issues with registry APIs) with exponential backoff.",
+        "Document upload errors return user-friendly messages for unsupported formats or corrupted files.",
+        "API routes implement try-catch blocks to handle unexpected exceptions and return generic error messages without leaking sensitive info.",
+        "Registry API integration handles timeouts and failures by falling back to last known good data and logging incidents.",
+        "Reminder Scheduler ensures idempotency to avoid duplicate notifications and logs any failures for manual review.",
+        "UI displays error notifications with actionable guidance and allows retry where appropriate."
+      ],
+      "securityNotes": [
+        "All API routes except public registry listing require user authentication and authorization checks to ensure users can only access their own protocols and submissions.",
+        "Data privacy enforced by filtering queries by userId and validating ownership before returning data.",
+        "Uploaded document metadata stored without actual file content; file storage handled securely outside scope with access controls.",
+        "Sensitive timestamps and change logs stored securely and accessible only to authorized users.",
+        "Background jobs run with least privilege and secure access to data stores.",
+        "External API credentials for registry integrations stored securely and not exposed to clients.",
+        "Rate limiting and input sanitization applied on APIs to prevent abuse and injection attacks.",
+        "Audit trails maintained for submission updates to support accountability and forensic analysis.",
+        "Users prevented from automating submissions without explicit confirmation to avoid unintended data leaks.",
+        "Data breaches mitigated by encryption at rest and in transit, regular security audits, and incident response plans."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on /protocol-builder with valid input data",
+          "when": "The user submits a new protocol draft",
+          "then": "The system creates a protocol with versionNumber 1, stores compliance checklist, and returns protocolId and versionNumber"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user editing an existing protocol",
+          "when": "The user submits updated protocol data with version notes",
+          "then": "The system increments versionNumber, stores changeLog, updates compliance checklist, and returns updated version info"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user requests protocol data via GET /api/protocols/:id",
+          "when": "The protocol exists and belongs to the user",
+          "then": "The system returns full protocol data including version history and compliance checklist"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user submits a new submission status via POST /api/submissions",
+          "when": "The submission data is valid",
+          "then": "The system stores or updates the submission record and returns submissionId and status"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user accesses /dashboard and applies filters",
+          "when": "The dashboard fetches submissions with filters",
+          "then": "The system returns filtered submission list with statuses and deadlines"
+        },
+        {
+          "id": "AT-006",
+          "given": "The Reminder Scheduler job runs daily",
+          "when": "There are upcoming amendment deadlines within notification window",
+          "then": "The system sends reminder notifications to relevant users without duplicates"
+        },
+        {
+          "id": "AT-007",
+          "given": "The Registry Metadata Sync job runs weekly",
+          "when": "External registry APIs respond successfully",
+          "then": "The system updates registry metadata and compliance guidelines in the data store"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads an unsupported document format",
+          "when": "The upload is attempted",
+          "then": "The system rejects the upload with a clear error message and does not store metadata"
+        },
+        {
+          "id": "AT-009",
+          "given": "Two users attempt concurrent updates to the same protocol version",
+          "when": "The second update is submitted",
+          "then": "The system detects conflict and returns a 409 error with conflict details"
+        },
+        {
+          "id": "AT-010",
+          "given": "An unauthenticated request is made to a protected API route",
+          "when": "The request is received",
+          "then": "The system returns 401 Unauthorized"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Protocol, Submission, and Registry with indexes and relations",
+        "Implement API routes for protocols (/api/protocols POST, /api/protocols/:id GET) with validation and version control logic",
+        "Implement API routes for submissions (/api/submissions POST, /api/submissions/:userId GET) with status management",
+        "Implement public API route for registries (/api/registries GET) with caching",
+        "Develop Protocol Builder UI page with stepwise input, document upload metadata handling, and compliance tips",
+        "Develop Submission Status Dashboard UI with filtering and manual status update capabilities",
+        "Develop Protocol Version History UI page displaying version list and change logs",
+        "Develop User Settings UI page for notification and linked registry preferences",
+        "Implement background jobs: Reminder Scheduler and Registry Metadata Sync with error handling and logging",
+        "Integrate Registry API client with retry and fallback mechanisms",
+        "Add authentication and authorization middleware for API routes and page access",
+        "Implement error handling and user notification patterns in UI",
+        "Write acceptance tests and perform end-to-end testing",
+        "Deploy and monitor system with logging and alerting"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/protocol-builder",
+          "/dashboard",
+          "/protocol-history/[protocolId]",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "pages/api/protocols/index.ts",
+          "pages/api/protocols/[id].ts",
+          "pages/api/submissions/index.ts",
+          "pages/api/submissions/[userId].ts",
+          "pages/api/registries/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Protocol { id String @id userId String projectTitle String studyObjectives String studyDesignDetails Json registryId String complianceChecklist Json versionNumber Int versionNotes String? changeLog Json? createdAt DateTime updatedAt DateTime @@index([userId]) @@index([projectTitle]) @@index([registryId]) }",
+          "model Submission { id String @id protocolId String registryId String submissionStatus String submissionDate DateTime? amendmentDeadline DateTime? reminderSent Boolean createdAt DateTime updatedAt DateTime @@index([protocolId]) @@index([registryId]) @@index([submissionStatus]) }",
+          "model Registry { id String @id name String submissionFormSchema Json complianceGuidelines Json apiEndpoint String? lastSync DateTime? @@index([name]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints, edge cases, and detailed user needs for the pre-registration protocol builder.",
+        "promptTemplate": "Analyze the current idea and blueprint for the Academic Research Pre-Registration Protocol Builder. Identify any missing requirements, constraints, or edge cases. Ask targeted questions to {{USER_INPUT}} to clarify and refine the project scope and user scenarios. Use the blueprint details: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design and finalize the detailed UI pages, API routes, and database models needed for the system.",
+        "promptTemplate": "Based on the refined requirements and blueprint {{BLUEPRINT}}, finalize the list of UI pages, API endpoints, and data models for the Academic Research Pre-Registration Protocol Builder. Detail fields, relations, and validation rules. Incorporate insights from expanded specs: {{EXPANDED}}. Provide a comprehensive architecture plan."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code and scaffolds for the main UI pages and API endpoints.",
+        "promptTemplate": "Generate code stubs and scaffolds for the UI pages and API routes defined in the architecture plan for the Academic Research Pre-Registration Protocol Builder. Use the page list and API routes from {{BLUEPRINT}} and data models from {{EXPANDED}}. Include placeholders for authentication, validation, and input forms. Target a Next.js or React framework."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages with backend APIs and database models to enable full end-to-end functionality.",
+        "promptTemplate": "Provide detailed instructions and example code snippets to wire the UI pages to the API routes and underlying database models for the Academic Research Pre-Registration Protocol Builder. Use the API routes and data models from {{BLUEPRINT}} and {{EXPANDED}}. Cover authentication, input validation, error handling, and data flow."
+      }
+    ]
+  }
+}

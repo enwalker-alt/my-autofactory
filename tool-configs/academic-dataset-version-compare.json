@@ -1,0 +1,661 @@
+{
+  "slug": "academic-dataset-version-compare",
+  "title": "Academic Dataset Version Comparison & Conflict Detection",
+  "description": "Upload two or three dataset versions (CSV, Excel, JSON) with optional metadata and change logs to generate detailed side-by-side comparison reports, conflict detection, and summary briefs tailored for academic research collaboration workflows.",
+  "inputLabel": "Upload dataset version files (2 or 3) and optional metadata/change logs",
+  "outputLabel": "Comparison report with conflict flags and update summaries",
+  "systemPrompt": "You are an expert assistant specialized in academic collaborative dataset version comparison and conflict detection. Your task is to analyze up to three uploaded dataset versions in CSV, Excel, or JSON format, along with optional metadata and change logs, and produce a detailed side-by-side comparison highlighting additions, deletions, and modifications per data field and record. Detect conflicts such as overlapping or inconsistent edits, and generate clear conflict flags requiring manual resolution. Summarize key updates in a structured communication brief suitable for multi-institutional research teams. Refuse any request that attempts to automate merges or modify datasets without explicit user instruction. Validate all inputs strictly for format, schema compliance, and data privacy. Output only plain text or structured JSON as requested. Do not provide any unauthorized access or handle user authentication. Enforce maximum input size to prevent overload. Always ensure safety and privacy in your responses.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Detailed Comparison Report",
+      "prompt": "Compare the uploaded dataset versions in detail, highlighting all additions, deletions, and modifications per field and record. Include conflict detection with clear flags and explanations.",
+      "hint": "Use this preset for a thorough dataset version diff with conflict analysis."
+    },
+    {
+      "label": "Summary Communication Brief",
+      "prompt": "Generate a structured communication brief summarizing key dataset updates, conflicts, and recommended discussion points for multi-institutional collaborators.",
+      "hint": "Use this preset to create team-ready update summaries."
+    },
+    {
+      "label": "Conflict Detection Focus",
+      "prompt": "Focus on detecting and explaining all conflicts and overlapping edits between the uploaded dataset versions, with guidance for manual resolution.",
+      "hint": "Use this preset to identify and clarify data conflicts."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output a JSON object with fields: comparisonReport (string), conflicts (array of conflict descriptions), summaryBrief (string).",
+  "clarifyPrompt": "Please upload two or three dataset versions in supported formats (CSV, Excel, JSON) along with optional metadata JSON and change logs (max 1000 chars). Confirm that you have permission to process these files and they do not contain sensitive data you do not want analyzed.",
+  "finalizePrompt": "Review the generated comparison and conflict report carefully. Confirm if you want to generate a communication brief summarizing these findings for your team or upload additional dataset versions for further analysis.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Collaborative Dataset Versioning & Change Impact Analyzer",
+      "niche": {
+        "role": "Academic research data managers and multi-institutional research collaborators",
+        "scenario": "Managing evolving shared research datasets with frequent updates, corrections, and additions from multiple collaborators across institutions"
+      },
+      "problem": "Collaborative academic research projects often require multiple researchers across institutions to iteratively update and refine shared datasets. Existing tools provide basic version control or harmonization but lack integrated, user-friendly change impact analysis, conflict detection, and communication facilitation tailored for academic workflows. This results in confusion about dataset changes, risks of data conflicts or overwrites, and inefficient coordination.",
+      "inputs": [
+        "Multiple dataset versions (CSV, Excel, JSON) uploaded by collaborators",
+        "Metadata describing contributors, timestamps, and dataset sections",
+        "Change logs or update notes optionally provided by collaborators",
+        "Project-specific data schema or harmonization rules (optional)"
+      ],
+      "outputs": [
+        "Detailed, side-by-side comparison reports highlighting additions, deletions, and modifications per data field and record",
+        "Impact analysis of changes on related datasets, analyses, or documentation",
+        "Conflict detection reports flagging inconsistent or overlapping edits",
+        "Interactive timeline view of dataset evolution with contributor annotations",
+        "Structured communication briefs summarizing key updates and conflicts for team discussion"
+      ],
+      "whyItWins": [
+        "Specialized focus on academic collaborative datasets with domain-aware change impact analysis",
+        "Combines version control with conflict detection and integrated communication tools in one system",
+        "Supports multiple common research data formats with semantic understanding beyond simple diffs",
+        "Enables better coordination and transparency among multi-institutional teams, reducing errors and rework",
+        "Designed to evolve from a lightweight comparison tool into a comprehensive multi-page collaboration and data lifecycle management platform"
+      ],
+      "upgradePath": {
+        "today": "Provide a lightweight web tool that accepts two or three dataset versions and metadata uploads to generate detailed change comparison and conflict detection reports with downloadable summaries.",
+        "in90Days": "Add interactive timeline visualization of dataset changes, support for partial dataset merges, contributor annotations, and automated impact alerts based on schema dependencies.",
+        "in12Months": "Develop a full multi-page collaborative web app with user accounts, fine-grained access controls, real-time multi-user editing awareness, integrated messaging, automated harmonization suggestions, and audit trail exports to support complex multi-institutional dataset lifecycle management."
+      },
+      "riskNotes": [
+        "Must ensure strict data privacy and secure handling of potentially sensitive academic datasets.",
+        "Avoid automating data merges without explicit user confirmation to prevent accidental data loss.",
+        "Complex change impact analysis may require domain-specific customization to ensure relevance.",
+        "System should not attempt to replace established version control systems but complement academic workflows with specialized features."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research data managers and multi-institutional collaborators to version, analyze, and communicate changes in shared datasets with domain-aware conflict detection, impact analysis, and interactive visualizations.",
+      "primaryUser": "Academic research data managers and multi-institutional research collaborators",
+      "successMetrics": [
+        "Reduction in data conflicts and overwrites reported by users",
+        "Increased frequency and clarity of dataset change communications",
+        "User adoption rate across multiple institutions in collaborative projects",
+        "Accuracy and usefulness of change impact analysis as rated by users",
+        "Engagement metrics on timeline visualizations and annotations"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard & Dataset Management UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for dataset uploads, version selection, viewing comparison reports, timelines, annotations, and communication briefs.",
+          "dependsOn": [
+            "api-dataset",
+            "api-comparison",
+            "api-user"
+          ],
+          "notes": [
+            "Supports multi-format dataset uploads (CSV, Excel, JSON).",
+            "Includes authentication and access control UI elements.",
+            "Evolves from simple report display to interactive multi-page app."
+          ]
+        },
+        {
+          "id": "api-dataset",
+          "name": "Dataset Versioning & Storage API",
+          "type": "api",
+          "responsibility": "Handle dataset uploads, store versions with metadata, enforce access controls, and provide dataset retrieval endpoints.",
+          "dependsOn": [
+            "data-datasets",
+            "data-users"
+          ],
+          "notes": [
+            "Stores datasets and metadata securely with encryption.",
+            "Supports partial dataset merges with user confirmation.",
+            "Validates dataset formats and schemas on upload."
+          ]
+        },
+        {
+          "id": "api-comparison",
+          "name": "Change Comparison & Impact Analysis API",
+          "type": "api",
+          "responsibility": "Perform detailed side-by-side dataset comparisons, detect conflicts, analyze change impacts, and generate structured reports.",
+          "dependsOn": [
+            "data-datasets",
+            "data-schemas"
+          ],
+          "notes": [
+            "Implements domain-aware semantic diffing beyond line-by-line comparison.",
+            "Supports optional project-specific schema or harmonization rules.",
+            "Generates data for timeline visualization and conflict reports."
+          ]
+        },
+        {
+          "id": "api-user",
+          "name": "User Authentication & Access Control API",
+          "type": "api",
+          "responsibility": "Manage user accounts, authentication, authorization, and permissions for dataset access and collaboration features.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Supports multi-institutional roles and fine-grained access controls.",
+            "Integrates with institutional single sign-on if applicable."
+          ]
+        },
+        {
+          "id": "data-datasets",
+          "name": "Dataset Versions & Metadata Store",
+          "type": "data",
+          "responsibility": "Persist uploaded datasets, version metadata, contributor info, change logs, and harmonization rules.",
+          "dependsOn": [],
+          "notes": [
+            "Stores datasets in raw and parsed forms for efficient comparison.",
+            "Indexes by project, dataset, version, and contributor.",
+            "Ensures data privacy and encryption at rest."
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User & Access Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, authentication credentials, roles, permissions, and session data.",
+          "dependsOn": [],
+          "notes": [
+            "Supports audit trails for user actions.",
+            "Encrypted sensitive fields."
+          ]
+        },
+        {
+          "id": "data-schemas",
+          "name": "Project Schema & Harmonization Rules Store",
+          "type": "data",
+          "responsibility": "Store optional project-specific data schemas and harmonization rules used for semantic comparison and impact analysis.",
+          "dependsOn": [],
+          "notes": [
+            "Allows versioning of schemas.",
+            "Supports extensible schema definitions for domain-specific customization."
+          ]
+        },
+        {
+          "id": "job-impact-alerts",
+          "name": "Automated Impact Alert Background Job",
+          "type": "job",
+          "responsibility": "Periodically analyze dataset changes against schemas and dependencies to generate automated impact alerts and notifications.",
+          "dependsOn": [
+            "data-datasets",
+            "data-schemas",
+            "api-comparison"
+          ],
+          "notes": [
+            "Runs asynchronously to avoid blocking user requests.",
+            "Triggers notifications to relevant collaborators."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "DatasetVersion",
+          "purpose": "Represents a specific version of a dataset including raw data, metadata, and contributor info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploaderUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileFormat",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rawData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "changeLog",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "uploadTimestamp"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Stores user account information and access permissions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "ProjectSchema",
+          "purpose": "Defines project-specific data schema and harmonization rules for semantic comparison.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "schemaDefinition",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "version"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the platform.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Project Dashboard",
+          "purpose": "Overview of projects, datasets, recent changes, and alerts.",
+          "inputs": [],
+          "outputs": [
+            "list of projects",
+            "recent dataset versions",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/datasets/upload",
+          "title": "Upload Dataset Version",
+          "purpose": "Allow users to upload new dataset versions with metadata and optional change logs.",
+          "inputs": [
+            "dataset file",
+            "metadata",
+            "change log"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/datasets/:datasetId/compare",
+          "title": "Dataset Comparison & Conflict Report",
+          "purpose": "Display detailed side-by-side comparison of selected dataset versions with conflict detection.",
+          "inputs": [
+            "selected dataset versions"
+          ],
+          "outputs": [
+            "comparison report",
+            "conflict flags",
+            "downloadable summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/timeline",
+          "title": "Dataset Evolution Timeline",
+          "purpose": "Interactive timeline visualization of dataset changes with contributor annotations.",
+          "inputs": [
+            "projectId"
+          ],
+          "outputs": [
+            "timeline visualization",
+            "annotations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/communication",
+          "title": "Communication Briefs & Discussion",
+          "purpose": "Structured briefs summarizing key updates and conflicts with messaging for team coordination.",
+          "inputs": [
+            "projectId",
+            "selected dataset versions"
+          ],
+          "outputs": [
+            "communication briefs",
+            "discussion threads"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/datasets/upload",
+          "method": "POST",
+          "purpose": "Upload a new dataset version with metadata.",
+          "requestShape": "{ projectId: string, file: file, metadata?: json, changeLog?: string }",
+          "responseShape": "{ datasetVersionId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets/:datasetId/versions",
+          "method": "GET",
+          "purpose": "List all versions of a dataset.",
+          "requestShape": "none",
+          "responseShape": "{ versions: DatasetVersion[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compare",
+          "method": "POST",
+          "purpose": "Generate detailed comparison and conflict report between dataset versions.",
+          "requestShape": "{ datasetVersionIds: string[] }",
+          "responseShape": "{ comparisonReport: json, conflicts: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/timeline/:projectId",
+          "method": "GET",
+          "purpose": "Retrieve dataset evolution timeline data with annotations.",
+          "requestShape": "none",
+          "responseShape": "{ timelineData: json, annotations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/communication/briefs",
+          "method": "POST",
+          "purpose": "Generate structured communication briefs summarizing updates and conflicts.",
+          "requestShape": "{ projectId: string, datasetVersionIds: string[] }",
+          "responseShape": "{ briefs: json }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ImpactAlertGenerator",
+          "trigger": "Scheduled (e.g., hourly) or on dataset version upload",
+          "purpose": "Analyze recent dataset changes against schemas and dependencies to generate impact alerts and notify collaborators."
+        }
+      ],
+      "edgeCases": [
+        "Conflicting edits made simultaneously by multiple collaborators requiring manual resolution.",
+        "Uploads of datasets with incompatible or corrupted formats needing graceful validation errors.",
+        "Partial or incomplete metadata or change logs provided by collaborators.",
+        "Large datasets causing performance bottlenecks in comparison and visualization.",
+        "Users with varying access permissions attempting unauthorized dataset views or edits.",
+        "Schema changes that invalidate previous harmonization rules or impact analysis.",
+        "Network interruptions during dataset upload or report generation.",
+        "Ensuring data privacy when datasets contain sensitive or unpublished research data."
+      ],
+      "nonGoals": [
+        "Replacing general-purpose version control systems like Git.",
+        "Automating dataset merges without explicit user confirmation.",
+        "Providing domain-specific data cleaning or harmonization beyond user-defined rules.",
+        "Real-time collaborative editing of dataset content in the initial phases.",
+        "Hosting or managing the underlying research data storage outside uploaded versions."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/auth/login POST endpoint.",
+        "On successful authentication, user receives token and user info; token stored client-side for subsequent requests.",
+        "Authenticated user accesses /dashboard; frontend calls /api/projects and /api/datasets/recent and /api/alerts endpoints to fetch projects, recent dataset versions, and alerts.",
+        "User navigates to /projects/:projectId/datasets/upload to upload a new dataset version; uploads file, metadata, and optional change log.",
+        "Frontend sends multipart/form-data POST request to /api/datasets/upload with projectId, file, metadata, and changeLog.",
+        "api-dataset validates file format and schema, stores raw and parsed dataset version with metadata and contributor info in data-datasets store.",
+        "User views dataset versions via /api/datasets/:datasetId/versions GET endpoint.",
+        "User selects dataset versions to compare on /projects/:projectId/datasets/:datasetId/compare page.",
+        "Frontend sends POST request to /api/compare with selected datasetVersionIds.",
+        "api-comparison performs semantic diff using project-specific schema/harmonization rules from data-schemas, generates comparison report and conflict flags.",
+        "User views timeline visualization on /projects/:projectId/timeline; frontend calls /api/timeline/:projectId GET endpoint to retrieve timeline data and annotations.",
+        "User accesses communication briefs and discussion on /projects/:projectId/communication; frontend posts to /api/communication/briefs with projectId and selected datasetVersionIds.",
+        "Background job ImpactAlertGenerator runs periodically or on dataset upload, fetching recent dataset changes and schemas, invoking api-comparison to analyze impacts, and generating alerts and notifications to collaborators."
+      ],
+      "validationRules": [
+        "Login: email must be valid email format; password must be non-empty string.",
+        "Dataset upload: file must be one of supported formats (CSV, Excel, JSON); file content must conform to expected schema or harmonization rules if available.",
+        "Metadata is optional but if provided must be valid JSON.",
+        "Change log is optional but if provided must be a string with max length limit (e.g., 1000 chars).",
+        "DatasetVersion creation: projectId and uploaderUserId must exist and be valid references.",
+        "DatasetVersion rawData must be parsable JSON representation of dataset content.",
+        "Comparison API: datasetVersionIds must be an array of at least two valid existing dataset version IDs belonging to the same project.",
+        "Timeline API: projectId must be a valid existing project ID.",
+        "Communication briefs API: projectId must be valid; datasetVersionIds must be valid and belong to the project.",
+        "User registration and authentication: email uniqueness enforced; password hashed securely.",
+        "Access control: user must have permission to access or modify datasets or projects involved."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Validation errors return 400 Bad Request with detailed field-specific messages.",
+        "File upload errors (unsupported format, corrupted file) return 422 Unprocessable Entity with explanation.",
+        "Access denied attempts return 403 Forbidden.",
+        "Not found resources return 404 Not Found.",
+        "Internal server errors return 500 with generic message; detailed errors logged server-side.",
+        "Background job failures logged with retry mechanisms and alerting to admins.",
+        "Network interruptions during upload or API calls handled with client-side retry prompts and server-side idempotency where applicable.",
+        "Conflict detection flags presented in comparison reports with instructions for manual resolution."
+      ],
+      "securityNotes": [
+        "All API endpoints except /api/auth/login require bearer token authentication.",
+        "Tokens must be JWTs with expiration and signed securely.",
+        "Sensitive fields like hashedPassword stored encrypted; never exposed in API responses.",
+        "Dataset rawData stored encrypted at rest.",
+        "Access control enforced at API layer based on user roles and project permissions.",
+        "Institutional single sign-on integration optional but recommended for user authentication.",
+        "Audit trails maintained for user actions on datasets and projects.",
+        "Rate limiting and input sanitization to prevent abuse and injection attacks.",
+        "File uploads scanned for malware and size-limited to prevent denial of service.",
+        "Communication briefs and discussion threads sanitized to prevent XSS."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and user info, and can access authenticated pages"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /projects/:projectId/datasets/upload",
+          "when": "They upload a valid CSV dataset file with optional metadata and change log",
+          "then": "The dataset version is stored, and user receives confirmation with datasetVersionId"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user requests dataset versions for a dataset",
+          "when": "They call /api/datasets/:datasetId/versions",
+          "then": "They receive a list of DatasetVersion objects sorted by uploadTimestamp"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user selects two dataset versions for comparison",
+          "when": "They POST datasetVersionIds to /api/compare",
+          "then": "They receive a detailed comparison report with conflict flags"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user accesses /projects/:projectId/timeline",
+          "when": "They fetch timeline data from /api/timeline/:projectId",
+          "then": "They receive timeline visualization data and contributor annotations"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user requests communication briefs for selected dataset versions",
+          "when": "They POST to /api/communication/briefs with projectId and datasetVersionIds",
+          "then": "They receive structured briefs summarizing updates and conflicts"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to upload a corrupted or unsupported dataset file",
+          "when": "They submit the upload request",
+          "then": "They receive a validation error indicating file format or corruption issues"
+        },
+        {
+          "id": "AT-008",
+          "given": "Multiple collaborators upload conflicting dataset versions simultaneously",
+          "when": "They attempt to compare versions",
+          "then": "Conflicts are detected and clearly flagged in the comparison report, requiring manual resolution"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user without permission tries to access a dataset version",
+          "when": "They call the dataset retrieval API",
+          "then": "They receive a 403 Forbidden error"
+        },
+        {
+          "id": "AT-010",
+          "given": "Background job ImpactAlertGenerator runs after dataset upload",
+          "when": "It analyzes changes and schemas",
+          "then": "Impact alerts are generated and notifications sent to relevant collaborators"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, DatasetVersion, ProjectSchema with indexes and encryption fields",
+        "Implement api-user authentication endpoints and user data store with secure password hashing and token issuance",
+        "Implement api-dataset endpoints for dataset upload, validation, storage, and retrieval with access control",
+        "Implement api-comparison endpoint with semantic diffing logic using project schemas and harmonization rules",
+        "Implement api-timeline and api-communication endpoints to provide timeline data and communication briefs",
+        "Build UI pages: /login with authentication flow; /dashboard showing projects and recent changes",
+        "Build dataset upload page with file input, metadata and change log forms, and upload confirmation",
+        "Build dataset comparison page with version selection and detailed conflict report display",
+        "Build timeline visualization page with interactive annotations",
+        "Build communication briefs and discussion page with messaging UI",
+        "Implement background job ImpactAlertGenerator to run asynchronously and send notifications",
+        "Add comprehensive validation and error handling across all APIs and UI forms",
+        "Add security features: token validation, access control, encryption, audit trails",
+        "Implement acceptance tests and edge case handling",
+        "Perform load testing and optimize performance for large datasets"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/projects/[projectId]/datasets/upload",
+          "/projects/[projectId]/datasets/[datasetId]/compare",
+          "/projects/[projectId]/timeline",
+          "/projects/[projectId]/communication"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/datasets/upload.ts",
+          "/api/datasets/[datasetId]/versions.ts",
+          "/api/compare.ts",
+          "/api/timeline/[projectId].ts",
+          "/api/communication/briefs.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { id String @id @default(uuid()) email String @unique hashedPassword String roles Json institution String? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }",
+          "model DatasetVersion { id String @id @default(uuid()) projectId String uploadTimestamp DateTime fileFormat String rawData Json metadata Json? changeLog String? uploaderUserId String @relation(fields: [uploaderUserId], references: [id]) @@index([projectId]) @@index([uploadTimestamp]) }",
+          "model ProjectSchema { id String @id @default(uuid()) projectId String schemaDefinition Json version String createdAt DateTime @default(now()) @@index([projectId]) @@index([version]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for missing constraints, edge cases, or clarifications needed to finalize the product requirements.",
+        "promptTemplate": "You are the Planner. Given the current blueprint and idea: {{BLUEPRINT}} and {{IDEA}}, identify any missing constraints, edge cases, or unclear requirements. Ask the user: {{USER_INPUT}} to clarify or add details."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the final set of pages, data models, and API endpoints needed to implement the product.",
+        "promptTemplate": "You are the Architect. Based on the refined requirements and blueprint: {{BLUEPRINT}}, finalize the pages, data models, and APIs needed. Provide detailed descriptions and relationships. Include edge cases and validation rules."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code and stubs for the web pages and UI components as per the architectural plan.",
+        "promptTemplate": "You are the Builder. Using the architecture plan: {{ARCHITECTURE}}, generate starter code and stubs for the web pages and UI components. Include input forms, file upload handlers, and output placeholders."
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages to backend APIs and database models, ensuring full data flow and security enforcement.",
+        "promptTemplate": "You are the Integrator. Based on the existing pages and APIs: {{PAGES}}, {{APIS}}, and data models: {{DATA_MODELS}}, wire the frontend to backend and database layers. Implement authentication, authorization, validation, and error handling."
+      }
+    ]
+  }
+}

@@ -1,0 +1,779 @@
+{
+  "slug": "academic-grant-report-compliance-tracker",
+  "title": "Academic Research Grant Compliance & Submission Tracker",
+  "description": "Upload multi-institutional grant award documents and funder reporting guidelines to generate customized compliance checklists and track submission deadlines for academic research grants. Manage draft and submitted report versions with basic compliance insights.",
+  "inputLabel": "Paste or summarize your grant award documents, funder reporting guidelines, or upload relevant files (PDF, DOCX)",
+  "outputLabel": "Generated funder-specific compliance checklist and upcoming submission deadlines summary",
+  "systemPrompt": "You are an expert academic research grant compliance assistant. Given uploaded grant award documents, funder-specific reporting guidelines, and draft report files, generate a consolidated, funder-specific reporting compliance checklist highlighting required sections and upcoming submission deadlines. Validate input formats and refuse any requests that attempt to solicit legal or financial advice or violate data privacy. Only accept PDF or DOCX file inputs or textual summaries. Output a clear, structured checklist of compliance items with due dates. If inputs are incomplete or unsupported, request clarifications. Do not generate or fill report content. Maintain strict data privacy and security awareness.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Compliance Checklist Summary",
+      "prompt": "Generate a consolidated funder-specific compliance checklist from the uploaded documents and guidelines, listing all required reporting sections and their submission deadlines.",
+      "hint": "Use this to get a clear compliance checklist overview."
+    },
+    {
+      "label": "Upcoming Deadlines Alert",
+      "prompt": "Analyze the provided documents and identify upcoming submission deadlines within the next 60 days, highlighting any risks of missing them.",
+      "hint": "Use this to focus on imminent deadlines."
+    },
+    {
+      "label": "Gap Identification Prompt",
+      "prompt": "Compare uploaded draft report contents with funder reporting requirements and identify any missing or incomplete sections.",
+      "hint": "Use this to find gaps in draft submissions."
+    },
+    {
+      "label": "Collaborator Task Summary",
+      "prompt": "Based on the uploaded documents and project details, generate a brief task assignment summary for collaborators highlighting pending actions and responsible roles.",
+      "hint": "Use this for collaborator communication briefs."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output a JSON object containing 'complianceChecklist' (array of items with 'section', 'dueDate', 'status'), and 'alerts' (array of upcoming deadlines with 'description' and 'dueDate').",
+  "clarifyPrompt": "Please provide the grant award documents, funder-specific reporting guidelines, or draft report files in PDF or DOCX format, or paste textual summaries. Specify the project and funder context if available.",
+  "finalizePrompt": "Review the generated compliance checklist and deadlines summary. Confirm completeness or specify additional documents or details to refine the output.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Funder Report Compliance & Submission Tracker",
+      "niche": {
+        "role": "Academic research grant administrators and finance managers",
+        "scenario": "Managing and tracking complex multi-institutional funder-specific reporting requirements and submission deadlines throughout the grant lifecycle"
+      },
+      "problem": "Academic research grant administrators struggle to keep track of diverse funder-specific reporting requirements, document versions, compliance criteria, and submission deadlines across multiple institutions and projects. This leads to missed deadlines, incomplete reports, and increased administrative overhead.",
+      "inputs": [
+        "Multi-institutional grant award documents and contracts (PDF/DOCX)",
+        "Funder-specific reporting guidelines and templates",
+        "Uploaded draft and submitted report files",
+        "Project milestone and expenditure data",
+        "Collaborator roles and contact information"
+      ],
+      "outputs": [
+        "Consolidated, funder-specific reporting compliance checklists",
+        "Automated reminders and alerts for upcoming submission deadlines",
+        "Version-controlled report submission tracking dashboards",
+        "Gap analyses highlighting missing or incomplete report sections",
+        "Collaborator-specific task assignments and communication briefs"
+      ],
+      "whyItWins": [
+        "Fills a critical gap in longitudinal management of grant reporting compliance beyond initial proposal and budgeting",
+        "Automates tracking of multiple, complex funder rules and evolving requirements in one unified system",
+        "Reduces risk of non-compliance penalties and funding delays by proactive deadline and content monitoring",
+        "Supports multi-institution collaboration with clear role assignments and document version control",
+        "Lays foundation for integration with grant financial and project management systems"
+      ],
+      "upgradePath": {
+        "today": "A single-page app that allows manual upload of award docs and funder guidelines to generate customized reporting checklists and basic deadline alerts",
+        "in90Days": "Add document version control, multi-user collaboration features, and automated gap analysis for uploaded draft reports versus guidelines",
+        "in12Months": "Develop a full multi-page system integrating with institutional financial systems, enabling dynamic milestone-based reporting workflows, automated data extraction, real-time compliance dashboards, and communication pipelines for cross-institution teams"
+      },
+      "riskNotes": [
+        "Must ensure secure handling of sensitive grant award and financial documents",
+        "Avoid providing legal or financial advice; focus on compliance tracking and reminders",
+        "Require careful user access controls for multi-institutional collaboration",
+        "Must manage data privacy and funder confidentiality requirements properly"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive multi-institutional academic research grant reporting compliance and submission tracker that manages funder-specific requirements, deadlines, document versions, and collaboration to reduce administrative overhead and compliance risks.",
+      "primaryUser": "Academic research grant administrators and finance managers",
+      "successMetrics": [
+        "Reduction in missed submission deadlines",
+        "Increase in on-time and complete report submissions",
+        "User adoption rate across multiple institutions",
+        "Decrease in administrative time spent tracking compliance",
+        "Number of active collaborative projects managed in the system"
+      ],
+      "components": [
+        {
+          "id": "ui_dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide an overview of grant projects, upcoming deadlines, compliance status, and alerts; display version-controlled report tracking and gap analyses.",
+          "dependsOn": [
+            "api_projects",
+            "api_reports",
+            "api_alerts"
+          ],
+          "notes": [
+            "Needs to handle large datasets efficiently",
+            "Must support role-based views and permissions",
+            "Should provide visual indicators for compliance risks"
+          ]
+        },
+        {
+          "id": "ui_reportSubmission",
+          "name": "Report Submission & Version Control UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload, view, and manage draft and submitted report documents with version control and collaborator annotations.",
+          "dependsOn": [
+            "api_reports",
+            "api_users",
+            "data_documents"
+          ],
+          "notes": [
+            "Support multiple file formats (PDF, DOCX)",
+            "Track document versions with metadata",
+            "Enable collaborator comments and task assignments"
+          ]
+        },
+        {
+          "id": "api_projects",
+          "name": "Project & Grant Management API",
+          "type": "api",
+          "responsibility": "Manage multi-institutional grant projects, collaborator roles, contact info, milestones, and expenditure data.",
+          "dependsOn": [
+            "data_projects",
+            "data_users"
+          ],
+          "notes": [
+            "Enforce access controls per institution and role",
+            "Support CRUD operations with audit trails"
+          ]
+        },
+        {
+          "id": "api_reports",
+          "name": "Reporting Compliance & Document API",
+          "type": "api",
+          "responsibility": "Handle funder-specific reporting guidelines, compliance checklists, gap analyses, and report document versioning.",
+          "dependsOn": [
+            "data_reports",
+            "data_guidelines",
+            "data_documents"
+          ],
+          "notes": [
+            "Implement automated gap analysis comparing drafts to guidelines",
+            "Maintain compliance checklist state and history"
+          ]
+        },
+        {
+          "id": "api_alerts",
+          "name": "Alerts & Notifications API",
+          "type": "api",
+          "responsibility": "Generate and deliver automated reminders and alerts for upcoming deadlines, compliance risks, and collaborator tasks.",
+          "dependsOn": [
+            "data_alerts",
+            "data_users"
+          ],
+          "notes": [
+            "Support multiple notification channels (email, in-app)",
+            "Allow user preferences for alert frequency and types"
+          ]
+        },
+        {
+          "id": "data_storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store all persistent data including projects, users, funder guidelines, documents, report versions, compliance checklists, milestones, expenditures, alerts, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure encryption at rest and in transit",
+            "Implement strict access controls and data partitioning per institution"
+          ]
+        },
+        {
+          "id": "job_deadlineMonitoring",
+          "name": "Deadline Monitoring Background Job",
+          "type": "job",
+          "responsibility": "Periodically scan projects and reporting deadlines to trigger alerts and update compliance statuses.",
+          "dependsOn": [
+            "data_projects",
+            "data_alerts",
+            "api_alerts"
+          ],
+          "notes": [
+            "Must handle timezone differences and deadline changes gracefully",
+            "Retry logic for transient failures"
+          ]
+        },
+        {
+          "id": "integration_financialSystems",
+          "name": "Financial Systems Integration",
+          "type": "integration",
+          "responsibility": "Integrate with institutional financial and project management systems to import milestone and expenditure data dynamically.",
+          "dependsOn": [
+            "api_projects",
+            "data_projects"
+          ],
+          "notes": [
+            "Support secure API connections with OAuth or similar",
+            "Handle data mapping and synchronization conflicts"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represent system users including administrators, finance managers, and collaborators with roles and access controls.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notificationPreferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "institutionId"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Store multi-institutional grant projects with metadata, collaborators, milestones, and expenditures.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "collaborators",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "milestones",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "expenditures",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderId",
+            "institutions"
+          ]
+        },
+        {
+          "name": "FunderGuideline",
+          "purpose": "Contain funder-specific reporting requirements, templates, and compliance criteria.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportingRequirements",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "templates",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName"
+          ]
+        },
+        {
+          "name": "ReportDocument",
+          "purpose": "Track uploaded draft and submitted report files with versioning and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "annotations",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "version"
+          ]
+        },
+        {
+          "name": "ComplianceChecklist",
+          "purpose": "Represent funder-specific checklist items and their completion status per report version.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportDocumentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "checklistItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "reportDocumentId"
+          ]
+        },
+        {
+          "name": "Alert",
+          "purpose": "Store alerts and reminders generated for deadlines, compliance gaps, and collaborator tasks.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alertType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "read",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "projectId",
+            "alertType"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Grant Compliance Dashboard",
+          "purpose": "Provide users with an overview of projects, deadlines, compliance statuses, and alerts.",
+          "inputs": [],
+          "outputs": [
+            "Project summaries",
+            "Upcoming deadlines",
+            "Compliance risk indicators",
+            "Alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/reports",
+          "title": "Report Submission & Version Control",
+          "purpose": "Enable users to upload, view, and manage report documents with version control and annotations.",
+          "inputs": [
+            "Report files",
+            "Annotations",
+            "Version metadata"
+          ],
+          "outputs": [
+            "Report versions list",
+            "Compliance checklist",
+            "Gap analysis results"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/collaborators",
+          "title": "Collaborator Management",
+          "purpose": "Manage collaborator roles, contact info, and task assignments within a project.",
+          "inputs": [
+            "Collaborator details",
+            "Task assignments"
+          ],
+          "outputs": [
+            "Collaborator list",
+            "Task status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings/notifications",
+          "title": "Notification Preferences",
+          "purpose": "Allow users to configure alert preferences and notification channels.",
+          "inputs": [
+            "Notification settings"
+          ],
+          "outputs": [
+            "Current preferences"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of projects accessible to the authenticated user.",
+          "requestShape": "None",
+          "responseShape": "Array of Project objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new multi-institutional project with collaborators and milestones.",
+          "requestShape": "Project creation payload",
+          "responseShape": "Created Project object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:projectId",
+          "method": "GET",
+          "purpose": "Get all report documents and compliance checklists for a project.",
+          "requestShape": "None",
+          "responseShape": "Array of ReportDocument and ComplianceChecklist objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:projectId/upload",
+          "method": "POST",
+          "purpose": "Upload a new report document version for a project.",
+          "requestShape": "Multipart form-data with file and metadata",
+          "responseShape": "Uploaded ReportDocument object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts",
+          "method": "GET",
+          "purpose": "Retrieve alerts and reminders for the authenticated user.",
+          "requestShape": "None",
+          "responseShape": "Array of Alert objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaborators/:projectId",
+          "method": "POST",
+          "purpose": "Add or update collaborator roles and contact info for a project.",
+          "requestShape": "Collaborator details payload",
+          "responseShape": "Updated collaborator list",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Deadline Monitoring Job",
+          "trigger": "Scheduled (e.g., hourly or daily)",
+          "purpose": "Scan projects for upcoming deadlines and compliance gaps to generate alerts and update statuses."
+        },
+        {
+          "name": "Gap Analysis Job",
+          "trigger": "On report upload or update",
+          "purpose": "Automatically compare uploaded draft reports against funder guidelines to identify missing or incomplete sections."
+        }
+      ],
+      "edgeCases": [
+        "Handling conflicting or overlapping deadlines across multiple funders and institutions",
+        "Managing access revocation or role changes mid-project",
+        "Dealing with incomplete or inconsistent uploaded documents",
+        "Supporting offline or intermittent connectivity for collaborators",
+        "Handling late updates to funder guidelines after reports have been drafted",
+        "Gracefully managing failed document uploads or corrupted files",
+        "Ensuring data segregation and privacy for multi-institutional users",
+        "Handling timezone differences in deadline calculations and alerts"
+      ],
+      "nonGoals": [
+        "Providing legal or financial advice regarding grant compliance",
+        "Replacing institutional financial or project management systems",
+        "Automated content generation or report writing",
+        "Handling grant proposal submission processes",
+        "Supporting funders directly in the system (focus is on administrators and managers)",
+        "Real-time collaborative editing of report documents"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses the Dashboard page (/dashboard). The Dashboard UI fetches project summaries, upcoming deadlines, compliance risk indicators, and alerts via GET /api/projects and GET /api/alerts.",
+        "On the Dashboard, role-based views filter projects and alerts based on user role and institution.",
+        "User navigates to a specific project's report submission page (/projects/:projectId/reports). The UI calls GET /api/reports/:projectId to retrieve all report documents and compliance checklists.",
+        "User uploads a new report document version via POST /api/reports/:projectId/upload with multipart form-data including file and metadata.",
+        "Upon successful upload, the Gap Analysis Job triggers automatically to compare the new report version against funder guidelines, updating compliance checklist state.",
+        "User manages collaborators on /projects/:projectId/collaborators, sending collaborator details via POST /api/collaborators/:projectId to update roles and contact info.",
+        "Users configure notification preferences on /settings/notifications, updating their User.notificationPreferences via an authenticated API endpoint (to be implemented).",
+        "The Deadline Monitoring Job runs periodically (hourly/daily), scanning projects and deadlines, generating alerts in data_alerts, and invoking API alerts to notify users via email and in-app notifications.",
+        "Financial Systems Integration imports milestone and expenditure data securely via OAuth, updating project data through API projects endpoints or direct data storage updates.",
+        "All data storage operations enforce encryption at rest and in transit, with strict access controls and data partitioning per institution to ensure privacy and security."
+      ],
+      "validationRules": [
+        "User authentication and authorization must be verified on all API routes; users can only access projects and data associated with their institution and roles.",
+        "Project creation payload must include required fields: title (non-empty string), institutions (non-empty array), collaborators (non-empty array), funderId (valid existing funder), and optional milestones and expenditures as valid JSON arrays.",
+        "Report document uploads must validate file type (allow only PDF and DOCX), file size limits, and required metadata: projectId, version (incremental number), uploadedBy (authenticated user ID), uploadDate (current date), status (draft or submitted).",
+        "Annotations on reports must be valid JSON objects with defined schema for comments and task assignments.",
+        "Compliance checklist items must conform to funder-specific reporting requirements and be updated atomically with report document versions.",
+        "Alert creation must include valid projectId, userId, alertType (predefined types), message (non-empty string), optional dueDate (valid future date), and read status (boolean).",
+        "Collaborator details payload must include userId, role (from predefined roles), contact info (valid email), and task assignments with valid statuses.",
+        "Notification preferences must be validated for allowed channels (email, in-app), frequency options, and user consent.",
+        "Background jobs must handle timezone-aware date comparisons and retry transient failures with exponential backoff.",
+        "All inputs must be sanitized to prevent injection attacks and ensure data integrity."
+      ],
+      "errorHandling": [
+        "API routes return standard HTTP status codes: 401 Unauthorized for unauthenticated access, 403 Forbidden for unauthorized actions, 400 Bad Request for validation errors, 404 Not Found for missing resources, and 500 Internal Server Error for unexpected failures.",
+        "File upload errors (e.g., unsupported format, corrupted file) return 400 with descriptive error messages; partial uploads are rolled back.",
+        "Background jobs log errors with context and retry transient failures; persistent failures trigger alerts to system administrators.",
+        "Client-side UI displays user-friendly error messages and validation feedback, with retry options where applicable.",
+        "API responses include error codes and messages in a consistent JSON structure to facilitate client handling.",
+        "Access revocation or role changes mid-project invalidate existing sessions or tokens where applicable and notify affected users.",
+        "Data conflicts during synchronization with financial systems trigger conflict resolution workflows and user notifications.",
+        "Timeouts and network failures in integrations and API calls are handled gracefully with retries and fallback UI states.",
+        "Sensitive error details are logged securely but not exposed to end users to prevent information leakage."
+      ],
+      "securityNotes": [
+        "Enforce authentication on all API routes using secure tokens (e.g., JWT or session cookies) with HTTPS only.",
+        "Implement role-based access control (RBAC) and institution-based data partitioning to restrict data visibility and operations.",
+        "Encrypt all sensitive data at rest using database encryption features and in transit via TLS/HTTPS.",
+        "Validate and sanitize all user inputs to prevent injection attacks (SQL, XSS).",
+        "Use secure file storage for uploaded documents with access controls and virus scanning.",
+        "Implement audit trails for all CRUD operations on projects, reports, collaborators, and alerts.",
+        "Secure background jobs and integrations with appropriate credentials and secrets management.",
+        "Limit API rate and implement throttling to prevent abuse.",
+        "Ensure notification preferences respect user privacy and consent regulations.",
+        "Regularly update dependencies and perform security audits."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user with access to multiple projects",
+          "when": "The user visits the /dashboard page",
+          "then": "The user sees a list of project summaries, upcoming deadlines, compliance risk indicators, and alerts filtered by their institution and role"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user on the report submission page for a specific project",
+          "when": "The user uploads a valid PDF report document with required metadata",
+          "then": "The document is saved with a new version, and a gap analysis is automatically performed and displayed"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user attempts to upload a report document with an unsupported file type",
+          "when": "The upload is submitted",
+          "then": "The API rejects the upload with a 400 error and a descriptive message, and the UI displays the error"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user updates collaborator roles on a project",
+          "when": "The collaborator details are submitted via the API",
+          "then": "The collaborator list is updated accordingly, and unauthorized users cannot perform this action"
+        },
+        {
+          "id": "AT-005",
+          "given": "The Deadline Monitoring Job runs",
+          "when": "There are upcoming deadlines within the configured alert window",
+          "then": "Alerts are generated and delivered to users respecting their notification preferences"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user with notification preferences configured",
+          "when": "An alert is generated for the user",
+          "then": "The user receives notifications via their selected channels and frequencies"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user tries to access a project from another institution without permission",
+          "when": "The user requests project data via the API",
+          "then": "The API returns 403 Forbidden and no data is exposed"
+        },
+        {
+          "id": "AT-008",
+          "given": "A report document upload fails due to network interruption",
+          "when": "The user retries the upload",
+          "then": "The upload succeeds without creating duplicate versions or corrupt data"
+        },
+        {
+          "id": "AT-009",
+          "given": "Financial Systems Integration imports milestone data with conflicts",
+          "when": "Conflicting data is detected during synchronization",
+          "then": "The system logs the conflict and notifies administrators for resolution"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user changes their role mid-project",
+          "when": "The role change is saved",
+          "then": "Access rights are updated immediately, and the user is notified of changes"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models for User, Project, FunderGuideline, ReportDocument, ComplianceChecklist, Alert",
+        "Implement authentication and role-based access control middleware",
+        "Develop API routes for projects (GET, POST), reports (GET, POST upload), alerts (GET), collaborators (POST)",
+        "Implement file upload handling with validation and storage for report documents",
+        "Build Dashboard UI with data fetching from projects and alerts APIs, including role-based filtering and visual compliance indicators",
+        "Build Report Submission UI with version control, file upload, annotations, and compliance checklist display",
+        "Build Collaborator Management UI with collaborator list and task assignment features",
+        "Build Notification Preferences UI and API endpoint for updating user preferences",
+        "Implement background jobs: Deadline Monitoring Job and Gap Analysis Job with retry and error handling",
+        "Integrate Financial Systems with secure OAuth connections and data synchronization logic",
+        "Implement alert generation and notification delivery respecting user preferences",
+        "Add audit logging and encryption features",
+        "Test edge cases including access revocation, conflicting deadlines, offline support, and timezone handling",
+        "Perform security audits and performance optimizations"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/projects/[projectId]/reports",
+          "/projects/[projectId]/collaborators",
+          "/settings/notifications"
+        ],
+        "apiFilesToCreate": [
+          "api/projects/index.ts",
+          "api/reports/[projectId]/index.ts",
+          "api/reports/[projectId]/upload.ts",
+          "api/alerts/index.ts",
+          "api/collaborators/[projectId].ts",
+          "api/users/notificationPreferences.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "FunderGuideline",
+          "ReportDocument",
+          "ComplianceChecklist",
+          "Alert"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to gather missing constraints or details about grant types, institutions, or compliance needs.",
+        "promptTemplate": "Given the current blueprint and idea: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nWhat additional constraints or specific funder scenarios should be considered to refine the compliance tracking requirements?"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Detail final page designs, data models, and API interactions needed for the grant compliance system.",
+        "promptTemplate": "Using the blueprint: {{BLUEPRINT}}\nAnd expanded specs: {{EXPANDED}}\nDraft a final detailed page list and data model definitions for the multi-institutional grant reporting compliance tracker."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial UI page stubs with placeholders for future detailed implementation.",
+        "promptTemplate": "Given the finalized page list: {{PAGES}}\nGenerate React/Next.js page stubs with minimal UI and placeholder text for the grant compliance tracker."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to API endpoints and the database models with authentication and access control.",
+        "promptTemplate": "Given the page stubs and API routes: {{API_ROUTES}}\nAnd data models: {{DATA_MODELS}}\nOutline the integration steps to connect UI, API, and DB layers securely with role-based access controls."
+      }
+    ]
+  }
+}

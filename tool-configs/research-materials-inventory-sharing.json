@@ -1,0 +1,801 @@
+{
+  "slug": "research-materials-inventory-sharing",
+  "title": "Academic Research Materials Inventory & Sharing Coordinator",
+  "description": "A lightweight single-page app for academic research lab managers to input and track consumable experimental materials inventory and usage logs, with manual sharing coordination notes and exportable basic reports to reduce waste and improve collaboration.",
+  "inputLabel": "Enter inventory item or usage log details (JSON or structured text). Optionally upload batch import file (CSV/JSON).",
+  "outputLabel": "Inventory and usage log update result, validation feedback, and sharing coordination notes.",
+  "systemPrompt": "You are a secure assistant for managing academic research consumable materials inventory and usage logs. Only accept input strictly related to adding or updating inventory items, logging usage events, or noting sharing coordination. Validate required fields: name, batchNumber, quantity (non-negative), unit for inventory; inventoryItemId, quantityUsed (positive), usedByUserId, timestamp for usage logs. Reject any request with disallowed content or unsafe sharing instructions. Refuse requests without required authentication context. Output clear validation errors or confirmation messages in plain text. Do not generate or infer sensitive collaborator contact info. Do not perform automated sharing approvals or transfers. Keep all outputs safe and compliant with institutional data privacy and safety rules.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Add Inventory Item",
+      "prompt": "Add a new inventory item with full metadata including name, batch number, quantity, unit, optional expiry date, supplier, storage conditions, and project associations. Validate all fields strictly.",
+      "hint": "Provide JSON or structured text with all required inventory item fields."
+    },
+    {
+      "label": "Log Usage Event",
+      "prompt": "Log a usage event specifying inventoryItemId, quantity used, usedByUserId, timestamp, and optional notes. Validate quantity is positive and timestamp is valid and not future.",
+      "hint": "Provide JSON or structured text with usage log details."
+    },
+    {
+      "label": "Batch Import Inventory Items",
+      "prompt": "Upload a CSV or JSON file with multiple inventory item records. Validate each record individually, report errors precisely, and confirm successful saves.",
+      "hint": "Use file upload for batch import. Provide a brief summary in text input."
+    },
+    {
+      "label": "Add Sharing Coordination Note",
+      "prompt": "Add a manual note about sharing coordination, including involved labs, inventory item, quantities, and status. Do not automate sharing approvals.",
+      "hint": "Provide structured text describing the sharing note."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Outputs are plain text confirmation or validation error messages. For structured output, JSON objects with 'status', 'errors', and 'details' fields may be returned.",
+  "clarifyPrompt": "Please provide complete and accurate details for inventory items or usage logs. Required fields must be included and valid. If you want to batch import, upload a properly formatted CSV or JSON file.",
+  "finalizePrompt": "Confirm your submission details for inventory or usage log updates. Ensure no disallowed content or unsafe sharing instructions are included.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Experimental Materials Inventory & Sharing Coordinator",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Managing and sharing consumable experimental materials across multiple research projects and collaborating labs"
+      },
+      "problem": "Lab managers struggle to track detailed inventories of consumable experimental materials (e.g., reagents, chemicals, biological samples) across multiple projects and collaborators, leading to redundant purchases, expiry waste, and inefficient sharing coordination. Existing tools focus on equipment or data but do not address consumable material lifecycle, usage tracking, or inter-lab sharing logistics.",
+      "inputs": [
+        "Inventory item metadata (name, batch number, supplier, storage conditions)",
+        "Quantity and unit measures",
+        "Expiry dates and stability notes",
+        "Project or experiment associations",
+        "Usage logs (consumption events)",
+        "Collaborator lab contact and sharing agreements",
+        "Material request and transfer records"
+      ],
+      "outputs": [
+        "Up-to-date consumable inventory dashboards with expiry risk alerts",
+        "Automated inter-project and inter-lab sharing coordination plans",
+        "Usage and consumption trend reports to optimize ordering schedules",
+        "Compliance checklists for storage and handling per material type",
+        "Exportable transfer documentation and communication briefs"
+      ],
+      "whyItWins": [
+        "Addresses a critical but underserved niche managing consumable research materials rather than equipment or data",
+        "Supports repeated, ongoing workflows with dynamic inventory and sharing needs",
+        "Facilitates collaboration between labs by coordinating material sharing logistics",
+        "Reduces waste and redundant spending by visibility into shared inventories and expiry risks",
+        "Provides a foundation for compliance and safety monitoring related to materials handling and storage"
+      ],
+      "upgradePath": {
+        "today": "Lightweight single-page app to input inventory and usage logs with manual sharing coordination notes and exportable basic reports",
+        "in90Days": "Add automated sharing request workflows, expiry risk alerts, and usage trend visualizations; support multi-user collaboration with role-based access",
+        "in12Months": "Full multi-page system integrating procurement, compliance documentation, inter-lab communication modules, predictive reorder scheduling, and mobile app support for in-lab scanning and updating"
+      },
+      "riskNotes": [
+        "Must ensure sensitive material sharing complies with institutional and legal safety regulations",
+        "Data privacy and access controls are critical when sharing inventory info across labs or institutions",
+        "Requires careful validation of user input to avoid inventory inaccuracies",
+        "System should not encourage unsafe sharing or handling practices; include compliance guidance",
+        "Integration with existing institutional procurement or safety systems may be needed for scalability"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive system for academic research lab managers to track, manage, and coordinate consumable experimental materials inventory across multiple projects and collaborating labs, reducing waste and improving sharing efficiency while ensuring compliance and safety.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Reduction in redundant material purchases across projects and labs",
+        "Decrease in expired or wasted consumable materials",
+        "Increased successful inter-lab material sharing events",
+        "User adoption rate among collaborating labs",
+        "Accuracy and timeliness of inventory and usage logs",
+        "Compliance adherence rate for material storage and handling"
+      ],
+      "components": [
+        {
+          "id": "ui-inventory-management",
+          "name": "Inventory Management UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for inputting, viewing, and editing consumable material inventory, usage logs, and expiry alerts.",
+          "dependsOn": [
+            "api-inventory",
+            "api-usage",
+            "api-alerts"
+          ],
+          "notes": [
+            "Supports manual data entry and batch imports.",
+            "Displays real-time expiry risk alerts and inventory summaries."
+          ]
+        },
+        {
+          "id": "ui-sharing-coordination",
+          "name": "Sharing Coordination UI",
+          "type": "ui",
+          "responsibility": "Enable users to create, track, and manage material sharing requests and transfers between projects and labs.",
+          "dependsOn": [
+            "api-sharing",
+            "api-collaborators"
+          ],
+          "notes": [
+            "Includes communication briefs and exportable transfer documentation.",
+            "Supports role-based access controls for multi-user collaboration."
+          ]
+        },
+        {
+          "id": "api-inventory",
+          "name": "Inventory API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for inventory items, batch numbers, storage conditions, and expiry data.",
+          "dependsOn": [
+            "data-inventory",
+            "data-projects"
+          ],
+          "notes": [
+            "Validates input to prevent inaccuracies.",
+            "Supports queries for expiry risk and inventory status."
+          ]
+        },
+        {
+          "id": "api-usage",
+          "name": "Usage Logging API",
+          "type": "api",
+          "responsibility": "Manage consumption event records linked to inventory items and projects.",
+          "dependsOn": [
+            "data-usage",
+            "data-inventory"
+          ],
+          "notes": [
+            "Tracks quantity used with timestamps and user attribution.",
+            "Feeds data for usage trend reports and reorder predictions."
+          ]
+        },
+        {
+          "id": "api-sharing",
+          "name": "Sharing Workflow API",
+          "type": "api",
+          "responsibility": "Coordinate sharing requests, approvals, transfer records, and collaborator lab contacts.",
+          "dependsOn": [
+            "data-sharing",
+            "data-collaborators"
+          ],
+          "notes": [
+            "Enforces sharing agreements and compliance checks.",
+            "Automates notifications and document generation for transfers."
+          ]
+        },
+        {
+          "id": "data-inventory",
+          "name": "Inventory Data Store",
+          "type": "data",
+          "responsibility": "Persist detailed inventory items, batch info, storage conditions, expiry dates, and project associations.",
+          "dependsOn": [],
+          "notes": [
+            "Must support indexing on expiry dates and batch numbers for alerts.",
+            "Data integrity critical to avoid inventory errors."
+          ]
+        },
+        {
+          "id": "data-usage",
+          "name": "Usage Logs Data Store",
+          "type": "data",
+          "responsibility": "Persist consumption events linked to inventory and projects.",
+          "dependsOn": [],
+          "notes": [
+            "Supports trend analysis and reorder scheduling."
+          ]
+        },
+        {
+          "id": "data-sharing",
+          "name": "Sharing Records Data Store",
+          "type": "data",
+          "responsibility": "Persist material sharing requests, approvals, transfer records, and compliance checklists.",
+          "dependsOn": [],
+          "notes": [
+            "Must enforce access controls and data privacy."
+          ]
+        },
+        {
+          "id": "data-collaborators",
+          "name": "Collaborator Labs Data Store",
+          "type": "data",
+          "responsibility": "Store collaborator lab contacts, sharing agreements, and roles.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multi-user collaboration and permissioning."
+          ]
+        },
+        {
+          "id": "job-expiry-alerts",
+          "name": "Expiry Risk Alert Job",
+          "type": "job",
+          "responsibility": "Periodically scan inventory for materials nearing expiry and generate alerts for users.",
+          "dependsOn": [
+            "data-inventory",
+            "api-alerts"
+          ],
+          "notes": [
+            "Triggers notifications and dashboard updates."
+          ]
+        },
+        {
+          "id": "job-usage-trends",
+          "name": "Usage Trend Analysis Job",
+          "type": "job",
+          "responsibility": "Aggregate usage logs to produce consumption trend reports and reorder recommendations.",
+          "dependsOn": [
+            "data-usage",
+            "api-reports"
+          ],
+          "notes": [
+            "Supports optimization of ordering schedules."
+          ]
+        },
+        {
+          "id": "integration-procurement",
+          "name": "Procurement & Compliance Integration",
+          "type": "integration",
+          "responsibility": "Integrate with institutional procurement and safety systems for compliance validation and order automation.",
+          "dependsOn": [
+            "api-inventory",
+            "api-sharing"
+          ],
+          "notes": [
+            "Planned for advanced upgrade phases.",
+            "Must handle data privacy and regulatory constraints."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "InventoryItem",
+          "purpose": "Represents a consumable experimental material batch with detailed metadata and storage info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "batchNumber",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "supplier",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "storageConditions",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "quantity",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "unit",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "expiryDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "stabilityNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "projectIds",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "batchNumber",
+            "expiryDate",
+            "name"
+          ]
+        },
+        {
+          "name": "UsageLog",
+          "purpose": "Records consumption events of inventory items linked to projects and users.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "inventoryItemId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "quantityUsed",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "usedByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "inventoryItemId",
+            "projectId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "SharingRequest",
+          "purpose": "Tracks requests and approvals for material sharing between labs and projects.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "requestingLabId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "providingLabId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "inventoryItemId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "quantityRequested",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "requestedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "approvedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "transferDocumentation",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "requestingLabId",
+            "providingLabId",
+            "status"
+          ]
+        },
+        {
+          "name": "CollaboratorLab",
+          "purpose": "Stores information about collaborating labs, contacts, and sharing agreements.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "labName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contactInfo",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "sharingAgreements",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "labName"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/inventory",
+          "title": "Inventory Dashboard",
+          "purpose": "View and manage consumable inventory, including expiry alerts and stock levels.",
+          "inputs": [
+            "search filters",
+            "inventory item form inputs"
+          ],
+          "outputs": [
+            "inventory list",
+            "expiry risk alerts",
+            "stock summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/usage-logs",
+          "title": "Usage Logs",
+          "purpose": "Log and review consumption events of materials by project and user.",
+          "inputs": [
+            "usage log form inputs",
+            "filters by project/date"
+          ],
+          "outputs": [
+            "usage event list",
+            "usage trends summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/sharing",
+          "title": "Sharing Coordination",
+          "purpose": "Manage sharing requests, approvals, and transfer documentation between labs.",
+          "inputs": [
+            "sharing request forms",
+            "approval actions"
+          ],
+          "outputs": [
+            "sharing request status",
+            "transfer documents"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reports & Compliance",
+          "purpose": "Generate usage trends, reorder recommendations, and compliance checklists.",
+          "inputs": [
+            "report filters",
+            "date ranges"
+          ],
+          "outputs": [
+            "trend charts",
+            "compliance checklists",
+            "exportable reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/collaborators",
+          "title": "Collaborator Labs",
+          "purpose": "Manage collaborating labs, contacts, and sharing agreements.",
+          "inputs": [
+            "lab info forms",
+            "agreement uploads"
+          ],
+          "outputs": [
+            "lab list",
+            "agreement summaries"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/inventory",
+          "method": "GET",
+          "purpose": "Retrieve inventory items with optional filters.",
+          "requestShape": "query parameters for filters",
+          "responseShape": "list of InventoryItem objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/inventory",
+          "method": "POST",
+          "purpose": "Create or update an inventory item.",
+          "requestShape": "InventoryItem object",
+          "responseShape": "InventoryItem object with id",
+          "auth": "user"
+        },
+        {
+          "route": "/api/usage",
+          "method": "POST",
+          "purpose": "Log a usage event for an inventory item.",
+          "requestShape": "UsageLog object without id",
+          "responseShape": "UsageLog object with id",
+          "auth": "user"
+        },
+        {
+          "route": "/api/sharing/requests",
+          "method": "GET",
+          "purpose": "List sharing requests filtered by lab or status.",
+          "requestShape": "query parameters",
+          "responseShape": "list of SharingRequest objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/sharing/requests",
+          "method": "POST",
+          "purpose": "Create a new sharing request.",
+          "requestShape": "SharingRequest object without id and status",
+          "responseShape": "SharingRequest object with id and status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaborators",
+          "method": "GET",
+          "purpose": "Retrieve list of collaborator labs.",
+          "requestShape": "none",
+          "responseShape": "list of CollaboratorLab objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaborators",
+          "method": "POST",
+          "purpose": "Add or update collaborator lab information.",
+          "requestShape": "CollaboratorLab object",
+          "responseShape": "CollaboratorLab object with id",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Expiry Risk Alert Job",
+          "trigger": "Scheduled daily",
+          "purpose": "Scan inventory for items nearing expiry and generate user alerts and dashboard notifications."
+        },
+        {
+          "name": "Usage Trend Analysis Job",
+          "trigger": "Scheduled weekly",
+          "purpose": "Aggregate usage logs to produce consumption trends and reorder recommendations."
+        }
+      ],
+      "edgeCases": [
+        "Handling inventory items with missing or uncertain expiry dates.",
+        "Conflicting sharing requests for limited quantity inventory items.",
+        "User input errors leading to negative inventory quantities.",
+        "Sharing requests denied due to compliance or safety restrictions.",
+        "Simultaneous updates to inventory by multiple users causing race conditions.",
+        "Collaborator labs with incomplete or outdated contact/sharing agreement info.",
+        "Data privacy breaches when sharing sensitive inventory info across institutions."
+      ],
+      "nonGoals": [
+        "Managing non-consumable lab equipment inventory.",
+        "Full procurement order placement and payment processing.",
+        "Real-time inventory scanning hardware integration (planned for future).",
+        "In-depth chemical hazard analysis or safety training modules.",
+        "Mobile app support in initial versions (planned for long-term)."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /inventory page and submits search filters or inventory item form inputs.",
+        "Inventory Management UI calls GET /api/inventory with filters to retrieve inventory items and expiry alerts.",
+        "Inventory Management UI displays inventory list, expiry risk alerts, and stock summaries.",
+        "User submits new or updated inventory item via Inventory Management UI.",
+        "Inventory Management UI calls POST /api/inventory with InventoryItem data; API validates and persists data in data-inventory store.",
+        "User accesses /usage-logs page and submits usage log form inputs or filters.",
+        "Usage Logging UI calls POST /api/usage to log consumption events; API validates and stores UsageLog in data-usage.",
+        "Usage Logging UI calls GET /api/usage (if implemented) to retrieve usage events and trends for display.",
+        "User accesses /sharing page to create or approve sharing requests.",
+        "Sharing Coordination UI calls GET /api/sharing/requests to list sharing requests filtered by lab or status.",
+        "User submits new sharing request via Sharing Coordination UI.",
+        "Sharing Coordination UI calls POST /api/sharing/requests; API validates, enforces compliance, stores in data-sharing, and triggers notifications.",
+        "User accesses /collaborators page to view or update collaborator labs.",
+        "Collaborator Labs UI calls GET /api/collaborators to retrieve list.",
+        "User submits new or updated collaborator lab info.",
+        "Collaborator Labs UI calls POST /api/collaborators; API validates and persists data in data-collaborators.",
+        "Scheduled Expiry Risk Alert Job scans data-inventory daily for items nearing expiry, generates alerts via api-alerts, and updates dashboards.",
+        "Scheduled Usage Trend Analysis Job aggregates data-usage weekly, generates reports via api-reports for /reports page.",
+        "Integration with procurement and compliance systems planned for future phases, interacting with api-inventory and api-sharing."
+      ],
+      "validationRules": [
+        "InventoryItem POST: 'name', 'batchNumber', 'quantity', and 'unit' are required fields and must be non-empty.",
+        "'quantity' must be a non-negative number; reject negative or zero values unless explicitly allowed for adjustments.",
+        "'expiryDate' if provided must be a valid future date or null; warn if near expiry.",
+        "'projectIds' must be a valid JSON array of existing project IDs if provided.",
+        "UsageLog POST: 'inventoryItemId', 'quantityUsed', 'usedByUserId', and 'timestamp' are required.",
+        "'quantityUsed' must be positive and not exceed available inventory quantity.",
+        "'timestamp' must be a valid date not in the future.",
+        "SharingRequest POST: 'requestingLabId', 'providingLabId', 'inventoryItemId', 'quantityRequested', and 'requestedAt' required.",
+        "'quantityRequested' must be positive and not exceed available inventory quantity in providing lab.",
+        "'status' is set by system; not accepted from client on creation.",
+        "CollaboratorLab POST: 'labName' and 'contactInfo' required; 'contactInfo' must be valid JSON with expected fields (e.g., email, phone).",
+        "All POST requests require authenticated user context; validate user permissions for the action.",
+        "Batch imports in Inventory Management UI must validate each record individually and provide detailed error feedback.",
+        "Prevent race conditions by implementing optimistic concurrency controls or transaction locking on inventory updates."
+      ],
+      "errorHandling": [
+        "API endpoints return HTTP 400 with detailed validation error messages for invalid inputs.",
+        "Return HTTP 401 Unauthorized if user is not authenticated.",
+        "Return HTTP 403 Forbidden if user lacks permission for requested operation.",
+        "Return HTTP 404 Not Found if requested resource (e.g., inventory item, sharing request) does not exist.",
+        "Return HTTP 409 Conflict for race condition conflicts or conflicting sharing requests exceeding inventory.",
+        "Log all errors server-side with context for debugging and audit trails.",
+        "UI displays user-friendly error messages with guidance for correction.",
+        "Batch import errors report line numbers and specific field issues.",
+        "Background jobs log failures and retry according to configured policies; alert admins on repeated failures.",
+        "APIs enforce input sanitization to prevent injection attacks and malformed data."
+      ],
+      "securityNotes": [
+        "All API routes require authentication; use session or token-based auth consistent with Next.js best practices.",
+        "Implement role-based access control (RBAC) for multi-user collaboration, restricting sensitive actions (e.g., approvals, sharing).",
+        "Sanitize and validate all inputs to prevent injection and cross-site scripting (XSS).",
+        "Encrypt sensitive data at rest and in transit, especially collaborator contact info and sharing agreements.",
+        "Ensure compliance with institutional data privacy policies when sharing inventory data across labs.",
+        "Audit logs for critical actions such as inventory updates, sharing approvals, and collaborator changes.",
+        "Limit data exposure in API responses based on user roles and lab affiliations.",
+        "Background jobs accessing data stores must authenticate and authorize their operations.",
+        "Plan for GDPR or equivalent compliance if applicable to collaborator data.",
+        "Use secure storage for API keys and integration credentials for procurement systems."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT1",
+          "given": "An authenticated lab manager on the /inventory page",
+          "when": "They submit a new inventory item with valid data",
+          "then": "The item is saved, appears in the inventory list, and no validation errors are shown"
+        },
+        {
+          "id": "AT2",
+          "given": "An authenticated user attempts to create an inventory item with negative quantity",
+          "when": "They submit the form",
+          "then": "The API rejects the request with a validation error and the UI displays an appropriate error message"
+        },
+        {
+          "id": "AT3",
+          "given": "An authenticated user views the /usage-logs page",
+          "when": "They log a usage event with valid inventory item and quantity",
+          "then": "The usage event is recorded and visible in the usage event list"
+        },
+        {
+          "id": "AT4",
+          "given": "Multiple users attempt simultaneous updates to the same inventory item",
+          "when": "They submit conflicting quantity changes",
+          "then": "The system prevents race conditions by rejecting conflicting updates and informs users accordingly"
+        },
+        {
+          "id": "AT5",
+          "given": "An authenticated user creates a sharing request exceeding available inventory quantity",
+          "when": "They submit the sharing request",
+          "then": "The API rejects the request with a conflict error and the UI displays a relevant message"
+        },
+        {
+          "id": "AT6",
+          "given": "The expiry alert job runs daily",
+          "when": "Inventory items are near expiry",
+          "then": "Expiry alerts are generated and visible on the inventory dashboard"
+        },
+        {
+          "id": "AT7",
+          "given": "An authenticated user accesses the /collaborators page",
+          "when": "They add a new collaborator lab with complete contact info",
+          "then": "The collaborator lab is saved and appears in the lab list"
+        },
+        {
+          "id": "AT8",
+          "given": "An unauthenticated user attempts to access any protected API route",
+          "when": "They make a request",
+          "then": "The API returns HTTP 401 Unauthorized"
+        },
+        {
+          "id": "AT9",
+          "given": "A user attempts to approve a sharing request without proper role",
+          "when": "They submit the approval action",
+          "then": "The API returns HTTP 403 Forbidden and the action is not performed"
+        },
+        {
+          "id": "AT10",
+          "given": "Batch import of inventory items with some invalid records",
+          "when": "The import is processed",
+          "then": "Valid records are saved; invalid records are rejected with detailed error reports"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for InventoryItem, UsageLog, SharingRequest, CollaboratorLab with indexes.",
+        "Implement API routes: /api/inventory (GET, POST), /api/usage (POST), /api/sharing/requests (GET, POST), /api/collaborators (GET, POST) with validation and auth.",
+        "Develop Inventory Management UI at /inventory with search, forms, and expiry alerts consuming inventory and alerts APIs.",
+        "Develop Usage Logs UI at /usage-logs with usage event logging and trends display.",
+        "Develop Sharing Coordination UI at /sharing with request creation, approval workflows, and document exports.",
+        "Develop Collaborator Labs UI at /collaborators with lab info management.",
+        "Implement background jobs: Expiry Risk Alert Job (daily), Usage Trend Analysis Job (weekly) with integration to APIs.",
+        "Implement role-based access control and authentication middleware across APIs and pages.",
+        "Add batch import support in Inventory Management UI with validation and error reporting.",
+        "Implement error handling and user-friendly messages in UI and API.",
+        "Perform security hardening: input sanitization, data encryption, audit logging.",
+        "Develop /reports page integrating usage trends and compliance checklists from aggregated data.",
+        "Plan and prepare for integration with procurement and compliance systems in future phases."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/inventory",
+          "/usage-logs",
+          "/sharing",
+          "/reports",
+          "/collaborators"
+        ],
+        "apiFilesToCreate": [
+          "pages/api/inventory/index.ts",
+          "pages/api/usage/index.ts",
+          "pages/api/sharing/requests.ts",
+          "pages/api/collaborators/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "InventoryItem",
+          "UsageLog",
+          "SharingRequest",
+          "CollaboratorLab"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to identify missing constraints or details in the current blueprint and idea spec.",
+        "promptTemplate": "Given the current blueprint: {{BLUEPRINT}} and idea spec: {{IDEA}}, what additional constraints, edge cases, or workflow details should we clarify? User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and confirm all necessary pages, data models, and their relationships for the system.",
+        "promptTemplate": "Based on the idea: {{IDEA}} and blueprint: {{BLUEPRINT}}, finalize the pages and data models needed. Include field details, indexes, and user roles. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs or templates for the frontend pages based on the finalized architecture.",
+        "promptTemplate": "Given the finalized pages and data models: {{BLUEPRINT.pages}}, generate starter code templates or stubs for each page’s UI components. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement API routes and connect frontend pages with backend data stores and business logic.",
+        "promptTemplate": "Using the finalized data models and API routes: {{BLUEPRINT.apiRoutes}}, implement the backend APIs and connect frontend pages to them. Ensure validation, auth, and error handling. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

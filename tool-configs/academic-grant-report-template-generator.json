@@ -1,0 +1,878 @@
+{
+  "slug": "academic-grant-report-template-generator",
+  "title": "Academic Research Grant Funder Reporting Template Generator",
+  "description": "Generate customized, funder-specific interim or final report drafts from master project data and uploaded funder guidelines, with coverage summaries to ensure compliance and reduce manual adaptation effort.",
+  "inputLabel": "Enter your master project progress data and milestones here (text or JSON). Optionally upload funder guideline documents or provide URLs below.",
+  "outputLabel": "Generated funder-specific report draft with alignment summary highlighting coverage and gaps.",
+  "systemPrompt": "You are a specialized assistant helping an academic research grant writer generate tailored interim or final project report drafts for specific funding agencies. You must only accept input consisting of master project progress data (text or structured JSON) and optionally uploaded funder guideline documents or URLs. Validate that input does not contain any disallowed content. Generate a clear, sectioned draft report tailored to the funder's guidelines, highlighting coverage and any gaps. Output must be in plain text. Do not produce confidential or personal data. Refuse requests that appear unsafe or off-topic. Maintain a professional, clear, and concise tone appropriate for academic grant reporting. Enforce input validation and respond with error messages if inputs are invalid or missing required fields.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Interim Report Draft",
+      "prompt": "Generate an interim progress report draft based on the provided master project data and uploaded funder guidelines. Highlight coverage of all required sections and note any missing elements.",
+      "hint": "Use this preset to create progress reports during the project lifecycle."
+    },
+    {
+      "label": "Final Report Draft",
+      "prompt": "Generate a final project report draft tailored to the funder's requirements using the master data and guideline documents provided. Include a summary of compliance and any gaps.",
+      "hint": "Use this preset for end-of-project reporting."
+    },
+    {
+      "label": "Coverage Summary Only",
+      "prompt": "Analyze the master project data against the uploaded funder guidelines and produce a section-by-section alignment summary indicating which requirements are fully covered, partially covered, or missing.",
+      "hint": "Use this to review compliance without generating full report text."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output a JSON object with fields: 'reportDraft' (string), 'alignmentSummary' (object with coverage and gaps arrays).",
+  "clarifyPrompt": "Please provide the master project data and upload or link to the funder reporting guidelines. Specify the report type (e.g., interim or final).",
+  "finalizePrompt": "Confirm all inputs are correct and generate the tailored report draft with alignment summary now.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Funder Reporting Template Generator",
+      "niche": {
+        "role": "Academic Research Grant Writer",
+        "scenario": "Preparing customized, funder-specific interim and final project reports for multiple concurrent funding agencies"
+      },
+      "problem": "Academic grant writers spend excessive time manually adapting progress reports to meet diverse, complex funder-specific reporting requirements, formats, and narrative styles, risking non-compliance, delays, and increased administrative burden.",
+      "inputs": [
+        "Master project progress data and milestones (text, tables, and metrics)",
+        "Individual funder reporting guidelines and templates (uploaded documents or URLs)",
+        "Previous submitted report drafts or summaries",
+        "Optional collaborator input notes or comments"
+      ],
+      "outputs": [
+        "Tailored, funder-compliant interim or final report drafts in structured formats (DOCX, PDF)",
+        "Section-by-section alignment summary highlighting coverage and gaps relative to funder requirements",
+        "Automated reminders for upcoming reporting deadlines and required data updates",
+        "Collaborator task assignment lists for input or review contributions"
+      ],
+      "whyItWins": [
+        "Significantly reduces manual effort and errors in generating multiple funder-specific reports from a single data source",
+        "Improves compliance by ensuring each funder's unique requirements are clearly addressed",
+        "Supports collaborative input and versioning for multi-institutional grant teams",
+        "Provides actionable insights with alignment summaries and deadline alerts to avoid submission risks",
+        "Lays groundwork for integration with grant management and finance tools for end-to-end reporting workflows"
+      ],
+      "upgradePath": {
+        "today": "A lightweight tool where grant writers upload master progress data and funder guidelines to generate a basic tailored report draft with coverage summary.",
+        "in90Days": "Add collaborative user roles, support multi-file guideline parsing, customizable report templates, and deadline tracking with notifications.",
+        "in12Months": "Evolve into a full multi-page grant reporting management system integrating data feeds from project management, finance, and publication repositories, with automated compliance validation, multi-format export, and submission tracking dashboards."
+      },
+      "riskNotes": [
+        "Ensure secure handling of potentially sensitive project data and funder documents.",
+        "Avoid over-automation that might produce inaccurate compliance assurances; keep human review central.",
+        "Carefully manage version control and collaborator permissions to prevent conflicting edits.",
+        "Design UI to clearly distinguish auto-generated content from manual inputs to maintain accountability."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page application that enables academic research grant writers to generate funder-specific interim and final project reports by leveraging master project data and funder guidelines. It supports collaborative editing, compliance alignment summaries, deadline tracking, and multi-format exports, evolving from a basic report generator into a comprehensive grant reporting management system.",
+      "primaryUser": "Academic Research Grant Writer",
+      "successMetrics": [
+        "Reduction in time spent preparing funder-specific reports",
+        "Increase in compliance rate with funder reporting requirements",
+        "Number of collaborative users actively contributing to reports",
+        "Percentage of reports generated with automated alignment summaries",
+        "User satisfaction with deadline reminders and task assignments"
+      ],
+      "components": [
+        {
+          "id": "ui-portal",
+          "name": "User Interface Portal",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for uploading data, managing projects, editing reports, viewing alignment summaries, assigning collaborator tasks, and tracking deadlines.",
+          "dependsOn": [
+            "api-core",
+            "data-storage"
+          ],
+          "notes": [
+            "Pages must clearly distinguish auto-generated content from manual edits.",
+            "Support role-based access control for collaborators.",
+            "Responsive design for desktop and tablet use."
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Core API Layer",
+          "type": "api",
+          "responsibility": "Handle all business logic including data ingestion, report generation, alignment analysis, collaborator management, deadline tracking, and export functionality.",
+          "dependsOn": [
+            "data-storage",
+            "integration-docparser",
+            "integration-notifications"
+          ],
+          "notes": [
+            "Expose RESTful endpoints with user authentication and authorization.",
+            "Validate inputs to prevent malformed or malicious uploads.",
+            "Ensure audit trails for edits and versioning."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store master project data, funder guidelines, report drafts, alignment summaries, user and collaborator info, deadlines, and version history.",
+          "dependsOn": [],
+          "notes": [
+            "Use relational database with strong consistency guarantees.",
+            "Encrypt sensitive data at rest.",
+            "Implement indexes on project IDs, funder IDs, and user IDs for efficient queries."
+          ]
+        },
+        {
+          "id": "integration-docparser",
+          "name": "Document Parsing and Template Engine",
+          "type": "integration",
+          "responsibility": "Parse uploaded funder guideline documents and master data files; generate tailored report drafts in DOCX and PDF formats based on templates and alignment rules.",
+          "dependsOn": [],
+          "notes": [
+            "Support multi-file guideline parsing and URL fetching.",
+            "Maintain extensible template system for future customization.",
+            "Handle edge cases like incomplete or inconsistent guideline formats."
+          ]
+        },
+        {
+          "id": "integration-notifications",
+          "name": "Notification and Reminder Service",
+          "type": "integration",
+          "responsibility": "Send automated reminders for upcoming reporting deadlines and collaborator task notifications via email or in-app alerts.",
+          "dependsOn": [],
+          "notes": [
+            "Allow configurable notification schedules.",
+            "Handle delivery failures and retries.",
+            "Respect user notification preferences."
+          ]
+        },
+        {
+          "id": "job-deadline-tracker",
+          "name": "Deadline Tracking Background Job",
+          "type": "job",
+          "responsibility": "Periodically scan stored deadlines and trigger notifications for upcoming or overdue reports and tasks.",
+          "dependsOn": [
+            "data-storage",
+            "integration-notifications"
+          ],
+          "notes": [
+            "Run daily with scalable scheduling.",
+            "Log job execution and failures for monitoring."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Project",
+          "purpose": "Represents a research project with master progress data and milestones.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "masterData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id"
+          ]
+        },
+        {
+          "name": "FunderGuideline",
+          "purpose": "Stores uploaded funder-specific reporting guidelines and templates.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "guidelineSource",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documentUrls",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "uploadedFiles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "parsedTemplate",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId"
+          ]
+        },
+        {
+          "name": "ReportDraft",
+          "purpose": "Holds generated and manually edited report drafts per funder and reporting period.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderGuidelineId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "lastEditedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId",
+            "funderGuidelineId"
+          ]
+        },
+        {
+          "name": "AlignmentSummary",
+          "purpose": "Stores section-by-section compliance and coverage analysis of report drafts against funder guidelines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportDraftId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "coverageDetails",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "gaps",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "reportDraftId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents system users including grant writers and collaborators.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        },
+        {
+          "name": "CollaboratorTask",
+          "purpose": "Tracks tasks assigned to collaborators for input or review contributions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportDraftId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedToUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "assignedToUserId",
+            "reportDraftId"
+          ]
+        },
+        {
+          "name": "ReportingDeadline",
+          "purpose": "Stores upcoming report submission deadlines and related metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderGuidelineId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deadlineDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notified",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId",
+            "deadlineDate"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/projects",
+          "title": "Project Dashboard",
+          "purpose": "List and manage research projects and their associated data.",
+          "inputs": [],
+          "outputs": [
+            "project list",
+            "project status summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/guidelines",
+          "title": "Funder Guidelines Management",
+          "purpose": "Upload, view, and manage funder-specific reporting guidelines and templates for a project.",
+          "inputs": [
+            "uploaded documents",
+            "URLs"
+          ],
+          "outputs": [
+            "parsed guideline summaries",
+            "upload status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/reports",
+          "title": "Report Drafts",
+          "purpose": "Generate, view, and edit funder-specific report drafts with versioning and collaborative inputs.",
+          "inputs": [
+            "master data updates",
+            "manual edits",
+            "collaborator comments"
+          ],
+          "outputs": [
+            "report draft content",
+            "version history",
+            "alignment summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/deadlines",
+          "title": "Deadline Tracker & Notifications",
+          "purpose": "View upcoming reporting deadlines and collaborator task assignments with notification settings.",
+          "inputs": [],
+          "outputs": [
+            "deadline lists",
+            "task lists",
+            "notification preferences"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/export",
+          "title": "Report Export",
+          "purpose": "Export finalized reports in DOCX or PDF formats.",
+          "inputs": [
+            "report draft selection",
+            "export format"
+          ],
+          "outputs": [
+            "downloadable files",
+            "export status"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: { id: string, name: string, role: string } }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of projects for authenticated user.",
+          "requestShape": "none",
+          "responseShape": "{ projects: Project[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project with master data.",
+          "requestShape": "{ title: string, description?: string, masterData: json }",
+          "responseShape": "{ project: Project }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/guidelines",
+          "method": "POST",
+          "purpose": "Upload funder guidelines documents or URLs for a project.",
+          "requestShape": "{ funderName: string, documents?: File[], urls?: string[] }",
+          "responseShape": "{ funderGuideline: FunderGuideline }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/reports/generate",
+          "method": "POST",
+          "purpose": "Generate a tailored report draft based on master data and funder guidelines.",
+          "requestShape": "{ funderGuidelineId: string, reportType: string }",
+          "responseShape": "{ reportDraft: ReportDraft, alignmentSummary: AlignmentSummary }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:reportDraftId",
+          "method": "POST",
+          "purpose": "Save manual edits or collaborator inputs to a report draft.",
+          "requestShape": "{ content: json, editorUserId: string }",
+          "responseShape": "{ reportDraft: ReportDraft }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:reportDraftId/alignment",
+          "method": "GET",
+          "purpose": "Retrieve the latest alignment summary for a report draft.",
+          "requestShape": "none",
+          "responseShape": "{ alignmentSummary: AlignmentSummary }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/deadlines",
+          "method": "GET",
+          "purpose": "Get upcoming reporting deadlines and collaborator tasks for a project.",
+          "requestShape": "none",
+          "responseShape": "{ deadlines: ReportingDeadline[], tasks: CollaboratorTask[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks/:taskId/assign",
+          "method": "POST",
+          "purpose": "Assign or update collaborator task status.",
+          "requestShape": "{ assignedToUserId: string, status: string }",
+          "responseShape": "{ task: CollaboratorTask }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:reportDraftId/export",
+          "method": "POST",
+          "purpose": "Export a report draft to DOCX or PDF format.",
+          "requestShape": "{ format: \"DOCX\" | \"PDF\" }",
+          "responseShape": "{ downloadUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "DeadlineNotificationJob",
+          "trigger": "Scheduled daily",
+          "purpose": "Scan upcoming deadlines and collaborator tasks, send reminders and notifications to users."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded funder guidelines are incomplete, inconsistent, or in unsupported formats causing parsing failures.",
+        "Conflicting manual edits by multiple collaborators leading to version conflicts.",
+        "Sensitive project data or funder documents accessed by unauthorized users due to misconfigured permissions.",
+        "Automated report generation misses nuanced compliance requirements leading to inaccurate alignment summaries.",
+        "Deadline notifications fail due to email delivery issues or user notification preference changes.",
+        "Large master data files or guideline documents causing performance degradation or timeouts.",
+        "Users accidentally overwrite auto-generated content without clear UI distinction.",
+        "Collaborators lose access or are incorrectly assigned tasks due to role mismanagement."
+      ],
+      "nonGoals": [
+        "Automating full compliance validation without human review.",
+        "Replacing existing grant management or finance tools; focus is on reporting generation and collaboration.",
+        "Supporting non-academic or non-grant reporting use cases.",
+        "Providing complex data analytics or visualization beyond alignment summaries.",
+        "Handling submission of reports directly to funders; export only."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI portal pages, authenticating via /api/auth/login to obtain token.",
+        "Authenticated user fetches project list via GET /api/projects to populate dashboard.",
+        "User uploads funder guidelines documents or URLs on /projects/:projectId/guidelines page, triggering POST /api/projects/:projectId/guidelines.",
+        "Uploaded documents and URLs are sent to integration-docparser for parsing and template extraction.",
+        "Parsed guideline summaries are stored in data-storage under FunderGuideline model.",
+        "User generates report drafts via POST /api/projects/:projectId/reports/generate, sending funderGuidelineId and reportType.",
+        "API-core calls integration-docparser to generate tailored report drafts using master project data and parsed templates.",
+        "Generated ReportDraft and AlignmentSummary are stored in data-storage.",
+        "Users collaboratively edit report drafts via POST /api/reports/:reportDraftId, saving manual edits and collaborator inputs with versioning and audit trails.",
+        "Alignment summaries can be retrieved via GET /api/reports/:reportDraftId/alignment for compliance review.",
+        "Deadline and collaborator task data fetched via GET /api/projects/:projectId/deadlines to display on deadline tracker page.",
+        "Collaborator tasks assigned or updated via POST /api/tasks/:taskId/assign.",
+        "Report drafts exported via POST /api/reports/:reportDraftId/export, generating downloadable DOCX or PDF files.",
+        "Background job DeadlineNotificationJob runs daily, scanning ReportingDeadline and CollaboratorTask data, sending notifications through integration-notifications respecting user preferences.",
+        "Audit logs and version histories maintained for all edits and actions for traceability."
+      ],
+      "validationRules": [
+        "Login: Validate email format and password presence; reject invalid credentials with generic error.",
+        "Project creation: Require non-empty title and valid JSON for masterData; optional description.",
+        "Funder guideline upload: Require funderName; validate uploaded files are supported document types; URLs must be valid and reachable.",
+        "Report generation: Validate funderGuidelineId exists and belongs to project; reportType must be a supported string (e.g., 'interim', 'final').",
+        "Report draft edits: Validate content JSON structure conforms to expected report schema; editorUserId must be authenticated user with edit rights.",
+        "Alignment summary retrieval: Ensure reportDraftId exists and user has access rights.",
+        "Deadline and task retrieval: Validate projectId exists and user has access.",
+        "Task assignment: assignedToUserId must be valid user with collaborator role; status must be one of predefined statuses (e.g., 'pending', 'in-progress', 'completed').",
+        "Report export: format must be either 'DOCX' or 'PDF'; reportDraftId must exist and user authorized.",
+        "All inputs sanitized to prevent injection attacks; file uploads scanned for malware.",
+        "API endpoints enforce role-based access control and ownership checks."
+      ],
+      "errorHandling": [
+        "Return HTTP 400 with descriptive messages for validation failures.",
+        "Return HTTP 401 for unauthorized access attempts.",
+        "Return HTTP 403 for forbidden actions due to insufficient permissions.",
+        "Return HTTP 404 when requested resources (projects, reports, guidelines) are not found or inaccessible.",
+        "Return HTTP 500 for unexpected server errors with generic message; log detailed error internally.",
+        "For file upload parsing errors, return 422 Unprocessable Entity with details on parsing failure.",
+        "Handle version conflicts on report edits by rejecting updates with stale version and prompting user to reload.",
+        "Background job logs failures and retries notification sending; alerts system admins on repeated failures.",
+        "API responses include error codes and user-friendly messages for UI display.",
+        "Gracefully handle timeouts or large file uploads by limiting size and providing progress feedback."
+      ],
+      "securityNotes": [
+        "Use JWT tokens with expiration for authentication; store securely in HttpOnly cookies or local storage with CSRF protection.",
+        "Enforce role-based access control on all API routes to restrict data access and editing capabilities.",
+        "Encrypt sensitive fields in database at rest, such as masterData and uploaded documents.",
+        "Validate and sanitize all user inputs to prevent injection and XSS attacks.",
+        "Use HTTPS for all client-server communication.",
+        "Implement audit trails for all edits and access to sensitive data for accountability.",
+        "Limit file upload types and sizes; scan for malware before processing.",
+        "Respect user notification preferences to avoid spam and privacy violations.",
+        "Ensure background jobs run with least privilege and secure credentials for notification services.",
+        "Regularly update dependencies and monitor for security vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and user info, and can access protected routes"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /projects",
+          "when": "They request the project list",
+          "then": "They receive a list of projects they have access to with status summaries"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /projects/:projectId/guidelines",
+          "when": "They upload valid funder guideline documents or URLs",
+          "then": "The system parses and stores guidelines, returning parsed summaries and upload status"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with a project and funder guideline",
+          "when": "They generate a report draft specifying reportType",
+          "then": "A tailored report draft and alignment summary are created and returned"
+        },
+        {
+          "id": "AT-005",
+          "given": "Multiple collaborators editing the same report draft",
+          "when": "They submit manual edits concurrently",
+          "then": "Version conflicts are detected and prevented, prompting users to reload latest draft"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user on /projects/:projectId/deadlines",
+          "when": "They view deadlines and tasks",
+          "then": "They see accurate upcoming deadlines, task lists, and their notification preferences"
+        },
+        {
+          "id": "AT-007",
+          "given": "A collaborator task assigned to a user",
+          "when": "The task status is updated via API",
+          "then": "The task reflects the new status and assigned user, and notifications are sent accordingly"
+        },
+        {
+          "id": "AT-008",
+          "given": "An authenticated user requests report export",
+          "when": "They select a report draft and export format",
+          "then": "They receive a downloadable file in the chosen format and export status confirmation"
+        },
+        {
+          "id": "AT-009",
+          "given": "The daily DeadlineNotificationJob runs",
+          "when": "There are upcoming deadlines and pending tasks",
+          "then": "Notifications are sent to users respecting preferences, and job logs success or failure"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user attempts to access a project they do not have permission for",
+          "when": "They request project data or report drafts",
+          "then": "They receive a 403 Forbidden error and no data is exposed"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models and database schema for all data models with indexes and encryption where required.",
+        "Implement authentication system with JWT and /api/auth/login route.",
+        "Develop core API routes for projects CRUD and guidelines upload with validation and parsing integration.",
+        "Build integration-docparser service for guideline parsing and report generation templates.",
+        "Implement report draft generation, editing, versioning, and alignment summary APIs.",
+        "Develop collaborator task management APIs and deadline retrieval APIs.",
+        "Create integration-notifications service for sending emails and in-app alerts with preference handling.",
+        "Implement background job DeadlineNotificationJob with scheduling and logging.",
+        "Build Next.js pages for login, project dashboard, guidelines management, report drafts editing, deadline tracking, and report export.",
+        "Integrate UI with API routes, enforcing authentication and role-based access control.",
+        "Add client-side validation and error handling for all forms and inputs.",
+        "Implement UI distinction between auto-generated and manual content in report editor.",
+        "Test concurrency and version conflict handling in collaborative editing.",
+        "Perform security audits and penetration testing.",
+        "Optimize performance for large file uploads and data retrieval.",
+        "Deploy and monitor background jobs and notification delivery."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/projects",
+          "/projects/[projectId]/guidelines",
+          "/projects/[projectId]/reports",
+          "/projects/[projectId]/deadlines",
+          "/projects/[projectId]/export"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/projects/index.ts",
+          "api/projects/[projectId]/guidelines.ts",
+          "api/projects/[projectId]/reports/generate.ts",
+          "api/reports/[reportDraftId]/index.ts",
+          "api/reports/[reportDraftId]/alignment.ts",
+          "api/projects/[projectId]/deadlines.ts",
+          "api/tasks/[taskId]/assign.ts",
+          "api/reports/[reportDraftId]/export.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Project",
+          "FunderGuideline",
+          "ReportDraft",
+          "AlignmentSummary",
+          "User",
+          "CollaboratorTask",
+          "ReportingDeadline"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather missing constraints or details to better specify the tool requirements.",
+        "promptTemplate": "You are the Planner refining requirements for the Academic Research Grant Reporting Tool. Review the current blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}. Ask the user to provide any missing constraints, edge cases, or specific preferences for input formats, output detail level, collaboration features, or security concerns. Your goal is to ensure no critical requirements are overlooked before design."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define final UI pages, data models, and API endpoints needed for the application.",
+        "promptTemplate": "You are the Architect finalizing the multi-page app design for the grant reporting system. Using the idea {{IDEA}}, blueprint {{BLUEPRINT}}, and expanded specs {{EXPANDED}}, produce detailed page routes, data models with fields and indexes, and API endpoints including methods, request and response shapes. Highlight any changes or additions from current specs to support planned features and scalability."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate basic Next.js page stubs for the planned UI routes to scaffold frontend development.",
+        "promptTemplate": "You are the Builder generating Next.js page stubs for the grant reporting tool. Based on finalized pages from {{BLUEPRINT.pages}}, create code stubs with route definitions, basic component skeletons, and placeholders for inputs and outputs. Include comments indicating integration points with APIs and data fetching. Ensure pages are structured for future feature expansion."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages with API endpoints and backend database models to enable full data flow.",
+        "promptTemplate": "You are the Integrator wiring the UI pages to backend APIs and database models. Using the API routes from {{BLUEPRINT.apiRoutes}} and data models from {{BLUEPRINT.dataModels}}, write integration code snippets to fetch, submit, and update data. Include authentication handling, error management, and data validation hooks. Ensure secure and efficient data flow aligned with the expanded specs {{EXPANDED}}."
+      }
+    ]
+  }
+}

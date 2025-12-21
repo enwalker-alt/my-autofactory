@@ -1,0 +1,818 @@
+{
+  "slug": "academic-research-resource-staffing-optimizer",
+  "title": "Academic Research Data Collection Resource & Staffing Optimizer",
+  "description": "Upload site schedules, inventory, and staff availability to generate optimized, conflict-free resource and staffing allocation plans with alerts for shortages and compliance risks.",
+  "inputLabel": "Enter site schedules, inventory, staff availability, and compliance constraints as JSON or upload CSV files",
+  "outputLabel": "Optimized allocation plan and alerts summary",
+  "systemPrompt": "You are an assistant that generates optimized, conflict-free resource and staffing allocation plans for academic research field study coordinators. Accept input as JSON text or CSV file uploads describing multiple active data collection sites, their schedules, inventory items, staff availability, and compliance constraints. Validate input format and data consistency strictly. Refuse any request containing personal participant data beyond IDs or any disallowed content. Generate a plain text summary of an optimized allocation plan including equipment, consumables, and staffing schedules with alerts for shortages, conflicts, or compliance risks. Do not provide any personally identifiable information. Ensure output is safe, actionable, and respects institutional policies. If input is invalid or incomplete, respond with clear error messages. Output must be plain text unless structured-output is enabled, then output valid JSON allocation plan structure. Use only provided features.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Optimization",
+      "prompt": "Generate an optimized allocation plan using the provided site schedules, inventory, staff availability, and compliance constraints. Identify any conflicts or shortages.",
+      "hint": "Use this to get a quick optimized resource and staffing plan."
+    },
+    {
+      "label": "Detailed Alerts",
+      "prompt": "Analyze the input data and produce a detailed alert report highlighting resource shortages, over-allocations, and compliance risks, with recommendations for resolution.",
+      "hint": "Use this to focus on potential issues and risks."
+    },
+    {
+      "label": "Manual Override Check",
+      "prompt": "Validate any manual overrides in the provided data for compliance and resource conflicts. Report errors and suggest corrective actions.",
+      "hint": "Use this to verify manual changes before saving."
+    },
+    {
+      "label": "Summary Dashboard Text",
+      "prompt": "Produce a concise summary dashboard text showing site-level resource utilization, staffing coverage, and alert overview based on the input data.",
+      "hint": "Use this for quick site summaries and status."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "When structured-output is enabled, output a JSON object with keys: allocationPlan (detailed resource and staffing assignments), alerts (array of alert objects), summaryDashboard (text summary).",
+  "clarifyPrompt": "Please provide complete and valid data for active sites, schedules, inventory, staff availability, and compliance constraints. Upload CSV files or enter JSON text. If any data is missing or unclear, specify what is needed.",
+  "finalizePrompt": "Confirm that the optimized allocation plan and alerts meet your operational requirements. If adjustments or manual overrides are needed, please specify.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Site Resource & Staffing Optimizer",
+      "niche": {
+        "role": "Academic Research Field Study Coordinator",
+        "scenario": "Planning and managing resource allocation and staffing across multiple active data collection sites in a longitudinal field study"
+      },
+      "problem": "Field study coordinators currently struggle to efficiently allocate limited equipment, personnel, and consumables across multiple active research data collection sites while balancing site-specific data collection schedules, participant availability, and compliance requirements. Manual spreadsheets and emails lead to resource conflicts, under- or over-staffing, and risk of protocol deviations.",
+      "inputs": [
+        "List of active data collection sites with site metadata",
+        "Site-specific scheduled data collection sessions and participant appointments",
+        "Inventory of available equipment and consumables with current location and usage status",
+        "Staff availability, roles, and qualifications",
+        "Compliance and protocol constraints per site"
+      ],
+      "outputs": [
+        "Optimized, conflict-free resource allocation plan for equipment and consumables across sites",
+        "Optimized staffing schedules matching site needs, staff qualifications, and availability",
+        "Alerts for potential resource shortages, over-allocations, or compliance risks",
+        "Summary dashboards showing site-level resource utilization and staffing coverage",
+        "Exportable reports and communication briefs for site teams and stakeholders"
+      ],
+      "whyItWins": [
+        "Directly addresses a complex, recurring coordination challenge in multi-site field research management not covered by existing equipment booking or compliance tools",
+        "Combines multiple data sources to generate actionable, optimized allocation plans reducing conflicts and improving operational efficiency",
+        "Supports repeated use during ongoing study phases with dynamic updates as schedules and availability change",
+        "Provides clear alerts and dashboards aiding proactive issue resolution and compliance adherence",
+        "Lays groundwork for a scalable multi-page app integrating resource, staffing, and compliance management in one system"
+      ],
+      "upgradePath": {
+        "today": "Lightweight web tool accepting site schedules, resource inventories, and staff availability via CSV uploads or manual entry to generate basic optimized allocation plans and conflict alerts",
+        "in90Days": "Add interactive multi-site visual dashboards, real-time adjustment capabilities, and communication brief generation for site teams; integrate simple compliance rule checks",
+        "in12Months": "Develop full multi-page system with user accounts, live syncing with calendar and inventory management systems, advanced optimization algorithms, role-based access, detailed compliance tracking, and collaborative planning features"
+      },
+      "riskNotes": [
+        "Must ensure data privacy and secure handling of participant scheduling and staff personal data",
+        "Optimization algorithms need to be transparent and adjustable to user constraints to maintain user trust",
+        "Avoid overreliance on automation; allow manual overrides and human decision-making",
+        "Must comply with institutional policies regarding staff scheduling and equipment sharing",
+        "Ongoing user training and support will be needed for adoption in diverse research contexts"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page web application to optimize and manage resource allocation and staffing across multiple academic research data collection sites, integrating site schedules, inventory, staff availability, and compliance constraints to produce conflict-free plans, alerts, dashboards, and reports.",
+      "primaryUser": "Academic Research Field Study Coordinator",
+      "successMetrics": [
+        "Reduction in resource conflicts and over/under-staffing incidents",
+        "User adoption rate among field study coordinators",
+        "Accuracy and usefulness of generated allocation plans",
+        "Frequency and responsiveness to alerts and compliance warnings",
+        "Time saved in planning and coordination activities"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide interactive visual dashboards for site-level resource utilization, staffing coverage, alerts, and summary reports.",
+          "dependsOn": [
+            "api-data",
+            "api-optimization",
+            "api-alerts"
+          ],
+          "notes": [
+            "Supports drill-down from summary to site/session details",
+            "Will evolve to real-time updates and interactive adjustments"
+          ]
+        },
+        {
+          "id": "ui-planning",
+          "name": "Planning & Scheduling UI",
+          "type": "ui",
+          "responsibility": "Allow users to input, upload, and manually adjust site schedules, resource inventories, staff availability, and compliance constraints; view and modify optimized allocation plans.",
+          "dependsOn": [
+            "api-data",
+            "api-optimization",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports CSV uploads and manual entry initially",
+            "Includes manual override capabilities to complement automation"
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Manage user accounts, roles, and access permissions to secure sensitive data and enforce role-based access controls.",
+          "dependsOn": [],
+          "notes": [
+            "Critical for data privacy and compliance",
+            "Foundation for future multi-user collaboration features"
+          ]
+        },
+        {
+          "id": "api-data",
+          "name": "Data Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for sites, schedules, inventory, staff, and compliance data; validate inputs and maintain data integrity.",
+          "dependsOn": [
+            "api-auth",
+            "data-db"
+          ],
+          "notes": [
+            "Supports data versioning or audit logs in future upgrades",
+            "Must enforce institutional policy constraints on data"
+          ]
+        },
+        {
+          "id": "api-optimization",
+          "name": "Optimization Engine API",
+          "type": "api",
+          "responsibility": "Run optimization algorithms to generate conflict-free resource and staffing allocation plans based on current data and constraints.",
+          "dependsOn": [
+            "api-data"
+          ],
+          "notes": [
+            "Algorithms must be transparent and adjustable",
+            "Must allow fallback to manual planning if needed"
+          ]
+        },
+        {
+          "id": "api-alerts",
+          "name": "Alerts & Compliance API",
+          "type": "api",
+          "responsibility": "Detect potential resource shortages, over-allocations, and compliance risks; generate alerts and notifications for users.",
+          "dependsOn": [
+            "api-data",
+            "api-optimization"
+          ],
+          "notes": [
+            "Supports configurable alert thresholds",
+            "Integrates compliance rule checks"
+          ]
+        },
+        {
+          "id": "data-db",
+          "name": "Primary Database",
+          "type": "data",
+          "responsibility": "Persist all core data including sites, schedules, inventory, staff, compliance rules, allocation plans, user accounts, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure encryption and secure access controls",
+            "Support efficient querying for optimization and reporting"
+          ]
+        },
+        {
+          "id": "job-report-generation",
+          "name": "Report Generation Job",
+          "type": "job",
+          "responsibility": "Generate exportable reports and communication briefs for site teams and stakeholders on demand or scheduled intervals.",
+          "dependsOn": [
+            "data-db",
+            "api-data"
+          ],
+          "notes": [
+            "Supports multiple formats (PDF, CSV)",
+            "Handles large data sets and formatting edge cases"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Site",
+          "purpose": "Represent a data collection site with metadata and compliance constraints.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "complianceConstraints",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "ScheduleSession",
+          "purpose": "Scheduled data collection sessions and participant appointments per site.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "participantIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "siteId",
+            "startTime"
+          ]
+        },
+        {
+          "name": "InventoryItem",
+          "purpose": "Equipment and consumables with current location and usage status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "currentSiteId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "type",
+            "currentSiteId"
+          ]
+        },
+        {
+          "name": "StaffMember",
+          "purpose": "Staff availability, roles, qualifications, and assignments.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "qualifications",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "availability",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "assignedSessions",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "AllocationPlan",
+          "purpose": "Optimized allocation of equipment, consumables, and staff to sessions and sites.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "planData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdByUserId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "generatedAt"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "User accounts with roles and permissions for access control.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "username",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "username"
+          ]
+        },
+        {
+          "name": "Alert",
+          "purpose": "Alerts for resource shortages, over-allocations, and compliance risks.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedEntityId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "type",
+            "resolved"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system securely.",
+          "inputs": [
+            "username",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Dashboard",
+          "purpose": "Show summary and detailed views of resource utilization, staffing coverage, and alerts.",
+          "inputs": [],
+          "outputs": [
+            "site summaries",
+            "alerts",
+            "resource usage charts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/planning",
+          "title": "Planning & Scheduling",
+          "purpose": "Input and adjust site schedules, inventories, staff availability, and view/edit allocation plans.",
+          "inputs": [
+            "site data",
+            "schedule data",
+            "inventory data",
+            "staff data",
+            "compliance constraints"
+          ],
+          "outputs": [
+            "optimized allocation plans",
+            "conflict alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Reports & Exports",
+          "purpose": "Generate and download communication briefs and detailed reports.",
+          "inputs": [
+            "report parameters",
+            "date ranges",
+            "site filters"
+          ],
+          "outputs": [
+            "PDF/CSV reports",
+            "export status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User & System Settings",
+          "purpose": "Manage user accounts, roles, compliance rules, and system preferences.",
+          "inputs": [
+            "user data",
+            "compliance rules",
+            "system preferences"
+          ],
+          "outputs": [
+            "confirmation messages",
+            "updated settings"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue access token.",
+          "requestShape": "{ username: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/sites",
+          "method": "GET",
+          "purpose": "Retrieve list of active data collection sites.",
+          "requestShape": "none",
+          "responseShape": "{ sites: Site[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/schedules",
+          "method": "GET",
+          "purpose": "Retrieve scheduled sessions and participant appointments.",
+          "requestShape": "none",
+          "responseShape": "{ schedules: ScheduleSession[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/inventory",
+          "method": "GET",
+          "purpose": "Retrieve inventory of equipment and consumables.",
+          "requestShape": "none",
+          "responseShape": "{ inventoryItems: InventoryItem[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/staff",
+          "method": "GET",
+          "purpose": "Retrieve staff availability, roles, and qualifications.",
+          "requestShape": "none",
+          "responseShape": "{ staffMembers: StaffMember[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/allocations/generate",
+          "method": "POST",
+          "purpose": "Generate optimized resource and staffing allocation plan.",
+          "requestShape": "{ siteIds: string[], constraints?: json }",
+          "responseShape": "{ allocationPlan: AllocationPlan }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts",
+          "method": "GET",
+          "purpose": "Retrieve current alerts for resource conflicts and compliance risks.",
+          "requestShape": "none",
+          "responseShape": "{ alerts: Alert[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Request generation of exportable reports and communication briefs.",
+          "requestShape": "{ reportType: string, parameters: json }",
+          "responseShape": "{ reportId: string, status: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "PeriodicAlertCheck",
+          "trigger": "Scheduled (e.g., every hour)",
+          "purpose": "Scan current data and allocation plans to detect new or unresolved resource conflicts and compliance risks, updating alert records."
+        },
+        {
+          "name": "ReportGeneration",
+          "trigger": "On-demand or scheduled report requests",
+          "purpose": "Generate formatted reports and communication briefs asynchronously to avoid blocking user requests."
+        }
+      ],
+      "edgeCases": [
+        "Conflicting manual overrides that violate compliance rules or resource constraints",
+        "Partial or inconsistent data uploads (e.g., missing staff availability or incomplete schedules)",
+        "Simultaneous edits by multiple users causing data conflicts",
+        "Resource or staff unavailability due to last-minute changes or emergencies",
+        "Handling of participant cancellations or rescheduling impacting resource allocation",
+        "Data privacy breaches or unauthorized access attempts",
+        "Optimization algorithm failures or timeouts under complex constraints"
+      ],
+      "nonGoals": [
+        "Direct participant recruitment or management beyond scheduling",
+        "Full inventory management system with procurement and maintenance tracking",
+        "Real-time location tracking of resources or staff",
+        "Automated compliance enforcement beyond alerting and reporting",
+        "Mobile app development in initial phases"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits username and password to /api/auth/login via POST.",
+        "On successful authentication, client stores token and uses it for subsequent API calls.",
+        "Authenticated user navigates to /dashboard, which fetches site summaries from /api/sites, alerts from /api/alerts, and resource usage charts from aggregated data via /api/data endpoints.",
+        "User navigates to /planning to input or upload site schedules, inventory, staff availability, and compliance constraints; data is sent to /api/data endpoints for CRUD operations.",
+        "User triggers optimization via POST to /api/allocations/generate with selected site IDs and optional constraints; receives optimized AllocationPlan.",
+        "Alerts API (/api/alerts) provides current alerts based on latest data and optimization results.",
+        "User can view and download reports from /reports page, which requests report generation via /api/reports/generate; report generation job processes requests asynchronously.",
+        "Settings page allows management of user accounts, roles, compliance rules, and preferences via authenticated API calls to /api/data and /api/auth.",
+        "Background jobs periodically scan data and allocation plans to update alerts and generate reports as scheduled or on-demand."
+      ],
+      "validationRules": [
+        "Authentication inputs: username and password must be non-empty strings; password must meet complexity requirements.",
+        "Site data: id and name required; location optional; complianceConstraints JSON must conform to predefined schema.",
+        "ScheduleSession: startTime must be before endTime; siteId must reference existing Site; participantIds if present must be array of valid participant IDs.",
+        "InventoryItem: id, type, and status required; currentSiteId if present must reference existing Site.",
+        "StaffMember: id, name, roles, and availability required; roles and availability JSON must follow defined schema; assignedSessions if present must reference valid ScheduleSession IDs.",
+        "AllocationPlan: id, generatedAt, planData, and createdByUserId required; planData must be valid JSON representing allocation structure.",
+        "User: username unique and non-empty; hashedPassword stored securely; roles JSON must define valid roles.",
+        "Alert: id, type, message, createdAt, and resolved required; relatedEntityId if present must reference valid entity.",
+        "API request bodies must be validated for required fields and correct types; CSV uploads must be parsed and validated for completeness and consistency.",
+        "Manual overrides in planning UI must be checked against compliance constraints and resource availability before acceptance.",
+        "Report generation parameters must include valid reportType and parameters JSON conforming to report schema."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Validation errors return 400 Bad Request with detailed field-level error information.",
+        "Authorization failures return 403 Forbidden when user lacks permissions.",
+        "Not found errors return 404 with entity-specific messages.",
+        "Server errors return 500 Internal Server Error with generic message; detailed errors logged internally.",
+        "API endpoints handle concurrency conflicts by returning 409 Conflict with instructions to refresh data.",
+        "CSV upload errors return 422 Unprocessable Entity with parsing and validation error details.",
+        "Optimization failures or timeouts return 503 Service Unavailable with retry suggestions.",
+        "Background job failures are logged and trigger alert notifications to admins.",
+        "Client-side UI displays error messages based on API responses and guides user to corrective actions."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/login require JWT token authentication.",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt).",
+        "Role-based access control enforced on all sensitive endpoints.",
+        "Input validation and sanitization performed to prevent injection attacks.",
+        "Sensitive data encrypted at rest in database.",
+        "Audit logs maintained for critical data changes and user actions.",
+        "Rate limiting applied on authentication endpoints to mitigate brute force attacks.",
+        "CSRF protection enabled for state-changing requests.",
+        "Access tokens stored securely on client side (e.g., HttpOnly cookies or secure storage).",
+        "Compliance constraints enforced in API layer to prevent unauthorized data manipulation."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials",
+          "when": "They submit correct username and password to /api/auth/login",
+          "then": "They receive a valid authentication token and userId"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /dashboard",
+          "when": "They load the page",
+          "then": "They see site summaries, current alerts, and resource usage charts without errors"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /planning",
+          "when": "They upload a valid CSV with schedule and staff data",
+          "then": "Data is validated, saved, and reflected in the UI with no conflicts"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with site IDs selected",
+          "when": "They request allocation plan generation via /api/allocations/generate",
+          "then": "They receive a conflict-free optimized allocation plan JSON"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user viewing alerts",
+          "when": "They access /api/alerts",
+          "then": "They receive current unresolved alerts relevant to their sites"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user requests a report generation",
+          "when": "They submit valid report parameters to /api/reports/generate",
+          "then": "They receive a reportId and status indicating processing started"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to access /dashboard without authentication",
+          "when": "They navigate to /dashboard",
+          "then": "They are redirected to /login"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user submits invalid data in planning UI",
+          "when": "They attempt to save data violating compliance constraints",
+          "then": "They receive validation errors preventing save"
+        },
+        {
+          "id": "AT-009",
+          "given": "Simultaneous edits occur on the same schedule by two users",
+          "when": "Both attempt to save changes",
+          "then": "One save succeeds; the other receives a conflict error and must refresh"
+        },
+        {
+          "id": "AT-010",
+          "given": "Background job runs PeriodicAlertCheck",
+          "when": "Resource conflicts or compliance risks are detected",
+          "then": "New alerts are created or existing alerts updated accordingly"
+        }
+      ],
+      "buildOrder": [
+        "Set up data-db with Prisma models for all data entities",
+        "Implement api-auth for user authentication and authorization",
+        "Implement api-data for CRUD operations with validation and access control",
+        "Implement api-optimization for allocation plan generation",
+        "Implement api-alerts for alert detection and retrieval",
+        "Develop /login page with authentication flow",
+        "Develop /dashboard page consuming api-data, api-alerts, and api-optimization",
+        "Develop /planning page with data input, CSV upload, manual overrides, and optimization triggers",
+        "Develop /reports page with report request and download functionality",
+        "Develop /settings page for user and system management",
+        "Implement background jobs for PeriodicAlertCheck and ReportGeneration",
+        "Add error handling, logging, and security hardening",
+        "Write acceptance tests and perform integration testing",
+        "Prepare deployment and monitoring"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/planning",
+          "/reports",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/sites/index.ts",
+          "/api/schedules/index.ts",
+          "/api/inventory/index.ts",
+          "/api/staff/index.ts",
+          "/api/allocations/generate.ts",
+          "/api/alerts/index.ts",
+          "/api/reports/generate.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Site",
+          "ScheduleSession",
+          "InventoryItem",
+          "StaffMember",
+          "AllocationPlan",
+          "User",
+          "Alert"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask user for any missing constraints, special conditions, or preferences needed for resource and staffing optimization.",
+        "promptTemplate": "Please provide any additional constraints or special requirements for resource allocation and staffing optimization that are not included in the current data. For example, site-specific rules, priority levels, or manual overrides. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the detailed pages, data models, and API endpoints needed for the full application.",
+        "promptTemplate": "Based on the current blueprint and idea, finalize the complete list of pages, data models, and API routes required for the application. Include details on data relationships and user roles. Blueprint: {{BLUEPRINT}}, Idea: {{IDEA}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code or detailed descriptions for the main pages of the application.",
+        "promptTemplate": "Generate the initial code stubs or detailed implementation outlines for the main application pages including login, dashboard, planning, reports, and settings. Use the finalized pages and data models. Pages: {{PAGES}}, DataModels: {{DATA_MODELS}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Create integration plans or code snippets to connect UI pages to API endpoints and underlying database models.",
+        "promptTemplate": "Provide integration plans, code snippets, or architecture descriptions to connect UI pages with API endpoints and database models. Ensure authentication, validation, and error handling are included. API routes: {{API_ROUTES}}, DataModels: {{DATA_MODELS}}"
+      }
+    ]
+  }
+}

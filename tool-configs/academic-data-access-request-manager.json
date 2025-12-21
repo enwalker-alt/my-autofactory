@@ -1,0 +1,671 @@
+{
+  "slug": "academic-data-access-request-manager",
+  "title": "Academic Research Data Access Request Manager",
+  "description": "A single-page web app for academic research data managers to manually enter and upload data access requests, generate agreement drafts, and track request statuses with basic dashboards and exportable reports. Ensures compliance tracking, ethical approval summaries, and audit-ready logs with secure file uploads.",
+  "inputLabel": "Enter or upload data access request details",
+  "outputLabel": "Request summary, status, and draft data usage agreement",
+  "systemPrompt": "You are an expert assistant helping academic research data managers handle external data access requests securely and compliantly. Accept input as manual text entry or uploaded request forms. Validate all required fields including requester name, institution, dataset, and submission date. Reject any request with missing or invalid data. Provide a clear, concise summary of the request status, compliance and ethics approval states, and generate a draft data usage agreement tailored to the requester. Include audit log entries for all changes. Enforce strict data privacy and refuse any unauthorized or disallowed data. Output must be plain text, optionally valid JSON if structured-output is enabled. Do not automate legal or ethical decisions; assist only with summarization and document generation. If input is disallowed or incomplete, respond with a clear error message and no partial outputs.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summarize Request Status",
+      "prompt": "Summarize the current status, compliance, ethics approval, and key metadata of this data access request. Highlight any missing or expiring documents.",
+      "hint": "Use this to get a clear overview of a request's progress and compliance."
+    },
+    {
+      "label": "Generate Data Usage Agreement Draft",
+      "prompt": "Generate a customized data usage agreement draft based on the provided requester details and dataset metadata. Include standard compliance clauses.",
+      "hint": "Use this to create preliminary agreement text for review."
+    },
+    {
+      "label": "Audit Log Entry",
+      "prompt": "Create a detailed audit log entry for this update, including timestamp, user role, and changes made to the request.",
+      "hint": "Use this to maintain tamper-proof history of request updates."
+    },
+    {
+      "label": "Compliance and Ethics Check Summary",
+      "prompt": "Provide a summary of compliance and ethics approval statuses, identifying any pending or expired approvals.",
+      "hint": "Use this to verify the request meets institutional policies."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with fields: {requestId, status, complianceStatus, ethicsApprovalStatus, dataUsageAgreementText, auditLogEntry, errors?}",
+  "clarifyPrompt": "Please provide all required request details including requester name, institution, dataset ID, submission date, and any uploaded documents. Specify compliance and ethics approval status if available.",
+  "finalizePrompt": "Confirm the final summary and draft agreement are accurate and complete. If ready, output the complete request record with audit log and status.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Collaborative Data Access Request Manager",
+      "niche": {
+        "role": "Academic research data manager",
+        "scenario": "Managing and tracking multiple external data access requests from collaborators and external researchers for shared datasets in multi-institution projects"
+      },
+      "problem": "Academic research data managers face challenges handling numerous external data access requests, ensuring compliance with institutional policies, ethical approvals, and funder mandates, while tracking request statuses, approvals, and data usage agreements over time. Existing tools do not provide a focused workflow for managing these requests systematically, leading to inefficiencies, compliance risks, and communication bottlenecks.",
+      "inputs": [
+        "Dataset metadata and sharing policies",
+        "External data access request forms (uploaded or manual entry)",
+        "Collaborator institutional affiliations and roles",
+        "Ethics and compliance approval documents",
+        "Data usage agreement templates",
+        "Communication logs and status updates"
+      ],
+      "outputs": [
+        "Centralized dashboard of all pending, approved, and denied data access requests",
+        "Compliance and ethical approval status summaries per request",
+        "Customized data usage agreement drafts for each requester",
+        "Automated reminders for document expiry and renewals",
+        "Communication briefs and templates for requester interactions",
+        "Audit-ready logs of data access and approval history"
+      ],
+      "whyItWins": [
+        "Fills a unique gap by focusing on the data access request lifecycle management, not just data sharing plans or agreements",
+        "Streamlines compliance tracking and document generation, reducing administrative burden",
+        "Improves transparency and accountability with audit-ready logs and status dashboards",
+        "Supports scalable, repeated use in multi-institutional collaborations with varying data governance requirements",
+        "Provides a foundation for integration with institutional identity and ethics review systems in future upgrades"
+      ],
+      "upgradePath": {
+        "today": "A single-page web app to manually enter requests, upload forms, generate agreement drafts, and track statuses with basic dashboards and exportable reports.",
+        "in90Days": "Add automated email notifications, templated communication workflows, and role-based access controls for collaborators and data custodians.",
+        "in12Months": "Develop multi-page system with integrations to institutional compliance databases, electronic signature workflows for agreements, real-time audit trails, and analytics on data sharing patterns and compliance risks."
+      },
+      "riskNotes": [
+        "Must ensure strict data privacy and security, especially handling sensitive dataset metadata and personal data of requesters",
+        "Avoid automating legal or ethical decisions—system should assist but not replace human compliance review",
+        "Require user authentication and role-based permissions to prevent unauthorized access to sensitive request information",
+        "Careful user interface design needed to handle complex compliance requirements without overwhelming users"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive system to manage, track, and streamline external data access requests for academic research datasets across multiple institutions, ensuring compliance with policies, ethical approvals, and funder mandates while providing audit-ready transparency and communication tools.",
+      "primaryUser": "Academic research data managers overseeing multi-institutional data access requests",
+      "successMetrics": [
+        "Reduction in time to process and approve data access requests",
+        "Increase in compliance adherence and reduction in compliance-related incidents",
+        "User satisfaction scores from data managers and collaborators",
+        "Number of requests tracked and managed through the system",
+        "Frequency and timeliness of automated reminders and communications"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide a centralized interface displaying all data access requests with statuses, summaries of compliance and ethical approvals, and quick access to detailed views and actions.",
+          "dependsOn": [
+            "api-requests",
+            "api-users",
+            "data-requests",
+            "data-users"
+          ],
+          "notes": [
+            "Must support filtering and sorting by status, institution, dataset, and date",
+            "Visual indicators for pending actions and document expiries",
+            "Accessible with role-based views for data managers and collaborators"
+          ]
+        },
+        {
+          "id": "ui-request-form",
+          "name": "Request Submission & Management UI",
+          "type": "ui",
+          "responsibility": "Allow manual entry or upload of external data access requests, management of request details, document uploads, and communication logs.",
+          "dependsOn": [
+            "api-requests",
+            "api-documents",
+            "data-requests",
+            "data-documents"
+          ],
+          "notes": [
+            "Form validation to ensure required compliance and ethics information",
+            "Support for uploading multiple document types (approval docs, agreements)",
+            "Versioning or history tracking of request updates"
+          ]
+        },
+        {
+          "id": "api-requests",
+          "name": "Data Access Request API",
+          "type": "api",
+          "responsibility": "Handle creation, retrieval, update, and deletion of data access requests and their statuses, including compliance and ethics approval tracking.",
+          "dependsOn": [
+            "data-requests",
+            "data-users",
+            "data-documents"
+          ],
+          "notes": [
+            "Enforce role-based access control",
+            "Support bulk export for reporting",
+            "Include endpoints for status updates and audit logs"
+          ]
+        },
+        {
+          "id": "api-documents",
+          "name": "Document Management API",
+          "type": "api",
+          "responsibility": "Manage upload, storage, retrieval, and versioning of compliance documents, ethics approvals, and data usage agreements.",
+          "dependsOn": [
+            "data-documents"
+          ],
+          "notes": [
+            "Ensure secure storage with encryption",
+            "Support expiry tracking and automated reminders",
+            "Integrate with communication templates for document sharing"
+          ]
+        },
+        {
+          "id": "data-requests",
+          "name": "Data Access Request Store",
+          "type": "data",
+          "responsibility": "Persist all data access requests, including metadata, statuses, institutional affiliations, compliance and ethics approvals, and audit trails.",
+          "dependsOn": [],
+          "notes": [
+            "Must support indexing by status, institution, dataset, and dates for efficient querying",
+            "Store request history and changes for audit purposes"
+          ]
+        },
+        {
+          "id": "data-documents",
+          "name": "Document Store",
+          "type": "data",
+          "responsibility": "Persist uploaded documents such as request forms, approval certificates, and data usage agreements securely with version history.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage with access logs",
+            "Metadata stored for expiry and renewal tracking"
+          ]
+        },
+        {
+          "id": "job-reminders",
+          "name": "Automated Reminder Job",
+          "type": "job",
+          "responsibility": "Periodically scan for expiring documents and pending approvals to send automated email reminders and notifications to relevant users.",
+          "dependsOn": [
+            "api-documents",
+            "api-requests",
+            "integration-email"
+          ],
+          "notes": [
+            "Configurable reminder schedules",
+            "Retry logic for failed email deliveries"
+          ]
+        },
+        {
+          "id": "integration-email",
+          "name": "Email Notification Integration",
+          "type": "integration",
+          "responsibility": "Interface with external email service providers to send notifications, reminders, and communication templates to requesters and data managers.",
+          "dependsOn": [],
+          "notes": [
+            "Support templated emails with dynamic data",
+            "Handle bounce and delivery failure reporting"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "DataAccessRequest",
+          "purpose": "Represent an external request for access to a dataset including status, requester info, compliance and ethics approvals, and audit history.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "requesterName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "requesterInstitution",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "requesterRole",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "submissionDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "complianceStatus",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "ethicsApprovalStatus",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "dataUsageAgreementId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "auditLog",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "communicationLogs",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "status",
+            "requesterInstitution",
+            "datasetId",
+            "submissionDate"
+          ]
+        },
+        {
+          "name": "Document",
+          "purpose": "Store metadata and content references for uploaded documents related to requests including approvals and agreements.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "requestId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "expiryDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "storageLocation",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "requestId",
+            "type",
+            "expiryDate"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represent system users including data managers and collaborators with role-based permissions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "role"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Data Access Requests Dashboard",
+          "purpose": "Provide a comprehensive overview of all data access requests with filtering, status summaries, and quick actions.",
+          "inputs": [
+            "filter parameters (status, institution, date range)"
+          ],
+          "outputs": [
+            "list of requests with statuses",
+            "compliance and ethics summaries",
+            "alerts for expiring documents"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/requests/new",
+          "title": "New Data Access Request",
+          "purpose": "Form page to submit a new data access request manually or via document upload.",
+          "inputs": [
+            "requester info",
+            "dataset selection",
+            "uploaded documents",
+            "compliance info"
+          ],
+          "outputs": [
+            "confirmation of submission",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/requests/:id",
+          "title": "Request Detail and Management",
+          "purpose": "View and update details of a specific data access request including status, documents, communication logs, and audit history.",
+          "inputs": [
+            "request updates",
+            "document uploads",
+            "communication entries"
+          ],
+          "outputs": [
+            "request detail view",
+            "status updates",
+            "document list",
+            "audit log"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings/users",
+          "title": "User and Role Management",
+          "purpose": "Manage system users, their roles, and permissions to control access to requests and data.",
+          "inputs": [
+            "user info",
+            "role assignments"
+          ],
+          "outputs": [
+            "user list",
+            "role-based access controls"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/requests",
+          "method": "GET",
+          "purpose": "Retrieve list of data access requests with optional filters.",
+          "requestShape": "{ filters: {status?, institution?, dateRange?} }",
+          "responseShape": "{ requests: DataAccessRequest[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/requests",
+          "method": "POST",
+          "purpose": "Create a new data access request.",
+          "requestShape": "{ requesterName, requesterInstitution, datasetId, documents?, complianceInfo? }",
+          "responseShape": "{ requestId, status }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/requests/:id",
+          "method": "GET",
+          "purpose": "Retrieve detailed information about a specific data access request.",
+          "requestShape": "{}",
+          "responseShape": "DataAccessRequest",
+          "auth": "user"
+        },
+        {
+          "route": "/api/requests/:id",
+          "method": "POST",
+          "purpose": "Update status, compliance info, or add communication logs to a data access request.",
+          "requestShape": "{ status?, complianceStatus?, ethicsApprovalStatus?, communicationLogEntry? }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents",
+          "method": "POST",
+          "purpose": "Upload a document related to a data access request.",
+          "requestShape": "{ requestId, type, file }",
+          "responseShape": "{ documentId, uploadDate }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users",
+          "method": "GET",
+          "purpose": "Retrieve list of users with roles.",
+          "requestShape": "{}",
+          "responseShape": "{ users: User[] }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ExpiryReminderJob",
+          "trigger": "Scheduled daily",
+          "purpose": "Scan documents for upcoming expiries and send automated reminder emails to responsible users."
+        },
+        {
+          "name": "PendingApprovalReminderJob",
+          "trigger": "Scheduled daily",
+          "purpose": "Identify requests pending compliance or ethics approvals beyond threshold time and notify data managers."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or invalid request submissions with clear validation feedback",
+        "Managing document upload failures or corrupted files with retry and error reporting",
+        "Ensuring audit logs are tamper-proof and accurately reflect all changes",
+        "Gracefully handling expired or revoked approvals and updating request statuses accordingly",
+        "Supporting concurrent updates to requests by multiple users with conflict resolution",
+        "Preventing unauthorized access or data leaks through strict role-based access control enforcement",
+        "Handling institutional changes such as collaborator affiliation updates or role changes"
+      ],
+      "nonGoals": [
+        "Automating legal or ethical decision-making processes",
+        "Providing a full electronic signature workflow in initial versions (planned for future upgrades)",
+        "Integrating directly with external institutional identity or ethics review systems in initial releases",
+        "Managing the datasets themselves or data storage/sharing mechanisms",
+        "Replacing human compliance review or institutional policy enforcement"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages (dashboard, request form, request detail, user management) with role-based views enforced.",
+        "Dashboard UI fetches filtered data access requests via GET /api/requests with query parameters for status, institution, and date range.",
+        "Request Submission UI sends new request data and uploaded documents to POST /api/requests and POST /api/documents respectively.",
+        "Request Detail UI fetches detailed request info via GET /api/requests/:id and allows updates via POST /api/requests/:id including status, compliance, ethics, and communication logs.",
+        "User Management UI fetches user list via GET /api/users and allows role updates (future extension).",
+        "API routes validate inputs, enforce role-based access control, and interact with Prisma data models (DataAccessRequest, Document, User) for persistence and querying.",
+        "Document uploads are stored securely with encryption; metadata including expiry and version tracked in Document model.",
+        "Background jobs (ExpiryReminderJob, PendingApprovalReminderJob) query documents and requests via APIs, identify targets for reminders, and send templated emails via integration-email service with retry logic.",
+        "Audit logs and communication logs are appended on request updates and stored as JSON fields in DataAccessRequest for tamper-proof tracking.",
+        "All user actions and data changes are logged for audit and compliance transparency."
+      ],
+      "validationRules": [
+        "DataAccessRequest creation requires non-empty requesterName, requesterInstitution, datasetId, and valid submissionDate.",
+        "Status fields must be one of predefined enums (e.g., 'Pending', 'Approved', 'Rejected', 'Expired').",
+        "ComplianceStatus and EthicsApprovalStatus must be valid status strings or null.",
+        "Document uploads must include requestId, valid type (e.g., 'approval', 'agreement'), filename, and file content; expiryDate if provided must be a future date.",
+        "User email must be valid format and unique; role must be one of predefined roles (e.g., 'data_manager', 'collaborator').",
+        "Request updates must validate fields individually; communicationLogEntry must include timestamp, userId, and message.",
+        "Filter parameters for GET /api/requests must be validated for allowed values and date ranges.",
+        "File uploads must be scanned for corruption and size limits enforced.",
+        "Concurrent updates to requests must include optimistic concurrency control (e.g., version or timestamp check)."
+      ],
+      "errorHandling": [
+        "API routes return 400 Bad Request with detailed validation error messages for invalid inputs.",
+        "Unauthorized access attempts return 401 Unauthorized or 403 Forbidden with clear error messages.",
+        "Document upload failures return 500 Internal Server Error with retry suggestion; corrupted files rejected with 422 Unprocessable Entity.",
+        "Conflict errors on concurrent updates return 409 Conflict with instructions to reload data.",
+        "Background jobs log failures and retry sending emails with exponential backoff; persistent failures trigger alerting.",
+        "All errors are logged server-side with context for debugging and audit.",
+        "UI displays user-friendly error messages and validation feedback inline.",
+        "Expired or revoked approvals trigger status updates and user notifications gracefully without system errors."
+      ],
+      "securityNotes": [
+        "All API routes require authentication and enforce role-based access control strictly.",
+        "Sensitive data including documents are stored encrypted at rest; access is logged.",
+        "Audit logs are append-only and protected against tampering.",
+        "File uploads are validated and sanitized to prevent injection or malware.",
+        "Email integration handles bounce and failure reporting to avoid spam or data leaks.",
+        "Session management and token handling follow best practices to prevent unauthorized access.",
+        "Data exposure is limited per user role and institution affiliation.",
+        "Background jobs run with least privilege principle and secure credentials for email services."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated data manager user on the dashboard page",
+          "when": "They apply filters by status 'Pending' and institution 'University A'",
+          "then": "The dashboard displays only requests matching those filters with correct statuses and visual indicators"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the new request submission page",
+          "when": "They submit a request with all required fields and upload valid documents",
+          "then": "The system creates the request, stores documents securely, and shows confirmation with request ID"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user viewing a specific request detail page",
+          "when": "They update the status to 'Approved' and add a communication log entry",
+          "then": "The request status updates, the communication log is appended, and audit log records the change"
+        },
+        {
+          "id": "AT-004",
+          "given": "An unauthenticated user attempts to access /dashboard",
+          "when": "They navigate to the dashboard route",
+          "then": "They are redirected to login page with an appropriate message"
+        },
+        {
+          "id": "AT-005",
+          "given": "A document upload with an expired expiryDate",
+          "when": "The user attempts to upload the document",
+          "then": "The system rejects the upload with validation error indicating expiry date must be in the future"
+        },
+        {
+          "id": "AT-006",
+          "given": "Background job runs daily",
+          "when": "There are documents expiring within the next 7 days",
+          "then": "Automated reminder emails are sent to responsible users with correct document details"
+        },
+        {
+          "id": "AT-007",
+          "given": "Two users attempt concurrent updates on the same request",
+          "when": "The second update conflicts with the first",
+          "then": "The system returns a conflict error to the second user and prompts to reload data"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user with collaborator role accesses the dashboard",
+          "when": "They view the dashboard",
+          "then": "They see only requests they have permission to view, with restricted actions"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, DataAccessRequest, Document with indexes and relations",
+        "Implement authentication and role-based access control middleware",
+        "Develop API routes for users, requests, and documents with validation and error handling",
+        "Create Next.js pages for dashboard, new request form, request detail, and user management with client-side validation",
+        "Integrate secure file upload handling and encrypted storage for documents",
+        "Implement audit logging and communication log append mechanisms",
+        "Develop background jobs for reminders and integrate with email service provider",
+        "Add UI features for filtering, sorting, visual indicators, and role-based views",
+        "Implement concurrency control and conflict resolution in request updates",
+        "Perform end-to-end testing including acceptance tests and edge case validations"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/requests/new",
+          "/requests/[id]",
+          "/settings/users"
+        ],
+        "apiFilesToCreate": [
+          "/api/requests/index.ts",
+          "/api/requests/[id].ts",
+          "/api/documents/index.ts",
+          "/api/users/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { id String @id @default(uuid()) name String email String @unique role String institution String? lastLogin DateTime? @@index([email, role]) }",
+          "model DataAccessRequest { id String @id @default(uuid()) datasetId String requesterName String requesterInstitution String requesterRole String? submissionDate DateTime status String complianceStatus String? ethicsApprovalStatus String? dataUsageAgreementId String? auditLog Json? communicationLogs Json? @@index([status, requesterInstitution, datasetId, submissionDate]) }",
+          "model Document { id String @id @default(uuid()) requestId String type String filename String uploadDate DateTime expiryDate DateTime? version Int? storageLocation String @@index([requestId, type, expiryDate]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints, clarify ambiguous requirements, and gather detailed use cases to improve the product spec.",
+        "promptTemplate": "You are the Planner refining the project requirements.\nGiven the current blueprint:\n{{BLUEPRINT}}\nAnd user input:\n{{USER_INPUT}}\nPlease ask detailed questions to clarify missing constraints, edge cases, and user needs to ensure a complete and accurate spec."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the final set of UI pages, API routes, and database models needed to implement the system.",
+        "promptTemplate": "You are the Architect designing the system.\nGiven the refined idea:\n{{IDEA}}\nAnd blueprint:\n{{BLUEPRINT}}\nPlease produce a final list of UI pages with routes and purposes, API endpoints with request/response shapes, and data models with fields and indexes."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code for the UI pages and API endpoints to accelerate implementation.",
+        "promptTemplate": "You are the Builder creating initial code scaffolds.\nGiven the finalized pages and API routes:\n{{PAGES}}\n{{API_ROUTES}}\nGenerate Next.js page and API endpoint stub code with placeholder components and validation."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the data flow connecting UI pages to API endpoints and database models, ensuring validation, security, and error handling.",
+        "promptTemplate": "You are the Integrator implementing data flow.\nGiven the UI pages, API routes, and Prisma data models:\n{{PAGES}}\n{{API_ROUTES}}\n{{PRISMA_MODELS}}\nImplement the wiring code connecting front-end to back-end with data validation, role-based access control, and audit logging."
+      }
+    ]
+  }
+}

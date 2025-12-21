@@ -1,0 +1,685 @@
+{
+  "slug": "academic-data-interpretation-harmonizer",
+  "title": "Academic Research Collaborative Data Interpretation Harmonizer",
+  "description": "Upload and analyze multi-site academic research analysis summaries and metadata to produce structured comparison reports highlighting agreements, discrepancies, and harmonization suggestions.",
+  "inputLabel": "Paste or upload your analysis summaries, metadata, and contextual notes",
+  "outputLabel": "Structured comparison report with highlighted conflicts and harmonization suggestions",
+  "systemPrompt": "You are a specialized assistant for academic research data analysts collaborating on multi-site study interpretation harmonization. Accept only uploads of supported file formats (text summaries, tables, figures) and metadata conforming to required schemas. Validate inputs strictly and reject unsupported or malformed content with clear error messages. Generate structured text reports highlighting agreements, discrepancies, and potential causes between uploaded data summaries. Provide harmonized interpretation suggestions while emphasizing that expert review is essential. Refuse any requests that attempt to replace expert judgment or handle unsupported workflows. Output must be plain text or valid JSON if structured-output is enabled. Do not produce visualizations or collaboration threads in this version. Enforce data privacy and security by not disclosing sensitive information beyond authorized users. Always require user authentication context for requests. If input is insufficient or ambiguous, prompt for clarification before proceeding.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Focus",
+      "prompt": "Focus on generating a clear and concise structured comparison report highlighting key agreements and discrepancies between the uploaded analysis summaries."
+    },
+    {
+      "label": "Harmonization Focus",
+      "prompt": "Emphasize drafting harmonized interpretation suggestions, noting alternative viewpoints and potential causes of conflicts."
+    },
+    {
+      "label": "Validation & Guidance",
+      "prompt": "Prioritize validating uploaded files and metadata for format and content correctness, providing detailed user guidance on errors."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with keys: agreements (array), discrepancies (array), potentialCauses (array), harmonizedInterpretation (string), alternativeViewpoints (optional array).",
+  "clarifyPrompt": "Your input is missing required or valid data. Please upload supported analysis summaries, metadata, and contextual notes following the guidelines.",
+  "finalizePrompt": "Review the generated structured comparison report and harmonization suggestions carefully. Remember this output aids but does not replace expert judgment.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Collaborative Data Interpretation Harmonizer",
+      "niche": {
+        "role": "Academic research team data analysts",
+        "scenario": "Collaborative interpretation and synthesis of ambiguous or conflicting data analysis results from multi-site studies"
+      },
+      "problem": "In multi-site academic research projects, data analysts often generate differing interpretations or conflicting results from similar datasets due to varying analysis methods, assumptions, or contextual factors. Harmonizing these interpretations manually is time-consuming, error-prone, and hampers consensus building needed for reporting and decision-making.",
+      "inputs": [
+        "Uploaded analysis result summaries (text, tables, or figures) from multiple sites or analysts",
+        "Metadata on analysis methods and assumptions (manual input or file upload)",
+        "Contextual notes explaining site-specific factors or data nuances"
+      ],
+      "outputs": [
+        "Structured comparison report highlighting agreements, discrepancies, and potential causes",
+        "Suggested harmonized interpretation draft with optional alternative viewpoints",
+        "Visualizations mapping interpretative differences and overlap",
+        "Collaboration workspace for discussion threads on key conflicting points"
+      ],
+      "whyItWins": [
+        "Addresses a critical and under-supported bottleneck in multi-site academic data synthesis workflows",
+        "Reduces manual coordination overhead and miscommunication by providing structured comparison and interpretation aids",
+        "Supports transparent documentation of disagreement rationale enhancing reproducibility and reporting quality",
+        "Facilitates iterative consensus building with integrated collaboration features",
+        "Distinct from existing tools focused on data cleaning, harmonization, or quality control by targeting post-analysis interpretation alignment"
+      ],
+      "upgradePath": {
+        "today": "A single-page app to upload analysis summaries and metadata, producing a structured comparison report with highlighted conflicts and basic harmonized interpretation suggestions",
+        "in90Days": "Add interactive visualization dashboards and collaboration threads allowing real-time discussion and annotation of conflicting points; enable user role-based permissions and versioned interpretation drafts",
+        "in12Months": "Develop a full multi-page system supporting multi-format data import, advanced NLP-powered interpretation clustering, automated hypothesis conflict detection, integration with data repositories and manuscript drafting tools, and comprehensive audit trails for team workflows"
+      },
+      "riskNotes": [
+        "Careful user guidance needed to avoid over-reliance on automated interpretation suggestions which cannot replace expert judgment",
+        "Sensitive collaborative content must be securely handled to protect unpublished research data and intellectual property",
+        "Complexity of diverse analysis methods may limit automated conflict detection accuracy; human review remains essential"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research data analysts to upload, compare, and harmonize multi-site analysis interpretations, featuring structured reports, conflict visualization, and discussion workspaces to build consensus efficiently and transparently.",
+      "primaryUser": "Academic research team data analysts involved in multi-site studies",
+      "successMetrics": [
+        "Reduction in time spent manually harmonizing conflicting analysis interpretations",
+        "User adoption rate among multi-site research teams",
+        "Number of consensus reports generated and collaboratively edited",
+        "Engagement metrics on discussion threads and collaboration workspaces",
+        "User satisfaction scores regarding clarity and usefulness of conflict visualizations and harmonization suggestions"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Upload & Input Interface",
+          "type": "ui",
+          "responsibility": "Allow users to upload analysis summaries, metadata, and contextual notes; validate inputs and provide guidance to avoid data quality issues.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multiple file formats (text, tables, figures) and manual metadata entry",
+            "Includes input validation and user guidance to mitigate risk of poor data quality"
+          ]
+        },
+        {
+          "id": "api-ingestion",
+          "name": "Data Ingestion & Validation API",
+          "type": "api",
+          "responsibility": "Receive, parse, and validate uploaded data and metadata; store validated inputs in the database; provide error feedback for malformed or incomplete submissions.",
+          "dependsOn": [
+            "data-interpretation",
+            "data-storage"
+          ],
+          "notes": [
+            "Handles parsing of diverse input formats",
+            "Ensures data integrity and completeness before persistence"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store uploaded analysis summaries, metadata, contextual notes, user profiles, interpretation drafts, discussion threads, and version histories securely.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive data encrypted at rest",
+            "Supports versioning for interpretation drafts and discussion history"
+          ]
+        },
+        {
+          "id": "api-interpretation",
+          "name": "Interpretation Comparison & Harmonization Engine",
+          "type": "api",
+          "responsibility": "Analyze uploaded inputs to identify agreements, discrepancies, and potential causes; generate structured comparison reports and harmonized interpretation suggestions.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Initial version uses rule-based heuristics; future upgrades to include NLP-powered clustering",
+            "Outputs structured data for visualization and collaboration"
+          ]
+        },
+        {
+          "id": "ui-report",
+          "name": "Comparison Report & Visualization UI",
+          "type": "ui",
+          "responsibility": "Display structured comparison reports highlighting agreements and conflicts; provide visualizations mapping interpretative differences and overlaps.",
+          "dependsOn": [
+            "api-interpretation"
+          ],
+          "notes": [
+            "Interactive visualizations planned for 90-day upgrade",
+            "Accessible summaries with drill-down capabilities"
+          ]
+        },
+        {
+          "id": "ui-collaboration",
+          "name": "Collaboration Workspace UI",
+          "type": "ui",
+          "responsibility": "Enable threaded discussions, annotations on conflicting points, and editing/versioning of harmonized interpretation drafts with role-based permissions.",
+          "dependsOn": [
+            "data-storage",
+            "api-interpretation"
+          ],
+          "notes": [
+            "Supports real-time updates and notifications in future upgrades",
+            "Includes permission controls to protect sensitive content"
+          ]
+        },
+        {
+          "id": "background-versioning",
+          "name": "Interpretation Draft Versioning Job",
+          "type": "job",
+          "responsibility": "Automatically create and store version snapshots of interpretation drafts and discussion threads to enable audit trails and rollback.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Runs on draft save events or at scheduled intervals",
+            "Ensures reproducibility and transparency of consensus building"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Stores user profile and authentication information with role-based permissions",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "AnalysisUpload",
+          "purpose": "Represents an uploaded analysis summary, metadata, and contextual notes from a site or analyst",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploaderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "summaryText",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "summaryTables",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "summaryFigures",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "contextualNotes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "uploaderId",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "ComparisonReport",
+          "purpose": "Structured report highlighting agreements, discrepancies, and potential causes between multiple AnalysisUploads",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedUploadIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "agreements",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "discrepancies",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "potentialCauses",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "generatedAt"
+          ]
+        },
+        {
+          "name": "InterpretationDraft",
+          "purpose": "Draft harmonized interpretation with optional alternative viewpoints and version history",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "comparisonReportId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alternativeViewpoints",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "comparisonReportId",
+            "authorId",
+            "version"
+          ]
+        },
+        {
+          "name": "DiscussionThread",
+          "purpose": "Threaded discussions and annotations on conflicting points within a ComparisonReport or InterpretationDraft",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "relatedEntityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "relatedEntityId",
+            "authorId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Analysis Summaries & Metadata",
+          "purpose": "Page for users to upload analysis result summaries, metadata, and contextual notes",
+          "inputs": [
+            "Files (text, tables, figures)",
+            "Manual metadata fields",
+            "Contextual notes text"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Validation error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/:reportId",
+          "title": "Comparison Report & Visualizations",
+          "purpose": "Displays structured comparison report with highlighted agreements, discrepancies, and visualizations",
+          "inputs": [
+            "Report ID from URL"
+          ],
+          "outputs": [
+            "Comparison report data",
+            "Interactive visualizations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/collaboration/:reportId",
+          "title": "Collaboration Workspace",
+          "purpose": "Workspace for threaded discussions, annotations, and editing interpretation drafts related to a specific report",
+          "inputs": [
+            "Report ID from URL",
+            "User inputs in threads and drafts"
+          ],
+          "outputs": [
+            "Discussion threads",
+            "Draft versions"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "User Dashboard",
+          "purpose": "Overview of user’s uploads, reports, and collaboration activities",
+          "inputs": [],
+          "outputs": [
+            "List of user uploads",
+            "Recent reports",
+            "Active discussion threads"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Receive and validate uploaded analysis summaries and metadata",
+          "requestShape": "{ files: File[], metadata: JSON, contextualNotes: string }",
+          "responseShape": "{ success: boolean, uploadId?: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:reportId",
+          "method": "GET",
+          "purpose": "Fetch structured comparison report data",
+          "requestShape": "{ reportId: string }",
+          "responseShape": "{ report: ComparisonReport }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/interpretation-drafts",
+          "method": "POST",
+          "purpose": "Create or update harmonized interpretation drafts",
+          "requestShape": "{ comparisonReportId: string, content: string, alternativeViewpoints?: JSON, version?: number }",
+          "responseShape": "{ success: boolean, draftId?: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/discussions",
+          "method": "POST",
+          "purpose": "Post new discussion comments or replies",
+          "requestShape": "{ relatedEntityId: string, parentId?: string, content: string }",
+          "responseShape": "{ success: boolean, discussionId?: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/visualizations/:reportId",
+          "method": "GET",
+          "purpose": "Fetch data required for interactive visualizations of interpretative differences",
+          "requestShape": "{ reportId: string }",
+          "responseShape": "{ visualizationData: JSON }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "InterpretationDraftVersioning",
+          "trigger": "On draft save or scheduled intervals",
+          "purpose": "Create version snapshots of interpretation drafts and discussion threads for audit trail and rollback"
+        }
+      ],
+      "edgeCases": [
+        "Uploaded files with unsupported formats or corrupted content",
+        "Conflicting metadata or missing contextual notes leading to ambiguous comparison results",
+        "Simultaneous edits on interpretation drafts causing version conflicts",
+        "Unauthorized access attempts to sensitive unpublished research data",
+        "Over-reliance on automated harmonization suggestions without expert review",
+        "Network failures during large file uploads or real-time collaboration",
+        "Handling of very large multi-site datasets causing performance degradation"
+      ],
+      "nonGoals": [
+        "Automated replacement of expert judgment in interpretation decisions",
+        "Data cleaning, quality control, or raw data harmonization prior to analysis",
+        "Full manuscript drafting or publication management system",
+        "Real-time video or voice communication features",
+        "Support for non-academic or commercial data analysis workflows"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses the Upload page (/upload).",
+        "User submits analysis summaries, metadata, contextual notes, and files via the Upload UI.",
+        "Upload UI sends POST request to /api/upload with files, metadata, and notes.",
+        "Data Ingestion API (/api/upload) parses, validates, and stores the data in the database (AnalysisUpload model).",
+        "Upon successful upload, the system triggers the Interpretation Comparison & Harmonization Engine to analyze new uploads and generate ComparisonReports.",
+        "ComparisonReport data is stored in the database and made available via /api/reports/:reportId.",
+        "User navigates to /reports/:reportId to view comparison reports and visualizations.",
+        "Report UI fetches report data from /api/reports/:reportId and visualization data from /api/visualizations/:reportId.",
+        "User accesses /collaboration/:reportId to participate in threaded discussions and edit InterpretationDrafts.",
+        "Collaboration UI fetches existing drafts and discussion threads from APIs and allows posting new drafts (/api/interpretation-drafts) and discussions (/api/discussions).",
+        "Background job 'InterpretationDraftVersioning' runs on draft saves or scheduled intervals to snapshot drafts and discussions for versioning and audit trails.",
+        "User dashboard (/dashboard) aggregates user uploads, recent reports, and active discussions by querying respective APIs."
+      ],
+      "validationRules": [
+        "Upload API validates file formats against supported types (text, tables, figures) and rejects unsupported or corrupted files with descriptive errors.",
+        "Metadata fields must conform to predefined schemas (e.g., required fields, data types) and be consistent with uploaded files.",
+        "Contextual notes are optional but if provided, must be non-empty strings with a reasonable length limit (e.g., max 5000 characters).",
+        "ComparisonReport requests validate that reportId exists and user has access rights.",
+        "InterpretationDraft creation/update requires valid comparisonReportId, non-empty content, and version number for concurrency control.",
+        "Discussion posts require relatedEntityId to exist, content to be non-empty, and parentId (if provided) to reference an existing discussion comment.",
+        "All API requests require authenticated user sessions with role-based permission checks.",
+        "Version conflicts in InterpretationDraft updates are detected by comparing submitted version with latest stored version; conflicts return error requiring user to reload.",
+        "Inputs are sanitized to prevent injection attacks and ensure data integrity."
+      ],
+      "errorHandling": [
+        "Upload API returns HTTP 400 with detailed error messages for validation failures (e.g., unsupported file format, missing required metadata).",
+        "APIs return HTTP 401 Unauthorized for unauthenticated requests and HTTP 403 Forbidden for unauthorized access attempts.",
+        "Version conflicts on draft updates return HTTP 409 Conflict with instructions to reload the latest draft.",
+        "Server errors return HTTP 500 with generic error messages; detailed errors logged internally for debugging.",
+        "Client-side UI displays user-friendly error messages and guidance based on API error responses.",
+        "Network failures during uploads or collaboration actions trigger retry mechanisms and user notifications.",
+        "APIs validate input shapes strictly and reject malformed requests with clear error descriptions."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication and enforce role-based access control.",
+        "Sensitive data (e.g., uploaded files, user credentials) is encrypted at rest in the database.",
+        "User passwords are stored as securely hashed values using strong algorithms (e.g., bcrypt).",
+        "Input sanitization is applied to prevent injection attacks (SQL, XSS).",
+        "Access to unpublished or sensitive research data is restricted based on user roles and ownership.",
+        "API endpoints validate user permissions before returning data or allowing modifications.",
+        "Versioning and audit trails enhance accountability and traceability of changes.",
+        "File uploads are scanned and validated to prevent malicious content."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with valid analysis files and metadata",
+          "when": "The user submits the upload form",
+          "then": "The system validates inputs, stores the upload, returns success with uploadId, and triggers report generation"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user requests a comparison report with a valid reportId",
+          "when": "The user navigates to /reports/:reportId",
+          "then": "The system returns the structured report data and visualization data, which are displayed correctly"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user attempts to upload unsupported file formats",
+          "when": "The user submits the upload form",
+          "then": "The system rejects the upload with clear validation error messages"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user edits an interpretation draft with the latest version",
+          "when": "The user submits the draft update",
+          "then": "The system saves the draft, increments version, and returns success"
+        },
+        {
+          "id": "AT-005",
+          "given": "Two users simultaneously edit the same interpretation draft",
+          "when": "The second user submits an outdated version",
+          "then": "The system returns a version conflict error prompting the user to reload"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthenticated user attempts to access /upload or API routes",
+          "when": "The user tries to access protected pages or APIs",
+          "then": "The system redirects to login or returns 401 Unauthorized"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user posts a new discussion comment with valid content",
+          "when": "The user submits the discussion form",
+          "then": "The system stores the comment and returns success with discussionId"
+        },
+        {
+          "id": "AT-008",
+          "given": "The background job runs after draft save",
+          "when": "A draft is saved or scheduled interval triggers",
+          "then": "A version snapshot of the draft and related discussions is created and stored"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user accesses the dashboard",
+          "when": "The user navigates to /dashboard",
+          "then": "The system displays the user's uploads, recent reports, and active discussion threads"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models and database schema for all data models",
+        "Implement authentication and role-based authorization middleware",
+        "Develop Data Storage layer with encryption and versioning support",
+        "Build API Ingestion endpoint (/api/upload) with file parsing and validation",
+        "Create Upload UI page with file input, metadata forms, and validation feedback",
+        "Implement Interpretation Comparison & Harmonization Engine API and data processing",
+        "Develop Comparison Report API (/api/reports/:reportId) and Visualization API (/api/visualizations/:reportId)",
+        "Build Report UI page to display comparison reports and visualizations",
+        "Implement Interpretation Draft API (/api/interpretation-drafts) with version control",
+        "Create Collaboration Workspace UI with discussion threads and draft editing",
+        "Implement Discussion API (/api/discussions) for threaded comments",
+        "Develop Background Job for Interpretation Draft Versioning",
+        "Build User Dashboard page aggregating uploads, reports, and discussions",
+        "Add comprehensive validation, error handling, and security checks",
+        "Write acceptance tests and perform end-to-end testing"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/reports/[reportId]",
+          "/collaboration/[reportId]",
+          "/dashboard"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload.ts",
+          "/api/reports/[reportId].ts",
+          "/api/interpretation-drafts.ts",
+          "/api/discussions.ts",
+          "/api/visualizations/[reportId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "AnalysisUpload",
+          "ComparisonReport",
+          "InterpretationDraft",
+          "DiscussionThread"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to capture missing constraints or details for the academic data interpretation harmonizer tool.",
+        "promptTemplate": "Given the current blueprint and expansion: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease ask any missing constraints, edge cases, or user needs to refine the project requirements."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the data models, pages, and API routes for the tool based on refined requirements.",
+        "promptTemplate": "With the refined requirements: {{REFINED_REQUIREMENTS}}\nBlueprint: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease finalize the pages, data models, and API routes needed."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for the UI pages and API endpoints to start implementation.",
+        "promptTemplate": "Based on the finalized design: {{FINALIZED_DESIGN}}\nUser input: {{USER_INPUT}}\nGenerate starter code stubs for each UI page and API route."
+      },
+      {
+        "id": "integrator-wireup-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate front-end pages with API endpoints and database models to create a working system.",
+        "promptTemplate": "Given the page stubs and data models: {{PAGE_STUBS}}, {{DATA_MODELS}}\nUser input: {{USER_INPUT}}\nProvide integration code and instructions to connect frontend, API, and database layers."
+      }
+    ]
+  }
+}

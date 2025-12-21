@@ -1,0 +1,786 @@
+{
+  "slug": "lab-safety-inspection-manager",
+  "title": "Academic Research Lab Safety Inspection Manager",
+  "description": "A single-page web app for academic research lab managers to input safety inspection notes, upload photos, select hazards from checklists, and generate prioritized inspection reports with remediation task lists. Supports secure data handling and compliance documentation.",
+  "inputLabel": "Enter inspection details, upload photos, and select hazards",
+  "outputLabel": "Inspection report and remediation task summary",
+  "systemPrompt": "You are a specialized assistant for academic research lab managers conducting safety inspections. Your job is to help the user input inspection details including lab ID, inspection date, notes, photos, and select hazards from predefined checklists. Validate inputs strictly: inspection date cannot be in the future; photos must be valid image files; hazard IDs must match known hazards. Generate a clear, structured inspection report prioritizing hazards by risk severity, and produce a remediation task list with assigned personnel and deadlines if provided. Refuse any request for medical, legal, or professional advice. Enforce data privacy and security. Output must be plain text or valid JSON if requested. Use only allowed features. If input is disallowed or incomplete, respond politely with instructions to correct. Do not hallucinate data. Confirm successful creation or meaningful error messages. Do not proceed with any unauthorized or unsafe requests.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Quick Inspection Report",
+      "prompt": "Create a basic safety inspection report using the provided lab ID, inspection date, notes, and uploaded photos. Select hazards from the checklist and generate a prioritized hazard list with remediation suggestions.",
+      "hint": "Use for fast inspection documentation with essential details."
+    },
+    {
+      "label": "Detailed Hazard Prioritization",
+      "prompt": "Analyze the input hazards and rate them by risk severity. Provide detailed remediation tasks including assigned personnel and deadlines if available. Produce a structured report emphasizing compliance and audit readiness.",
+      "hint": "Use for comprehensive safety assessment and task planning."
+    },
+    {
+      "label": "Compliance Summary Focus",
+      "prompt": "Generate a summary report highlighting compliance checklist status, outstanding hazards, and remediation progress based on the inspection inputs. Emphasize audit readiness and regulatory alignment.",
+      "hint": "Use for compliance overview and reporting."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output enabled, output JSON with fields: {inspectionReport: string, hazards: [{id: string, name: string, riskSeverity: number, remediationTask: {assignedTo: string, deadline: string, status: string}}]}",
+  "clarifyPrompt": "Please provide the lab ID, inspection date (not in the future), any notes, upload photos (images only), and select hazards from the checklist. Also specify assigned personnel and deadlines for remediation tasks if available. Let me know if you need assistance.",
+  "finalizePrompt": "Confirm that all inspection details and photos are correct. Generate the final prioritized inspection report and remediation task list. Ensure data privacy and compliance documentation readiness.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Lab Safety Inspection & Remediation Manager",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Conducting regular safety inspections to identify, document, and track lab hazards and ensure timely remediation compliance"
+      },
+      "problem": "Academic research labs require frequent safety inspections to identify hazards, document findings, assign remediation tasks, and track resolution progress. Currently, lab managers rely on manual spreadsheets, emails, or fragmented tools that make it difficult to maintain consistent records, prioritize risks, ensure accountability, and demonstrate compliance over time.",
+      "inputs": [
+        "Lab layout descriptions or maps",
+        "Inspection checklists and safety protocols",
+        "Uploaded photos or notes from inspection walkthroughs",
+        "Hazard descriptions and risk severity ratings",
+        "Assigned personnel for remediation tasks",
+        "Remediation status updates and deadlines"
+      ],
+      "outputs": [
+        "Structured safety inspection reports with prioritized hazard lists",
+        "Clear remediation task assignments with deadlines and progress tracking",
+        "Automated compliance checklists aligned with institutional and regulatory standards",
+        "Historical inspection and remediation logs for audit and reporting",
+        "Dashboard summaries highlighting outstanding risks and compliance status"
+      ],
+      "whyItWins": [
+        "Fills a gap in academic lab safety by combining inspection documentation, risk prioritization, and remediation tracking in a unified system",
+        "Reduces manual administrative burden and communication overhead for lab managers",
+        "Improves safety outcomes by ensuring hazards are promptly addressed and tracked to completion",
+        "Supports compliance audits by maintaining organized, exportable documentation and timelines",
+        "Lays foundation for integrating safety training, incident reporting, and equipment maintenance workflows"
+      ],
+      "upgradePath": {
+        "today": "Single-page web app where lab managers input inspection notes, upload photos, and generate prioritized inspection reports with basic remediation task lists.",
+        "in90Days": "Add multi-user task assignment, progress tracking, deadline reminders, and compliance checklist integration with institutional safety standards. Include dashboards summarizing lab safety status and trends over time.",
+        "in12Months": "Evolve into a full multi-page safety management system with mobile inspection apps, incident reporting, integration with equipment maintenance logs, training records, and automated compliance audit report generation."
+      },
+      "riskNotes": [
+        "Must ensure data privacy and security as safety reports may contain sensitive facility information",
+        "Avoid medical or legal advice; focus exclusively on safety management and compliance documentation",
+        "Require clear disclaimers that the tool assists documentation and tracking but does not replace professional safety consultations or legal compliance verification"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page web application to help academic research lab managers conduct safety inspections, document hazards, assign and track remediation tasks, and maintain compliance records. The system evolves from a simple inspection note-taking tool into a comprehensive lab safety management platform with dashboards, multi-user collaboration, and integration with institutional standards.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Reduction in time spent on manual safety inspection documentation",
+        "Percentage of hazards assigned remediation tasks with deadlines",
+        "Rate of remediation task completion before deadlines",
+        "User adoption and frequency of inspection report generation",
+        "Audit readiness demonstrated by organized historical logs and compliance checklists"
+      ],
+      "components": [
+        {
+          "id": "ui-inspection",
+          "name": "Inspection Input UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for lab managers to input inspection notes, upload photos, select hazards, and generate inspection reports.",
+          "dependsOn": [
+            "api-inspection",
+            "api-tasks",
+            "data-hazards"
+          ],
+          "notes": [
+            "Must support photo uploads and rich text notes.",
+            "Should allow hazard selection from predefined checklists.",
+            "Initial version is single-page; later expanded to multi-page."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Safety Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display summaries of outstanding hazards, remediation task statuses, compliance checklist progress, and historical trends.",
+          "dependsOn": [
+            "api-dashboard",
+            "data-tasks",
+            "data-inspections"
+          ],
+          "notes": [
+            "Introduced after initial MVP for multi-user task tracking and compliance overview.",
+            "Visualize risk prioritization and deadlines."
+          ]
+        },
+        {
+          "id": "api-inspection",
+          "name": "Inspection Management API",
+          "type": "api",
+          "responsibility": "Handle creation, retrieval, and updating of inspection records, including notes, photos, and hazard entries.",
+          "dependsOn": [
+            "data-inspections",
+            "data-hazards"
+          ],
+          "notes": [
+            "Must validate input data for completeness and security.",
+            "Support pagination and filtering for historical inspection logs."
+          ]
+        },
+        {
+          "id": "api-tasks",
+          "name": "Remediation Task API",
+          "type": "api",
+          "responsibility": "Manage remediation task assignments, status updates, deadlines, and progress tracking.",
+          "dependsOn": [
+            "data-tasks",
+            "data-users"
+          ],
+          "notes": [
+            "Supports multi-user assignment and status transitions.",
+            "Enforces deadline constraints and sends reminders."
+          ]
+        },
+        {
+          "id": "api-dashboard",
+          "name": "Dashboard & Compliance API",
+          "type": "api",
+          "responsibility": "Aggregate data for dashboards, generate compliance checklists, and produce audit reports.",
+          "dependsOn": [
+            "data-inspections",
+            "data-tasks",
+            "data-compliance"
+          ],
+          "notes": [
+            "Integrates institutional and regulatory safety standards.",
+            "Provides exportable reports."
+          ]
+        },
+        {
+          "id": "data-inspections",
+          "name": "Inspection Records Data Store",
+          "type": "data",
+          "responsibility": "Persist inspection details including notes, photos, hazard identifications, and timestamps.",
+          "dependsOn": [],
+          "notes": [
+            "Photos stored securely with access control.",
+            "Supports versioning or edits with audit trail."
+          ]
+        },
+        {
+          "id": "data-tasks",
+          "name": "Remediation Tasks Data Store",
+          "type": "data",
+          "responsibility": "Store remediation task details, assignments, statuses, deadlines, and progress history.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Tracks task lifecycle and notifications.",
+            "Supports linking tasks to specific hazards and inspections."
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User Accounts Data Store",
+          "type": "data",
+          "responsibility": "Manage user identities, roles, and permissions for multi-user collaboration.",
+          "dependsOn": [],
+          "notes": [
+            "Supports authentication and authorization.",
+            "Role-based access control for lab managers and assigned personnel."
+          ]
+        },
+        {
+          "id": "data-hazards",
+          "name": "Hazard & Checklist Data Store",
+          "type": "data",
+          "responsibility": "Maintain predefined hazard types, risk severity ratings, and inspection checklists aligned with safety protocols.",
+          "dependsOn": [],
+          "notes": [
+            "Allows updates to checklists as protocols evolve.",
+            "Supports mapping hazards to remediation guidelines."
+          ]
+        },
+        {
+          "id": "data-compliance",
+          "name": "Compliance Standards Data Store",
+          "type": "data",
+          "responsibility": "Store institutional and regulatory compliance checklists and audit criteria for automated validation.",
+          "dependsOn": [],
+          "notes": [
+            "Enables automated compliance status calculation.",
+            "Supports export of compliance reports."
+          ]
+        },
+        {
+          "id": "job-reminder",
+          "name": "Deadline Reminder Job",
+          "type": "job",
+          "responsibility": "Periodically scan remediation tasks and send deadline reminders to assigned personnel and lab managers.",
+          "dependsOn": [
+            "data-tasks",
+            "data-users"
+          ],
+          "notes": [
+            "Must handle missed deadlines and escalate notifications.",
+            "Configurable reminder frequency."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Inspection",
+          "purpose": "Store safety inspection session details including notes, photos, hazards identified, and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "labId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "inspectorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "inspectionDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "photos",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "hazards",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "labId",
+            "inspectionDate"
+          ]
+        },
+        {
+          "name": "Hazard",
+          "purpose": "Define hazard types and risk severity ratings used in inspections.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "riskSeverity",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "RemediationTask",
+          "purpose": "Track remediation tasks assigned to personnel for identified hazards.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "inspectionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hazardId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedToUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deadline",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "progressNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "assignedToUserId",
+            "status",
+            "deadline"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user account information and roles.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "ComplianceChecklist",
+          "purpose": "Represent compliance checklists and audit criteria for safety standards.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "criteria",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "title",
+            "version"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/inspection/new",
+          "title": "New Safety Inspection",
+          "purpose": "Input inspection notes, upload photos, select hazards, and create inspection records.",
+          "inputs": [
+            "labId",
+            "inspectionDate",
+            "notes",
+            "photos",
+            "hazards"
+          ],
+          "outputs": [
+            "inspectionRecord",
+            "preliminaryReport"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/inspection/history",
+          "title": "Inspection History",
+          "purpose": "View past inspections with filtering and search capabilities.",
+          "inputs": [
+            "labId",
+            "dateRange",
+            "hazardFilter"
+          ],
+          "outputs": [
+            "inspectionList"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/tasks",
+          "title": "Remediation Tasks",
+          "purpose": "View and update remediation tasks assigned to users, track progress and deadlines.",
+          "inputs": [
+            "userId",
+            "statusFilter",
+            "deadlineFilter"
+          ],
+          "outputs": [
+            "taskList"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Lab Safety Dashboard",
+          "purpose": "Summarize lab safety status, outstanding hazards, remediation progress, and compliance checklists.",
+          "inputs": [
+            "labId",
+            "dateRange"
+          ],
+          "outputs": [
+            "riskSummary",
+            "taskStatusSummary",
+            "complianceStatus"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/compliance",
+          "title": "Compliance Checklists & Reports",
+          "purpose": "View institutional and regulatory compliance checklists and generate audit reports.",
+          "inputs": [
+            "labId",
+            "checklistVersion"
+          ],
+          "outputs": [
+            "complianceChecklist",
+            "auditReport"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/inspections",
+          "method": "POST",
+          "purpose": "Create a new safety inspection record with notes, photos, and hazards.",
+          "requestShape": "{ labId: string, inspectionDate: date, notes?: string, photos?: json, hazards?: json }",
+          "responseShape": "{ inspectionId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/inspections",
+          "method": "GET",
+          "purpose": "Retrieve inspection records with optional filters.",
+          "requestShape": "{ labId?: string, dateRange?: { start: date, end: date }, hazardFilter?: string }",
+          "responseShape": "{ inspections: Inspection[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Create or update remediation tasks.",
+          "requestShape": "{ inspectionId: string, hazardId: string, assignedToUserId: string, description?: string, status: string, deadline?: date }",
+          "responseShape": "{ taskId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "GET",
+          "purpose": "Retrieve remediation tasks with filters by user, status, or deadline.",
+          "requestShape": "{ userId?: string, statusFilter?: string, deadlineFilter?: date }",
+          "responseShape": "{ tasks: RemediationTask[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/dashboard",
+          "method": "GET",
+          "purpose": "Fetch aggregated data for dashboards including risk summaries and compliance status.",
+          "requestShape": "{ labId: string, dateRange?: { start: date, end: date } }",
+          "responseShape": "{ riskSummary: json, taskStatusSummary: json, complianceStatus: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance",
+          "method": "GET",
+          "purpose": "Retrieve compliance checklists and generate audit reports.",
+          "requestShape": "{ labId: string, checklistVersion?: string }",
+          "responseShape": "{ complianceChecklist: ComplianceChecklist, auditReport: json }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Deadline Reminder Job",
+          "trigger": "Scheduled (e.g., daily at midnight)",
+          "purpose": "Scan remediation tasks nearing or past deadlines and send reminder notifications to assigned users and lab managers."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or missing photo uploads during inspection submission.",
+        "Users attempting to assign remediation tasks to non-existent or unauthorized personnel.",
+        "Concurrent updates to remediation tasks causing race conditions or data conflicts.",
+        "Expired or outdated compliance checklists causing audit report discrepancies.",
+        "Data privacy breaches if inspection photos or notes contain sensitive information.",
+        "Users losing access due to role changes or account deactivation mid-task.",
+        "Network failures during photo upload or report generation.",
+        "Remediation tasks without deadlines or with invalid dates."
+      ],
+      "nonGoals": [
+        "Providing medical, legal, or professional safety advice.",
+        "Replacing institutional safety training or official compliance verification.",
+        "Managing incident reporting beyond remediation task tracking (planned for future upgrades).",
+        "Integrating with physical lab equipment or IoT sensors at this stage.",
+        "Mobile native apps (only web app with responsive design initially)."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages requiring authorization.",
+        "On /inspection/new, user inputs labId, inspectionDate, notes, uploads photos, selects hazards from predefined checklist fetched from api-inspection and data-hazards.",
+        "UI-inspection sends POST /api/inspections with inspection data; api-inspection validates and persists data in data-inspections including photos stored securely with access control.",
+        "User can view inspection history on /inspection/history; UI calls GET /api/inspections with filters; api-inspection returns paginated inspection records.",
+        "On /tasks, UI fetches remediation tasks via GET /api/tasks filtered by userId, status, deadline; user can create/update tasks via POST /api/tasks; api-tasks validates and persists in data-tasks.",
+        "Dashboard UI on /dashboard fetches aggregated data via GET /api/dashboard, which queries data-inspections, data-tasks, and data-compliance to produce risk summaries, task statuses, and compliance progress.",
+        "Compliance page /compliance fetches compliance checklists and audit reports via GET /api/compliance, integrating institutional standards from data-compliance.",
+        "Background job 'Deadline Reminder Job' periodically queries data-tasks and data-users to identify tasks nearing or past deadlines and sends notifications accordingly.",
+        "All APIs enforce authentication and role-based authorization using data-users roles.",
+        "Data updates maintain audit trails and versioning where applicable (e.g., inspections, tasks)."
+      ],
+      "validationRules": [
+        "Inspection creation requires labId (string), inspectionDate (valid date, not future), inspectorUserId (authenticated user), optional notes (string), photos (array of valid image metadata), hazards (array of valid hazard IDs).",
+        "Photo uploads must be validated for file type, size limits, and scanned for malware before storage.",
+        "Hazard IDs in inspections must exist in data-hazards.",
+        "Remediation task creation/update requires inspectionId and hazardId that exist, assignedToUserId must be a valid user with appropriate role, status must be one of predefined states (e.g., 'pending', 'in-progress', 'completed'), deadline if provided must be a valid future date.",
+        "Task status transitions must follow allowed state machine rules to prevent invalid transitions.",
+        "API filters (dateRange, statusFilter, hazardFilter) must be validated for correct formats and logical consistency (e.g., start date before end date).",
+        "Compliance checklist version if provided must exist in data-compliance.",
+        "All user inputs must be sanitized to prevent injection attacks.",
+        "Concurrent updates to remediation tasks must use optimistic concurrency control (e.g., updatedAt timestamp) to detect conflicts."
+      ],
+      "errorHandling": [
+        "API responses use consistent error format with HTTP status codes and JSON body containing error code and message.",
+        "Validation errors return 400 Bad Request with detailed field error messages.",
+        "Authentication failures return 401 Unauthorized; authorization failures return 403 Forbidden.",
+        "Not found resources return 404 with clear messages.",
+        "Concurrent update conflicts return 409 Conflict with instructions to reload data.",
+        "File upload errors return 422 Unprocessable Entity with reason (e.g., invalid file type, size).",
+        "Server errors return 500 Internal Server Error with generic message and log details internally.",
+        "APIs handle missing optional data gracefully and provide defaults where applicable.",
+        "Background job logs failures and retries with exponential backoff; escalates repeated failures via alerting.",
+        "UI displays user-friendly error messages and allows retry or corrective actions."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user sessions with role-based access control enforced.",
+        "Sensitive data such as photos are stored with access control restricting to authorized users only.",
+        "Input sanitization and validation prevent injection and XSS attacks.",
+        "Use HTTPS for all client-server communications.",
+        "Implement rate limiting and throttling on APIs to prevent abuse.",
+        "Audit trails for data changes support accountability and traceability.",
+        "Background job notifications avoid leaking sensitive info and respect user privacy.",
+        "User sessions expire and support secure logout.",
+        "Ensure compliance data and reports are accessible only to authorized roles.",
+        "Regular security reviews and dependency updates recommended."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated lab manager on /inspection/new",
+          "when": "They input valid labId, inspectionDate, notes, upload photos, select hazards and submit",
+          "then": "A new inspection record is created, photos stored securely, and a preliminary report is generated and displayed"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /inspection/history with labId and date range filters",
+          "when": "They request inspection records",
+          "then": "The system returns a paginated list of inspections matching filters with correct hazard data"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /tasks with userId and status filter",
+          "when": "They view remediation tasks and update a task status with a valid deadline",
+          "then": "The task is updated in data-tasks and reflected in subsequent queries"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user on /dashboard with labId and date range",
+          "when": "They request dashboard data",
+          "then": "The system returns aggregated risk summaries, task statuses, and compliance progress accurately"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on /compliance with labId and optional checklistVersion",
+          "when": "They request compliance checklists and audit reports",
+          "then": "The system returns the correct compliance checklist and audit report data"
+        },
+        {
+          "id": "AT-006",
+          "given": "A remediation task nearing deadline",
+          "when": "The scheduled Deadline Reminder Job runs",
+          "then": "Assigned users and lab managers receive reminder notifications without duplication"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to assign a remediation task to a non-existent user",
+          "when": "They submit the task creation request",
+          "then": "The API returns a 400 error with a clear message about invalid assigned user"
+        },
+        {
+          "id": "AT-008",
+          "given": "Concurrent updates to the same remediation task by two users",
+          "when": "Both submit updates simultaneously",
+          "then": "One update succeeds; the other receives a 409 conflict error prompting reload"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user uploads an invalid photo file during inspection creation",
+          "when": "They submit the inspection",
+          "then": "The API rejects the upload with a 422 error and descriptive message"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user with insufficient role tries to access /api/tasks POST",
+          "when": "They attempt to create or update a remediation task",
+          "then": "The API returns 403 Forbidden"
+        }
+      ],
+      "buildOrder": [
+        "Set up data models in Prisma: User, Hazard, Inspection, RemediationTask, ComplianceChecklist",
+        "Implement authentication and role-based authorization middleware",
+        "Develop api-inspection routes (POST and GET) with validation and photo upload handling",
+        "Develop api-tasks routes (POST and GET) with task lifecycle and concurrency control",
+        "Develop api-dashboard GET route aggregating data from inspections, tasks, compliance",
+        "Develop api-compliance GET route fetching compliance checklists and audit reports",
+        "Create UI pages: /inspection/new, /inspection/history with integration to api-inspection",
+        "Create UI page /tasks integrating with api-tasks for viewing and updating tasks",
+        "Create UI page /dashboard integrating with api-dashboard for aggregated views",
+        "Create UI page /compliance integrating with api-compliance",
+        "Implement background job Deadline Reminder Job with notification sending",
+        "Add error handling, input sanitization, and security hardening",
+        "Write acceptance tests and perform QA",
+        "Deploy and monitor"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/inspection/new",
+          "/inspection/history",
+          "/tasks",
+          "/dashboard",
+          "/compliance"
+        ],
+        "apiFilesToCreate": [
+          "/api/inspections.ts",
+          "/api/tasks.ts",
+          "/api/dashboard.ts",
+          "/api/compliance.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Hazard",
+          "Inspection",
+          "RemediationTask",
+          "ComplianceChecklist"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Identify missing constraints, clarify user needs, and refine the project requirements for the lab safety inspection manager.",
+        "promptTemplate": "Given the current blueprint and expanded specs:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nPlease ask clarifying questions or suggest missing constraints to ensure the requirements are complete and precise."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final detailed UI pages, data models, and API routes for the lab safety inspection manager application.",
+        "promptTemplate": "Using the refined requirements and blueprint:\n\n{{REFINED_REQUIREMENTS}}\n\nDesign the final set of pages, data models, and API endpoints. Provide detailed specifications and relationships."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code and stubs for UI pages and API endpoints based on the finalized design.",
+        "promptTemplate": "Given the finalized design documents:\n\n{{FINAL_DESIGN}}\n\nGenerate code stubs and scaffolds for the UI pages and API routes to kickstart development."
+      },
+      {
+        "id": "integrator-wire-components",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate UI pages with API endpoints and database models, ensuring data flow and security compliance.",
+        "promptTemplate": "Based on the generated stubs and data models:\n\n{{CODE_STUBS}}\n\nProvide integration instructions and code samples for connecting UI, API, and database layers with proper validation and security."
+      }
+    ]
+  }
+}

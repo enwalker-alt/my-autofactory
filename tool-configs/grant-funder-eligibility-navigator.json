@@ -1,0 +1,836 @@
+{
+  "slug": "grant-funder-eligibility-navigator",
+  "title": "Academic Research Grant Funder Eligibility & Restriction Navigator",
+  "description": "Single-page web tool for academic research grant writers and administrators to input project scope, investigator profiles, and institution data, upload funder eligibility criteria documents, and receive a ranked list of eligible funders with detailed match explanations and alerts to guide proposal targeting decisions.",
+  "inputLabel": "Enter your project research scope, investigator profiles, institution data, and upload funder eligibility criteria documents (PDF or supported formats).",
+  "outputLabel": "Ranked eligible funders with detailed eligibility match scores, explanations, and alerts.",
+  "systemPrompt": "You are an eligibility screening assistant for academic research grant funding. Accept project research scope, investigator profiles, institution data as JSON or text, and optionally accept PDF or supported file uploads of funder eligibility criteria. Validate that uploaded files are supported formats and safe. Refuse unsupported or unsafe files. Parse and analyze the inputs to generate a ranked list of eligible funders and programs with clear explanations of matched and unmatched eligibility criteria and alerts on any funding restrictions or conflicts. Output plain text summary of eligibility ranking and detailed explanations. Do not provide legal or financial advice. Enforce data privacy and security. If inputs are incomplete or invalid, respond with clear error messages. Always produce safe, transparent, and explainable output.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary View",
+      "prompt": "Provide a concise ranked list of eligible funders with overall eligibility scores based on the provided project and funder criteria.",
+      "hint": "Use this for quick overview of top matching funders."
+    },
+    {
+      "label": "Detailed Explanation",
+      "prompt": "Provide detailed explanations of matched and unmatched eligibility criteria per funder, including alerts on restrictions or conflicts.",
+      "hint": "Use this to understand why funders are eligible or ineligible."
+    },
+    {
+      "label": "Eligibility Report Format",
+      "prompt": "Generate a structured eligibility summary report suitable for download including ranked funders, eligibility scores, detailed match explanations, and alerts.",
+      "hint": "Use this to export a complete eligibility report."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output a JSON object with keys: rankedFunders (array of funder objects with id, name, score), explanations (object mapping funderId to matchedCriteria, unmatchedCriteria, alerts arrays), and alerts (global alerts array).",
+  "clarifyPrompt": "Please provide the project research scope description, investigator profiles (names, affiliations, prior funding), institution data (name, type, location), and upload any funder eligibility criteria documents (PDF or supported formats). Ensure all inputs follow the required formats. If you have any questions or need to correct inputs, please clarify now.",
+  "finalizePrompt": "Confirm that all required project, investigator, institution, and funder criteria inputs are complete and valid. Proceed to generate the ranked eligibility list with detailed explanations and alerts.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Funder Eligibility & Restriction Navigator",
+      "niche": {
+        "role": "Academic Research Grant Writers and Administrators",
+        "scenario": "Identifying and screening suitable grant funders early in the proposal planning phase considering complex eligibility criteria and funding restrictions"
+      },
+      "problem": "Grant writers and administrators struggle to efficiently identify which funders and funding programs their research project is eligible for due to complex, multi-layered eligibility criteria (institutional, geographic, thematic, investigator qualifications) and numerous restrictions (budget limits, funding overlap bans, prior award history). Manual review of funding calls is time-consuming and error-prone, increasing risk of wasted effort on ineligible or inappropriate funders.",
+      "inputs": [
+        "Project research scope description",
+        "Investigator profiles (CV, affiliations, prior funding)",
+        "Institutional data (type, location, partnerships)",
+        "Preloaded or uploaded funder eligibility criteria and restrictions database (PDFs, guidelines, structured data)"
+      ],
+      "outputs": [
+        "Ranked list of eligible funders/programs with detailed eligibility match scores",
+        "Clear explanations of matched and unmatched eligibility criteria per funder",
+        "Alerts on potential funding restrictions or conflicts",
+        "Downloadable eligibility summary reports to guide proposal targeting decisions"
+      ],
+      "whyItWins": [
+        "Automates complex eligibility screening across multiple nuanced criteria, saving grant teams hours of manual work",
+        "Provides transparent, explainable eligibility rationales to support decision-making and reduce risk",
+        "Improves targeting accuracy, increasing chance of funding success and reducing wasted proposal effort",
+        "Scales easily with updated funder databases and evolving criteria, adaptable to multi-institutional teams"
+      ],
+      "upgradePath": {
+        "today": "Lightweight web tool where users input project and team data and upload funder criteria documents to receive a ranked eligibility list with textual match explanations",
+        "in90Days": "Add interactive dashboards to explore eligibility by criterion, filter funders by custom constraints, and integrate public funder data sources for automatic updates",
+        "in12Months": "Develop a multi-page app with collaborative team accounts, funder calendar integration, proposal deadline tracking, and predictive recommendation of best-fit funders based on historical success and project metadata"
+      },
+      "riskNotes": [
+        "Accuracy depends on quality and currency of funder eligibility data; requires ongoing updates",
+        "Must avoid legal/financial advice language; tool provides decision support only",
+        "Data privacy for uploaded investigator and project information must be ensured",
+        "Potential complexity in parsing diverse funder documents may require user validation of parsed criteria"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web application to help academic research grant writers and administrators efficiently identify eligible funders by automating complex eligibility screening based on multi-layered criteria and restrictions, providing transparent match explanations and actionable insights.",
+      "primaryUser": "Academic research grant writers and administrators",
+      "successMetrics": [
+        "Reduction in time spent screening funders by grant teams",
+        "Increase in accuracy of eligibility matches (validated by user feedback)",
+        "User adoption and engagement with eligibility reports and dashboards",
+        "Number of funders and criteria successfully parsed and updated",
+        "User retention and collaborative team usage growth"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend UI",
+          "type": "ui",
+          "responsibility": "Provides user interfaces for data input, funder eligibility results, detailed explanations, dashboards, reports, and team collaboration features.",
+          "dependsOn": [
+            "api-core",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports multi-page navigation: input forms, results, dashboards, team management",
+            "Handles file uploads for funder criteria documents",
+            "Displays detailed eligibility match scores and explanations",
+            "Allows report downloads and alerts viewing",
+            "Responsive design for accessibility"
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Manages user accounts, team collaboration permissions, and secure access control.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Supports user registration, login, password reset",
+            "Manages team roles and shared project access",
+            "Ensures data privacy and secure sessions"
+          ]
+        },
+        {
+          "id": "api-core",
+          "name": "Eligibility Screening API",
+          "type": "api",
+          "responsibility": "Processes input data, parses funder eligibility criteria, matches projects and investigators to funders, scores eligibility, and generates explanations and alerts.",
+          "dependsOn": [
+            "data-projects",
+            "data-investigators",
+            "data-institutions",
+            "data-funders"
+          ],
+          "notes": [
+            "Handles parsing of uploaded funder documents with user validation",
+            "Executes complex multi-criteria matching logic",
+            "Generates ranked eligibility lists with detailed scoring",
+            "Produces alerts for restrictions and conflicts",
+            "Supports report generation endpoints"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Primary Data Storage",
+          "type": "data",
+          "responsibility": "Persists all core data: users, teams, projects, investigators, institutions, funders, eligibility criteria, match results, and reports.",
+          "dependsOn": [],
+          "notes": [
+            "Stores structured data models with indexes for efficient querying",
+            "Ensures data privacy and encryption at rest",
+            "Supports versioning or history of funder criteria updates"
+          ]
+        },
+        {
+          "id": "job-funder-data-update",
+          "name": "Funder Data Update Job",
+          "type": "job",
+          "responsibility": "Periodically fetches and integrates public funder data sources and updates eligibility criteria database.",
+          "dependsOn": [
+            "data-funders",
+            "integration-public-funder-sources"
+          ],
+          "notes": [
+            "Runs on schedule (e.g., daily or weekly)",
+            "Validates and flags new or changed criteria for review",
+            "Handles failures with retry and alerting"
+          ]
+        },
+        {
+          "id": "integration-public-funder-sources",
+          "name": "Public Funder Data Integrations",
+          "type": "integration",
+          "responsibility": "Connects to external public databases and APIs to retrieve funder eligibility data for automatic updates.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multiple funder data formats and APIs",
+            "Normalizes and structures incoming data",
+            "Handles API rate limits and errors gracefully"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Stores user account and authentication information",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLoginAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Team",
+          "purpose": "Represents collaborative groups of users working on projects",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "memberUserIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Stores research project details including scope and associated team",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "teamId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "researchScopeDescription",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "teamId"
+          ]
+        },
+        {
+          "name": "Investigator",
+          "purpose": "Profiles of investigators including CV, affiliations, and prior funding",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "cvText",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "affiliations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "priorFunding",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId"
+          ]
+        },
+        {
+          "name": "Institution",
+          "purpose": "Institutional data relevant for eligibility (type, location, partnerships)",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "partnerships",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "name",
+            "location"
+          ]
+        },
+        {
+          "name": "Funder",
+          "purpose": "Funding organizations and their programs with eligibility criteria and restrictions",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "programs",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "eligibilityCriteria",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "restrictions",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "EligibilityMatch",
+          "purpose": "Stores results of eligibility screening with scores, explanations, and alerts",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "score",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "matchedCriteria",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "unmatchedCriteria",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "alerts",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "funderId"
+          ]
+        },
+        {
+          "name": "Report",
+          "purpose": "Downloadable eligibility summary reports generated for projects",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileUrl",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "login success/failure",
+            "session token"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Project Dashboard",
+          "purpose": "Overview of user's projects, teams, and recent eligibility screenings",
+          "inputs": [],
+          "outputs": [
+            "project list",
+            "team info",
+            "recent results summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/new",
+          "title": "Create New Project",
+          "purpose": "Input new research project details and associated investigators/institution data",
+          "inputs": [
+            "project title",
+            "research scope description",
+            "investigator profiles",
+            "institution data"
+          ],
+          "outputs": [
+            "project created confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:id/eligibility",
+          "title": "Eligibility Results",
+          "purpose": "Display ranked list of eligible funders with detailed match scores, explanations, and alerts",
+          "inputs": [
+            "project id"
+          ],
+          "outputs": [
+            "ranked funder list",
+            "match explanations",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:id/report",
+          "title": "Eligibility Report Download",
+          "purpose": "Allow users to download eligibility summary reports for their projects",
+          "inputs": [
+            "project id"
+          ],
+          "outputs": [
+            "report file download link"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/funders/upload",
+          "title": "Upload Funder Criteria",
+          "purpose": "Upload funder eligibility documents (PDFs, guidelines) for parsing and inclusion",
+          "inputs": [
+            "file upload"
+          ],
+          "outputs": [
+            "parsing results",
+            "validation prompts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/team",
+          "title": "Team Management",
+          "purpose": "Manage team members, roles, and shared project access",
+          "inputs": [
+            "team info",
+            "member invites"
+          ],
+          "outputs": [
+            "team member list",
+            "role assignments"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project with associated data",
+          "requestShape": "{ title: string, researchScopeDescription: string, investigators: json, institution: json }",
+          "responseShape": "{ projectId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:id/eligibility",
+          "method": "GET",
+          "purpose": "Retrieve eligibility screening results for a project",
+          "requestShape": "{ }",
+          "responseShape": "{ rankedFunders: json, explanations: json, alerts: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funders/upload",
+          "method": "POST",
+          "purpose": "Upload funder eligibility documents for parsing",
+          "requestShape": "{ file: binary }",
+          "responseShape": "{ parsingSummary: json, validationIssues: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/:projectId/download",
+          "method": "GET",
+          "purpose": "Download eligibility summary report for a project",
+          "requestShape": "{ }",
+          "responseShape": "{ fileUrl: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/teams",
+          "method": "POST",
+          "purpose": "Create or update team and manage members",
+          "requestShape": "{ name: string, memberUserIds: string[] }",
+          "responseShape": "{ teamId: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Funder Data Update Job",
+          "trigger": "Scheduled (e.g., daily)",
+          "purpose": "Fetch and integrate updated public funder eligibility data, validate changes, and update database"
+        }
+      ],
+      "edgeCases": [
+        "Uploaded funder documents are in unsupported formats or poorly scanned PDFs requiring user validation",
+        "Conflicting eligibility criteria between multiple funder programs for the same project",
+        "Incomplete or inconsistent investigator or institutional data input by users",
+        "Data privacy breach attempts or unauthorized access to sensitive project/investigator data",
+        "API rate limits or failures from public funder data sources during automated updates",
+        "Users uploading outdated or incorrect funder criteria leading to inaccurate eligibility matches",
+        "Network failures during file uploads or report downloads",
+        "Simultaneous edits in team management causing conflicting permissions"
+      ],
+      "nonGoals": [
+        "Providing legal or financial advice regarding grant applications",
+        "Automatically writing grant proposals or content generation",
+        "Handling actual grant submission processes or integrations with funder portals",
+        "Full automation of complex natural language understanding of all funder documents without user validation",
+        "Offline or mobile app versions in initial phases"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses frontend UI pages (login, dashboard, project creation, eligibility results, report download, funder upload, team management).",
+        "Frontend sends authenticated API requests to api-auth for user login, registration, and session management.",
+        "Upon project creation, frontend sends project details, investigator profiles, and institution data to /api/projects POST endpoint.",
+        "api-core processes project creation, persists data in data-storage, and returns projectId.",
+        "When user requests eligibility results for a project, frontend calls /api/projects/:id/eligibility GET endpoint.",
+        "api-core retrieves project, investigator, institution, and funder data from data-storage, runs eligibility matching logic, and returns ranked funders with explanations and alerts.",
+        "For funder criteria uploads, frontend sends file binary to /api/funders/upload POST endpoint.",
+        "api-core parses uploaded documents, validates parsed data, stores or flags criteria in data-storage, and returns parsing summary and validation issues.",
+        "Report download requests to /api/reports/:projectId/download GET endpoint return report file URLs stored in data-storage.",
+        "Team management actions send team info and member user IDs to /api/teams POST endpoint, which updates team data in data-storage.",
+        "Background job 'Funder Data Update Job' periodically fetches public funder data via integration-public-funder-sources, normalizes and validates data, updates funder criteria in data-storage, and flags changes for review.",
+        "All API routes enforce authentication and authorization via api-auth to ensure data privacy and secure access."
+      ],
+      "validationRules": [
+        "Login: email must be valid format, password non-empty.",
+        "Project creation: title and researchScopeDescription required and non-empty strings.",
+        "Investigator profiles: each must have a non-empty name; optional CV text, affiliations, and prior funding must be valid JSON if provided.",
+        "Institution data: name, type, and location required; partnerships optional JSON.",
+        "Funder upload: file must be PDF or supported document format; reject unsupported or corrupted files.",
+        "Team management: team name required; memberUserIds must be array of valid existing user IDs.",
+        "Eligibility matching inputs: projectId must exist and belong to requesting user’s team.",
+        "Report download: projectId must exist and belong to requesting user’s team.",
+        "API requests must include valid session tokens for authenticated endpoints.",
+        "Uploaded funder documents must pass basic parsing validation; flag ambiguous or incomplete criteria for user review.",
+        "Prevent duplicate team names within the same user context.",
+        "File uploads limited in size and scanned document quality flagged for manual validation."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with descriptive error messages for validation failures.",
+        "Return 401 Unauthorized if authentication token is missing or invalid.",
+        "Return 403 Forbidden if user attempts access to projects, teams, or reports they do not have permission for.",
+        "Return 404 Not Found if requested project, funder, or team does not exist.",
+        "Return 413 Payload Too Large for oversized file uploads.",
+        "Return 500 Internal Server Error for unexpected failures with logging for diagnostics.",
+        "For funder upload parsing errors, return partial parsing results with validation issues for user correction.",
+        "Background job failures trigger retries with exponential backoff and alerting to system admins.",
+        "Handle API rate limit errors from external funder sources gracefully by backing off and logging.",
+        "Network failures during uploads or downloads prompt user-friendly retry messages.",
+        "Simultaneous team edits use optimistic concurrency control with conflict error messages."
+      ],
+      "securityNotes": [
+        "All API endpoints except login require JWT or session token authentication.",
+        "Passwords stored hashed using a strong algorithm (e.g., bcrypt).",
+        "Access control enforced to restrict project, team, and report data to authorized users only.",
+        "File uploads scanned for malware and restricted to safe types and sizes.",
+        "Data at rest encrypted in database storage.",
+        "Sensitive investigator and project data access logged and monitored.",
+        "Rate limiting applied on API endpoints to prevent abuse.",
+        "Use HTTPS for all client-server communications.",
+        "Implement CSRF protection on state-changing endpoints.",
+        "Ensure team management actions verify user roles before allowing member or role changes."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login page",
+          "then": "They receive a session token and are redirected to /dashboard"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /project/new page",
+          "when": "They submit valid project title, scope, investigator profiles, and institution data",
+          "then": "The project is created, stored, and a confirmation with projectId is returned"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user with a created project",
+          "when": "They request eligibility results for that project",
+          "then": "They receive a ranked list of funders with detailed match scores, explanations, and alerts"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user on /funders/upload page",
+          "when": "They upload a supported funder eligibility document",
+          "then": "The system parses the document, returns parsing summary, and prompts for validation if needed"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on /project/:id/report page",
+          "when": "They request to download the eligibility summary report",
+          "then": "They receive a valid file download link for the report"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user on /team page",
+          "when": "They create or update a team with valid member user IDs",
+          "then": "The team is saved and member list and roles are updated accordingly"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user tries to access /dashboard",
+          "when": "They navigate to /dashboard",
+          "then": "They are redirected to /login"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads an unsupported file format on /funders/upload",
+          "when": "The upload is submitted",
+          "then": "The system rejects the file with a clear error message"
+        },
+        {
+          "id": "AT-009",
+          "given": "The background job runs on schedule",
+          "when": "It fetches public funder data",
+          "then": "It updates funder eligibility criteria in the database and flags changes for review"
+        },
+        {
+          "id": "AT-010",
+          "given": "Two users attempt to edit the same team simultaneously",
+          "when": "Both submit conflicting changes",
+          "then": "One update succeeds and the other receives a conflict error prompting retry"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models for all entities (User, Team, Project, Investigator, Institution, Funder, EligibilityMatch, Report).",
+        "Implement api-auth routes and user authentication logic including registration, login, password hashing, and session management.",
+        "Build frontend login page and session handling.",
+        "Implement api-core endpoints for project creation and eligibility screening logic.",
+        "Build frontend pages for project creation, dashboard, and eligibility results.",
+        "Implement funder upload API route with document parsing and validation.",
+        "Build frontend funder upload page with file upload and validation UI.",
+        "Implement report generation and download API endpoints.",
+        "Build frontend report download page.",
+        "Implement team management API and frontend pages with role and member management.",
+        "Develop background job for funder data updates integrating public funder sources.",
+        "Implement integration layer for public funder data sources with normalization and error handling.",
+        "Add comprehensive validation and error handling across all APIs and frontend forms.",
+        "Implement security features: authentication enforcement, authorization checks, data encryption, and rate limiting.",
+        "Conduct acceptance testing and edge case handling.",
+        "Deploy and monitor system with logging and alerting."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/project/new",
+          "/project/[id]/eligibility",
+          "/project/[id]/report",
+          "/funders/upload",
+          "/team"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/projects/index.ts",
+          "/api/projects/[id]/eligibility.ts",
+          "/api/funders/upload.ts",
+          "/api/reports/[projectId]/download.ts",
+          "/api/teams/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Team",
+          "Project",
+          "Investigator",
+          "Institution",
+          "Funder",
+          "EligibilityMatch",
+          "Report"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, clarifications, or additional requirements from the user to better define the tool scope and inputs.",
+        "promptTemplate": "Given the current blueprint and expanded specs {{BLUEPRINT}} and {{EXPANDED}}, please provide any missing constraints, input validation rules, or user scenarios to further refine the requirements for the Academic Research Grant Funder Eligibility & Restriction Navigator. Your input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Outline and finalize the pages, UI components, and data models to be implemented in the multi-page app.",
+        "promptTemplate": "Based on the refined requirements and blueprint {{BLUEPRINT}}, draft the finalized list of pages, input/output data models, and API routes needed to implement the Academic Research Grant Funder Eligibility & Restriction Navigator. Include data field definitions and inter-component dependencies. Your notes: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial frontend page stubs with input forms and output placeholders for the planned routes.",
+        "promptTemplate": "Using the finalized page and data model design {{BLUEPRINT}}, create code stubs for the frontend pages including input forms for project details, investigator profiles, institution data, funder uploads, eligibility results, report downloads, and team management. Include placeholder UI elements and validation hooks. Any special notes: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement API endpoints and connect frontend pages to backend logic and database models.",
+        "promptTemplate": "Implement the API routes and backend logic as per the blueprint {{BLUEPRINT}} and expanded specs {{EXPANDED}}. Wire the frontend pages to these APIs ensuring authentication, data validation, error handling, and security best practices. Provide integration details and notes: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

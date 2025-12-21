@@ -1,0 +1,773 @@
+{
+  "slug": "academic-protocol-compliance-tracker",
+  "title": "Academic Research Protocol Compliance Tracker",
+  "description": "A single-page app tool for academic research study coordinators to manually input protocol checklists, site progress updates, and deviation reports, producing real-time compliance summaries, alerts, and actionable recommendations to support multi-site data collection protocol adherence.",
+  "inputLabel": "Enter protocol checklist items, site progress updates, and deviation reports (JSON or text). You may optionally upload a protocol document file.",
+  "outputLabel": "Compliance summary, alerts, and recommendations",
+  "systemPrompt": "You are an expert assistant for managing academic research data collection protocol compliance. Accept user input containing protocol checklist items, site progress updates, and deviation reports. Validate all inputs for required fields and correct JSON format. Reject any requests involving participant-level data, automated decision-making, or unauthorized data access. Produce a clear and concise compliance summary indicating protocol adherence status per site, list active alerts with severity, and provide actionable recommendations. Output must be plain text or valid JSON if requested. Enforce strict data privacy and disclaim that this tool aids monitoring but does not replace expert oversight. If inputs are invalid or incomplete, respond with specific validation error messages. Do not process disallowed content or unauthorized requests.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Focus",
+      "prompt": "Provide a concise compliance summary highlighting protocol adherence status and any deviations detected.",
+      "hint": "Use this to get a quick overview without detailed reports."
+    },
+    {
+      "label": "Alerts and Recommendations",
+      "prompt": "Focus on listing active alerts and actionable recommendations for resolving protocol deviations and data quality issues.",
+      "hint": "Ideal for coordinating immediate follow-up tasks."
+    },
+    {
+      "label": "Full Compliance Report",
+      "prompt": "Generate a detailed compliance report including timestamped logs, site progress summaries, deviation details, and audit notes.",
+      "hint": "Use for audit preparation and regulatory review."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON object should include fields: complianceSummary (string), alerts (array of {siteId, message, severity}), recommendations (array of strings).",
+  "clarifyPrompt": "Please provide the protocol checklist items, site progress updates, and any deviation reports you want to analyze. You may also upload the protocol document file for reference.",
+  "finalizePrompt": "Confirm you want to generate the compliance summary, alerts, and recommendations based on the provided inputs.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Protocol Compliance Tracker",
+      "niche": {
+        "role": "Academic Research Study Coordinator",
+        "scenario": "Managing multi-site data collection protocols to ensure real-time adherence and quick issue resolution during active research data collection phases."
+      },
+      "problem": "Study coordinators struggle to continuously monitor and document compliance with complex data collection protocols across multiple sites, leading to delayed identification of deviations, inconsistent data quality, and cumbersome manual reporting.",
+      "inputs": [
+        "Approved data collection protocol documents (structured or text)",
+        "Site-specific data collection progress logs",
+        "Real-time manual or automated event reports (e.g., deviations, missing data points)",
+        "Compliance checklist items extracted or input from protocols"
+      ],
+      "outputs": [
+        "Dynamic compliance dashboard summarizing protocol adherence status per site and overall",
+        "Automated alerts for detected or reported protocol deviations or data quality issues",
+        "Structured compliance reports with timestamped logs for audit and review",
+        "Actionable recommendations and follow-up task assignments for coordinators and site teams"
+      ],
+      "whyItWins": [
+        "Integrates real-time data collection monitoring with protocol compliance tracking in a unified workflow",
+        "Reduces manual effort and delays in detecting and resolving data collection issues",
+        "Supports consistent documentation for audits and regulatory reviews",
+        "Scalable from simple checklist tracking to automated data integration and analytics",
+        "Fills a gap between static protocol documents and fragmented site reports by providing actionable insights"
+      ],
+      "upgradePath": {
+        "today": "Single-page app allowing manual input of protocol checklists, site progress updates, and deviation reports to generate compliance summaries and alerts.",
+        "in90Days": "Add integrations with common electronic data capture systems and mobile data entry tools for semi-automated data ingestion and real-time dashboard updates.",
+        "in12Months": "Develop a full multi-page system with user roles, multi-site collaboration features, protocol version control, automated anomaly detection using data analytics, and comprehensive audit trail management."
+      },
+      "riskNotes": [
+        "Ensure strict data privacy and security compliance when handling sensitive research data and participant information.",
+        "Avoid any automated decisions that could replace expert judgment; outputs should assist but not override human protocol oversight.",
+        "Require user authentication and role-based access control to protect sensitive compliance data.",
+        "Clearly disclaim that the tool aids compliance monitoring but does not substitute for regulatory or ethical review."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-site academic research data collection protocol compliance tracker that integrates manual and automated inputs to provide real-time monitoring, alerts, and reporting for study coordinators, ensuring adherence to protocols and facilitating audit-ready documentation.",
+      "primaryUser": "Academic Research Study Coordinator",
+      "successMetrics": [
+        "Reduction in time to detect and resolve protocol deviations",
+        "Increase in completeness and timeliness of compliance documentation",
+        "User adoption rate across multiple research sites",
+        "Number of automated alerts generated and acted upon",
+        "Audit readiness and positive regulatory review feedback"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Compliance Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide real-time visualization of protocol adherence status per site and overall, display alerts, and actionable recommendations.",
+          "dependsOn": [
+            "api-compliance",
+            "data-protocols",
+            "api-alerts"
+          ],
+          "notes": [
+            "Must support role-based views (coordinator vs site team).",
+            "Dynamic updates for real-time monitoring.",
+            "Mobile-friendly for on-the-go access."
+          ]
+        },
+        {
+          "id": "ui-data-entry",
+          "name": "Manual Data Entry UI",
+          "type": "ui",
+          "responsibility": "Allow users to input protocol checklists, site progress updates, and deviation reports manually.",
+          "dependsOn": [
+            "api-data-entry",
+            "data-protocols"
+          ],
+          "notes": [
+            "Input validation to ensure data quality.",
+            "Support for attaching documents or notes.",
+            "Audit logging of all manual entries."
+          ]
+        },
+        {
+          "id": "api-compliance",
+          "name": "Compliance Monitoring API",
+          "type": "api",
+          "responsibility": "Process inputs from manual entries and integrations to evaluate protocol adherence, generate compliance summaries, and provide data for dashboards and reports.",
+          "dependsOn": [
+            "data-protocols",
+            "data-siteProgress",
+            "data-deviations"
+          ],
+          "notes": [
+            "Implements business logic for compliance rules.",
+            "Handles protocol versioning and site-specific adaptations.",
+            "Exposes endpoints for dashboard and reporting."
+          ]
+        },
+        {
+          "id": "api-alerts",
+          "name": "Alerts and Notifications API",
+          "type": "api",
+          "responsibility": "Generate, manage, and deliver automated alerts for detected or reported protocol deviations and data quality issues.",
+          "dependsOn": [
+            "api-compliance",
+            "data-alerts",
+            "integration-edc"
+          ],
+          "notes": [
+            "Supports configurable alert thresholds and channels (email, in-app).",
+            "Ensures alerts are actionable and traceable.",
+            "Rate limits to avoid alert fatigue."
+          ]
+        },
+        {
+          "id": "data-protocols",
+          "name": "Protocol and Compliance Data Store",
+          "type": "data",
+          "responsibility": "Persist approved protocol documents, extracted compliance checklists, protocol versions, and related metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Supports structured and unstructured protocol data.",
+            "Version control for protocols to track changes over time."
+          ]
+        },
+        {
+          "id": "data-siteProgress",
+          "name": "Site Progress and Event Logs Store",
+          "type": "data",
+          "responsibility": "Store site-specific data collection progress logs, manual and automated event reports including deviations and missing data points.",
+          "dependsOn": [],
+          "notes": [
+            "Timestamped entries for audit trail.",
+            "Supports linking events to specific protocol items."
+          ]
+        },
+        {
+          "id": "background-job-anomalyDetection",
+          "name": "Anomaly Detection Job",
+          "type": "job",
+          "responsibility": "Periodically analyze collected data to detect unusual patterns or potential protocol deviations using data analytics.",
+          "dependsOn": [
+            "data-siteProgress",
+            "data-protocols"
+          ],
+          "notes": [
+            "Runs asynchronously to avoid impacting real-time performance.",
+            "Outputs feed into alerts and recommendations."
+          ]
+        },
+        {
+          "id": "integration-edc",
+          "name": "Electronic Data Capture (EDC) Integration",
+          "type": "integration",
+          "responsibility": "Ingest data from common EDC systems and mobile data entry tools to semi-automate data collection and update compliance status.",
+          "dependsOn": [
+            "api-compliance",
+            "data-siteProgress"
+          ],
+          "notes": [
+            "Handles data format normalization and error handling.",
+            "Requires secure authentication and data privacy compliance."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Protocol",
+          "purpose": "Store approved research data collection protocols and compliance checklists.",
+          "fields": [
+            {
+              "name": "protocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "document",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "checklistItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "protocolId",
+            "version"
+          ]
+        },
+        {
+          "name": "SiteProgressLog",
+          "purpose": "Capture site-specific data collection progress and event logs.",
+          "fields": [
+            {
+              "name": "logId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "protocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "eventType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "reportedBy",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "protocolId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "DeviationReport",
+          "purpose": "Record reported protocol deviations or data quality issues.",
+          "fields": [
+            {
+              "name": "deviationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "protocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "checklistItemId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "detectedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "resolvedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "reportedBy",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "protocolId",
+            "status"
+          ]
+        },
+        {
+          "name": "Alert",
+          "purpose": "Store generated alerts for deviations and compliance issues.",
+          "fields": [
+            {
+              "name": "alertId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedDeviationId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "severity",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "acknowledged",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "acknowledgedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "severity",
+            "acknowledged"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user authentication and authorization data.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "role"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Compliance Dashboard",
+          "purpose": "Display real-time protocol adherence status, alerts, and actionable recommendations.",
+          "inputs": [],
+          "outputs": [
+            "compliance summaries",
+            "alerts",
+            "recommendations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/data-entry",
+          "title": "Manual Data Entry",
+          "purpose": "Allow users to input protocol checklists, site progress updates, and deviation reports.",
+          "inputs": [
+            "protocol checklist items",
+            "site progress data",
+            "deviation reports"
+          ],
+          "outputs": [
+            "confirmation of data saved",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Compliance Reports",
+          "purpose": "Generate and download structured compliance reports with timestamped logs for audit and review.",
+          "inputs": [
+            "date range",
+            "site selection",
+            "protocol version"
+          ],
+          "outputs": [
+            "compliance reports (PDF/CSV)"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/admin/users",
+          "title": "User and Role Management",
+          "purpose": "Manage user accounts and assign roles for access control.",
+          "inputs": [
+            "user details",
+            "role assignments"
+          ],
+          "outputs": [
+            "user list",
+            "confirmation messages"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/compliance/status",
+          "method": "GET",
+          "purpose": "Retrieve current compliance status summaries per site and overall.",
+          "requestShape": "query params: siteId (optional), protocolId (optional)",
+          "responseShape": "JSON object with compliance metrics and status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/data-entry/progress",
+          "method": "POST",
+          "purpose": "Submit site progress updates and event logs.",
+          "requestShape": "JSON with siteId, protocolId, eventType, details",
+          "responseShape": "confirmation with saved record ID or error",
+          "auth": "user"
+        },
+        {
+          "route": "/api/data-entry/deviation",
+          "method": "POST",
+          "purpose": "Report a protocol deviation or data quality issue.",
+          "requestShape": "JSON with siteId, protocolId, description, checklistItemId (optional)",
+          "responseShape": "confirmation with deviationId or error",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts",
+          "method": "GET",
+          "purpose": "Fetch active alerts for the authenticated user’s sites.",
+          "requestShape": "query params: siteId (optional)",
+          "responseShape": "list of alert objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/compliance",
+          "method": "GET",
+          "purpose": "Generate compliance reports for specified parameters.",
+          "requestShape": "query params: siteId, protocolId, dateRange",
+          "responseShape": "report file link or error",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue access token.",
+          "requestShape": "JSON with email and password",
+          "responseShape": "authentication token and user info or error",
+          "auth": "public"
+        },
+        {
+          "route": "/api/admin/users",
+          "method": "POST",
+          "purpose": "Create or update user accounts and roles.",
+          "requestShape": "JSON with user details and role",
+          "responseShape": "confirmation or error",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Anomaly Detection Job",
+          "trigger": "Scheduled (e.g., hourly/daily)",
+          "purpose": "Analyze collected data to detect anomalies or potential protocol deviations and feed alerts."
+        },
+        {
+          "name": "Alert Notification Dispatcher",
+          "trigger": "On new alert creation",
+          "purpose": "Send alert notifications via configured channels (email, in-app) to relevant users."
+        },
+        {
+          "name": "Data Integration Sync",
+          "trigger": "Scheduled or webhook from EDC systems",
+          "purpose": "Fetch and ingest new data from integrated electronic data capture and mobile tools."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or inconsistent protocol documents and checklist extractions.",
+        "Sites reporting delayed or missing progress updates impacting real-time accuracy.",
+        "False positive alerts due to transient data anomalies or integration errors.",
+        "User input errors causing invalid or conflicting data entries.",
+        "Protocol version changes mid-study requiring data reconciliation.",
+        "Network or integration failures causing data ingestion delays.",
+        "Ensuring data privacy and access restrictions in multi-site, multi-role environments.",
+        "Handling simultaneous edits or updates to protocol checklists or site data."
+      ],
+      "nonGoals": [
+        "Automated decision making replacing expert human protocol oversight.",
+        "Direct management of participant-level research data beyond compliance metadata.",
+        "Full electronic data capture system functionality (focus is on compliance tracking).",
+        "Regulatory or ethical review processes or approvals.",
+        "Offline data collection without network connectivity support.",
+        "Complex machine learning models beyond basic anomaly detection."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User logs in via /login page, sending credentials to /api/auth/login; receives authentication token and user info.",
+        "Authenticated user accesses /dashboard page; dashboard UI calls /api/compliance/status with optional siteId and protocolId to fetch compliance summaries, alerts from /api/alerts, and recommendations.",
+        "User accesses /data-entry page to submit manual data: protocol checklist items, site progress updates, and deviation reports.",
+        "Data-entry UI sends POST requests to /api/data-entry/progress and /api/data-entry/deviation with validated input data.",
+        "Compliance Monitoring API (/api/compliance) processes manual and integrated data, applies business logic, and updates compliance status.",
+        "Alerts API (/api/alerts) fetches active alerts for user’s sites; background jobs generate alerts based on anomaly detection and compliance evaluations.",
+        "Background job Anomaly Detection periodically analyzes site progress and protocol data to detect deviations, feeding results into alerts and recommendations.",
+        "EDC Integration ingests external data, normalizes it, and updates site progress and compliance status via API calls.",
+        "User accesses /reports page, which calls /api/reports/compliance with filters to generate downloadable compliance reports.",
+        "Admin users manage users and roles via /admin/users page, interacting with /api/admin/users to create/update user accounts.",
+        "Audit logging occurs for all manual data entries and critical actions to ensure traceability."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password required; reject invalid credentials with generic error.",
+        "Data Entry Progress: siteId, protocolId, eventType required; details optional but if present must be valid JSON; timestamp auto-generated server-side.",
+        "Deviation Reports: siteId, protocolId, description required; checklistItemId optional but if provided must exist in protocol checklist; status defaults to 'Open' on creation.",
+        "Compliance Status API: siteId and protocolId if provided must correspond to existing records; reject invalid IDs.",
+        "Alerts API: siteId optional; if provided must be valid and accessible by user.",
+        "Reports API: siteId, protocolId required; dateRange must be valid date interval with start <= end.",
+        "User Management: email unique and valid; role must be one of predefined roles (e.g., coordinator, site team, admin); password complexity enforced on creation/update.",
+        "Protocol Documents: JSON structure validated for required fields and checklistItems format.",
+        "All inputs sanitized to prevent injection attacks and ensure data integrity."
+      ],
+      "errorHandling": [
+        "API endpoints return standardized JSON error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors).",
+        "Validation errors include field-specific messages to guide user correction.",
+        "Authentication failures return generic error to avoid user enumeration.",
+        "Integration data ingestion logs errors and retries transient failures; alerts generated for persistent issues.",
+        "Background jobs log exceptions and send notifications to admins if critical failures occur.",
+        "Rate limiting applied on alert generation and API calls to prevent overload and alert fatigue.",
+        "UI displays user-friendly error messages and retry options where applicable.",
+        "Concurrent data updates use optimistic locking or version checks to prevent conflicts."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/login require authentication via JWT tokens or session cookies.",
+        "Role-based access control enforced on UI and API layers to restrict data and actions per user role.",
+        "Sensitive data such as passwords stored hashed with strong algorithms (e.g., bcrypt).",
+        "Data privacy ensured by scoping data access to user’s authorized sites only.",
+        "EDC integration uses secure authentication methods (e.g., OAuth, API keys) and encrypted data transmission.",
+        "Audit logs maintained for all manual data entries and critical operations for traceability and compliance.",
+        "Input validation and sanitization prevent injection and XSS attacks.",
+        "HTTPS enforced for all client-server communications.",
+        "Rate limiting and monitoring to detect and prevent abuse."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with coordinator role is logged in",
+          "when": "They access the /dashboard page",
+          "then": "They see real-time compliance summaries, active alerts, and recommendations relevant to their authorized sites"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user is on the /data-entry page",
+          "when": "They submit a valid site progress update",
+          "then": "The system saves the entry, logs the action, and returns confirmation with the saved record ID"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user submits a deviation report missing required fields",
+          "when": "The POST request is made to /api/data-entry/deviation",
+          "then": "The API responds with a 400 error and descriptive validation error messages"
+        },
+        {
+          "id": "AT-004",
+          "given": "An anomaly is detected by the background job",
+          "when": "The job runs successfully",
+          "then": "A new alert is generated, stored, and dispatched to relevant users without exceeding rate limits"
+        },
+        {
+          "id": "AT-005",
+          "given": "An unauthorized user attempts to access /dashboard",
+          "when": "They navigate to the page",
+          "then": "They are redirected to the /login page"
+        },
+        {
+          "id": "AT-006",
+          "given": "An admin user accesses /admin/users",
+          "when": "They create a new user with valid details and role",
+          "then": "The user is created, stored securely, and a confirmation message is returned"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user requests a compliance report with valid filters",
+          "when": "They call /api/reports/compliance",
+          "then": "A report file link is returned and the report contains accurate, timestamped audit data"
+        },
+        {
+          "id": "AT-008",
+          "given": "EDC integration receives malformed data",
+          "when": "Data ingestion is attempted",
+          "then": "The system logs the error, rejects the data, and does not update compliance status"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models for Protocol, SiteProgressLog, DeviationReport, Alert, and User.",
+        "Implement authentication API (/api/auth/login) and user model with secure password handling.",
+        "Develop user management API (/api/admin/users) and UI for role assignments.",
+        "Build data-entry APIs (/api/data-entry/progress and /api/data-entry/deviation) with validation and audit logging.",
+        "Create Compliance Monitoring API (/api/compliance/status) with business logic for protocol adherence.",
+        "Develop Alerts API (/api/alerts) with filtering and rate limiting.",
+        "Implement dashboard UI (/dashboard) integrating compliance and alerts APIs with role-based views.",
+        "Build manual data entry UI (/data-entry) with input validation and document attachment support.",
+        "Develop reports API (/api/reports/compliance) and reports UI (/reports) for generating audit-ready documents.",
+        "Implement background jobs: Anomaly Detection, Alert Notification Dispatcher, Data Integration Sync.",
+        "Integrate EDC systems with secure authentication and data normalization.",
+        "Add audit logging and concurrency controls across APIs.",
+        "Perform security hardening, input sanitization, and role-based access enforcement.",
+        "Conduct acceptance testing and edge case handling."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/data-entry",
+          "/reports",
+          "/login",
+          "/admin/users"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/admin/users.ts",
+          "api/data-entry/progress.ts",
+          "api/data-entry/deviation.ts",
+          "api/compliance/status.ts",
+          "api/alerts/index.ts",
+          "api/reports/compliance.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Protocol",
+          "SiteProgressLog",
+          "DeviationReport",
+          "Alert",
+          "User"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions and gather any missing or ambiguous constraints to finalize the detailed requirements.",
+        "promptTemplate": "You are the planner refining the project requirements for the Academic Research Protocol Compliance Tracker. Given the current blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}, identify any missing constraints, unclear workflows, or edge cases. Ask the user for further details or clarifications on: {{USER_INPUT}}."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final set of UI pages, APIs, and data models needed for the system.",
+        "promptTemplate": "You are the architect finalizing the system design for the Academic Research Protocol Compliance Tracker. Based on the refined requirements and blueprint: {{BLUEPRINT}}, produce the detailed pages, API routes, and data models. Confirm any assumptions and highlight dependencies. Use user input: {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial code scaffolds or page templates for the UI based on the finalized design.",
+        "promptTemplate": "You are the builder creating page stubs for the Academic Research Protocol Compliance Tracker. Using the architect's finalized design: {{BLUEPRINT}} and {{EXPANDED}}, generate starter code or detailed outlines for each UI page. Consider role-based access and input validation. Reference user input: {{USER_INPUT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages with backend APIs and data models ensuring full workflow integration and data consistency.",
+        "promptTemplate": "You are the integrator wiring the Academic Research Protocol Compliance Tracker system. Connect the UI pages with corresponding APIs and database models as per the blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}. Ensure secure authentication, data validation, and audit logging are implemented. Use user input: {{USER_INPUT}}."
+      }
+    ]
+  }
+}

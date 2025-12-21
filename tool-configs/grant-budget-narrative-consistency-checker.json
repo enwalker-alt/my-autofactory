@@ -1,0 +1,584 @@
+{
+  "slug": "grant-budget-narrative-consistency-checker",
+  "title": "Academic Grant Proposal Budget Narrative Consistency Checker",
+  "description": "Upload your budget tables and narrative documents to receive a detailed report identifying inconsistencies between numeric budgets and narratives, flagged unsupported or conflicting sections, actionable suggestions, and a funder-specific compliance checklist.",
+  "inputLabel": "Upload budget tables (CSV, Excel, PDF) and narrative texts (TXT, DOCX), then enter funder name",
+  "outputLabel": "Consistency Check Report",
+  "systemPrompt": "You are an expert assistant specializing in academic research grant proposals. Your task is to analyze uploaded budget tables and narrative documents to identify inconsistencies, flag unsupported or conflicting narrative sections, suggest improvements for alignment, and generate a compliance checklist based on funder-specific guidelines. Refuse any requests unrelated to budget-narrative consistency checking or that seek legal or financial advice. Validate input file types and funder names strictly. Output a clear, structured text report summarizing findings, including identified discrepancies, flagged narratives, suggestions for improvement, and compliance checklist items. If any inputs are missing or invalid, respond with clear error messages. Maintain confidentiality and never expose sensitive data beyond the user request. Do not perform automated corrections; only provide detailed, actionable feedback for user review.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Report",
+      "prompt": "Generate a concise summary report highlighting the key inconsistencies between the uploaded budget tables and narrative documents, including major flagged sections and top suggestions for improvement.",
+      "hint": "Use this preset for a quick overview of main issues."
+    },
+    {
+      "label": "Detailed Analysis",
+      "prompt": "Provide a comprehensive analysis report that lists all detected inconsistencies in detail, flags every narrative section lacking budget support or conflicting with budget tables, and offers thorough suggestions to improve alignment and clarity according to the funder guidelines.",
+      "hint": "Use this preset for in-depth review and editing."
+    },
+    {
+      "label": "Compliance Focused",
+      "prompt": "Focus on generating a detailed compliance checklist based on the selected funder’s budget narrative requirements, highlighting any gaps or potential compliance risks in the uploaded documents.",
+      "hint": "Use this preset to ensure funder guideline adherence."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON must include: inconsistencies (array), flaggedNarratives (array), suggestions (array), complianceChecklist (array).",
+  "clarifyPrompt": "Please upload valid budget tables and narrative documents within supported formats and sizes, and specify the funder name exactly as per guidelines. Would you like to clarify any details before proceeding?",
+  "finalizePrompt": "Review the generated consistency report carefully. If you need more detailed analysis or compliance focus, select an appropriate preset or upload additional documents.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Grant Proposal Budget Narrative Consistency Checker",
+      "niche": {
+        "role": "Academic Research Grant Writer",
+        "scenario": "During multi-institutional grant proposal preparation, ensuring that the detailed budget tables align consistently and narratively with the budget justification and project narrative sections."
+      },
+      "problem": "Grant writers struggle to maintain consistency and alignment between numeric budget tables, budget justification narratives, and overall project narratives especially in complex, multi-institution proposals. Discrepancies cause reviewer confusion, compliance risks, and reduce funding chances. Existing tools focus on budget category allocation or compliance but do not cross-validate narrative coherence and numeric data consistency across proposal documents.",
+      "inputs": [
+        "Detailed budget table files (CSV, Excel, or PDF)",
+        "Budget justification narrative text or documents",
+        "Project narrative sections relevant to budget (text or DOCX)",
+        "Funder-specific budget formatting and narrative guidelines"
+      ],
+      "outputs": [
+        "Structured report identifying inconsistencies between budget numbers and narrative descriptions",
+        "Flagged narrative sections lacking budget support or conflicting with budget tables",
+        "Suggestions to improve alignment and clarity in budget-related narratives",
+        "Summary compliance checklist for funder-specific budget narrative requirements"
+      ],
+      "whyItWins": [
+        "Addresses a critical but overlooked pain point by cross-validating numeric budgets with narrative text for the first time",
+        "Supports multi-institution proposals where complexity and document volume compound risks of inconsistency",
+        "Improves proposal clarity and reduces revision cycles by providing actionable, detailed, document-specific feedback",
+        "Enables grant writers to confidently prepare compliant, coherent budget narratives aligned with funder expectations",
+        "Can integrate with existing budget and compliance tools but adds unique narrative consistency verification"
+      ],
+      "upgradePath": {
+        "today": "Provide a simple single-page tool that accepts uploads of budget tables and narrative texts and returns a detailed discrepancy report with manual review recommendations.",
+        "in90Days": "Develop a multi-document upload interface with interactive discrepancy highlighting, side-by-side budget vs. narrative view, and inline editing suggestions for immediate corrections.",
+        "in12Months": "Expand into a full multi-page grant proposal budget narrative management system with version control, collaboration features, funder guideline templates, automated compliance alerts, and integration with institutional budget systems."
+      },
+      "riskNotes": [
+        "Does not provide legal or financial advice, only consistency checking and suggestions",
+        "Requires careful handling of sensitive proposal data to ensure confidentiality and compliance with institutional policies",
+        "Automated text analysis may miss nuanced funding agency-specific expectations and should be complemented with expert review",
+        "Initial versions rely on uploaded documents and may require users to format inputs properly for best results"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A system to help academic research grant writers ensure consistency and alignment between numeric budget tables and narrative texts in multi-institutional grant proposals, providing detailed discrepancy reports, compliance checklists, and actionable suggestions.",
+      "primaryUser": "Academic Research Grant Writer",
+      "successMetrics": [
+        "Reduction in detected inconsistencies between budget tables and narratives",
+        "User adoption rate among grant writing teams in multi-institution proposals",
+        "Decrease in proposal revision cycles due to budget narrative issues",
+        "User satisfaction with discrepancy reports and suggestions",
+        "Compliance checklist coverage and accuracy relative to funder guidelines"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Document Upload & Parsing UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload budget tables (CSV, Excel, PDF) and narrative documents (text, DOCX), and initiate parsing and analysis.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multiple file formats with validation and error feedback",
+            "Initial version: single page upload",
+            "Later versions: multi-document upload with progress indicators"
+          ]
+        },
+        {
+          "id": "ui-report",
+          "name": "Discrepancy Report & Review UI",
+          "type": "ui",
+          "responsibility": "Display structured reports highlighting inconsistencies, flagged narrative sections, and suggestions; enable side-by-side views and inline editing in advanced versions.",
+          "dependsOn": [
+            "api-analysis"
+          ],
+          "notes": [
+            "Includes summary compliance checklist",
+            "Supports interactive discrepancy highlighting and navigation",
+            "Allows export of reports"
+          ]
+        },
+        {
+          "id": "api-analysis",
+          "name": "Consistency Analysis API",
+          "type": "api",
+          "responsibility": "Process uploaded documents, extract numeric and narrative data, cross-validate budget tables against narratives, apply funder guideline rules, and generate discrepancy reports and suggestions.",
+          "dependsOn": [
+            "data-models",
+            "integration-guidelines"
+          ],
+          "notes": [
+            "Handles document parsing, NLP for narrative analysis, numeric validation",
+            "Must handle edge cases like missing data, ambiguous narrative references",
+            "Scalable for multi-institutional proposals with large document sets"
+          ]
+        },
+        {
+          "id": "data-models",
+          "name": "Data Persistence Layer",
+          "type": "data",
+          "responsibility": "Store uploaded documents metadata, parsed budget and narrative data, discrepancy reports, user sessions, and funder guideline templates.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive data storage with encryption and access controls",
+            "Supports versioning for documents and reports in advanced versions"
+          ]
+        },
+        {
+          "id": "integration-guidelines",
+          "name": "Funder Guidelines Integration",
+          "type": "integration",
+          "responsibility": "Maintain and update funder-specific budget formatting and narrative compliance rules used by the analysis API.",
+          "dependsOn": [],
+          "notes": [
+            "Supports adding new funder templates",
+            "Feeds rules into analysis engine for compliance checklist generation"
+          ]
+        },
+        {
+          "id": "job-report-generation",
+          "name": "Background Report Generation Job",
+          "type": "job",
+          "responsibility": "Asynchronously process uploaded documents to generate discrepancy reports and compliance checklists, notifying users when ready.",
+          "dependsOn": [
+            "api-analysis",
+            "data-models"
+          ],
+          "notes": [
+            "Handles long-running document parsing and analysis",
+            "Retries and error handling for failed jobs"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "UploadedDocument",
+          "purpose": "Metadata and storage reference for uploaded budget and narrative files.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "parsedData",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "DiscrepancyReport",
+          "purpose": "Stores results of consistency analysis including identified inconsistencies, flagged sections, and suggestions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documentIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "inconsistencies",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "flaggedNarratives",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "suggestions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "complianceChecklist",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "FunderGuideline",
+          "purpose": "Stores funder-specific budget and narrative formatting and compliance rules.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName"
+          ]
+        },
+        {
+          "name": "UserSession",
+          "purpose": "Tracks user authentication and session state.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sessionToken",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "expiresAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "sessionToken"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Budget and Narrative Documents",
+          "purpose": "Allow users to upload budget tables and narrative documents for analysis.",
+          "inputs": [
+            "budget table files (CSV, Excel, PDF)",
+            "narrative documents (text, DOCX)",
+            "funder selection"
+          ],
+          "outputs": [
+            "upload status",
+            "parsing errors",
+            "analysis initiation confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/report/:reportId",
+          "title": "Discrepancy Report Viewer",
+          "purpose": "Display detailed discrepancy reports with inconsistencies, flagged narratives, suggestions, and compliance checklist.",
+          "inputs": [
+            "reportId"
+          ],
+          "outputs": [
+            "discrepancy details",
+            "highlighted text sections",
+            "suggestions",
+            "compliance checklist"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/guidelines",
+          "title": "Funder Guidelines Management",
+          "purpose": "View and manage funder-specific budget and narrative compliance rules (admin or advanced users).",
+          "inputs": [],
+          "outputs": [
+            "list of funder guidelines",
+            "rule details",
+            "edit options"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/",
+          "title": "Home / Dashboard",
+          "purpose": "Landing page showing recent uploads, reports, and quick actions.",
+          "inputs": [],
+          "outputs": [
+            "recent activity",
+            "upload shortcuts",
+            "notifications"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Receive and store uploaded budget and narrative documents, initiate parsing and analysis job.",
+          "requestShape": "{ userId: string, files: [file], funderId: string }",
+          "responseShape": "{ uploadId: string, status: string, message?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/report/:reportId",
+          "method": "GET",
+          "purpose": "Retrieve detailed discrepancy report by report ID.",
+          "requestShape": "{ reportId: string }",
+          "responseShape": "{ report: DiscrepancyReport }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/guidelines",
+          "method": "GET",
+          "purpose": "List all funder guidelines.",
+          "requestShape": "{}",
+          "responseShape": "{ guidelines: FunderGuideline[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/guidelines/:id",
+          "method": "POST",
+          "purpose": "Update or add funder guideline rules.",
+          "requestShape": "{ id?: string, funderName: string, rules: json }",
+          "responseShape": "{ success: boolean, message?: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "DocumentParsingAndAnalysis",
+          "trigger": "On document upload completion",
+          "purpose": "Parse uploaded budget and narrative documents, perform consistency checks, generate discrepancy reports and compliance checklists."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded documents with unsupported or corrupted file formats",
+        "Narrative sections referencing budget items ambiguously or indirectly",
+        "Missing or incomplete budget tables or narrative documents",
+        "Conflicting funder guidelines or ambiguous compliance rules",
+        "Large multi-institution proposals with many documents causing performance bottlenecks",
+        "User uploads sensitive data requiring strict confidentiality and access controls",
+        "Partial parsing failures where some documents parse successfully and others do not"
+      ],
+      "nonGoals": [
+        "Providing legal, financial, or compliance advice beyond consistency checking",
+        "Automated correction of narrative text without user review",
+        "Replacing institutional budget management or compliance systems",
+        "Handling proposal sections unrelated to budget or narrative alignment",
+        "Guaranteeing 100% accuracy of NLP-based narrative analysis due to funding agency nuances"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses the /upload page to submit budget and narrative documents along with funder selection.",
+        "Frontend validates file types and sizes, then sends POST request to /api/upload with userId, files, and funderId.",
+        "API route /api/upload stores uploaded files metadata in UploadedDocument model, assigns versioning, and enqueues DocumentParsingAndAnalysis background job.",
+        "Background job fetches uploaded documents, retrieves relevant funder guidelines, parses documents (budget tables and narratives), performs NLP and numeric consistency checks, applies funder compliance rules, and generates discrepancy report data.",
+        "DiscrepancyReport model is created/updated with inconsistencies, flagged narratives, suggestions, compliance checklist, and status.",
+        "User is notified asynchronously (e.g., via UI polling or notifications) that the report is ready.",
+        "User navigates to /report/:reportId page, which fetches discrepancy report data via GET /api/report/:reportId API.",
+        "Frontend displays detailed discrepancy report with interactive highlighting, suggestions, and compliance checklist.",
+        "Admin or advanced users access /guidelines page to view and manage funder guidelines via GET /api/guidelines and POST /api/guidelines/:id APIs.",
+        "Home dashboard (/) aggregates recent uploads and reports via appropriate API calls to show user activity and notifications."
+      ],
+      "validationRules": [
+        "File uploads must be limited to supported formats: CSV, Excel, PDF for budgets; text and DOCX for narratives.",
+        "Each uploaded file must be non-empty and below a defined maximum size (e.g., 10MB).",
+        "Funder selection must correspond to an existing FunderGuideline entry.",
+        "UploadedDocument entries require unique id, valid userId, filename, fileType, uploadDate, and version number.",
+        "DiscrepancyReport must include valid references to documentIds and userId, with non-empty inconsistencies, flaggedNarratives, suggestions, and complianceChecklist JSON fields.",
+        "FunderGuideline rules JSON must conform to a defined schema representing budget and narrative compliance rules.",
+        "API requests must include valid authentication tokens and user authorization checks.",
+        "Background job must validate parsed data completeness and handle partial parsing failures gracefully.",
+        "On /api/guidelines/:id POST, funderName must be non-empty and rules must be valid JSON; if id is provided, it must exist or else create new."
+      ],
+      "errorHandling": [
+        "Upload API returns descriptive error messages for unsupported file types, oversized files, or missing funder selection.",
+        "Parsing errors during background job are logged; partial failures allow successful documents to be processed with warnings.",
+        "API endpoints return standard HTTP status codes: 400 for validation errors, 401 for unauthorized, 404 for missing resources, 500 for server errors.",
+        "Background job retries failed parsing or analysis tasks with exponential backoff; persistent failures mark report status as 'failed' with error details.",
+        "Frontend displays parsing errors and upload status clearly, allowing users to retry or remove problematic files.",
+        "Discrepancy report retrieval returns 404 if reportId does not exist or does not belong to user.",
+        "Guidelines API validates input and returns success or detailed error messages for malformed rules or unauthorized access.",
+        "Sensitive data access is logged and restricted; unauthorized access attempts return 403 Forbidden."
+      ],
+      "securityNotes": [
+        "All API routes require authentication and verify user ownership of resources (documents, reports).",
+        "Uploaded files and parsed data are stored with encryption at rest and access controls limiting to authorized users only.",
+        "Session tokens are securely stored and validated; expiration is enforced.",
+        "File uploads are scanned or sanitized to prevent injection or malware risks.",
+        "Sensitive data in discrepancy reports and documents is never exposed to unauthorized users or in logs.",
+        "Rate limiting and input sanitization are applied to APIs to prevent abuse.",
+        "Background jobs run in isolated environments with limited privileges.",
+        "Audit trails are maintained for document uploads, report generation, and guideline changes."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with valid budget and narrative files and a selected funder",
+          "when": "The user submits the upload form",
+          "then": "The system accepts the files, stores metadata, initiates parsing job, and returns upload confirmation with status"
+        },
+        {
+          "id": "AT-002",
+          "given": "Uploaded documents have been processed by the background job successfully",
+          "when": "The user navigates to /report/:reportId with the generated reportId",
+          "then": "The system displays detailed discrepancy report including inconsistencies, flagged narratives, suggestions, and compliance checklist"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user attempts to upload unsupported file formats or oversized files",
+          "when": "The user submits the upload form",
+          "then": "The system rejects the upload with clear validation error messages"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user requests a discrepancy report with an invalid or unauthorized reportId",
+          "when": "The user accesses /api/report/:reportId",
+          "then": "The system returns a 404 Not Found or 403 Forbidden error"
+        },
+        {
+          "id": "AT-005",
+          "given": "An admin user accesses the /guidelines page",
+          "when": "The user views and edits funder guidelines",
+          "then": "The system lists all guidelines and allows updates, persisting changes and validating input"
+        },
+        {
+          "id": "AT-006",
+          "given": "The background job encounters partial parsing failures",
+          "when": "The job completes processing",
+          "then": "The system generates a discrepancy report with available data and flags parsing warnings"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user uploads sensitive documents",
+          "when": "The documents are stored and processed",
+          "then": "The system ensures encryption and access controls prevent unauthorized access"
+        }
+      ],
+      "buildOrder": [
+        "data-models",
+        "integration-guidelines",
+        "api-analysis",
+        "job-report-generation",
+        "ui-upload",
+        "ui-report",
+        "ui-guidelines",
+        "home-dashboard"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/report/[reportId]",
+          "/guidelines",
+          "/"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload.ts",
+          "/api/report/[reportId].ts",
+          "/api/guidelines/index.ts",
+          "/api/guidelines/[id].ts"
+        ],
+        "prismaModelsToAdd": [
+          "model UploadedDocument { id String @id userId String filename String fileType String uploadDate DateTime parsedData Json? version Int @@index([userId]) @@index([uploadDate]) }",
+          "model DiscrepancyReport { id String @id documentIds Json userId String createdAt DateTime inconsistencies Json flaggedNarratives Json suggestions Json complianceChecklist Json status String @@index([userId]) @@index([createdAt]) }",
+          "model FunderGuideline { id String @id funderName String rules Json lastUpdated DateTime @@index([funderName]) }",
+          "model UserSession { userId String sessionToken String expiresAt DateTime @@id([userId, sessionToken]) @@index([userId]) @@index([sessionToken]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user detailed questions to clarify and refine missing constraints or edge cases for the grant budget-narrative consistency checker.",
+        "promptTemplate": "You are a planner refining the tool requirements for the Academic Grant Proposal Budget Narrative Consistency Checker. Given the current blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}, ask the user these clarifying questions: {{USER_INPUT}}. Focus on uncovering missing constraints, edge cases, and user preferences."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Help finalize and validate the UI pages, data models, and their interactions for the grant proposal consistency checker system.",
+        "promptTemplate": "You are an architect tasked with finalizing the pages and data models for the Academic Grant Proposal Budget Narrative Consistency Checker. Based on the current blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, review and refine the page routes, inputs, outputs, and data models. Provide detailed design notes and propose any changes. User input: {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for the UI pages and components for the grant proposal budget narrative consistency checker.",
+        "promptTemplate": "You are a builder generating page stubs for the Academic Grant Proposal Budget Narrative Consistency Checker. Using the finalized pages and specs from blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, create React/Next.js stub components with placeholder UI and minimal logic. User instructions: {{USER_INPUT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Guide integration of frontend pages with backend API routes and database models for full functionality.",
+        "promptTemplate": "You are an integrator responsible for wiring the UI pages with backend API endpoints and the database for the Academic Grant Proposal Budget Narrative Consistency Checker. Based on the blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, describe how to connect page actions to API calls and database operations securely and efficiently. User notes: {{USER_INPUT}}."
+      }
+    ]
+  }
+}

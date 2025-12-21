@@ -1,0 +1,665 @@
+{
+  "slug": "academic-instrument-version-diff",
+  "title": "Academic Instrument Version Diff & Impact Analyzer",
+  "description": "Upload two versions of academic research data collection instruments (DOCX, XLSX, or text) along with deployment metadata and optional revision notes. Get a detailed side-by-side textual diff report highlighting changes and basic impact annotations to support version control and data comparability analysis.",
+  "inputLabel": "Upload two instrument version files and enter deployment metadata",
+  "outputLabel": "Version comparison report with change highlights and impact annotations",
+  "systemPrompt": "You are a specialized assistant that compares two versions of academic research data collection instruments. Accept only DOCX, XLSX, or plain text files, and metadata including site (non-empty string) and deployment date (ISO date). Reject any files containing personally identifiable information (PII) and refuse unsupported file formats. Generate a clear, detailed, side-by-side textual comparison focusing on question changes, response options, skip logic, and instructions. Provide basic impact annotations describing potential data comparability issues and recommendations. Output only plain text. Do not provide medical, legal, or compliance advice. Enforce strict validation rules and respond with clear error messages if inputs are invalid or disallowed. Do not output any personally identifiable data. Use the input files and metadata only for the described comparison and analysis. Refuse any requests not matching this scope.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Focus on question text changes",
+      "prompt": "Highlight and explain textual changes in question wording between instrument versions."
+    },
+    {
+      "label": "Emphasize response option modifications",
+      "prompt": "Detail additions, deletions, or changes in response options and their potential impact."
+    },
+    {
+      "label": "Highlight skip logic and flow changes",
+      "prompt": "Identify modifications in skip patterns or branching logic affecting data collection."
+    },
+    {
+      "label": "Summarize overall impact on data comparability",
+      "prompt": "Provide a concise impact analysis outlining risks to data consistency and recommendations."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with fields: diffReport (detailed changes), impactAnnotations (list of potential data comparability issues and recommendations).",
+  "clarifyPrompt": "Please upload exactly two instrument files (DOCX, XLSX, or text) and provide deployment metadata: site (required) and deployment date (required, ISO format). Optionally add revision notes. Ensure files do not contain any personally identifiable information (PII).",
+  "finalizePrompt": "Confirm you want to generate a side-by-side comparison and impact analysis report for the uploaded instrument versions and metadata. This output will be plain text highlighting changes and basic impact notes. Proceed?",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Instrument Version Control & Impact Analyzer",
+      "niche": {
+        "role": "Academic Research Data Manager",
+        "scenario": "Managing iterative updates and versions of data collection instruments (e.g., surveys, questionnaires, interview guides) used across multiple study sites or over longitudinal research phases"
+      },
+      "problem": "Academic research teams often revise data collection instruments multiple times throughout a project's lifecycle, creating multiple versions that are deployed across sites or waves. Tracking differences, understanding impacts of changes on data comparability, and ensuring consistent version use is complex, error-prone, and manual, risking data quality, reproducibility, and compliance.",
+      "inputs": [
+        "Two or more versions of data collection instruments (DOCX, XLSX, or text formats)",
+        "Metadata describing deployment contexts (site, date, sample population)",
+        "Change rationale notes or revision logs (optional)"
+      ],
+      "outputs": [
+        "Detailed, side-by-side version comparison report highlighting additions, deletions, modifications in questions, response options, skip logic, and instructions",
+        "Impact analysis report outlining potential data comparability issues and recommendations for harmonization or adjustment",
+        "Version usage dashboard showing instrument deployment timelines and site-specific version assignments"
+      ],
+      "whyItWins": [
+        "Addresses a critical, underserved pain point in multi-site and longitudinal academic research workflows where instrument version control is essential but poorly supported",
+        "Combines textual diffing with domain-specific impact analysis to help data managers proactively mitigate data inconsistencies",
+        "Facilitates compliance and audit readiness by documenting change rationales and deployment records",
+        "Supports repeated, iterative use as instruments evolve, creating sustained value beyond a one-off tool"
+      ],
+      "upgradePath": {
+        "today": "Lightweight tool for uploading two instrument versions and generating side-by-side textual change reports with basic impact annotations",
+        "in90Days": "Add metadata inputs for deployment contexts, develop interactive dashboards for version tracking, and generate site-specific instrument assignment visualizations",
+        "in12Months": "Develop a multi-page web system integrating collaborative revision notes, automated harmonization suggestions, integration with data collection platforms for version enforcement, and compliance audit reporting features"
+      },
+      "riskNotes": [
+        "Ensure no personally identifiable research data is uploaded with instruments to protect privacy",
+        "Avoid offering medical or legal advice regarding instrument content or compliance",
+        "Focus impact analysis on data comparability and consistency without overstepping into data interpretation or results analysis"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web-based system for academic research data managers to upload, version-control, compare, and analyze data collection instruments across multiple sites and time points, supporting compliance and data quality assurance.",
+      "primaryUser": "Academic Research Data Manager",
+      "successMetrics": [
+        "Number of instrument versions uploaded and compared",
+        "Frequency of dashboard usage for version tracking",
+        "User satisfaction with impact analysis accuracy and usefulness",
+        "Reduction in reported data comparability issues across sites",
+        "Audit readiness demonstrated by documented revision logs and deployment metadata"
+      ],
+      "components": [
+        {
+          "id": "ui-instrument-upload",
+          "name": "Instrument Upload & Comparison UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload multiple instrument versions, input metadata, view side-by-side textual diffs and basic impact annotations.",
+          "dependsOn": [
+            "api-instrument-processing",
+            "data-instrument-storage"
+          ],
+          "notes": [
+            "Supports DOCX, XLSX, and text formats",
+            "Validates no PII included in uploads",
+            "Handles file parsing errors gracefully"
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Version Usage Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display interactive visualizations of instrument deployment timelines, site-specific version assignments, and revision history.",
+          "dependsOn": [
+            "api-dashboard-data",
+            "data-deployment-metadata"
+          ],
+          "notes": [
+            "Supports filtering by site, date, and instrument version",
+            "Visualizes gaps or overlaps in version usage"
+          ]
+        },
+        {
+          "id": "api-instrument-processing",
+          "name": "Instrument Processing API",
+          "type": "api",
+          "responsibility": "Process uploaded instrument files, extract structured content, generate textual diffs, and perform domain-specific impact analysis.",
+          "dependsOn": [
+            "data-instrument-storage",
+            "job-impact-analysis"
+          ],
+          "notes": [
+            "Sanitizes inputs to exclude PII",
+            "Handles parsing failures with detailed error messages",
+            "Returns structured diff and impact reports"
+          ]
+        },
+        {
+          "id": "api-dashboard-data",
+          "name": "Dashboard Data API",
+          "type": "api",
+          "responsibility": "Serve deployment metadata, version assignments, and revision logs to UI dashboard components.",
+          "dependsOn": [
+            "data-deployment-metadata",
+            "data-revision-logs"
+          ],
+          "notes": [
+            "Supports pagination and filtering",
+            "Ensures data consistency and freshness"
+          ]
+        },
+        {
+          "id": "data-instrument-storage",
+          "name": "Instrument Version Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded instrument files, extracted structured content, and generated diff/impact reports.",
+          "dependsOn": [],
+          "notes": [
+            "Stores metadata about instrument versions",
+            "Supports version history and retrieval"
+          ]
+        },
+        {
+          "id": "data-deployment-metadata",
+          "name": "Deployment Metadata Store",
+          "type": "data",
+          "responsibility": "Persist metadata describing deployment contexts including site, date, sample population, and assigned instrument versions.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multi-site and longitudinal tracking",
+            "Enables dashboard visualizations"
+          ]
+        },
+        {
+          "id": "data-revision-logs",
+          "name": "Revision Logs Store",
+          "type": "data",
+          "responsibility": "Persist change rationale notes and collaborative revision comments linked to instrument versions.",
+          "dependsOn": [],
+          "notes": [
+            "Supports audit and compliance documentation",
+            "Allows collaborative editing and versioning"
+          ]
+        },
+        {
+          "id": "job-impact-analysis",
+          "name": "Impact Analysis Background Job",
+          "type": "job",
+          "responsibility": "Perform detailed domain-specific impact analysis on instrument version differences asynchronously to generate harmonization recommendations.",
+          "dependsOn": [
+            "data-instrument-storage",
+            "data-deployment-metadata"
+          ],
+          "notes": [
+            "Runs on upload or revision log updates",
+            "Handles failures with retry and alerting"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "InstrumentVersion",
+          "purpose": "Represents a single version of a data collection instrument with extracted structured content and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionLabel",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rawFileReference",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "structuredContent",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "diffReport",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "impactReport",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "versionLabel"
+          ]
+        },
+        {
+          "name": "DeploymentMetadata",
+          "purpose": "Stores metadata about where and when specific instrument versions were deployed.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "instrumentVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "site",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deploymentDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "samplePopulationDescription",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "instrumentVersionId",
+            "site",
+            "deploymentDate"
+          ]
+        },
+        {
+          "name": "RevisionLog",
+          "purpose": "Captures rationale and notes for changes made between instrument versions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "instrumentVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "note",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "instrumentVersionId",
+            "authorUserId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents authenticated users managing instruments and revisions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload and Compare Instruments",
+          "purpose": "Page for uploading instrument versions, entering metadata, and viewing side-by-side comparison and impact annotations.",
+          "inputs": [
+            "Instrument files",
+            "Metadata inputs (site, date, population)",
+            "Optional revision notes"
+          ],
+          "outputs": [
+            "Textual diff report",
+            "Basic impact annotations",
+            "Upload confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Version Usage Dashboard",
+          "purpose": "Interactive dashboard showing deployment timelines, site-specific version assignments, and revision history.",
+          "inputs": [
+            "Filter parameters (site, date range, version)"
+          ],
+          "outputs": [
+            "Visualizations of version usage",
+            "Revision log summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/revision-notes",
+          "title": "Revision Notes & Collaboration",
+          "purpose": "Page to view, add, and manage collaborative revision notes linked to instrument versions.",
+          "inputs": [
+            "Revision note text",
+            "Instrument version selection"
+          ],
+          "outputs": [
+            "List of revision notes",
+            "Audit trail"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access protected features.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token",
+            "User session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/instruments/upload",
+          "method": "POST",
+          "purpose": "Upload instrument files and metadata, trigger processing and diff generation.",
+          "requestShape": "{ files: File[], metadata: { site: string, deploymentDate: string, samplePopulation?: string }, revisionNote?: string }",
+          "responseShape": "{ instrumentVersionId: string, diffReport: json, impactReport: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/instruments/:id/diff",
+          "method": "GET",
+          "purpose": "Retrieve side-by-side diff and impact analysis report for a specific instrument version.",
+          "requestShape": "{ }",
+          "responseShape": "{ diffReport: json, impactReport: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/deployments",
+          "method": "POST",
+          "purpose": "Add or update deployment metadata for instrument versions.",
+          "requestShape": "{ instrumentVersionId: string, site: string, deploymentDate: string, samplePopulation?: string }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/dashboard/data",
+          "method": "GET",
+          "purpose": "Provide data for version usage dashboard filtered by parameters.",
+          "requestShape": "{ site?: string, dateRange?: { start: string, end: string }, versionLabel?: string }",
+          "responseShape": "{ deployments: json[], revisionLogs: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/revision-notes",
+          "method": "POST",
+          "purpose": "Add a revision note linked to an instrument version.",
+          "requestShape": "{ instrumentVersionId: string, note: string }",
+          "responseShape": "{ success: boolean, noteId?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: json }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ImpactAnalysisJob",
+          "trigger": "Triggered asynchronously after instrument upload or revision note update",
+          "purpose": "Perform detailed domain-specific impact analysis on instrument version differences and generate harmonization recommendations."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded instrument files contain unsupported formats or corrupted data",
+        "Instruments include inadvertent personally identifiable information (PII)",
+        "Conflicting deployment metadata entered for the same site and date",
+        "Simultaneous edits to revision notes causing version conflicts",
+        "Partial or failed background impact analysis jobs requiring retries",
+        "Large instrument files causing processing timeouts or memory issues",
+        "Users uploading instruments with minimal or no changes between versions",
+        "Network interruptions during file upload or API calls"
+      ],
+      "nonGoals": [
+        "Analyzing or interpreting research data results beyond instrument content",
+        "Providing medical, legal, or compliance advice regarding instrument content",
+        "Storing or processing any personally identifiable research participant data",
+        "Replacing full-featured version control systems for general documents",
+        "Automated enforcement of instrument versions in external data collection platforms (planned for future upgrades)"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User navigates to /upload page and selects instrument files (DOCX, XLSX, text) and inputs metadata (site, deploymentDate, samplePopulation) plus optional revision note.",
+        "Client validates inputs (file types, metadata completeness, no PII) before sending POST /api/instruments/upload with files and metadata.",
+        "API /api/instruments/upload authenticates user, sanitizes files to exclude PII, parses files to extract structured content, stores raw files and structured content in InstrumentVersion data store.",
+        "API triggers asynchronous ImpactAnalysisJob to generate diffReport and impactReport comparing new instrument version with previous versions.",
+        "API responds with instrumentVersionId, diffReport, and impactReport (may be partial if job is pending).",
+        "User views side-by-side textual diff and basic impact annotations on /upload page from API response.",
+        "User can add or update deployment metadata via POST /api/deployments with instrumentVersionId and deployment details; API stores in DeploymentMetadata store.",
+        "User navigates to /dashboard page, inputs filters (site, date range, versionLabel), client requests GET /api/dashboard/data with filters.",
+        "Dashboard Data API fetches filtered deployment metadata and revision logs from respective stores, returns paginated and consistent data for visualizations.",
+        "User navigates to /revision-notes page, selects instrument version, views existing revision notes fetched from RevisionLogs store via API, and can add new notes via POST /api/revision-notes.",
+        "Adding revision notes triggers ImpactAnalysisJob asynchronously to update impactReport if relevant.",
+        "User logs in at /login page, submits credentials to POST /api/auth/login, receives authentication token and user session for protected routes.",
+        "Background ImpactAnalysisJob processes instrument differences and revision note changes, retries on failure, alerts on repeated failures, updates InstrumentVersion records with updated impact reports."
+      ],
+      "validationRules": [
+        "Uploaded files must be one of supported formats: DOCX, XLSX, or plain text.",
+        "Uploaded files must not contain any PII; server-side sanitization and client-side warnings apply.",
+        "Metadata fields: site (non-empty string), deploymentDate (valid ISO date), samplePopulation (optional string).",
+        "Revision notes must be non-empty strings when provided.",
+        "API endpoints requiring authentication must verify valid user session token.",
+        "For deployment metadata, site and deploymentDate combination must be unique to avoid conflicting entries.",
+        "Revision notes must be linked to existing instrumentVersionId and authored by authenticated user.",
+        "Dashboard filter parameters (site, dateRange, versionLabel) are optional but must be valid types if provided.",
+        "Login requires valid email format and non-empty password.",
+        "File size limits enforced to prevent timeouts or memory issues during upload."
+      ],
+      "errorHandling": [
+        "File parsing errors return 400 with detailed messages indicating unsupported format or corrupted data.",
+        "PII detection triggers rejection of upload with clear error message; logs incident for audit.",
+        "Conflicting deployment metadata returns 409 Conflict with explanation and suggestions.",
+        "Simultaneous revision note edits handled via optimistic concurrency control; conflicts return 409 with user prompt to refresh.",
+        "Background job failures are logged, retried with exponential backoff, and alert system administrators after repeated failures.",
+        "Large file uploads exceeding limits return 413 Payload Too Large with guidance on file size restrictions.",
+        "Network interruptions during upload or API calls return appropriate HTTP errors; client retries or prompts user accordingly.",
+        "Authentication failures return 401 Unauthorized with generic error to avoid information leakage.",
+        "Invalid input data returns 422 Unprocessable Entity with field-specific validation messages."
+      ],
+      "securityNotes": [
+        "All API routes requiring user authentication must validate JWT or session tokens.",
+        "File uploads sanitized to remove any embedded PII or malicious content before storage or processing.",
+        "Access control enforced so users can only view or modify data related to their projects or permissions.",
+        "Sensitive data such as raw files stored securely with restricted access.",
+        "Revision notes and deployment metadata changes logged with user ID and timestamp for audit trail.",
+        "Rate limiting applied on login and upload endpoints to prevent brute force and denial of service attacks.",
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Ensure background job processing environment is isolated and secured to prevent unauthorized data access.",
+        "Validate and sanitize all inputs to APIs to prevent injection attacks.",
+        "Session tokens have expiration and refresh mechanisms to reduce risk of token theft."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with valid instrument files and metadata",
+          "when": "The user submits the upload form",
+          "then": "The system stores the instrument version, triggers impact analysis, and returns diff and impact reports without PII"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user requests the diff report for a specific instrument version via GET /api/instruments/:id/diff",
+          "when": "The instrument version exists and user is authorized",
+          "then": "The system returns the diffReport and impactReport JSON data"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user submits deployment metadata with a site and deploymentDate already used",
+          "when": "The user attempts to add conflicting deployment metadata",
+          "then": "The system responds with 409 Conflict and an explanatory error message"
+        },
+        {
+          "id": "AT-004",
+          "given": "An unauthenticated user attempts to access /upload or /dashboard pages",
+          "when": "The user navigates to these pages",
+          "then": "The system redirects the user to the /login page"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user uploads a file containing PII",
+          "when": "The upload is processed by the API",
+          "then": "The system rejects the upload with a clear error message and logs the incident"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user adds a revision note linked to an instrument version",
+          "when": "The note is submitted via POST /api/revision-notes",
+          "then": "The system stores the note, returns success with noteId, and triggers impact analysis job"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user applies filters on the /dashboard page",
+          "when": "The dashboard requests filtered data from /api/dashboard/data",
+          "then": "The system returns consistent, paginated deployment and revision log data matching filters"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to upload a file of unsupported format",
+          "when": "The upload is submitted",
+          "then": "The system rejects the upload with a 400 error and descriptive message"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user logs in with valid credentials",
+          "when": "The login form is submitted",
+          "then": "The system returns an authentication token and user session data"
+        },
+        {
+          "id": "AT-010",
+          "given": "The ImpactAnalysisJob fails during processing",
+          "when": "The job encounters an error",
+          "then": "The system retries the job with backoff and alerts administrators after repeated failures"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database (InstrumentVersion, DeploymentMetadata, RevisionLog, User)",
+        "Implement authentication system and /api/auth/login route",
+        "Build /login page with form and client-side validation",
+        "Develop /upload page UI with file input, metadata form, and revision note input",
+        "Implement /api/instruments/upload POST route with file parsing, PII sanitization, and storage",
+        "Create background ImpactAnalysisJob infrastructure and integrate with upload API",
+        "Implement /api/instruments/:id/diff GET route to retrieve diff and impact reports",
+        "Build /dashboard page UI with filters and visualizations",
+        "Implement /api/dashboard/data GET route with filtering and pagination",
+        "Develop /revision-notes page UI for viewing and adding notes",
+        "Implement /api/revision-notes POST route with concurrency control",
+        "Implement /api/deployments POST route with conflict detection",
+        "Add error handling and validation across all APIs and pages",
+        "Implement security measures including authentication checks, input sanitization, and rate limiting",
+        "Write acceptance tests and perform end-to-end testing",
+        "Deploy and monitor background job processing with alerting"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/dashboard",
+          "/revision-notes",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/instruments/upload.ts",
+          "api/instruments/[id]/diff.ts",
+          "api/deployments.ts",
+          "api/dashboard/data.ts",
+          "api/revision-notes.ts"
+        ],
+        "prismaModelsToAdd": [
+          "InstrumentVersion",
+          "DeploymentMetadata",
+          "RevisionLog",
+          "User"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing or unclear constraints and details about the academic instrument version control tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs {{BLUEPRINT}}, {{EXPANDED}}, please ask detailed questions to clarify any missing constraints or requirements about the instrument version comparison and impact analysis tool. Focus on user workflows, input validations, security, and output expectations. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define final page routes, UI components, data models, and API endpoints for the system.",
+        "promptTemplate": "Based on the refined requirements and blueprint {{BLUEPRINT}}, {{EXPANDED}}, generate a finalized list of pages, data models, and API routes needed for the academic instrument version control and analysis system. Include details on inputs, outputs, and interactions. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial UI page stubs and forms for uploading instruments and viewing reports.",
+        "promptTemplate": "Using the finalized design {{BLUEPRINT}}, {{EXPANDED}}, generate starter code or detailed descriptions for the /upload page UI that supports file uploads, metadata entry, and displays diff/impact reports. Include validation rules and user guidance. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the integrations between UI pages, backend APIs, and database models.",
+        "promptTemplate": "Given the scaffolded pages, APIs, and data models {{BLUEPRINT}}, {{EXPANDED}}, produce integration plans and code snippets to connect the /upload page UI to the /api/instruments/upload endpoint, handle authentication, validation, file parsing, storage, and trigger background impact analysis jobs. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

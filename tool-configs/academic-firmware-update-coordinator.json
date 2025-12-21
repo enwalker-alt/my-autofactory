@@ -1,0 +1,794 @@
+{
+  "slug": "academic-firmware-update-coordinator",
+  "title": "Academic Research Device Firmware Update Coordinator",
+  "description": "A single-page tool for academic field research technicians to manually track, schedule, and verify firmware updates across deployed data collection devices. Enables centralized input of device metadata, firmware versions, update packages, and schedules, with status tracking and basic alerts to ensure update consistency, security, and minimal downtime.",
+  "inputLabel": "Enter device info, current firmware versions, firmware update package details, and update schedule preferences (JSON or structured text). Optionally upload firmware package files.",
+  "outputLabel": "Firmware update coordination summary, including device statuses, scheduled updates, detected conflicts or errors, and compliance alerts.",
+  "systemPrompt": "You are an expert assistant helping an academic field research technician coordinate firmware updates for multiple deployed data collection devices. Accept input describing device metadata (model, serial number, deployment location), current firmware versions, firmware update package details or upload references, and update scheduling preferences including constraints. Validate inputs for completeness and correctness. Detect conflicts such as overlapping update schedules or incompatible firmware packages. Provide a clear, concise summary report of the current device firmware statuses, scheduled updates, alerts for missing or failed updates, and compliance notes. Do NOT perform any automatic device control or trigger updates. Reject any requests lacking required fields or containing disallowed operations. Output plain text summary by default. If structured-output feature enabled, output JSON with detailed status, schedule, and alert objects. Always prioritize user data privacy and security. Refuse to process inputs that attempt unauthorized actions or expose sensitive data improperly.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Report",
+      "prompt": "Generate a concise summary report of device firmware versions, scheduled updates, and any alerts or conflicts based on the provided device and firmware update data."
+    },
+    {
+      "label": "Detailed JSON Status",
+      "prompt": "Provide a detailed JSON report including device metadata, firmware package validation status, update schedules with approval states, and alerts for missing or failed updates."
+    },
+    {
+      "label": "Validate Input Data",
+      "prompt": "Check the provided device metadata, firmware package details, and update schedules for required fields, data format correctness, and possible conflicts. Report any validation errors clearly."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON includes arrays of devices, firmwarePackages, updateSchedules, and alerts with structured fields per the data models.",
+  "clarifyPrompt": "Please provide all required device metadata fields (deviceId, model, serialNumber, deploymentLocation, currentFirmwareVersion), firmware package details including checksum and compatible models, and update schedule parameters including device targets and scheduled times. Specify any constraints or preferences for scheduling updates.",
+  "finalizePrompt": "Confirm that all input data is complete and valid. Summarize the firmware update coordination status, listing devices, their current firmware versions, scheduled updates with approval status, detected conflicts or missing updates, and any compliance or security alerts.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Device Firmware Update Coordinator",
+      "niche": {
+        "role": "Academic Field Research Technician",
+        "scenario": "Managing firmware updates across multiple data collection devices deployed in ongoing field studies to ensure consistency, security, and minimal downtime."
+      },
+      "problem": "Field research technicians often struggle to track, schedule, and verify firmware updates for multiple data collection devices deployed at diverse locations. Manual tracking leads to inconsistent firmware versions, security vulnerabilities, and data compatibility issues, risking data quality and study integrity.",
+      "inputs": [
+        "Device metadata (model, serial number, deployment location)",
+        "Current firmware version per device",
+        "Firmware update packages or links",
+        "Update scheduling preferences and constraints",
+        "Device connectivity status logs"
+      ],
+      "outputs": [
+        "Centralized dashboard showing firmware versions and update status across devices",
+        "Automated update schedules optimized to minimize field downtime",
+        "Update compliance and verification reports",
+        "Alerts for devices missing critical updates or failed updates",
+        "Audit logs for firmware update activities"
+      ],
+      "whyItWins": [
+        "Fills a unique gap in managing firmware updates specifically for academic field research devices, a niche overlooked by generic device management tools",
+        "Reduces risk of data loss or corruption caused by inconsistent or outdated firmware",
+        "Supports repeatable workflows for ongoing longitudinal studies requiring strict device version control",
+        "Lightweight enough to start with manual input but scalable to automated update coordination and integration with device APIs",
+        "Enhances collaboration between field technicians and research managers by providing clear update status and compliance tracking"
+      ],
+      "upgradePath": {
+        "today": "Simple single-page app allowing manual entry of device info, firmware versions, and update plans with status tracking and basic alerts",
+        "in90Days": "Add semi-automated update scheduling with conflict resolution, CSV import/export, and user roles for update approval and communication",
+        "in12Months": "Develop multi-page system integrating with device APIs for automatic firmware version detection, remote update triggering, real-time connectivity monitoring, detailed analytics dashboards, and multi-project support with collaborative team workflows"
+      },
+      "riskNotes": [
+        "Must ensure no automatic device control without explicit technician authorization to prevent unintended disruptions",
+        "Sensitive device and location metadata requires secure handling and privacy compliance",
+        "Firmware update files must be validated for integrity and compatibility to avoid bricking devices",
+        "Avoid replacing existing device management systems but complement them with a focus on academic field research context"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A firmware update coordination system tailored for academic field research technicians to manage, schedule, and verify firmware updates across multiple deployed data collection devices, ensuring consistency, security, and minimal downtime.",
+      "primaryUser": "Academic Field Research Technician",
+      "successMetrics": [
+        "Percentage of devices running approved firmware versions",
+        "Reduction in firmware update failures or rollbacks",
+        "Average downtime per device during updates",
+        "User adoption rate among field technicians and research managers",
+        "Number of audit log entries generated per update cycle"
+      ],
+      "components": [
+        {
+          "id": "ui_dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide a centralized interface displaying device firmware versions, update statuses, alerts, and compliance reports.",
+          "dependsOn": [
+            "api_deviceManagement",
+            "api_updateScheduling",
+            "data_device",
+            "data_updateLog"
+          ],
+          "notes": [
+            "Must support filtering by project, location, and device status",
+            "Display alerts prominently for failed or missing updates",
+            "Accessible with role-based views (technician vs manager)"
+          ]
+        },
+        {
+          "id": "ui_deviceManagement",
+          "name": "Device & Firmware Management UI",
+          "type": "ui",
+          "responsibility": "Allow manual entry, editing, and bulk import/export (CSV) of device metadata, firmware versions, and update plans.",
+          "dependsOn": [
+            "api_deviceManagement",
+            "data_device"
+          ],
+          "notes": [
+            "Supports manual input initially, scalable to API-driven device info retrieval",
+            "Includes validation for firmware package integrity and compatibility"
+          ]
+        },
+        {
+          "id": "api_deviceManagement",
+          "name": "Device Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for devices, firmware versions, and metadata; validate firmware packages; manage device connectivity status logs.",
+          "dependsOn": [
+            "data_device",
+            "data_firmwarePackage",
+            "data_connectivityLog"
+          ],
+          "notes": [
+            "Enforce security and privacy compliance for sensitive metadata",
+            "Provide endpoints for manual and automated device info updates"
+          ]
+        },
+        {
+          "id": "api_updateScheduling",
+          "name": "Update Scheduling & Coordination API",
+          "type": "api",
+          "responsibility": "Manage firmware update schedules, conflict resolution, update triggering authorization, and compliance reporting.",
+          "dependsOn": [
+            "data_updateSchedule",
+            "data_updateLog",
+            "integration_deviceAPIs"
+          ],
+          "notes": [
+            "Requires explicit technician authorization before triggering updates",
+            "Supports scheduling constraints and downtime minimization",
+            "Generates alerts for failed or missing updates"
+          ]
+        },
+        {
+          "id": "data_device",
+          "name": "Device Data Store",
+          "type": "data",
+          "responsibility": "Persist device metadata, current firmware versions, deployment locations, and connectivity status logs.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive data must be encrypted and access-controlled",
+            "Supports indexing by device ID, location, and project"
+          ]
+        },
+        {
+          "id": "data_firmwarePackage",
+          "name": "Firmware Package Store",
+          "type": "data",
+          "responsibility": "Store firmware update packages or references with integrity and compatibility metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Includes validation status and versioning",
+            "Must prevent storage of corrupted or incompatible packages"
+          ]
+        },
+        {
+          "id": "data_updateSchedule",
+          "name": "Update Schedule Store",
+          "type": "data",
+          "responsibility": "Persist scheduled firmware updates with timing, device targets, status, and approval info.",
+          "dependsOn": [],
+          "notes": [
+            "Supports conflict detection and resolution metadata",
+            "Tracks update history and compliance"
+          ]
+        },
+        {
+          "id": "data_updateLog",
+          "name": "Update Audit Log",
+          "type": "data",
+          "responsibility": "Maintain immutable logs of all firmware update activities, including attempts, successes, failures, and user actions.",
+          "dependsOn": [],
+          "notes": [
+            "Supports audit and compliance reporting",
+            "Must be tamper-evident and securely stored"
+          ]
+        },
+        {
+          "id": "integration_deviceAPIs",
+          "name": "Device API Integration Module",
+          "type": "integration",
+          "responsibility": "Interface with device vendor APIs for automatic firmware version detection, remote update triggering, and real-time connectivity monitoring.",
+          "dependsOn": [
+            "api_deviceManagement",
+            "api_updateScheduling"
+          ],
+          "notes": [
+            "Must require explicit user authorization before any remote control",
+            "Handles API failures and fallback to manual mode"
+          ]
+        },
+        {
+          "id": "job_updateVerification",
+          "name": "Firmware Update Verification Job",
+          "type": "job",
+          "responsibility": "Periodically verify device firmware versions post-update and generate compliance reports and alerts for discrepancies.",
+          "dependsOn": [
+            "data_device",
+            "data_updateLog",
+            "integration_deviceAPIs"
+          ],
+          "notes": [
+            "Retries verification on failure with exponential backoff",
+            "Notifies users of verification failures or mismatches"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Device",
+          "purpose": "Store metadata and status of each deployed data collection device.",
+          "fields": [
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "model",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "serialNumber",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deploymentLocation",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "currentFirmwareVersion",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "connectivityStatus",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastSeen",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "serialNumber",
+            "deploymentLocation",
+            "projectId"
+          ]
+        },
+        {
+          "name": "FirmwarePackage",
+          "purpose": "Represent firmware update packages with metadata for validation and compatibility.",
+          "fields": [
+            {
+              "name": "packageId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "compatibleModels",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "checksum",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "validationStatus",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "packageId",
+            "version"
+          ]
+        },
+        {
+          "name": "UpdateSchedule",
+          "purpose": "Store scheduled firmware updates with timing, target devices, status, and approval info.",
+          "fields": [
+            {
+              "name": "scheduleId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "firmwarePackageId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scheduledTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "approvedBy",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "scheduleId",
+            "scheduledTime",
+            "status"
+          ]
+        },
+        {
+          "name": "UpdateLog",
+          "purpose": "Immutable log entries for all firmware update activities and user actions.",
+          "fields": [
+            {
+              "name": "logId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "firmwarePackageId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "performedBy",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "logId",
+            "deviceId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "ConnectivityLog",
+          "purpose": "Track device connectivity status and changes over time.",
+          "fields": [
+            {
+              "name": "logId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Firmware Update Dashboard",
+          "purpose": "Display overview of devices, firmware versions, update statuses, alerts, and compliance reports.",
+          "inputs": [
+            "filter criteria (project, location, status)"
+          ],
+          "outputs": [
+            "device list with statuses",
+            "alerts",
+            "compliance summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/devices",
+          "title": "Device & Firmware Management",
+          "purpose": "Manage device metadata, firmware versions, and update plans with manual entry and bulk import/export.",
+          "inputs": [
+            "device info",
+            "firmware package uploads",
+            "CSV import files"
+          ],
+          "outputs": [
+            "device records",
+            "validation errors",
+            "import/export status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/schedules",
+          "title": "Update Scheduling & Approval",
+          "purpose": "Create, view, and approve firmware update schedules with conflict detection and downtime optimization.",
+          "inputs": [
+            "schedule parameters",
+            "approval actions"
+          ],
+          "outputs": [
+            "schedule list",
+            "conflict alerts",
+            "approval status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Compliance & Audit Reports",
+          "purpose": "Generate and view reports on update compliance, verification results, and audit logs.",
+          "inputs": [
+            "report filters (date range, device, project)"
+          ],
+          "outputs": [
+            "compliance metrics",
+            "audit logs",
+            "verification alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User & System Settings",
+          "purpose": "Manage user roles, permissions, notification preferences, and integration settings.",
+          "inputs": [
+            "user info",
+            "notification settings",
+            "integration credentials"
+          ],
+          "outputs": [
+            "updated settings",
+            "role assignments"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/devices",
+          "method": "GET",
+          "purpose": "Retrieve list of devices with metadata and current firmware versions.",
+          "requestShape": "query params for filtering (projectId, location, status)",
+          "responseShape": "array of Device objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/devices",
+          "method": "POST",
+          "purpose": "Create or update device metadata and firmware version.",
+          "requestShape": "Device object",
+          "responseShape": "success status with deviceId",
+          "auth": "user"
+        },
+        {
+          "route": "/api/firmware-packages",
+          "method": "POST",
+          "purpose": "Upload and validate a new firmware package.",
+          "requestShape": "multipart/form-data with firmware file and metadata",
+          "responseShape": "validation result and packageId",
+          "auth": "user"
+        },
+        {
+          "route": "/api/update-schedules",
+          "method": "GET",
+          "purpose": "Retrieve scheduled firmware updates with status and approval info.",
+          "requestShape": "query params for filtering (deviceId, status, date range)",
+          "responseShape": "array of UpdateSchedule objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/update-schedules",
+          "method": "POST",
+          "purpose": "Create or update a firmware update schedule with approval workflow.",
+          "requestShape": "UpdateSchedule object",
+          "responseShape": "success status with scheduleId",
+          "auth": "user"
+        },
+        {
+          "route": "/api/update-logs",
+          "method": "GET",
+          "purpose": "Retrieve update audit logs filtered by device, date, or action.",
+          "requestShape": "query params (deviceId, date range, action type)",
+          "responseShape": "array of UpdateLog objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/device-connectivity",
+          "method": "POST",
+          "purpose": "Submit device connectivity status logs.",
+          "requestShape": "ConnectivityLog object",
+          "responseShape": "success status",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Firmware Update Verification Job",
+          "trigger": "Scheduled periodic (e.g. hourly) job",
+          "purpose": "Verify firmware versions on devices post-update, generate compliance reports, and alert on discrepancies."
+        },
+        {
+          "name": "Connectivity Status Aggregation Job",
+          "trigger": "Scheduled periodic job",
+          "purpose": "Aggregate and analyze device connectivity logs to detect offline devices and notify users."
+        }
+      ],
+      "edgeCases": [
+        "Device offline or unreachable during scheduled update window",
+        "Firmware package fails integrity or compatibility validation",
+        "Conflicting update schedules for the same device or overlapping downtime windows",
+        "Unauthorized or accidental triggering of remote updates",
+        "Partial update failures requiring rollback or manual intervention",
+        "Sensitive device location data exposed due to misconfiguration",
+        "API integration failures with vendor device APIs",
+        "Simultaneous edits or conflicting updates from multiple users"
+      ],
+      "nonGoals": [
+        "Replacing existing comprehensive device management systems",
+        "Automatic device control without explicit technician authorization",
+        "Handling hardware repair or physical device maintenance",
+        "Providing generic IoT device management beyond academic field research devices",
+        "Real-time firmware update streaming or over-the-air update delivery protocols"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages (/dashboard, /devices, /schedules, /reports, /settings) with role-based access control.",
+        "Dashboard UI fetches device data, update schedules, update logs, and alerts via GET /api/devices, /api/update-schedules, /api/update-logs endpoints with filters.",
+        "Device Management UI allows manual entry, editing, and bulk CSV import/export of device metadata and firmware packages; interacts with POST /api/devices and POST /api/firmware-packages for creation and validation.",
+        "Update Scheduling UI allows creation, viewing, and approval of update schedules; interacts with GET and POST /api/update-schedules endpoints, enforcing approval workflow and conflict detection.",
+        "Compliance & Audit Reports UI fetches filtered update logs and compliance metrics via GET /api/update-logs and related endpoints.",
+        "Settings UI manages user roles, permissions, notification preferences, and integration credentials, interacting with secured API endpoints (to be implemented).",
+        "Device Management API handles CRUD operations on devices and firmware packages, validating firmware integrity and compatibility before storage.",
+        "Update Scheduling API manages scheduling, conflict resolution, approval workflows, and triggers updates only after explicit technician authorization.",
+        "Integration module interfaces with vendor device APIs for automatic firmware version detection, remote update triggering, and connectivity monitoring, requiring explicit user authorization and handling API failures gracefully.",
+        "Background jobs periodically verify device firmware versions post-update, generate compliance reports, and alert discrepancies; also aggregate connectivity logs to detect offline devices and notify users.",
+        "Immutable update logs and connectivity logs are stored securely with tamper-evident mechanisms for audit and compliance reporting.",
+        "All sensitive data, especially device metadata and location, are encrypted and access-controlled throughout data storage and transmission."
+      ],
+      "validationRules": [
+        "Device metadata fields (deviceId, model, serialNumber, deploymentLocation, currentFirmwareVersion) are required and must be non-empty strings.",
+        "FirmwarePackage upload must include a valid firmware file, metadata (packageId, version, compatibleModels, checksum), and pass integrity (checksum) and compatibility validation before acceptance.",
+        "UpdateSchedule creation requires valid deviceIds array, existing firmwarePackageId, scheduledTime in the future, status within allowed states (e.g., pending, approved, rejected), and approval info if applicable.",
+        "UpdateLog entries must contain valid deviceId, action, status, timestamp, and optional performedBy and details.",
+        "ConnectivityLog entries require valid deviceId, status (e.g., online, offline), and timestamp.",
+        "API endpoints must validate user authentication and authorization, ensuring role-based access control (e.g., only managers can approve schedules).",
+        "Bulk CSV imports for devices must validate each row for required fields and report row-specific errors without stopping entire import.",
+        "Conflict detection logic must validate no overlapping update schedules for the same device within downtime windows.",
+        "Firmware package validation must reject corrupted or incompatible packages before storage.",
+        "All date/time fields must be valid ISO 8601 strings and represent sensible times (e.g., scheduledTime not in the past)."
+      ],
+      "errorHandling": [
+        "API endpoints return standardized error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 409 for conflicts, 500 for server errors).",
+        "Validation errors include detailed messages specifying field and issue to support UI error display.",
+        "Bulk import errors report per-row failures and aggregate summary of successes and failures.",
+        "Firmware package upload failures return validation failure reasons (e.g., checksum mismatch, incompatible models).",
+        "Update scheduling conflicts return conflict details to UI for user resolution.",
+        "Integration module handles vendor API failures with retries, exponential backoff, and fallback to manual mode, logging errors and notifying users.",
+        "Unauthorized attempts to trigger updates or access restricted data return 403 Forbidden with audit logging.",
+        "Background jobs log errors and retry transient failures with exponential backoff; critical failures generate alerts to system administrators.",
+        "Sensitive data access violations are logged and blocked, with alerts for suspicious activity.",
+        "UI displays user-friendly error messages and guidance for corrective actions."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication and enforce role-based authorization checks.",
+        "Sensitive device metadata, including deploymentLocation and projectId, must be encrypted at rest and access-controlled.",
+        "Firmware packages must be validated for integrity and compatibility before storage to prevent malicious uploads.",
+        "Explicit user authorization is required before triggering any remote device control or firmware update via integration APIs.",
+        "Audit logs are immutable and tamper-evident, stored securely to support compliance requirements.",
+        "API inputs are sanitized to prevent injection attacks; rate limiting is applied to prevent abuse.",
+        "User roles and permissions are managed securely, restricting access to sensitive operations (e.g., schedule approval).",
+        "Integration credentials and API keys are stored securely with encryption and access controls.",
+        "All communication between UI, API, and integration modules uses HTTPS to protect data in transit.",
+        "Error messages avoid leaking sensitive information that could aid attackers."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A technician is authenticated and on the /dashboard page",
+          "when": "They apply filters for project and device status",
+          "then": "The dashboard displays a filtered list of devices with current firmware versions and alerts for failed updates"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user uploads a firmware package via /api/firmware-packages",
+          "when": "The package passes integrity and compatibility validation",
+          "then": "The package is stored with validationStatus 'validated' and packageId returned"
+        },
+        {
+          "id": "AT-003",
+          "given": "A manager creates an update schedule with overlapping downtime for the same device",
+          "when": "They submit the schedule via POST /api/update-schedules",
+          "then": "The API returns a conflict error with details, and the schedule is not saved"
+        },
+        {
+          "id": "AT-004",
+          "given": "A technician triggers a firmware update via the scheduling UI",
+          "when": "They have not provided explicit authorization",
+          "then": "The system prevents update triggering and prompts for authorization"
+        },
+        {
+          "id": "AT-005",
+          "given": "A bulk CSV import of devices contains rows with missing required fields",
+          "when": "The import is processed",
+          "then": "The system imports valid rows, reports errors for invalid rows, and provides a summary report"
+        },
+        {
+          "id": "AT-006",
+          "given": "The Firmware Update Verification Job runs after an update cycle",
+          "when": "It detects devices with firmware version mismatches",
+          "then": "It generates alerts and updates compliance reports accordingly"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthorized user attempts to access /api/update-schedules",
+          "when": "They make a GET request",
+          "then": "The API returns 401 Unauthorized and logs the attempt"
+        },
+        {
+          "id": "AT-008",
+          "given": "A device is offline during a scheduled update window",
+          "when": "The update scheduling system attempts to trigger the update",
+          "then": "The system logs the failure, retries according to policy, and alerts the technician"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user views the /reports page with filters applied",
+          "when": "They request audit logs and compliance metrics",
+          "then": "The system displays accurate, filtered reports with no sensitive data leakage"
+        },
+        {
+          "id": "AT-010",
+          "given": "Multiple users attempt simultaneous edits on the same device metadata",
+          "when": "They submit conflicting updates",
+          "then": "The system detects conflicts, prevents data corruption, and notifies users of the conflict"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Device, FirmwarePackage, UpdateSchedule, UpdateLog, ConnectivityLog with indexes and encryption where required",
+        "Implement authentication and role-based authorization middleware for API routes",
+        "Develop Device Management API endpoints (/api/devices) with validation and secure CRUD operations",
+        "Develop Firmware Package upload and validation API (/api/firmware-packages) with integrity checks",
+        "Implement Update Scheduling API (/api/update-schedules) with conflict detection and approval workflow",
+        "Implement Update Log and Connectivity Log APIs (/api/update-logs, /api/device-connectivity) for audit and status tracking",
+        "Build Integration module for vendor device APIs with explicit authorization and error handling",
+        "Develop UI pages (/dashboard, /devices, /schedules, /reports, /settings) with data fetching, filtering, and role-based views",
+        "Implement bulk CSV import/export functionality in Device Management UI with validation and error reporting",
+        "Implement background jobs for Firmware Update Verification and Connectivity Status Aggregation with retry and alerting",
+        "Add comprehensive error handling and user-friendly messages across UI and APIs",
+        "Implement security features: data encryption, audit logging, input sanitization, and secure storage of credentials",
+        "Perform acceptance testing and edge case validation",
+        "Deploy and monitor system with logging and alerting"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/devices",
+          "/schedules",
+          "/reports",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "api/devices.ts",
+          "api/firmware-packages.ts",
+          "api/update-schedules.ts",
+          "api/update-logs.ts",
+          "api/device-connectivity.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Device",
+          "FirmwarePackage",
+          "UpdateSchedule",
+          "UpdateLog",
+          "ConnectivityLog"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, clarifications, or additional user needs related to the firmware update coordination tool.",
+        "promptTemplate": "You are the planner refining the firmware update coordinator requirements. Given the current blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}} What additional constraints, edge cases, or user preferences should be considered? Provide detailed questions to clarify requirements. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages, API endpoints, and database data models needed to build the system.",
+        "promptTemplate": "You are the architect designing the firmware update coordination system. Based on the idea and blueprint: {{IDEA}} {{BLUEPRINT}} Review and finalize the list of pages, APIs, and data models. Suggest improvements or confirm completeness. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate stub code or descriptions for the UI pages and API routes to jumpstart development.",
+        "promptTemplate": "You are the builder generating initial code stubs for the firmware update coordinator. Use the finalized pages and APIs: {{PAGES}} {{API_ROUTES}} Generate basic functional stubs with placeholders. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Plan and implement the integration of UI pages with API endpoints and database models for full functionality.",
+        "promptTemplate": "You are the integrator connecting UI pages to APIs and the database for the firmware update coordinator. Using the build order and scaffolds: {{BUILD_ORDER}} {{SCAFFOLDS}} Describe the wiring strategy and implementation steps. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

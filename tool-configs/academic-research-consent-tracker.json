@@ -1,0 +1,681 @@
+{
+  "slug": "academic-research-consent-tracker",
+  "title": "Academic Research Participant Consent Tracker",
+  "description": "A single-page app for academic clinical trial coordinators to input and update participant consent statuses, notes, and optionally upload scanned consent forms, producing real-time compliance logs and summaries to help track consent processes across multiple sites safely and efficiently.",
+  "inputLabel": "Enter or update participant consent details (JSON or plain text)",
+  "outputLabel": "Consent update confirmation and compliance summary",
+  "systemPrompt": "You are a secure clinical trial consent process assistant. Accept only valid participant consent updates with required fields: participant ID, site ID, recruiter ID, consent form version and date, consent status, and timestamp. Validate inputs strictly: dates must be ISO format, status must be one of 'pending', 'consented', 'declined', or 'withdrawn'. Notes are optional but max 1000 characters. Accept optional scanned consent form uploads (PDF or image), validating size and type. Reject any inputs that may contain sensitive personal health information or violate privacy rules. Respond with clear confirmation or detailed validation errors. Output plain text or JSON if requested. Do not provide legal advice or store PHI. Do not process unauthorized requests.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Quick Consent Update",
+      "prompt": "Update participant consent status:\n\nParticipant ID: {{participantId}}\nSite ID: {{siteId}}\nRecruiter ID: {{recruiterId}}\nConsent Form Version: {{consentFormVersion}}\nConsent Form Date (YYYY-MM-DD): {{consentFormDate}}\nStatus (pending, consented, declined, withdrawn): {{status}}\nStatus Timestamp (ISO 8601): {{statusTimestamp}}\nNotes (optional): {{notes}}",
+      "hint": "Fill all required fields; omit notes if none"
+    },
+    {
+      "label": "Consent Update with File Upload",
+      "prompt": "Update participant consent status with scanned form upload:\n\nParticipant ID: {{participantId}}\nSite ID: {{siteId}}\nRecruiter ID: {{recruiterId}}\nConsent Form Version: {{consentFormVersion}}\nConsent Form Date (YYYY-MM-DD): {{consentFormDate}}\nStatus (pending, consented, declined, withdrawn): {{status}}\nStatus Timestamp (ISO 8601): {{statusTimestamp}}\nNotes (optional): {{notes}}\nUpload scanned signed consent form file.",
+      "hint": "Attach a PDF or image file of the signed consent form"
+    },
+    {
+      "label": "Check Compliance Summary",
+      "prompt": "Generate a compliance summary report for site {{siteId}} from {{startDate}} to {{endDate}}.",
+      "hint": "Specify site and date range"
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output JSON includes success boolean, message string, and consentRecord object with fields participantId, siteId, recruiterId, consentFormVersion, consentFormDate, status, statusTimestamp, notes, flags, signedFormFileId, and auditTrail if applicable.",
+  "clarifyPrompt": "Please provide all required participant consent details including IDs, consent form version and date, status, and timestamps. Optional notes and scanned consent form file uploads are supported. Ensure no sensitive personal health information is included.",
+  "finalizePrompt": "Confirm submission of participant consent update with provided details. Validate all required fields and optional file upload. Respond with success confirmation or detailed error messages if validation fails.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Participant Consent Process Tracker",
+      "niche": {
+        "role": "Academic Clinical Trial Coordinator",
+        "scenario": "Managing and documenting informed consent processes across multiple recruitment sites for clinical trials"
+      },
+      "problem": "Clinical trial coordinators struggle to track and document participant consent statuses and process adherence across multiple sites, risking compliance gaps and administrative overhead with manual or fragmented systems.",
+      "inputs": [
+        "Participant identifiers (e.g., ID, initials)",
+        "Site location and recruiter identifiers",
+        "Consent form version and date",
+        "Consent status updates (e.g., approached, consented, declined, withdrawn)",
+        "Date and time stamps for each consent interaction",
+        "Notes or flags on consent process issues or deviations",
+        "Upload of scanned signed consent forms (optional)"
+      ],
+      "outputs": [
+        "Real-time consolidated dashboard of consent statuses by site and participant",
+        "Automated alerts for missing or delayed consent documentation",
+        "Compliance summary reports highlighting protocol adherence and deviations",
+        "Exportable audit-ready consent logs with detailed timelines and metadata",
+        "Recruiter performance and workflow efficiency metrics"
+      ],
+      "whyItWins": [
+        "Provides centralized, real-time visibility into participant consent progress across multiple sites, reducing risk of missed or incomplete consents",
+        "Automates labor-intensive manual tracking and audit preparation, saving time and improving data accuracy",
+        "Supports compliance with ethical and regulatory standards by documenting consent process details comprehensively",
+        "Enables performance insights for recruiters, fostering process improvements and accountability",
+        "Lightweight initial tool with clear path to full clinical trial management integration"
+      ],
+      "upgradePath": {
+        "today": "A simple single-page app allowing coordinators to input and update participant consent statuses and notes manually, generating basic compliance dashboards and exportable logs.",
+        "in90Days": "Add secure uploading and OCR processing of consent form scans, site-level user roles, automated reminder emails for pending consents, and integration with electronic data capture (EDC) systems.",
+        "in12Months": "Expand into a multi-page clinical trial consent management system with workflow automation, audit trail analytics, mobile data capture for recruiters in the field, multi-language support, and regulatory submission exports."
+      },
+      "riskNotes": [
+        "Must strictly avoid processing or storing sensitive personal health information beyond consent metadata to comply with privacy regulations",
+        "Ensure secure authentication and access control to protect participant confidentiality",
+        "Avoid replacing formal electronic informed consent systems; this tool is to augment tracking and documentation only",
+        "Require clear disclaimers that this does not constitute legal advice on consent compliance"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A centralized consent process tracker for academic clinical trial coordinators to manage, document, and monitor participant consent statuses across multiple recruitment sites, ensuring compliance, reducing administrative overhead, and providing actionable insights.",
+      "primaryUser": "Academic Clinical Trial Coordinator",
+      "successMetrics": [
+        "Reduction in missed or delayed consent documentation incidents",
+        "Time saved in preparing audit-ready consent logs",
+        "User adoption rate across multiple recruitment sites",
+        "Accuracy and completeness of consent status data",
+        "Number of automated alerts successfully generated and acted upon"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display real-time consolidated consent statuses, compliance summaries, recruiter performance metrics, and alerts in an intuitive interface.",
+          "dependsOn": [
+            "api-consent",
+            "api-reporting"
+          ],
+          "notes": [
+            "Supports filtering by site, participant, and consent status",
+            "Visualizes timelines and flags deviations",
+            "Initial version is single-page; expandable to multi-page with detailed views"
+          ]
+        },
+        {
+          "id": "ui-consent-entry",
+          "name": "Consent Entry & Update UI",
+          "type": "ui",
+          "responsibility": "Enable coordinators and recruiters to input and update participant consent statuses, notes, and upload scanned consent forms securely.",
+          "dependsOn": [
+            "api-consent",
+            "integration-ocr"
+          ],
+          "notes": [
+            "Includes validation to ensure required fields are completed",
+            "Supports optional file uploads with secure storage",
+            "Future support for mobile data capture and multi-language"
+          ]
+        },
+        {
+          "id": "api-consent",
+          "name": "Consent Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for participant consent records, status updates, notes, and file uploads with secure access control.",
+          "dependsOn": [
+            "data-consent",
+            "integration-storage"
+          ],
+          "notes": [
+            "Implements strict authentication and authorization",
+            "Validates input to prevent sensitive PHI storage",
+            "Logs changes for audit trail purposes"
+          ]
+        },
+        {
+          "id": "api-reporting",
+          "name": "Reporting and Alerts API",
+          "type": "api",
+          "responsibility": "Generate compliance summaries, recruiter performance metrics, exportable audit logs, and trigger automated alerts for missing or delayed consents.",
+          "dependsOn": [
+            "data-consent",
+            "job-alerts"
+          ],
+          "notes": [
+            "Supports export formats suitable for audits (e.g., CSV, PDF)",
+            "Provides aggregated and participant-level data",
+            "Integrates with notification systems for alerts"
+          ]
+        },
+        {
+          "id": "data-consent",
+          "name": "Consent Data Store",
+          "type": "data",
+          "responsibility": "Persist participant consent metadata, status histories, notes, and references to uploaded consent form files securely.",
+          "dependsOn": [],
+          "notes": [
+            "Stores timestamps and versioning for audit trail",
+            "Indexes on participant ID, site, and status for efficient queries",
+            "Avoids storing sensitive personal health information"
+          ]
+        },
+        {
+          "id": "job-alerts",
+          "name": "Consent Compliance Alert Job",
+          "type": "job",
+          "responsibility": "Periodically scan consent records to identify missing, delayed, or non-compliant consent statuses and trigger alert notifications.",
+          "dependsOn": [
+            "data-consent",
+            "api-reporting"
+          ],
+          "notes": [
+            "Runs daily or configurable intervals",
+            "Handles edge cases like site holidays or recruiter unavailability",
+            "Logs alert delivery status"
+          ]
+        },
+        {
+          "id": "integration-ocr",
+          "name": "OCR Integration Service",
+          "type": "integration",
+          "responsibility": "Process uploaded scanned consent forms to extract metadata such as consent form version and date to assist data entry and verification.",
+          "dependsOn": [
+            "api-consent"
+          ],
+          "notes": [
+            "Optional feature for future upgrades",
+            "Ensures no PHI is extracted or stored",
+            "Handles OCR failures gracefully with manual override"
+          ]
+        },
+        {
+          "id": "integration-storage",
+          "name": "Secure File Storage Integration",
+          "type": "integration",
+          "responsibility": "Store uploaded scanned consent forms securely with access controls and retention policies compliant with privacy regulations.",
+          "dependsOn": [],
+          "notes": [
+            "Supports encrypted storage and access logging",
+            "Implements retention and deletion policies",
+            "Separates file metadata from consent metadata"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "ParticipantConsent",
+          "purpose": "Store metadata and status history for each participant's consent process within a clinical trial site.",
+          "fields": [
+            {
+              "name": "participantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "recruiterId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "consentFormVersion",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "consentFormDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "statusTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "flags",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "signedFormFileId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "auditTrail",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "participantId",
+            "siteId",
+            "status",
+            "statusTimestamp"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user credentials, roles, and access permissions for coordinators and recruiters.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "username",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "username",
+            "role"
+          ]
+        },
+        {
+          "name": "AlertLog",
+          "purpose": "Record details of alerts generated and their delivery status for compliance monitoring.",
+          "fields": [
+            {
+              "name": "alertId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "participantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alertType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alertTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "deliveryStatus",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "participantId",
+            "siteId",
+            "alertType"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Consent Status Dashboard",
+          "purpose": "Provide real-time overview of consent statuses, compliance summaries, and recruiter performance across sites.",
+          "inputs": [
+            "site filter",
+            "participant filter",
+            "date range",
+            "status filter"
+          ],
+          "outputs": [
+            "consent status charts",
+            "compliance alerts",
+            "performance metrics"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/consent-entry",
+          "title": "Participant Consent Entry",
+          "purpose": "Allow authorized users to add or update participant consent statuses, notes, and upload signed consent forms.",
+          "inputs": [
+            "participant ID",
+            "site",
+            "recruiter",
+            "consent form version",
+            "status update",
+            "notes",
+            "file upload"
+          ],
+          "outputs": [
+            "confirmation of update",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Compliance and Audit Reports",
+          "purpose": "Generate and export audit-ready consent logs and compliance summary reports.",
+          "inputs": [
+            "site",
+            "date range",
+            "report type"
+          ],
+          "outputs": [
+            "downloadable reports (CSV, PDF)"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/alerts",
+          "title": "Consent Alerts Management",
+          "purpose": "View and manage automated alerts related to consent process delays or issues.",
+          "inputs": [
+            "alert filters by site, type, date"
+          ],
+          "outputs": [
+            "alert list",
+            "alert details",
+            "acknowledgement controls"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Authentication",
+          "purpose": "Authenticate users to access the system with role-based permissions.",
+          "inputs": [
+            "username",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/consents",
+          "method": "POST",
+          "purpose": "Create or update participant consent records.",
+          "requestShape": "{ participantId, siteId, recruiterId, consentFormVersion, consentFormDate, status, statusTimestamp, notes?, flags?, signedFormFileId? }",
+          "responseShape": "{ success: boolean, message: string, consentRecord? }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/consents",
+          "method": "GET",
+          "purpose": "Retrieve participant consent records with optional filters.",
+          "requestShape": "{ participantId?, siteId?, status?, dateRange? }",
+          "responseShape": "{ consents: ParticipantConsent[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/compliance",
+          "method": "GET",
+          "purpose": "Generate compliance summary reports.",
+          "requestShape": "{ siteId, dateRange }",
+          "responseShape": "{ reportData: json, exportUrl?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/audit-log",
+          "method": "GET",
+          "purpose": "Export audit-ready consent logs.",
+          "requestShape": "{ siteId, dateRange }",
+          "responseShape": "{ auditLogData: json, exportUrl?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts",
+          "method": "GET",
+          "purpose": "Retrieve active and historical consent alerts.",
+          "requestShape": "{ siteId?, alertType?, dateRange? }",
+          "responseShape": "{ alerts: AlertLog[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue access token.",
+          "requestShape": "{ username, password }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "DailyConsentComplianceCheck",
+          "trigger": "Scheduled daily at configurable time",
+          "purpose": "Scan consent records for missing, delayed, or non-compliant statuses and generate alerts."
+        },
+        {
+          "name": "AlertDeliveryJob",
+          "trigger": "Triggered after alert creation",
+          "purpose": "Send notifications (email, in-app) to responsible users about consent process issues."
+        }
+      ],
+      "edgeCases": [
+        "Handling participants with multiple consent form versions or amendments",
+        "Partial or incomplete data entry with missing timestamps or statuses",
+        "Network or storage failures during file upload of scanned consent forms",
+        "User role changes affecting access to site-specific data",
+        "Delayed or missed alerts due to job failures or system downtime",
+        "OCR failures or inaccuracies requiring manual correction",
+        "Ensuring no sensitive PHI is stored even in uploaded documents or extracted metadata"
+      ],
+      "nonGoals": [
+        "Replacing formal electronic informed consent (eICF) systems",
+        "Storing or processing sensitive personal health information beyond consent metadata",
+        "Providing legal advice or compliance certification",
+        "Managing full clinical trial data beyond consent tracking",
+        "Supporting patient-facing consent capture or e-signatures in initial versions"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receives token for session.",
+        "Dashboard page fetches consolidated consent statuses, compliance summaries, and recruiter metrics from /api/consents and /api/reports/compliance with filters (site, participant, date range, status).",
+        "Consent Entry page submits new or updated consent records via POST to /api/consents, including optional file uploads handled via integration-storage and OCR metadata extraction via integration-ocr.",
+        "Reports page requests audit logs and compliance reports from /api/reports/audit-log and /api/reports/compliance, receiving export URLs for CSV/PDF downloads.",
+        "Alerts page fetches alerts from /api/alerts with filters and allows acknowledgement updates.",
+        "Background job DailyConsentComplianceCheck scans data-consent records daily, identifies missing/delayed consents, creates AlertLog entries, and triggers AlertDeliveryJob.",
+        "AlertDeliveryJob sends notifications to users via configured channels and logs delivery status in AlertLog.",
+        "All APIs validate user roles and site access before processing requests.",
+        "Audit trails are appended to ParticipantConsent records on every update for compliance."
+      ],
+      "validationRules": [
+        "participantId, siteId, recruiterId, consentFormVersion, consentFormDate, status, and statusTimestamp are required for consent record creation/update.",
+        "status must be one of predefined valid statuses (e.g., 'pending', 'consented', 'declined', 'withdrawn').",
+        "consentFormDate and statusTimestamp must be valid ISO date strings and statusTimestamp cannot be earlier than consentFormDate.",
+        "Notes are optional but limited to 1000 characters max.",
+        "Flags JSON must conform to defined schema (e.g., keys for deviations, flags).",
+        "File uploads must be validated for type (PDF, image), size limits, and scanned for malware before storage.",
+        "User authentication requires valid username and password; passwords hashed and never stored or transmitted in plain text.",
+        "API requests must include valid auth token; unauthorized or insufficient role access results in 401 or 403 errors.",
+        "Filters on GET endpoints must be validated for allowed values and formats (e.g., date ranges, enums).",
+        "OCR extracted metadata must be validated to exclude any PHI and allow manual override on failure.",
+        "Alert creation requires valid alertType and associated participantId and siteId."
+      ],
+      "errorHandling": [
+        "API endpoints return structured error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 500 for server errors).",
+        "Validation errors include field-specific messages to guide user correction.",
+        "File upload failures return descriptive errors and do not persist partial data.",
+        "OCR failures log errors and fallback to manual data entry without blocking consent record creation.",
+        "Background jobs log errors and retry on transient failures; critical failures alert system admins.",
+        "Authentication failures return generic error messages to avoid information leakage.",
+        "Unhandled exceptions are caught and logged with correlation IDs for troubleshooting.",
+        "API rate limiting and throttling applied to prevent abuse.",
+        "Client-side UI displays user-friendly error messages based on API error responses.",
+        "Audit trail logs errors related to consent record changes for traceability."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /api/auth/login.",
+        "Role-based access control enforced: coordinators and recruiters have scoped access to site-specific data.",
+        "Sensitive PHI is explicitly excluded from storage; only consent metadata and non-identifiable flags stored.",
+        "File uploads stored encrypted with access controls and retention policies per privacy regulations.",
+        "Audit trails record user actions with timestamps for compliance.",
+        "Tokens use secure HTTP-only cookies or Authorization headers with expiration and refresh mechanisms.",
+        "Input validation prevents injection attacks and enforces strict typing.",
+        "Logging avoids sensitive data exposure.",
+        "Background jobs run with least privilege and secure environment variables.",
+        "OCR integration ensures no PHI extraction or storage; manual override required for corrections."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated coordinator user on the /dashboard page",
+          "when": "They apply filters for site, participant, date range, and status",
+          "then": "The dashboard displays updated consent status charts, compliance alerts, and recruiter performance metrics matching the filters"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated recruiter on the /consent-entry page",
+          "when": "They submit a new consent record with all required fields and a valid signed consent form upload",
+          "then": "The system stores the record, uploads the file securely, triggers OCR metadata extraction, and returns a success confirmation"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user requests a compliance report on /reports with valid site and date range",
+          "when": "They select report type and submit the request",
+          "then": "The system generates the report, provides a downloadable CSV or PDF link, and the data matches the requested parameters"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user views the /alerts page with filters applied",
+          "when": "They acknowledge an alert",
+          "then": "The alert status updates to acknowledged, and the change is reflected in the alert list"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user attempts to access /consent-entry without authentication",
+          "when": "They navigate to the page",
+          "then": "They are redirected to the /login page"
+        },
+        {
+          "id": "AT-006",
+          "given": "The background job DailyConsentComplianceCheck runs",
+          "when": "It detects missing or delayed consents",
+          "then": "It creates corresponding AlertLog entries and triggers AlertDeliveryJob to notify responsible users"
+        },
+        {
+          "id": "AT-007",
+          "given": "An OCR failure occurs during consent form processing",
+          "when": "The system cannot extract metadata",
+          "then": "It logs the failure, allows manual override, and does not block consent record creation"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user submits invalid data (e.g., missing required fields) to /api/consents POST",
+          "when": "The API receives the request",
+          "then": "It returns a 400 error with detailed validation messages and does not create or update records"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for ParticipantConsent, User, AlertLog with indexes and constraints",
+        "Implement authentication API (/api/auth/login) with password hashing and token issuance",
+        "Build Consent Management API (/api/consents) with CRUD, validation, authorization, audit trail logging",
+        "Develop Secure File Storage Integration for scanned consent form uploads",
+        "Create Consent Entry & Update UI page with form validation and file upload support",
+        "Implement OCR Integration service with fallback and manual override",
+        "Build Reporting and Alerts API (/api/reports/compliance, /api/reports/audit-log, /api/alerts) with export capabilities",
+        "Develop Dashboard UI page with filters and real-time data visualization",
+        "Create Reports UI page for generating and downloading reports",
+        "Develop Alerts Management UI page with alert acknowledgment controls",
+        "Implement background jobs: DailyConsentComplianceCheck and AlertDeliveryJob with logging and retry",
+        "Add role-based access control and site scoping throughout APIs and UI",
+        "Implement comprehensive error handling and user-friendly messages",
+        "Write acceptance tests and perform end-to-end validation",
+        "Deploy and monitor system with logging and alerting"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/consent-entry",
+          "/reports",
+          "/alerts",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/consents/index.ts",
+          "/api/reports/compliance.ts",
+          "/api/reports/audit-log.ts",
+          "/api/alerts/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model ParticipantConsent { participantId String siteId String recruiterId String consentFormVersion String consentFormDate DateTime status String statusTimestamp DateTime notes String? flags Json? signedFormFileId String? auditTrail Json? @@index([participantId]) @@index([siteId]) @@index([status]) @@index([statusTimestamp]) }",
+          "model User { userId String @id username String @unique hashedPassword String role String siteId String? @@index([username]) @@index([role]) }",
+          "model AlertLog { alertId String @id participantId String siteId String alertType String alertTimestamp DateTime deliveryStatus String notes String? @@index([participantId]) @@index([siteId]) @@index([alertType]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather any missing constraints or requirements for the consent tracker tool.",
+        "promptTemplate": "You are a planner refining the Academic Research Participant Consent Tracker requirements. Given the current blueprint and expanded specs:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nPlease identify and ask for any missing constraints, edge cases, or important considerations to ensure the tool meets clinical compliance and user needs."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize detailed page designs and data models based on refined requirements.",
+        "promptTemplate": "You are an architect designing the multi-page app for the consent tracker. Using the refined specs and blueprint:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nProduce detailed page structures, data models, and API contracts ready for implementation."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for pages and API endpoints to jumpstart development.",
+        "promptTemplate": "You are a builder generating code stubs for the consent tracker pages and APIs. Based on the architect's finalized design:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nProduce starter code templates with placeholders and comments for each page and API endpoint."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate UI pages with backend APIs and database models to enable full functionality.",
+        "promptTemplate": "You are an integrator connecting the front-end pages with backend APIs and database models for the consent tracker. Using the build order and specs:\n\n{{BLUEPRINT}}\n\nUser input:\n{{USER_INPUT}}\n\nProvide integration instructions, code snippets, and testing plans to ensure end-to-end data flow."
+      }
+    ]
+  }
+}

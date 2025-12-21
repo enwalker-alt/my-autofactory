@@ -1,0 +1,733 @@
+{
+  "slug": "academic-grant-competitor-landscape-mapper",
+  "title": "Academic Research Grant Competitor Landscape Mapper",
+  "description": "Analyze and summarize the competitive funding landscape for your academic research project by inputting your project abstract and uploading recent funded grant lists. Get a structured competitor summary report highlighting active research groups, funding trends, thematic overlaps, and strategic recommendations to improve your grant proposal competitiveness.",
+  "inputLabel": "Enter your research project abstract and upload recent funded grant lists (CSV or JSON files). Optionally provide keywords or links to grant announcements.",
+  "outputLabel": "Competitor Landscape Summary Report",
+  "systemPrompt": "You are a specialized assistant for academic research grant writers. Given a research project abstract and uploaded recent funded grant lists or links, generate a structured competitor landscape summary including: identification of active research groups and funded projects, trends in funding amounts and timelines, thematic overlaps and gaps relative to the user's project, and strategic recommendations for proposal differentiation and funder targeting. Use only publicly available or user-provided data. Do not generate medical, legal, or ethical advice. Validate and refuse any disallowed or confidential data inputs. Output a clear, factual, and actionable text report. If structured-output feature is enabled, output JSON matching the competitor landscape schema. Refuse any request that violates privacy or data policy.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Focus",
+      "prompt": "Provide a concise summary highlighting key competitors, funding trends, and strategic recommendations."
+    },
+    {
+      "label": "In-depth Analysis",
+      "prompt": "Provide a detailed competitor landscape map with thematic overlaps, funding timelines, and comprehensive strategic insights."
+    },
+    {
+      "label": "Funding Trends Emphasis",
+      "prompt": "Focus analysis on funding amounts, timelines, and trends relevant to the user's research area."
+    },
+    {
+      "label": "Proposal Differentiation Advice",
+      "prompt": "Emphasize strategic recommendations to differentiate the user's proposal from competitors."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with keys: competitorGroups (array of {name, projects}), fundingTrends (array of {period, amount}), thematicGaps (array of strings), strategicRecommendations (string).",
+  "clarifyPrompt": "To provide the best competitor landscape analysis, please ensure your project abstract is clear and upload recent funded grant data files in CSV or JSON format. Optionally, provide relevant keywords or links. Do you have any questions or need help with input formats?",
+  "finalizePrompt": "Review the competitor landscape summary and let me know if you want more detailed analysis, focus on funding trends, or strategic advice for your proposal.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Competitor Landscape Mapper",
+      "niche": {
+        "role": "Academic Research Grant Writer",
+        "scenario": "Planning and preparing a competitive grant proposal by analyzing the current funding landscape and competitor projects"
+      },
+      "problem": "Grant writers need to understand the competitive funding environment for their research topic to tailor proposals effectively, but gathering, organizing, and synthesizing relevant competitor project data and funding histories is time-consuming and scattered across multiple sources.",
+      "inputs": [
+        "Research project abstract or summary",
+        "List of recent relevant funded grants (uploaded files or links)",
+        "Funder databases or grant award announcements (optional upload)",
+        "Keywords or research themes"
+      ],
+      "outputs": [
+        "Structured competitor landscape map identifying active research groups, funded projects, and funding trends",
+        "Comparative analysis highlighting thematic overlaps and gaps relative to the user's project",
+        "Strategic recommendations on proposal differentiation and funder targeting",
+        "Visual dashboards summarizing competitor profiles, funding amounts, timelines, and key collaborators"
+      ],
+      "whyItWins": [
+        "Fills a gap by focusing on competitor and funding landscape analysis rather than proposal writing or compliance",
+        "Supports repeated use throughout grant writing cycles as competitive context evolves",
+        "Combines fragmented data sources into actionable, visual insights tailored for academic grant writers",
+        "Enables strategic proposal positioning to increase funding success chances"
+      ],
+      "upgradePath": {
+        "today": "Lightweight single-page app where users manually input project info and upload recent funded grant lists to receive a basic competitor summary report.",
+        "in90Days": "Add automated data ingestion from public grant databases, enhanced visual competitor maps, and interactive filtering by research themes and funders.",
+        "in12Months": "Develop a fully integrated multi-page system with user accounts, collaborative proposal planning dashboards, competitor tracking alerts, and integration with funder opportunity feeds."
+      },
+      "riskNotes": [
+        "Ensure all data processed respects privacy and public data usage policies; no confidential or unpublished proposals should be ingested.",
+        "Avoid generating or implying misleading competitive intelligence claims; focus on publicly available data and factual summaries.",
+        "No medical, legal, or ethical advice is provided; purely analytical and strategic insights for academic grant planning.",
+        "Handle uploaded data securely to protect user intellectual property and project confidentiality."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An evolving platform to help academic research grant writers analyze and visualize the competitive funding landscape by aggregating and synthesizing data from user inputs and public grant sources, delivering actionable insights and strategic recommendations to improve proposal competitiveness.",
+      "primaryUser": "Academic Research Grant Writer",
+      "successMetrics": [
+        "User engagement frequency throughout grant writing cycles",
+        "Accuracy and relevance of competitor landscape maps and analyses",
+        "User-reported improvement in proposal differentiation and funding success",
+        "Volume and diversity of data sources integrated and processed",
+        "User retention and collaborative feature adoption"
+      ],
+      "components": [
+        {
+          "id": "ui-landing",
+          "name": "Landing and Authentication UI",
+          "type": "ui",
+          "responsibility": "Provide user onboarding, login/signup, and access to main app features with secure authentication.",
+          "dependsOn": [
+            "api-auth"
+          ],
+          "notes": [
+            "Supports user account creation and session management.",
+            "Must enforce privacy and data security policies."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Competitor Landscape Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display visual dashboards of competitor profiles, funding trends, thematic maps, and strategic recommendations with interactive filtering.",
+          "dependsOn": [
+            "api-competitor",
+            "api-analysis"
+          ],
+          "notes": [
+            "Supports data visualization and user interaction.",
+            "Allows export of reports and visual summaries."
+          ]
+        },
+        {
+          "id": "ui-data-input",
+          "name": "Project and Data Input UI",
+          "type": "ui",
+          "responsibility": "Collect user inputs including project abstracts, grant lists (file upload or links), keywords, and optional funder databases.",
+          "dependsOn": [
+            "api-data-upload"
+          ],
+          "notes": [
+            "Includes validation and secure handling of uploaded files.",
+            "Supports incremental data input and editing."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication and User Management API",
+          "type": "api",
+          "responsibility": "Manage user authentication, authorization, and profile data securely.",
+          "dependsOn": [],
+          "notes": [
+            "Supports OAuth and password-based login.",
+            "Implements session and token management."
+          ]
+        },
+        {
+          "id": "api-data-upload",
+          "name": "Data Ingestion and Processing API",
+          "type": "api",
+          "responsibility": "Handle uploads of grant lists, links, and optional funder data; parse and normalize inputs for analysis.",
+          "dependsOn": [
+            "data-grants"
+          ],
+          "notes": [
+            "Validates file formats and content compliance with privacy policies.",
+            "Extracts structured data for downstream processing."
+          ]
+        },
+        {
+          "id": "api-competitor",
+          "name": "Competitor Landscape Analysis API",
+          "type": "api",
+          "responsibility": "Generate structured competitor landscape maps, identify active research groups, funded projects, and funding trends based on inputs.",
+          "dependsOn": [
+            "data-grants",
+            "data-users"
+          ],
+          "notes": [
+            "Implements algorithms for thematic overlap and gap analysis.",
+            "Ensures all data is sourced from public or user-provided inputs."
+          ]
+        },
+        {
+          "id": "api-analysis",
+          "name": "Strategic Recommendation and Reporting API",
+          "type": "api",
+          "responsibility": "Produce comparative analyses and strategic recommendations for proposal differentiation and funder targeting.",
+          "dependsOn": [
+            "api-competitor"
+          ],
+          "notes": [
+            "Generates textual and visual reports.",
+            "Supports export and sharing features."
+          ]
+        },
+        {
+          "id": "data-grants",
+          "name": "Grant and Competitor Data Store",
+          "type": "data",
+          "responsibility": "Persist structured data on grants, competitor projects, funding histories, and related metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Stores user-uploaded data securely with encryption.",
+            "Indexes on keywords, funders, dates for efficient querying."
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User Profiles and Project Data Store",
+          "type": "data",
+          "responsibility": "Persist user accounts, project abstracts, keywords, and user preferences.",
+          "dependsOn": [],
+          "notes": [
+            "Ensures data confidentiality and access control."
+          ]
+        },
+        {
+          "id": "job-data-ingestion",
+          "name": "Automated Public Grant Data Ingestion Job",
+          "type": "job",
+          "responsibility": "Periodically fetch and update public grant databases and award announcements to enrich competitor data.",
+          "dependsOn": [
+            "integration-public-grant-sources",
+            "data-grants"
+          ],
+          "notes": [
+            "Handles rate limits and data freshness.",
+            "Validates and sanitizes external data."
+          ]
+        },
+        {
+          "id": "integration-public-grant-sources",
+          "name": "Public Grant Database Integrations",
+          "type": "integration",
+          "responsibility": "Connect and interface with external public grant databases and funder feeds for data ingestion.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multiple data formats and APIs.",
+            "Monitors for changes and new data releases."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user account information and preferences.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLoginAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Store user-submitted research project abstracts and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "abstract",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "keywords",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "keywords"
+          ]
+        },
+        {
+          "name": "GrantRecord",
+          "purpose": "Represent individual funded grants and competitor projects.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "abstract",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "principalInvestigators",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "fundingAmount",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "funder",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "keywords",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "importedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "funder",
+            "keywords",
+            "principalInvestigators"
+          ]
+        },
+        {
+          "name": "AnalysisReport",
+          "purpose": "Store generated competitor landscape analyses and strategic recommendations per project.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "landscapeMap",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "comparativeAnalysis",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "strategicRecommendations",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "createdAt"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Welcome and Login",
+          "purpose": "Landing page for user onboarding and authentication.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "login success/failure",
+            "signup link"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Competitor Landscape Dashboard",
+          "purpose": "Visualize competitor maps, funding trends, and strategic insights.",
+          "inputs": [
+            "project selection",
+            "filter criteria"
+          ],
+          "outputs": [
+            "interactive visualizations",
+            "exportable reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/input",
+          "title": "Project and Data Input",
+          "purpose": "Input project abstracts, upload grant lists, and specify keywords.",
+          "inputs": [
+            "project abstract",
+            "file uploads",
+            "links",
+            "keywords"
+          ],
+          "outputs": [
+            "data validation feedback",
+            "upload status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/:projectId",
+          "title": "Analysis Reports",
+          "purpose": "View detailed competitor analysis and strategic recommendations for a project.",
+          "inputs": [
+            "projectId"
+          ],
+          "outputs": [
+            "textual reports",
+            "visual summaries"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and create session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/signup",
+          "method": "POST",
+          "purpose": "Create new user account.",
+          "requestShape": "{ email: string, password: string, name?: string }",
+          "responseShape": "{ userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create or update user project data.",
+          "requestShape": "{ title?: string, abstract: string, keywords?: string[] }",
+          "responseShape": "{ projectId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/data/upload",
+          "method": "POST",
+          "purpose": "Upload grant lists or funder data files and links.",
+          "requestShape": "{ projectId: string, files?: File[], links?: string[] }",
+          "responseShape": "{ uploadStatus: string, parsedRecordsCount: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/competitor/landscape",
+          "method": "GET",
+          "purpose": "Retrieve competitor landscape map and funding trends for a project.",
+          "requestShape": "{ projectId: string, filters?: { keywords?: string[], funders?: string[] } }",
+          "responseShape": "{ landscapeMap: json, fundingTrends: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/analysis/report",
+          "method": "GET",
+          "purpose": "Get comparative analysis and strategic recommendations for a project.",
+          "requestShape": "{ projectId: string }",
+          "responseShape": "{ comparativeAnalysis: string, strategicRecommendations: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Public Grant Data Sync",
+          "trigger": "Scheduled (e.g., daily or weekly)",
+          "purpose": "Automatically fetch and ingest updated public grant award data to enrich competitor datasets."
+        },
+        {
+          "name": "Analysis Report Generation",
+          "trigger": "On user data upload or project update",
+          "purpose": "Process new inputs to generate updated competitor landscape maps and strategic recommendations."
+        }
+      ],
+      "edgeCases": [
+        "User uploads incomplete or malformed grant data files requiring validation and graceful error messaging.",
+        "Public grant data sources become temporarily unavailable or change API formats, requiring fallback and alerting.",
+        "User inputs ambiguous or overly broad keywords leading to noisy or irrelevant competitor maps.",
+        "Handling of overlapping or conflicting data from multiple sources without misleading aggregation.",
+        "Ensuring user data privacy when multiple users collaborate or share reports.",
+        "Large file uploads or datasets causing performance bottlenecks or timeouts."
+      ],
+      "nonGoals": [
+        "Providing medical, legal, or ethical advice related to grant proposals.",
+        "Automating proposal writing or compliance checking.",
+        "Accessing or processing confidential or unpublished grant proposals.",
+        "Replacing funder official databases or their authoritative data.",
+        "Real-time collaboration editing beyond basic sharing and commenting."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User visits '/' landing page and signs up or logs in via /api/auth/signup or /api/auth/login, receiving a session token.",
+        "Authenticated user navigates to '/project/input' to create or update projects via /api/projects (POST) with project abstract and keywords.",
+        "User uploads grant lists or funder data files and/or submits links via /api/data/upload (POST), associated with a projectId.",
+        "Uploaded data is validated, parsed, normalized, and stored in data-grants (GrantRecord) and linked to user projects.",
+        "Background job triggers analysis report generation on new data upload or project update, invoking api-competitor and api-analysis logic.",
+        "User accesses '/dashboard' to view competitor landscape maps and funding trends fetched from /api/competitor/landscape (GET) with filters.",
+        "User views detailed analysis reports at '/reports/:projectId' by fetching data from /api/analysis/report (GET).",
+        "Background job 'Public Grant Data Sync' periodically fetches and ingests public grant data via integration-public-grant-sources into data-grants.",
+        "All data flows respect user authentication and authorization, ensuring data confidentiality and access control."
+      ],
+      "validationRules": [
+        "Email must be valid format and unique during signup.",
+        "Password must meet minimum complexity (e.g., length, character types) for signup and login.",
+        "Project abstract is required and must be non-empty string.",
+        "Keywords, if provided, must be an array of non-empty strings.",
+        "File uploads must be validated for allowed formats (e.g., CSV, JSON), size limits, and scanned for malicious content.",
+        "Links submitted must be valid URLs and accessible.",
+        "API request bodies must be validated against defined shapes; missing required fields cause 400 errors.",
+        "Filters for competitor landscape must be arrays of strings if provided.",
+        "User authentication tokens must be validated on protected routes; invalid or expired tokens cause 401 errors.",
+        "Uploaded grant data must be checked for completeness and consistency; malformed or incomplete records are rejected with detailed error messages.",
+        "Date fields must be valid ISO date strings where applicable."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with descriptive error messages for validation failures.",
+        "Return 401 Unauthorized for missing or invalid authentication tokens on protected endpoints.",
+        "Return 403 Forbidden if user attempts to access or modify data they do not own.",
+        "Return 404 Not Found if requested project, report, or resource does not exist or does not belong to user.",
+        "Return 413 Payload Too Large for file uploads exceeding size limits.",
+        "Gracefully handle external API failures in public grant data ingestion with retries, fallbacks, and alerting.",
+        "Log all errors with context for debugging and monitoring.",
+        "Provide user-friendly error messages on UI with actionable feedback.",
+        "For ambiguous or overly broad keywords leading to noisy data, provide warnings and suggestions to refine inputs.",
+        "Timeouts or performance issues during large data processing should return 503 Service Unavailable with retry guidance."
+      ],
+      "securityNotes": [
+        "All API routes requiring authentication must verify JWT or session tokens securely.",
+        "Passwords must be hashed using strong algorithms (e.g., bcrypt) before storage.",
+        "Sensitive data such as user credentials and grant data must be encrypted at rest.",
+        "File uploads must be scanned and sanitized to prevent injection or malware.",
+        "Access control enforced strictly so users can only access their own projects and reports.",
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Implement rate limiting on authentication and data upload endpoints to prevent abuse.",
+        "Ensure CORS policies restrict API access to authorized frontends.",
+        "Audit logs should be maintained for critical actions like login, data upload, and report generation.",
+        "Collaborative sharing features must include explicit user consent and access revocation mechanisms."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A new user visits the landing page",
+          "when": "They submit valid email and password to /api/auth/signup",
+          "then": "A new user account is created, and userId is returned"
+        },
+        {
+          "id": "AT-002",
+          "given": "An existing user with valid credentials",
+          "when": "They submit login request to /api/auth/login",
+          "then": "They receive a valid token and userId"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on '/project/input'",
+          "when": "They submit a project with abstract and optional keywords to /api/projects",
+          "then": "Project is created or updated and projectId is returned"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with a project",
+          "when": "They upload valid grant list files and links to /api/data/upload",
+          "then": "Files are validated, parsed, data stored, and uploadStatus with parsedRecordsCount is returned"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user with projects and uploaded data",
+          "when": "They request competitor landscape via /api/competitor/landscape with filters",
+          "then": "A landscapeMap and fundingTrends JSON are returned matching filters"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user with generated analysis reports",
+          "when": "They request /api/analysis/report for a projectId",
+          "then": "Comparative analysis and strategic recommendations are returned"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user uploads a malformed grant data file",
+          "when": "They submit the file to /api/data/upload",
+          "then": "The API returns 400 with detailed validation error messages"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user tries to access another user's project or report",
+          "when": "They request data with that projectId",
+          "then": "The API returns 403 Forbidden"
+        },
+        {
+          "id": "AT-009",
+          "given": "Public grant data source is unavailable during scheduled job",
+          "when": "The ingestion job runs",
+          "then": "The job logs the failure, retries appropriately, and alerts maintainers"
+        },
+        {
+          "id": "AT-010",
+          "given": "User inputs ambiguous keywords leading to noisy competitor maps",
+          "when": "They request competitor landscape",
+          "then": "The system provides warnings and suggestions to refine keywords"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models for User, Project, GrantRecord, AnalysisReport.",
+        "Implement api-auth routes for signup and login with secure password hashing and token management.",
+        "Build Landing and Authentication UI at '/' with forms for login and signup.",
+        "Implement api-projects POST route for creating/updating projects with validation and auth.",
+        "Develop Project and Data Input UI at '/project/input' with forms for abstracts, keywords, file uploads, and links.",
+        "Implement api-data-upload POST route to handle file and link uploads, validation, parsing, and storage.",
+        "Implement background job for Analysis Report Generation triggered on data upload or project update.",
+        "Implement api-competitor GET route to generate and return competitor landscape maps and funding trends.",
+        "Build Competitor Landscape Dashboard UI at '/dashboard' to display visualizations and filters.",
+        "Implement api-analysis GET route to provide comparative analysis and strategic recommendations.",
+        "Build Analysis Reports UI at '/reports/:projectId' to display textual and visual reports.",
+        "Implement background job for Public Grant Data Sync with integration-public-grant-sources.",
+        "Add monitoring, logging, error handling, and security hardening across all components.",
+        "Perform acceptance testing and iterate based on feedback."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/dashboard",
+          "/project/input",
+          "/reports/[projectId]"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/auth/signup.ts",
+          "api/projects/index.ts",
+          "api/data/upload.ts",
+          "api/competitor/landscape.ts",
+          "api/analysis/report.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "GrantRecord",
+          "AnalysisReport"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify missing constraints, user needs, and edge cases for the competitor landscape mapper.",
+        "promptTemplate": "You are a planner refining the requirements for the Academic Research Grant Competitor Landscape Mapper. Given the current blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}, ask the user these questions: What are the key user goals not yet fully detailed? Are there additional data privacy or security considerations? What edge cases or failure modes should be anticipated? {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the app's pages and detailed data models ensuring alignment with requirements and security.",
+        "promptTemplate": "You are the architect tasked with finalizing the pages and data models for the Academic Research Grant Competitor Landscape Mapper. Using the idea, blueprint, and expanded specs: {{IDEA}}, {{BLUEPRINT}}, {{EXPANDED}}, produce a detailed list of pages with routes, inputs, outputs, and auth requirements, plus Prisma data models with fields and indexes. {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code stubs for each page UI and API endpoint to accelerate development.",
+        "promptTemplate": "You are a builder generating code stubs for the Academic Research Grant Competitor Landscape Mapper. Based on the finalized pages and APIs: {{BLUEPRINT}}, {{EXPANDED}}, generate React component stubs for each page route and TypeScript handlers for each API route. Include form fields, validation placeholders, and authentication checks. {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the frontend pages, backend APIs, and database models to create a working end-to-end system.",
+        "promptTemplate": "You are the integrator wiring together the frontend pages, backend APIs, and database for the Academic Research Grant Competitor Landscape Mapper. Using the build order and scaffolds: {{BLUEPRINT}}, {{EXPANDED}}, create detailed integration steps and code snippets showing how UI components call APIs, APIs validate and process data, and data is stored/retrieved via Prisma models. {{USER_INPUT}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,643 @@
+{
+  "slug": "academic-research-vis-accessibility-optimizer",
+  "title": "Academic Research Data Visualization Accessibility Optimizer",
+  "description": "Upload raw data files, chart images (PNG, SVG), and visualization descriptions to generate a structured accessibility compliance report. Receive prioritized recommendations for improving color contrast, labeling, and screen reader compatibility to optimize your academic data visualizations for accessibility compliance (e.g., WCAG 2.1 AA).",
+  "inputLabel": "Upload your raw data files, chart images (PNG, SVG), and paste visualization descriptions here. Select target accessibility standards and optionally provide audience profile details.",
+  "outputLabel": "Accessibility Compliance Report and Recommendations",
+  "systemPrompt": "You are an expert assistant specialized in analyzing academic data visualizations for accessibility compliance. Given raw data files, chart images (PNG, SVG), visualization descriptions, target accessibility standards (e.g., WCAG 2.1 AA), and optional audience profiles, generate a detailed, structured accessibility compliance report. Identify issues such as color contrast failures, insufficient labeling, and lack of screen reader support. Provide clear, prioritized, actionable recommendations to improve accessibility, including color palette adjustments, alt text suggestions, and layout restructuring. Output must be safe, advisory only, avoid medical or legal conclusions, and must refuse unsupported file formats or disallowed content. Output should be plain text summarizing findings and recommendations, optionally valid JSON if structured output is enabled. Enforce input validation and user data privacy. Respond only to authenticated users. If input is invalid or unsupported, respond with a clear error message.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary Report",
+      "prompt": "Provide a concise summary of the accessibility compliance status of the submitted visualization, highlighting the top 3 issues and their impact.",
+      "hint": "Focus on the most critical accessibility problems and summarize recommendations briefly."
+    },
+    {
+      "label": "Detailed Compliance Analysis",
+      "prompt": "Generate a detailed accessibility compliance report including all detected issues, their severity levels, and comprehensive recommendations for each.",
+      "hint": "Include details on color contrast, labeling, screen reader compatibility, and compliance with the selected standards."
+    },
+    {
+      "label": "Improvement Priorities",
+      "prompt": "List prioritized actionable improvements for the visualization's accessibility, explaining the rationale and estimated effort for each fix.",
+      "hint": "Help users focus on changes that deliver the greatest accessibility benefits first."
+    },
+    {
+      "label": "Export Metadata Format",
+      "prompt": "Output an exportable JSON metadata document summarizing accessibility compliance results and recommended adjustments, ready for inclusion in publication materials.",
+      "hint": "Structured JSON format suitable for integration with publishing workflows."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Use JSON output for structured reports including fields: issues (array), recommendations (array), complianceMetadata (object).",
+  "clarifyPrompt": "Please provide the raw data files, chart images (PNG, SVG), visualization descriptions, target accessibility standards (e.g., WCAG 2.1 AA), and optionally an audience profile. Upload supported file formats only. Specify any particular accessibility concerns if any.",
+  "finalizePrompt": "Confirm you have provided all required inputs and selected the appropriate accessibility standards. Ready to generate the accessibility compliance report?",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Visualization Accessibility Optimizer",
+      "niche": {
+        "role": "Academic researchers and data visualization specialists",
+        "scenario": "Preparing data visualizations for academic publications and presentations with accessibility compliance focus"
+      },
+      "problem": "Researchers create complex data visualizations for papers and presentations that often lack accessibility considerations such as color blindness compatibility, screen reader support, and clear data contrast. Existing tools focus on data cleaning or visualization design but do not specifically evaluate and optimize visualizations for accessibility compliance and usability for diverse audiences.",
+      "inputs": [
+        "Raw data or finalized chart images (PNG, SVG)",
+        "Visualization descriptions or design specs",
+        "Target accessibility standards or guidelines (e.g., WCAG 2.1 AA)",
+        "Audience profile including potential disabilities (optional)"
+      ],
+      "outputs": [
+        "Structured accessibility compliance report highlighting issues like color contrast failures, insufficient labeling, and non-screen reader-friendly elements",
+        "Recommended actionable improvements with prioritized fixes (e.g., color palette adjustments, alt text suggestions, layout restructuring)",
+        "Preview of optimized visualization mockups or annotated diagrams",
+        "Exportable accessibility metadata and compliance documentation for publication"
+      ],
+      "whyItWins": [
+        "Fills a critical gap by focusing exclusively on accessibility optimization of academic data visualizations",
+        "Supports repeated use in iterative research publication workflows, enhancing inclusion and compliance",
+        "Combines automated analysis with actionable design guidance, reducing manual accessibility checks",
+        "Facilitates compliance with publishing and funding agency accessibility mandates",
+        "Offers clear upgrade path from lightweight reports to interactive multi-page visualization editing and compliance tracking system"
+      ],
+      "upgradePath": {
+        "today": "Single-page web tool that accepts data files and visualization descriptions to generate accessibility compliance reports with color contrast and labeling checks",
+        "in90Days": "Add interactive visualization previews with live accessibility adjustment sliders and exportable accessibility metadata for journals and presentations",
+        "in12Months": "Full multi-page system integrating data upload, visualization builder/editor with built-in accessibility enforcement, collaboration tools for research teams, versioning, and compliance tracking dashboards"
+      },
+      "riskNotes": [
+        "Must ensure user data privacy and secure handling of potentially unpublished research data",
+        "Avoid generating medical or legal conclusions about disability accommodations; focus strictly on accessibility guidelines",
+        "Accessibility recommendations must be clearly advisory and not guarantee legal compliance without professional review",
+        "Handle diverse input types and formats robustly to avoid false positive/negative accessibility flags"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A system to analyze, report, and optimize academic data visualizations for accessibility compliance, evolving from a single-page report generator to a full-featured collaborative visualization editor with compliance tracking.",
+      "primaryUser": "Academic researchers and data visualization specialists preparing accessible visualizations for publications and presentations.",
+      "successMetrics": [
+        "Number of accessibility reports generated",
+        "User engagement with interactive optimization tools",
+        "Reduction in accessibility issues in user-submitted visualizations over time",
+        "User satisfaction and perceived usability improvements",
+        "Compliance documentation exports for academic publishing"
+      ],
+      "components": [
+        {
+          "id": "ui_reportPage",
+          "name": "Accessibility Report UI",
+          "type": "ui",
+          "responsibility": "Display accessibility compliance reports with issue highlights, recommendations, and visualization previews.",
+          "dependsOn": [
+            "api_analysis",
+            "data_visualization",
+            "data_reports"
+          ],
+          "notes": [
+            "Initial single-page interface for report generation and viewing.",
+            "Later supports interactive previews and sliders for live adjustments."
+          ]
+        },
+        {
+          "id": "ui_visualizationEditor",
+          "name": "Visualization Builder & Editor UI",
+          "type": "ui",
+          "responsibility": "Allow users to create, edit, and optimize visualizations with built-in accessibility enforcement and live feedback.",
+          "dependsOn": [
+            "api_analysis",
+            "data_visualization",
+            "data_projects"
+          ],
+          "notes": [
+            "Introduced in mid to long-term upgrades.",
+            "Supports collaboration and versioning features."
+          ]
+        },
+        {
+          "id": "api_analysis",
+          "name": "Accessibility Analysis API",
+          "type": "api",
+          "responsibility": "Process inputs (data files, images, descriptions) to generate structured accessibility compliance reports and recommendations.",
+          "dependsOn": [
+            "data_visualization",
+            "integration_accessibilityGuidelines"
+          ],
+          "notes": [
+            "Handles diverse input formats robustly.",
+            "Performs color contrast, labeling, and screen reader compatibility checks."
+          ]
+        },
+        {
+          "id": "data_visualization",
+          "name": "Visualization Data Store",
+          "type": "data",
+          "responsibility": "Persist visualization metadata, user-uploaded files, and optimized mockups for reports and editing.",
+          "dependsOn": [],
+          "notes": [
+            "Stores both raw inputs and processed visualization representations.",
+            "Ensures secure handling of sensitive research data."
+          ]
+        },
+        {
+          "id": "data_reports",
+          "name": "Accessibility Reports Store",
+          "type": "data",
+          "responsibility": "Persist generated accessibility compliance reports, recommendations, and exportable metadata documents.",
+          "dependsOn": [
+            "data_visualization"
+          ],
+          "notes": [
+            "Supports versioning for iterative workflows.",
+            "Enables export of compliance documentation."
+          ]
+        },
+        {
+          "id": "data_projects",
+          "name": "User Projects and Collaboration Store",
+          "type": "data",
+          "responsibility": "Manage user projects, collaboration data, version history, and compliance tracking dashboards.",
+          "dependsOn": [
+            "data_visualization",
+            "data_reports"
+          ],
+          "notes": [
+            "Introduced in long-term upgrades.",
+            "Supports team workflows and audit trails."
+          ]
+        },
+        {
+          "id": "integration_accessibilityGuidelines",
+          "name": "Accessibility Guidelines Integration",
+          "type": "integration",
+          "responsibility": "Provide up-to-date accessibility standards (e.g., WCAG 2.1 AA) and validation rules for analysis and recommendations.",
+          "dependsOn": [],
+          "notes": [
+            "Ensures recommendations align with recognized standards.",
+            "Allows updates as guidelines evolve."
+          ]
+        },
+        {
+          "id": "job_reportGeneration",
+          "name": "Report Generation Background Job",
+          "type": "job",
+          "responsibility": "Asynchronously process complex inputs to generate accessibility reports and optimized visualization previews.",
+          "dependsOn": [
+            "api_analysis",
+            "data_reports",
+            "data_visualization"
+          ],
+          "notes": [
+            "Improves responsiveness and scalability.",
+            "Handles retries and failure notifications."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Visualization",
+          "purpose": "Store uploaded raw data, images, descriptions, and processed visualization metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "rawDataFile",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "imageFile",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "processedMetadata",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "userId"
+          ]
+        },
+        {
+          "name": "AccessibilityReport",
+          "purpose": "Persist accessibility compliance results, issue details, recommendations, and export metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "visualizationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "issues",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "recommendations",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "complianceMetadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "visualizationId",
+            "userId"
+          ]
+        },
+        {
+          "name": "UserProject",
+          "purpose": "Manage user projects, collaboration info, versioning, and compliance tracking.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ownerUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "memberUserIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "visualizationIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "reportIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "versionHistory",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "ownerUserId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Accessibility Report Generator",
+          "purpose": "Single-page interface to upload data and visualization descriptions and generate accessibility reports.",
+          "inputs": [
+            "raw data files",
+            "chart images (PNG, SVG)",
+            "visualization descriptions",
+            "accessibility standards",
+            "audience profile (optional)"
+          ],
+          "outputs": [
+            "accessibility compliance report",
+            "recommendations",
+            "preview mockups"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/visualization-editor",
+          "title": "Visualization Builder & Editor",
+          "purpose": "Interactive page to create and optimize visualizations with live accessibility feedback and adjustment tools.",
+          "inputs": [
+            "existing visualizations",
+            "user edits",
+            "accessibility guidelines"
+          ],
+          "outputs": [
+            "optimized visualization mockups",
+            "updated accessibility reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects",
+          "title": "Projects and Collaboration Dashboard",
+          "purpose": "Manage user projects, team collaboration, version history, and compliance tracking.",
+          "inputs": [
+            "project metadata",
+            "collaboration invites",
+            "visualizations",
+            "reports"
+          ],
+          "outputs": [
+            "project summaries",
+            "compliance dashboards"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/analyze",
+          "method": "POST",
+          "purpose": "Accept visualization inputs and generate accessibility compliance reports asynchronously.",
+          "requestShape": "{ visualizationData: json, accessibilityStandards: string, audienceProfile?: json }",
+          "responseShape": "{ reportId: string, status: 'pending' | 'completed' | 'failed' }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/report/{reportId}",
+          "method": "GET",
+          "purpose": "Retrieve generated accessibility compliance report and recommendations.",
+          "requestShape": "{ reportId: string }",
+          "responseShape": "{ report: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/visualization/{visualizationId}",
+          "method": "GET",
+          "purpose": "Fetch visualization metadata and files for editing or preview.",
+          "requestShape": "{ visualizationId: string }",
+          "responseShape": "{ visualization: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "List user projects with collaboration info and compliance status.",
+          "requestShape": "{}",
+          "responseShape": "{ projects: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create new project for collaboration and versioning.",
+          "requestShape": "{ title: string, memberUserIds?: string[] }",
+          "responseShape": "{ projectId: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Accessibility Report Generation",
+          "trigger": "Triggered by new analysis requests from /api/analyze",
+          "purpose": "Process inputs asynchronously to generate detailed accessibility reports and optimized visualization previews."
+        }
+      ],
+      "edgeCases": [
+        "Handling corrupted or unsupported file formats gracefully with clear error messages.",
+        "Avoiding false positives/negatives in accessibility checks due to diverse visualization styles and data complexity.",
+        "Ensuring privacy and secure storage of unpublished or sensitive research data.",
+        "Managing partial inputs where some accessibility parameters or audience profiles are missing.",
+        "Handling simultaneous edits and version conflicts in collaborative projects.",
+        "Scaling report generation for large or complex visualizations without timeouts."
+      ],
+      "nonGoals": [
+        "Providing medical or legal advice regarding disability accommodations.",
+        "Guaranteeing legal compliance or certification of accessibility beyond advisory guidance.",
+        "Replacing specialized data cleaning or visualization design tools.",
+        "Supporting non-academic or non-research visualization use cases extensively.",
+        "Performing real-time accessibility enforcement outside the visualization editor context."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User uploads raw data files, chart images, and visualization descriptions via the Accessibility Report Generator page (/).",
+        "The frontend sends a POST request to /api/analyze with visualizationData, selected accessibilityStandards, and optional audienceProfile.",
+        "The API validates input, authenticates user, stores raw visualization data in data_visualization, and enqueues a background job for report generation.",
+        "The background job processes the input asynchronously, invoking the accessibilityGuidelines integration to apply WCAG 2.1 AA rules and other standards.",
+        "The job performs checks (color contrast, labeling, screen reader compatibility) and generates a structured accessibility report with issues and recommendations.",
+        "The generated report and optimized visualization previews are persisted in data_reports linked to the visualization and user.",
+        "The frontend polls or fetches the report status and data via GET /api/report/{reportId} to display the accessibility compliance report UI with issue highlights and recommendations.",
+        "Users can navigate to /visualization-editor to load existing visualizations via GET /api/visualization/{visualizationId}, edit them with live accessibility feedback, and save updates to data_visualization.",
+        "Edits trigger re-analysis requests to /api/analyze to update accessibility reports asynchronously.",
+        "Users manage projects and collaboration via /projects page, which fetches project data from GET /api/projects and allows creating new projects via POST /api/projects.",
+        "Projects aggregate visualizations and reports, track version history, and display compliance dashboards.",
+        "Throughout, authentication is enforced on all API routes and pages to ensure user data privacy and secure access.",
+        "Error states such as corrupted files, unsupported formats, or analysis failures are surfaced to users with clear messages and retry options."
+      ],
+      "validationRules": [
+        "API /api/analyze POST: visualizationData must be valid JSON with required fields (e.g., data files, images, descriptions).",
+        "accessibilityStandards must be a recognized string matching supported guideline versions (e.g., 'WCAG 2.1 AA').",
+        "Optional audienceProfile, if provided, must conform to expected schema (e.g., JSON with user demographics).",
+        "File uploads (rawDataFile, imageFile) must be validated for supported formats (e.g., CSV, JSON, PNG, SVG) and size limits.",
+        "UserProject creation requires non-empty title string; memberUserIds, if provided, must be arrays of valid user IDs.",
+        "GET routes require valid UUIDs or string IDs for reportId, visualizationId, and projectId parameters.",
+        "All inputs must be sanitized to prevent injection attacks or malformed data storage.",
+        "Version history JSON structures must conform to defined schema to track changes and resolve conflicts.",
+        "Collaborative edits must validate concurrent update timestamps to detect conflicts."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with descriptive error messages for invalid or missing input fields.",
+        "Return 401 Unauthorized if user authentication fails or token is missing.",
+        "Return 404 Not Found if requested report, visualization, or project ID does not exist or does not belong to the user.",
+        "Return 415 Unsupported Media Type for unsupported file uploads with guidance on accepted formats.",
+        "Background job failures trigger retry logic with exponential backoff; after max retries, mark report as 'failed' with error details.",
+        "API responses include status fields ('pending', 'completed', 'failed') to inform frontend of processing state.",
+        "Frontend displays user-friendly error modals or inline messages with actionable next steps (e.g., re-upload, contact support).",
+        "Log all errors with context for monitoring and debugging, ensuring no sensitive user data is exposed in logs.",
+        "Handle partial inputs gracefully by applying default accessibility standards or skipping optional checks with warnings.",
+        "Detect and resolve version conflicts in collaborative edits by prompting users to merge or overwrite changes."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication; implement JWT or session-based auth with secure cookies.",
+        "Validate and sanitize all user inputs to prevent injection attacks (SQL, NoSQL, XSS).",
+        "Store sensitive research data and files encrypted at rest and restrict access to authorized users only.",
+        "Use role-based access control for project collaboration features to limit editing and viewing permissions.",
+        "Implement rate limiting on API endpoints to prevent abuse and denial-of-service attacks.",
+        "Ensure secure file upload handling with virus scanning and file type validation.",
+        "Use HTTPS for all client-server communication to protect data in transit.",
+        "Audit logs for project changes and report generations to support compliance and traceability.",
+        "Regularly update accessibilityGuidelines integration to patch vulnerabilities and maintain standards compliance.",
+        "Avoid exposing internal error details or stack traces to end users."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the Accessibility Report Generator page with valid raw data files and visualization descriptions",
+          "when": "The user submits the data to generate an accessibility report",
+          "then": "The system accepts the input, enqueues a background job, and returns a reportId with status 'pending', then eventually updates status to 'completed' with a detailed report accessible via /api/report/{reportId}"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user requests a report with an invalid or non-existent reportId",
+          "when": "The user calls GET /api/report/{reportId}",
+          "then": "The API returns a 404 Not Found error with a clear message"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user uploads an unsupported file format during visualization submission",
+          "when": "The user submits the form",
+          "then": "The system rejects the upload with a 415 Unsupported Media Type error and displays a user-friendly message listing supported formats"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user edits a visualization in the Visualization Editor with live accessibility feedback enabled",
+          "when": "The user makes changes and saves",
+          "then": "The system updates the visualization data, triggers re-analysis, and updates the accessibility report asynchronously"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user creates a new project with a valid title and optional members",
+          "when": "The user submits the project creation form",
+          "then": "The system creates the project, stores collaboration info, and returns the new projectId"
+        },
+        {
+          "id": "AT-006",
+          "given": "Multiple users collaborate on a project and edit the same visualization simultaneously",
+          "when": "Conflicting edits occur",
+          "then": "The system detects version conflicts and prompts users to resolve them before saving"
+        },
+        {
+          "id": "AT-007",
+          "given": "A background job fails repeatedly during report generation",
+          "when": "Max retry attempts are exceeded",
+          "then": "The report status is set to 'failed' with error details logged and user notified"
+        },
+        {
+          "id": "AT-008",
+          "given": "An unauthenticated user attempts to access any protected page or API route",
+          "when": "The request is made",
+          "then": "The system returns 401 Unauthorized and redirects to login"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models: Visualization, AccessibilityReport, UserProject",
+        "Implement authentication middleware and user session management",
+        "Create API routes for /api/analyze, /api/report/{reportId}, /api/visualization/{visualizationId}, /api/projects (GET and POST)",
+        "Develop background job infrastructure for asynchronous report generation",
+        "Integrate accessibilityGuidelines module with updatable standards and validation rules",
+        "Build Accessibility Report Generator page (/) with upload UI and report display",
+        "Implement Visualization Builder & Editor page (/visualization-editor) with live feedback and editing capabilities",
+        "Develop Projects and Collaboration Dashboard page (/projects) with project creation and listing",
+        "Add error handling and validation logic across API and UI layers",
+        "Implement security features including input sanitization, access control, and secure file handling",
+        "Add acceptance tests and automated test suites for all critical flows",
+        "Deploy and monitor background jobs and API endpoints for scalability and reliability"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/index.tsx",
+          "/visualization-editor.tsx",
+          "/projects.tsx"
+        ],
+        "apiFilesToCreate": [
+          "/api/analyze.ts",
+          "/api/report/[reportId].ts",
+          "/api/visualization/[visualizationId].ts",
+          "/api/projects/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Visualization { id String @id userId String title String? rawDataFile String? imageFile String? description String? createdAt DateTime updatedAt DateTime? processedMetadata Json? @@index([id]) @@index([userId]) }",
+          "model AccessibilityReport { id String @id visualizationId String userId String issues Json recommendations Json complianceMetadata Json? createdAt DateTime updatedAt DateTime? @@index([id]) @@index([visualizationId]) @@index([userId]) }",
+          "model UserProject { id String @id ownerUserId String title String memberUserIds Json? visualizationIds Json? reportIds Json? versionHistory Json? createdAt DateTime updatedAt DateTime? @@index([id]) @@index([ownerUserId]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, input/output details, or special user needs to ensure the tool fully meets academic researchers' accessibility optimization workflows.",
+        "promptTemplate": "Given the current blueprint and idea:\n\n{{BLUEPRINT}}\n\n{{IDEA}}\n\nPlease provide any missing requirements, constraints, or special considerations needed for the Academic Research Data Visualization Accessibility Optimizer. Include details about input formats, user roles, compliance standards, or edge cases.\n\nUser input:\n{{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define final page routes, UI components, API endpoints, and data models schema for the multi-page app to support accessibility report generation and visualization editing workflows.",
+        "promptTemplate": "Using the refined requirements and blueprint:\n\n{{BLUEPRINT}}\n\n{{EXPANDED}}\n\nPlease provide the finalized page routes, API endpoints, data models, and component responsibilities needed to implement the Academic Research Data Visualization Accessibility Optimizer.\n\nUser input:\n{{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code stubs for the key pages including Accessibility Report Generator, Visualization Editor, and Projects Dashboard with placeholders for inputs, outputs, and API integrations.",
+        "promptTemplate": "Given the finalized architecture and data models:\n\n{{BLUEPRINT}}\n\n{{EXPANDED}}\n\nPlease generate initial React/Next.js page stubs for the following routes: '/', '/visualization-editor', and '/projects', including UI elements for file uploads, input text areas, and output report display.\n\nUser input:\n{{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Create the backend API routes to handle data uploads, analysis requests, report retrieval, and project management. Connect frontend pages to these APIs and implement data persistence using Prisma models.",
+        "promptTemplate": "Using the page stubs and data models:\n\n{{BLUEPRINT}}\n\n{{EXPANDED}}\n\nPlease provide the implementation plan and code snippets to wire the frontend pages to backend API routes and database models, including authentication, input validation, and background job triggering for analysis.\n\nUser input:\n{{USER_INPUT}}"
+      }
+    ]
+  }
+}

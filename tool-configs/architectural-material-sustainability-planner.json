@@ -1,0 +1,740 @@
+{
+  "slug": "architectural-material-sustainability-planner",
+  "title": "Architectural Material Sustainability & Compliance Planner",
+  "description": "Upload your preliminary architectural project description and candidate building materials specifications to receive a structured sustainability compliance assessment, prioritized material recommendations balancing sustainability, cost, and performance, and a gap analysis report highlighting potential certification risks.",
+  "inputLabel": "Paste your project description and material specs JSON or upload a JSON file containing project details, candidate materials, certification criteria, client goals, and budget",
+  "outputLabel": "Sustainability Compliance Assessment and Material Recommendations Report",
+  "systemPrompt": "You are an expert assistant specialized in architectural material sustainability and compliance planning. Given a JSON input containing a preliminary architectural project description, a list of candidate building materials with specifications (including embodied carbon, recyclability, sourcing, cost, and performance metrics), applicable sustainability certification criteria, client sustainability goals, and budget constraints, produce a structured and comprehensive sustainability compliance assessment report. The report must include: 1) a compliance assessment per material against the provided certification criteria and client goals, 2) prioritized recommendations balancing sustainability, cost, and performance, 3) a gap analysis highlighting potential certification risks, and 4) a customizable project-level sustainability compliance checklist summary. Always ensure outputs are advisory and informational only; do not provide medical, legal, or structural engineering advice. Validate all input data for completeness and consistency; if input is invalid or missing required fields, respond with a clear error message refusing to proceed. Output must be plain text unless structured-output mode is enabled, in which case produce valid JSON following the defined schema. Handle potential conflicting or ambiguous data by asking for clarification if clarify-first mode is enabled. Maintain client confidentiality and do not include any sensitive or personal data in outputs.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Balanced Sustainability & Cost Prioritization",
+      "prompt": "Prioritize materials by balancing sustainability metrics with cost and performance factors, aiming for optimal compliance and budget adherence."
+    },
+    {
+      "label": "Maximize Certification Compliance",
+      "prompt": "Focus on maximizing compliance with sustainability certification criteria, even if it means higher costs or lower performance."
+    },
+    {
+      "label": "Cost-Efficient Sustainability Planning",
+      "prompt": "Prioritize cost efficiency while ensuring minimum sustainability compliance thresholds are met."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON must include keys: complianceAssessment (array), prioritizedRecommendations (array), gapAnalysis (object), complianceChecklist (object).",
+  "clarifyPrompt": "Your input contains ambiguous or conflicting data regarding project goals or material specifications. Please clarify the following: {{ISSUES}}",
+  "finalizePrompt": "Please review the sustainability compliance assessment and recommendations. Confirm or specify any additional constraints or priorities for refinement.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Architectural Material Sustainability & Compliance Planner",
+      "niche": {
+        "role": "Architectural Designer",
+        "scenario": "Planning and specifying sustainable building materials in early design phases to meet environmental certifications and client requirements"
+      },
+      "problem": "Architectural designers need to select building materials that comply with complex sustainability standards (e.g., LEED, BREEAM) and client environmental goals, but existing tools do not integrate material sustainability data with project context and compliance planning, making it difficult to balance performance, cost, and certification requirements early in the design workflow.",
+      "inputs": [
+        "Preliminary architectural project description",
+        "List of candidate building materials with specifications (e.g., embodied carbon, recyclability, sourcing)",
+        "Applicable sustainability certification criteria",
+        "Client sustainability goals and priorities",
+        "Budget constraints and cost data"
+      ],
+      "outputs": [
+        "Structured sustainability compliance assessment per material",
+        "Prioritized material selection recommendations balancing sustainability, cost, and performance",
+        "Gap analysis report highlighting areas of potential certification risk",
+        "A customizable project-level sustainability compliance checklist",
+        "Material specification comparison dashboard"
+      ],
+      "whyItWins": [
+        "Addresses a specific early-phase architectural workflow gap not covered by existing compliance or design tools",
+        "Enables architects to proactively integrate sustainability considerations with material selection and certification planning",
+        "Produces actionable, prioritized outputs that support informed decision-making and client communication",
+        "Reduces risk of costly redesigns by identifying compliance gaps early",
+        "Scales from a lightweight planner into a comprehensive, multi-project sustainability management system"
+      ],
+      "upgradePath": {
+        "today": "A lightweight tool where architects upload project briefs and material specs to receive an initial sustainability and compliance assessment report with recommendations.",
+        "in90Days": "Add interactive dashboards for side-by-side material comparisons, customizable compliance checklists, and integration with common sustainability certification frameworks allowing scenario planning.",
+        "in12Months": "Develop a multi-page app supporting project-level sustainability tracking across multiple phases, collaborative workflows with clients and consultants, integration with BIM software, and automated certification documentation generation."
+      },
+      "riskNotes": [
+        "Must ensure no medical, legal, or structural engineering advice is given—outputs are advisory and informational only.",
+        "Material data must be sourced from reliable, up-to-date databases to avoid misinformation.",
+        "Client confidentiality and project data security must be maintained.",
+        "Sustainability certification criteria change over time; tool must include update mechanisms to remain current."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A sustainability and compliance planning tool for architectural designers to assess and select building materials early in design phases, balancing environmental certifications, client goals, cost, and performance. Evolves from a lightweight assessment report generator to a comprehensive multi-project management and collaboration platform with integrations and automated documentation.",
+      "primaryUser": "Architectural Designer",
+      "successMetrics": [
+        "Number of projects successfully assessed for sustainability compliance",
+        "User engagement with material comparison dashboards and compliance checklists",
+        "Reduction in redesigns due to early sustainability gap identification",
+        "User satisfaction with actionable recommendations and reporting features",
+        "Frequency of certification criteria updates applied and reflected in assessments"
+      ],
+      "components": [
+        {
+          "id": "ui_projectDashboard",
+          "name": "Project Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide project overview, navigation to material assessments, compliance checklists, and reports; support multi-project management and collaboration features.",
+          "dependsOn": [
+            "api_project",
+            "api_material",
+            "api_compliance"
+          ],
+          "notes": [
+            "Supports authentication and role-based access for architects and collaborators",
+            "Displays project status, compliance progress, and alerts for gaps"
+          ]
+        },
+        {
+          "id": "ui_materialComparison",
+          "name": "Material Comparison Dashboard UI",
+          "type": "ui",
+          "responsibility": "Interactive interface for side-by-side comparison of candidate materials based on sustainability metrics, cost, and performance data.",
+          "dependsOn": [
+            "api_material",
+            "api_compliance"
+          ],
+          "notes": [
+            "Supports filtering, sorting, and scenario planning",
+            "Visualizes embodied carbon, recyclability, sourcing, and cost trade-offs"
+          ]
+        },
+        {
+          "id": "api_project",
+          "name": "Project Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for projects, project briefs, client goals, budgets, and collaboration data.",
+          "dependsOn": [
+            "data_project",
+            "data_user"
+          ],
+          "notes": [
+            "Enforces data security and confidentiality",
+            "Supports project-level authorization and versioning"
+          ]
+        },
+        {
+          "id": "api_material",
+          "name": "Material Data API",
+          "type": "api",
+          "responsibility": "Manage candidate building materials data, including specifications, sustainability metrics, and cost information.",
+          "dependsOn": [
+            "data_material",
+            "integration_materialDB"
+          ],
+          "notes": [
+            "Includes validation and update mechanisms for material data",
+            "Supports bulk upload and manual entry"
+          ]
+        },
+        {
+          "id": "api_compliance",
+          "name": "Sustainability Compliance API",
+          "type": "api",
+          "responsibility": "Assess materials and projects against sustainability certification criteria and client goals; generate compliance reports, gap analyses, and recommendations.",
+          "dependsOn": [
+            "data_complianceCriteria",
+            "data_project",
+            "data_material"
+          ],
+          "notes": [
+            "Implements rules engine for certification criteria evaluation",
+            "Supports customizable checklists and scenario simulations"
+          ]
+        },
+        {
+          "id": "data_project",
+          "name": "Project Data Store",
+          "type": "data",
+          "responsibility": "Persist project descriptions, client goals, budgets, collaboration info, and assessment results.",
+          "dependsOn": [],
+          "notes": [
+            "Stores versioned project data for audit and rollback",
+            "Ensures encryption and access controls"
+          ]
+        },
+        {
+          "id": "data_material",
+          "name": "Material Data Store",
+          "type": "data",
+          "responsibility": "Persist building material specifications, sustainability metrics, cost data, and sourcing details.",
+          "dependsOn": [],
+          "notes": [
+            "Supports periodic updates from trusted external material databases",
+            "Tracks data provenance and update timestamps"
+          ]
+        },
+        {
+          "id": "data_complianceCriteria",
+          "name": "Compliance Criteria Store",
+          "type": "data",
+          "responsibility": "Persist sustainability certification frameworks, criteria, and scoring rules.",
+          "dependsOn": [],
+          "notes": [
+            "Supports versioning and update history to reflect evolving standards",
+            "Allows customization per client or project"
+          ]
+        },
+        {
+          "id": "integration_materialDB",
+          "name": "External Material Database Integration",
+          "type": "integration",
+          "responsibility": "Synchronize and update material sustainability and specification data from trusted external databases.",
+          "dependsOn": [],
+          "notes": [
+            "Handles API rate limits, errors, and data validation",
+            "Schedules regular data refresh jobs"
+          ]
+        },
+        {
+          "id": "backgroundJob_updateComplianceCriteria",
+          "name": "Compliance Criteria Update Job",
+          "type": "job",
+          "responsibility": "Periodically fetch and apply updates to sustainability certification criteria to keep the tool current.",
+          "dependsOn": [
+            "integration_complianceCriteria"
+          ],
+          "notes": [
+            "Includes alerting on major changes affecting existing projects",
+            "Supports manual override and rollback"
+          ]
+        },
+        {
+          "id": "backgroundJob_materialDataRefresh",
+          "name": "Material Data Refresh Job",
+          "type": "job",
+          "responsibility": "Regularly update material data from external sources to ensure accuracy and reliability.",
+          "dependsOn": [
+            "integration_materialDB"
+          ],
+          "notes": [
+            "Handles partial failures and retries",
+            "Maintains data integrity during updates"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Project",
+          "purpose": "Store architectural project details, client goals, budget, and assessment results.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "clientGoals",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "budget",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "assessmentReports",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "complianceChecklist",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "Material",
+          "purpose": "Store building material specifications and sustainability metrics.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "embodiedCarbon",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "recyclability",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "sourcing",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "cost",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "performanceMetrics",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "ComplianceCriteria",
+          "purpose": "Store sustainability certification frameworks and criteria rules.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "frameworkName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "criteriaRules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "frameworkName",
+            "version"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user authentication and role information for access control.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the planner and project data.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/projects",
+          "title": "Project Dashboard",
+          "purpose": "List and manage projects, view compliance status and recent activity.",
+          "inputs": [],
+          "outputs": [
+            "project list",
+            "project status summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/materials",
+          "title": "Material Selection and Comparison",
+          "purpose": "View and compare candidate materials for a specific project with sustainability and cost metrics.",
+          "inputs": [
+            "projectId"
+          ],
+          "outputs": [
+            "material comparison dashboard",
+            "filter and sort options"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/compliance",
+          "title": "Compliance Assessment and Checklist",
+          "purpose": "Display sustainability compliance assessment, gap analysis, and customizable checklists for the project.",
+          "inputs": [
+            "projectId"
+          ],
+          "outputs": [
+            "compliance reports",
+            "gap analysis",
+            "checklist"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/reports",
+          "title": "Reports and Recommendations",
+          "purpose": "Generate and download structured reports including prioritized material recommendations and certification risk summaries.",
+          "inputs": [
+            "projectId"
+          ],
+          "outputs": [
+            "downloadable reports",
+            "recommendation summaries"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of projects for authenticated user.",
+          "requestShape": "none",
+          "responseShape": "array of Project summaries",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project with description, client goals, and budget.",
+          "requestShape": "{ name, description?, clientGoals?, budget? }",
+          "responseShape": "Project object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/materials",
+          "method": "GET",
+          "purpose": "Get candidate materials for a project with sustainability and cost data.",
+          "requestShape": "none",
+          "responseShape": "array of Material objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/materials",
+          "method": "POST",
+          "purpose": "Add or update material specifications and sustainability metrics.",
+          "requestShape": "{ name, embodiedCarbon?, recyclability?, sourcing?, cost?, performanceMetrics? }",
+          "responseShape": "Material object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/compliance/assess",
+          "method": "POST",
+          "purpose": "Run sustainability compliance assessment and generate gap analysis for project materials.",
+          "requestShape": "none",
+          "responseShape": "{ complianceReport, gapAnalysis, recommendations }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/checklist",
+          "method": "GET",
+          "purpose": "Retrieve customizable sustainability compliance checklist for the project.",
+          "requestShape": "none",
+          "responseShape": "compliance checklist JSON",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/reports",
+          "method": "GET",
+          "purpose": "Generate and retrieve downloadable compliance and material selection reports.",
+          "requestShape": "none",
+          "responseShape": "report file or URL",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Compliance Criteria Update Job",
+          "trigger": "Scheduled (e.g., weekly or monthly)",
+          "purpose": "Fetch and apply updates to sustainability certification criteria to keep assessments current."
+        },
+        {
+          "name": "Material Data Refresh Job",
+          "trigger": "Scheduled (e.g., daily or weekly)",
+          "purpose": "Synchronize material data from trusted external databases to maintain accuracy."
+        }
+      ],
+      "edgeCases": [
+        "Material data from external sources is incomplete or inconsistent, requiring validation and fallback mechanisms.",
+        "Certification criteria change mid-project, necessitating re-assessment and user alerts.",
+        "User uploads conflicting or ambiguous project goals or material specs, requiring input validation and guidance.",
+        "Network or API failures during data synchronization or report generation, requiring retries and user notifications.",
+        "Unauthorized access attempts to project or material data, requiring strict authentication and authorization enforcement.",
+        "Large projects with many materials may cause performance bottlenecks in assessments and dashboards."
+      ],
+      "nonGoals": [
+        "Providing medical, legal, or structural engineering advice or certifications.",
+        "Replacing detailed BIM software or structural analysis tools.",
+        "Automating procurement or vendor management processes.",
+        "Serving as a general-purpose project management or CAD tool."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving an authentication token stored client-side.",
+        "Authenticated user accesses /projects page, triggering GET /api/projects to fetch user's projects summary.",
+        "User selects a project, navigating to /projects/:projectId/materials, which calls GET /api/projects/:projectId/materials to retrieve candidate materials with sustainability and cost data.",
+        "User interacts with material comparison dashboard UI to filter, sort, and scenario plan materials; UI updates dynamically based on API data.",
+        "User navigates to /projects/:projectId/compliance, triggering GET /api/projects/:projectId/checklist to fetch compliance checklist, and POST /api/projects/:projectId/compliance/assess to run compliance assessment and gap analysis.",
+        "Compliance API evaluates project materials against current compliance criteria from data_complianceCriteria, generating reports and recommendations.",
+        "User accesses /projects/:projectId/reports to download generated reports via GET /api/projects/:projectId/reports.",
+        "Background jobs run on schedule: Material Data Refresh Job calls integration_materialDB to update material data in data_material store; Compliance Criteria Update Job calls integration_complianceCriteria to update compliance criteria in data_complianceCriteria store.",
+        "APIs enforce authorization and data validation on all requests, ensuring users access only their projects and related data.",
+        "UI components subscribe to updates or refresh data after background jobs complete to reflect latest material and compliance data."
+      ],
+      "validationRules": [
+        "Login inputs: email must be valid email format; password must be non-empty.",
+        "Project creation: name is required, non-empty string; description optional string; clientGoals optional JSON object with defined schema; budget optional positive number.",
+        "Material creation/update: name required non-empty string; embodiedCarbon optional non-negative number; recyclability optional string from predefined categories; sourcing optional string; cost optional non-negative number; performanceMetrics optional JSON object with defined schema.",
+        "API route parameters: projectId and materialId must be valid UUID strings matching existing records accessible by user.",
+        "Compliance assessment requests require project to have at least one material assigned; otherwise return validation error.",
+        "Background job data updates validate incoming external data for completeness and consistency; incomplete or inconsistent data triggers fallback or partial update with warnings logged.",
+        "User roles validated for access control: only authorized users can create/update projects, materials, or run assessments.",
+        "Input JSON fields validated against expected schemas to prevent malformed data storage or processing errors."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Authorization failures return 403 Forbidden when user attempts to access or modify unauthorized projects or materials.",
+        "Validation errors return 400 Bad Request with detailed messages indicating invalid fields.",
+        "Not found errors return 404 when requested project, material, or compliance criteria do not exist or are inaccessible.",
+        "API rate limits and external integration failures handled with retries and exponential backoff; failures logged and user notified if manual action required.",
+        "Background jobs handle partial failures gracefully, retrying failed updates and maintaining data integrity; alerts generated for manual intervention if needed.",
+        "Network or server errors return 500 Internal Server Error with generic messages; detailed logs maintained server-side for troubleshooting.",
+        "UI displays user-friendly error notifications and guidance for corrective actions on input errors or system failures.",
+        "All error responses include error codes and messages standardized across APIs for consistent client handling."
+      ],
+      "securityNotes": [
+        "All API routes except /login require authentication via bearer tokens (e.g., JWT) validated on each request.",
+        "Role-based access control enforced at API layer to restrict project and material data access to authorized users and collaborators.",
+        "Sensitive data such as hashed passwords stored securely using strong hashing algorithms (e.g., bcrypt).",
+        "Project and material data encrypted at rest as per compliance requirements.",
+        "Input data sanitized to prevent injection attacks and ensure data integrity.",
+        "Rate limiting and monitoring applied to external integrations to prevent abuse and handle API limits.",
+        "Audit logs maintained for critical operations such as project creation, updates, compliance assessments, and data refreshes.",
+        "Background jobs and integrations run with least privilege access to data stores and external APIs.",
+        "Session management includes token expiration and refresh mechanisms to reduce risk of token theft.",
+        "Cross-Origin Resource Sharing (CORS) policies configured to restrict API access to authorized front-end domains."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "the user submits correct email and password on /login",
+          "then": "the user receives an authentication token and is redirected to /projects"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user with multiple projects",
+          "when": "the user visits /projects",
+          "then": "the user sees a list of projects with status summaries and can navigate to each project's detail pages"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user viewing a project with assigned materials",
+          "when": "the user accesses /projects/:projectId/materials",
+          "then": "the user sees a material comparison dashboard with filtering and sorting options"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user with a project containing materials",
+          "when": "the user triggers a compliance assessment via POST /api/projects/:projectId/compliance/assess",
+          "then": "the system returns a compliance report, gap analysis, and recommendations consistent with current compliance criteria"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user requests a compliance checklist for a project",
+          "when": "the user calls GET /api/projects/:projectId/checklist",
+          "then": "the system returns the current customizable compliance checklist JSON for that project"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user requests project reports",
+          "when": "the user calls GET /api/projects/:projectId/reports",
+          "then": "the system generates and returns downloadable report files or URLs"
+        },
+        {
+          "id": "AT-007",
+          "given": "External material data source updates material information",
+          "when": "the Material Data Refresh Job runs",
+          "then": "material data in the system is updated accurately, with partial failures handled and logged"
+        },
+        {
+          "id": "AT-008",
+          "given": "Certification criteria are updated externally",
+          "when": "the Compliance Criteria Update Job runs",
+          "then": "compliance criteria in the system are updated, existing projects flagged if affected, and users alerted"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user attempts to access a project they do not own or collaborate on",
+          "when": "the user requests project data",
+          "then": "the system returns 403 Forbidden and denies access"
+        },
+        {
+          "id": "AT-010",
+          "given": "User submits invalid input data (e.g., missing required fields)",
+          "when": "the user calls any API endpoint",
+          "then": "the system returns 400 Bad Request with detailed validation error messages"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, Project, Material, ComplianceCriteria with indexes and relations.",
+        "Implement authentication system with login API and token management.",
+        "Develop API routes for project CRUD operations with authorization and validation.",
+        "Develop API routes for material management including bulk upload support and integration with external material DB.",
+        "Develop compliance API with rules engine to evaluate materials and projects against compliance criteria.",
+        "Implement background jobs for material data refresh and compliance criteria updates with error handling and logging.",
+        "Build UI pages: login, project dashboard, material comparison, compliance assessment, and reports with data fetching from APIs.",
+        "Implement role-based access control and secure data access in both API and UI layers.",
+        "Add input validation and error handling in UI forms and API endpoints.",
+        "Create acceptance tests covering authentication, data retrieval, compliance assessment, report generation, and error cases.",
+        "Set up monitoring, logging, and alerting for background jobs and API integrations.",
+        "Optimize performance for large projects and material datasets with pagination and caching as needed."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/projects",
+          "/projects/[projectId]/materials",
+          "/projects/[projectId]/compliance",
+          "/projects/[projectId]/reports"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.js",
+          "/api/projects/index.js",
+          "/api/projects/[projectId]/materials.js",
+          "/api/materials/index.js",
+          "/api/projects/[projectId]/compliance/assess.js",
+          "/api/projects/[projectId]/checklist.js",
+          "/api/projects/[projectId]/reports.js"
+        ],
+        "prismaModelsToAdd": [
+          "model User { id String @id @default(uuid()) email String @unique hashedPassword String roles Json? createdAt DateTime @default(now()) }",
+          "model Project { id String @id @default(uuid()) name String description String? clientGoals Json? budget Float? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt assessmentReports Json? complianceChecklist Json? }",
+          "model Material { id String @id @default(uuid()) name String embodiedCarbon Float? recyclability String? sourcing String? cost Float? performanceMetrics Json? lastUpdated DateTime? }",
+          "model ComplianceCriteria { id String @id @default(uuid()) frameworkName String version String criteriaRules Json effectiveDate DateTime lastUpdated DateTime }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, priorities, or clarifications needed to improve the sustainability compliance planning tool requirements.",
+        "promptTemplate": "Please provide any additional constraints, client goals, certification criteria updates, or specific challenges you want the Architectural Material Sustainability & Compliance Planner to address. Your input: {{USER_INPUT}}\n\nReference blueprint and idea: {{BLUEPRINT}}\n\nRefine or add details as needed."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design and finalize the UI pages, API routes, and data models needed for the multi-page app based on refined requirements and blueprint.",
+        "promptTemplate": "Using the refined requirements and blueprint, please finalize the list of UI pages, their routes and purposes, API endpoints with request and response shapes, and Prisma data models with fields and relations for the Architectural Material Sustainability & Compliance Planner. Input: {{USER_INPUT}}\n\nBlueprint: {{BLUEPRINT}}\n\nIdea spec: {{IDEA_SPEC}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code stubs for each finalized UI page route, including placeholders for inputs, outputs, and API integration points.",
+        "promptTemplate": "Generate code stubs for the following UI pages with their routes and basic structure, including placeholders for input forms, data displays, and API calls. Pages: {{PAGES}}\n\nUse blueprint and expanded specs for context: {{BLUEPRINT}}, {{EXPANDED}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement the integration connecting UI pages to API routes and database models, ensuring authentication, validation, and secure data flow.",
+        "promptTemplate": "Provide detailed implementation guidance and code snippets to connect UI pages to backend API routes and Prisma database models for the Architectural Material Sustainability & Compliance Planner. Include authentication, input validation, error handling, and data security best practices. Inputs: {{UI_PAGES}}, {{API_ROUTES}}, {{DATA_MODELS}}\n\nBlueprint and expanded specs: {{BLUEPRINT}}, {{EXPANDED}}"
+      }
+    ]
+  }
+}

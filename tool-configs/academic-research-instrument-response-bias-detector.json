@@ -1,0 +1,611 @@
+{
+  "slug": "academic-research-instrument-response-bias-detector",
+  "title": "Academic Research Instrument Response Bias Detector",
+  "description": "Upload your survey or experimental response data and instrument metadata to automatically detect common response biases such as acquiescence, social desirability, and extreme responding. Receive a structured report with statistical evidence, simple visualizations, and actionable recommendations to improve your data quality and instrument design.",
+  "inputLabel": "Upload your raw response data file (CSV or Excel) and instrument metadata JSON",
+  "outputLabel": "Bias detection report with statistical insights, visualizations, and recommendations",
+  "systemPrompt": "You are an expert assistant specializing in detecting response biases in social science and psychology research instruments. Given raw survey or experimental response data files (CSV or Excel) and instrument metadata, analyze the data to identify common response biases such as acquiescence bias, social desirability bias, and extreme responding. Generate a clear, structured text report highlighting detected bias patterns with supporting statistical evidence. Include simple textual visualizations of response distributions and bias indicators per instrument section or item. Provide actionable recommendations for mitigating bias impact in data analysis or instrument revision. Enforce strict data privacy: do not store or expose any participant-identifiable information. Reject inputs missing required fields or unsupported formats with clear error messages. Refuse any request attempting medical, legal, or diagnostic interpretation. Output only plain text unless structured-output is enabled, then produce valid JSON with biasMetrics, visualizationData, and recommendations fields. Always keep the user informed of any validation or processing issues. Use a professional, academic tone suitable for social science researchers.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Summary Report",
+      "prompt": "Analyze the uploaded survey response data and instrument metadata to detect common response biases. Provide a concise summary report highlighting key bias patterns, statistical evidence, and practical recommendations for researchers.",
+      "hint": "Get a brief overview focusing on main biases and recommendations."
+    },
+    {
+      "label": "Detailed Statistical Analysis",
+      "prompt": "Perform a thorough statistical analysis of the uploaded response data to identify acquiescence bias, social desirability bias, and extreme responding. Include detailed bias metrics, confidence levels, and interpretive commentary suitable for academic reporting.",
+      "hint": "Request an in-depth, data-driven analysis with interpretive detail."
+    },
+    {
+      "label": "Visualizations Overview",
+      "prompt": "Generate textual visualizations and descriptions of response distributions and bias indicators by instrument section and item based on the uploaded data and metadata. Highlight areas of concern for further investigation.",
+      "hint": "Focus on visual insights in text form to understand bias patterns."
+    },
+    {
+      "label": "Recommendations Focus",
+      "prompt": "Provide actionable recommendations for mitigating detected response biases in data analysis and instrument redesign. Base recommendations on the uploaded dataset's bias detection results and best practices in social science research.",
+      "hint": "Emphasize practical steps researchers can take to improve data validity."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "When structured-output is enabled, output JSON with keys: biasMetrics (object), visualizationData (object), recommendations (array of strings).",
+  "clarifyPrompt": "Please upload your survey or experimental response data file (CSV or Excel) and instrument metadata (JSON). Ensure the files contain required columns and metadata fields. If unsure, ask for assistance or instructions.",
+  "finalizePrompt": "Review the bias detection report carefully. Use the recommendations to improve your data analysis or instrument design. Remember, this tool aids in identifying response biases but final validation decisions remain yours. For deeper analysis or dashboard exploration, consider advanced multi-page versions later.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Instrument Response Bias Detector",
+      "niche": {
+        "role": "Academic Researcher in Social Sciences or Psychology",
+        "scenario": "Analyzing survey or experimental instrument response data to detect and report potential systematic response biases affecting data validity"
+      },
+      "problem": "Researchers often struggle to identify subtle but impactful response biases (e.g., acquiescence bias, social desirability bias, extreme responding) in their survey or experimental data, which can compromise the validity and reliability of their findings. Existing tools focus on data cleaning or psychometric validation but lack automated, interpretable detection of common response biases from raw response patterns.",
+      "inputs": [
+        "Raw survey or instrument response data (CSV or Excel format)",
+        "Instrument metadata (question types, scales, reverse-coded items)",
+        "Optional participant demographic data"
+      ],
+      "outputs": [
+        "Structured report highlighting detected response bias patterns with statistical evidence",
+        "Visualizations of response distributions and bias indicators per instrument section or item",
+        "Recommendations for mitigating bias impact in data analysis or instrument revision"
+      ],
+      "whyItWins": [
+        "Fills a gap by providing automated, interpretable response bias detection tailored to social science and psychology instruments",
+        "Supports early detection of problematic response patterns, improving data quality and research validity",
+        "Outputs actionable recommendations, helping researchers decide on data adjustments or instrument redesign",
+        "Lightweight initial input/output enables quick insights, but with rich potential for deeper multi-page analytics and integration"
+      ],
+      "upgradePath": {
+        "today": "Single-page app where researchers upload response data and instrument metadata to get a downloadable bias detection report and simple visualizations",
+        "in90Days": "Multi-page system adding interactive dashboards to explore bias patterns by demographic groups, item clusters, and time; exportable summary tables; integration with psychometric validation tools",
+        "in12Months": "Full research instrument quality management platform including longitudinal tracking of response biases across studies, collaborative annotation and instrument revision workflows, and predictive bias risk modeling using machine learning"
+      },
+      "riskNotes": [
+        "Ensure no sensitive participant-identifiable data is exposed or stored insecurely",
+        "Avoid medical, legal, or diagnostic interpretations; focus strictly on data quality insights",
+        "Require clear disclaimers that tool aids data exploration but final validity judgments rest with researchers"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A research tool for academic social scientists and psychologists to upload survey response data and instrument metadata, automatically detect common response biases with interpretable statistical evidence, visualize bias patterns, and receive actionable recommendations to improve data quality and instrument design.",
+      "primaryUser": "Academic researchers in social sciences or psychology analyzing survey or experimental instrument data",
+      "successMetrics": [
+        "Number of bias detection reports generated",
+        "User engagement with interactive dashboards and visualizations",
+        "User-reported improvements in data quality or instrument revision decisions",
+        "Frequency of exported reports and summary tables",
+        "Adoption rate of integration features with psychometric tools"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Data Upload & Input UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload raw response data files, instrument metadata, and optional demographic data; validate inputs and provide feedback.",
+          "dependsOn": [],
+          "notes": [
+            "Support CSV and Excel formats with clear instructions.",
+            "Validate file structure and required fields before processing."
+          ]
+        },
+        {
+          "id": "api-bias-detection",
+          "name": "Bias Detection API",
+          "type": "api",
+          "responsibility": "Process uploaded data to detect response biases using statistical algorithms; generate structured bias reports and visualization data.",
+          "dependsOn": [
+            "data-uploaded"
+          ],
+          "notes": [
+            "Implement algorithms for common biases: acquiescence, social desirability, extreme responding.",
+            "Return interpretable results with statistical evidence and confidence metrics.",
+            "Handle malformed or incomplete data gracefully."
+          ]
+        },
+        {
+          "id": "ui-report",
+          "name": "Bias Report & Visualization UI",
+          "type": "ui",
+          "responsibility": "Display bias detection results in structured reports with charts and visualizations; allow users to download reports and explore bias patterns interactively.",
+          "dependsOn": [
+            "api-bias-detection"
+          ],
+          "notes": [
+            "Include visualizations per instrument section and item.",
+            "Provide actionable recommendations based on detected biases.",
+            "Support export of reports in PDF or CSV."
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage & Persistence",
+          "type": "data",
+          "responsibility": "Persist user-uploaded metadata, analysis results, and user settings securely; ensure no sensitive participant-identifiable data is stored long-term unless explicitly permitted.",
+          "dependsOn": [],
+          "notes": [
+            "Implement data retention policies to avoid storing sensitive raw participant data.",
+            "Store only aggregated or anonymized results for dashboards and history."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Interactive Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide multi-page dashboards for exploring bias patterns by demographics, item clusters, and time; enable filtering, sorting, and exporting summary tables.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Supports advanced exploration beyond initial report.",
+            "Facilitates longitudinal and subgroup analyses."
+          ]
+        },
+        {
+          "id": "integration-psychometric",
+          "name": "Psychometric Tools Integration",
+          "type": "integration",
+          "responsibility": "Integrate with external psychometric validation tools to enhance bias detection and instrument quality assessment.",
+          "dependsOn": [
+            "api-bias-detection"
+          ],
+          "notes": [
+            "Use APIs or data exchange formats to connect with popular psychometric software.",
+            "Plan for future machine learning bias risk modeling."
+          ]
+        },
+        {
+          "id": "job-report-generation",
+          "name": "Background Report Generation Job",
+          "type": "job",
+          "responsibility": "Asynchronously generate downloadable bias detection reports and visualizations after data processing to improve UI responsiveness.",
+          "dependsOn": [
+            "api-bias-detection"
+          ],
+          "notes": [
+            "Handle large datasets and retry on failures.",
+            "Notify users on job completion or errors."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "UploadedDataset",
+          "purpose": "Store metadata about uploaded response data and instrument metadata files.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "errorDetails",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "uploadTimestamp"
+          ]
+        },
+        {
+          "name": "BiasReport",
+          "purpose": "Persist results of bias detection analyses including statistical evidence and recommendations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "biasMetrics",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "visualizationData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "recommendations",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "datasetId",
+            "generatedAt"
+          ]
+        },
+        {
+          "name": "UserSettings",
+          "purpose": "Store user preferences and settings for reports and dashboards.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Data and Instrument Metadata",
+          "purpose": "Page for users to upload raw response data, instrument metadata, and optional demographics.",
+          "inputs": [
+            "CSV/Excel files",
+            "metadata fields"
+          ],
+          "outputs": [
+            "Upload status",
+            "validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/report/:reportId",
+          "title": "Bias Detection Report",
+          "purpose": "Display detailed bias detection results, visualizations, and recommendations for a specific analysis.",
+          "inputs": [
+            "reportId"
+          ],
+          "outputs": [
+            "Structured report",
+            "charts",
+            "download links"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Interactive Bias Exploration Dashboard",
+          "purpose": "Multi-page dashboard for exploring bias patterns by demographics, items, and time with filtering and export capabilities.",
+          "inputs": [
+            "filter criteria",
+            "date ranges",
+            "demographic groups"
+          ],
+          "outputs": [
+            "Interactive charts",
+            "summary tables",
+            "export options"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings",
+          "purpose": "Manage user preferences related to reports, dashboards, and data retention.",
+          "inputs": [
+            "preference inputs"
+          ],
+          "outputs": [
+            "confirmation",
+            "saved settings"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/",
+          "title": "Home / Overview",
+          "purpose": "Landing page with tool overview, disclaimers, and quick links to upload or view reports.",
+          "inputs": [],
+          "outputs": [
+            "navigation",
+            "tool description"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Accept uploaded files and metadata, validate and store them for processing.",
+          "requestShape": "{ files: [file], metadata: json }",
+          "responseShape": "{ uploadId: string, status: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/bias-detection/start",
+          "method": "POST",
+          "purpose": "Trigger bias detection processing on uploaded dataset.",
+          "requestShape": "{ uploadId: string }",
+          "responseShape": "{ jobId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/bias-detection/status",
+          "method": "GET",
+          "purpose": "Check status of bias detection job and retrieve partial or complete results.",
+          "requestShape": "{ jobId: string }",
+          "responseShape": "{ status: string, reportId?: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/report/:reportId",
+          "method": "GET",
+          "purpose": "Fetch bias detection report data including metrics, visualizations, and recommendations.",
+          "requestShape": "N/A",
+          "responseShape": "{ biasMetrics: json, visualizationData: json, recommendations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/dashboard/data",
+          "method": "GET",
+          "purpose": "Retrieve aggregated data for interactive dashboards filtered by user criteria.",
+          "requestShape": "{ filters: json }",
+          "responseShape": "{ dashboardData: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/user/settings",
+          "method": "POST",
+          "purpose": "Save user preferences for reports and dashboards.",
+          "requestShape": "{ preferences: json }",
+          "responseShape": "{ status: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "BiasDetectionProcessing",
+          "trigger": "Triggered after successful data upload and user request",
+          "purpose": "Run statistical algorithms to detect response biases and generate reports asynchronously."
+        },
+        {
+          "name": "ReportGeneration",
+          "trigger": "After bias detection processing completes",
+          "purpose": "Generate downloadable report files (PDF/CSV) and prepare visualization assets."
+        },
+        {
+          "name": "DataRetentionCleanup",
+          "trigger": "Scheduled (e.g., monthly)",
+          "purpose": "Remove or anonymize sensitive raw data after retention period to ensure privacy compliance."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded files with missing or inconsistent metadata fields",
+        "Malformed or corrupted CSV/Excel files causing parsing failures",
+        "Datasets with very small sample sizes limiting statistical power",
+        "Instruments with mixed question types or non-standard scales",
+        "Demographic data missing or incomplete for subgroup analyses",
+        "User uploads containing sensitive participant identifiers requiring immediate deletion",
+        "Bias detection algorithms returning inconclusive or contradictory results",
+        "Simultaneous multiple uploads causing processing queue delays",
+        "User attempts to access reports or dashboards without proper authorization"
+      ],
+      "nonGoals": [
+        "Providing medical, legal, or diagnostic interpretations of participant data",
+        "Storing or exposing raw participant-identifiable data beyond transient processing",
+        "Replacing expert psychometric validation or comprehensive instrument design",
+        "Real-time collaborative editing or annotation in initial versions",
+        "Machine learning predictive bias modeling in initial release (planned for future)"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and navigates to /upload page.",
+        "User uploads CSV/Excel files and metadata via /upload UI.",
+        "Frontend validates file formats and required fields; provides immediate feedback.",
+        "Frontend sends files and metadata to POST /api/upload.",
+        "API validates file structure, stores metadata in UploadedDataset with status 'uploaded' or 'error'.",
+        "Upon successful upload, user triggers bias detection via POST /api/bias-detection/start with uploadId.",
+        "API enqueues BiasDetectionProcessing background job with uploadId.",
+        "BiasDetectionProcessing job fetches uploaded data, runs bias detection algorithms, generates biasMetrics, visualizationData, and recommendations.",
+        "Job stores results in BiasReport linked to UploadedDataset; updates status.",
+        "ReportGeneration job triggers after BiasDetectionProcessing completes to create downloadable PDF/CSV reports and visualization assets.",
+        "User accesses /report/:reportId page; frontend fetches report data from GET /api/report/:reportId.",
+        "User explores interactive visualizations and recommendations; can download reports.",
+        "User accesses /dashboard page; frontend requests aggregated dashboard data via GET /api/dashboard/data with filters.",
+        "Dashboard displays interactive charts and summary tables based on aggregated, anonymized data.",
+        "User can save preferences via POST /api/user/settings; preferences stored in UserSettings.",
+        "DataRetentionCleanup job runs monthly to anonymize or delete sensitive raw data per policy."
+      ],
+      "validationRules": [
+        "Upload UI: Accept only CSV or Excel files; reject unsupported formats.",
+        "Uploaded files must contain required columns as per instrument metadata schema.",
+        "Metadata fields must include instrument identifiers and demographics if provided.",
+        "Reject uploads with missing mandatory metadata or malformed files with clear error messages.",
+        "Bias detection API validates that uploadId exists, belongs to user, and upload status is 'uploaded'.",
+        "Bias detection algorithms validate dataset size to ensure statistical power; warn if too small.",
+        "Report API validates reportId exists and belongs to requesting user.",
+        "Dashboard API validates filter criteria format and permissible values.",
+        "User settings API validates preferences JSON schema before saving.",
+        "All APIs enforce authentication and authorization checks."
+      ],
+      "errorHandling": [
+        "Upload API returns status 'error' with array of descriptive error messages on validation failure.",
+        "Bias detection start API returns error if uploadId invalid or processing already running.",
+        "Background jobs log errors and retry up to configurable limits; notify users on persistent failures.",
+        "Report and dashboard APIs return 404 if resource not found or unauthorized access.",
+        "Malformed requests return 400 with validation error details.",
+        "Unexpected server errors return 500 with generic message; detailed logs kept server-side.",
+        "UI displays user-friendly error messages and guidance for corrective actions.",
+        "Concurrent upload attempts queue and throttle to prevent overload."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication; verify user owns requested resources.",
+        "Sanitize and validate all uploaded files to prevent injection or malware.",
+        "Do not store raw participant-identifiable data beyond transient processing; delete or anonymize promptly.",
+        "Use secure storage for files and database with encryption at rest and in transit.",
+        "Implement rate limiting on upload and processing endpoints to prevent abuse.",
+        "Background jobs run with least privilege access to data.",
+        "Ensure CORS policies restrict API access to authorized frontends.",
+        "Log access and errors for audit and anomaly detection."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on /upload page with valid CSV and metadata files",
+          "when": "User uploads files and submits",
+          "then": "Files are validated, stored, and user receives uploadId with status 'uploaded' and no errors"
+        },
+        {
+          "id": "AT-002",
+          "given": "A valid uploadId from a previous upload",
+          "when": "User triggers bias detection via /api/bias-detection/start",
+          "then": "Bias detection job is enqueued, jobId and status 'started' returned"
+        },
+        {
+          "id": "AT-003",
+          "given": "A completed bias detection job with generated BiasReport",
+          "when": "User accesses /report/:reportId page",
+          "then": "Report data including bias metrics, visualizations, and recommendations are displayed correctly"
+        },
+        {
+          "id": "AT-004",
+          "given": "User on /dashboard page with valid filter criteria",
+          "when": "User applies filters and requests data",
+          "then": "Dashboard displays interactive charts and summary tables matching filters"
+        },
+        {
+          "id": "AT-005",
+          "given": "User submits invalid file format or missing required metadata on upload",
+          "when": "User attempts to upload",
+          "then": "Upload is rejected with clear validation error messages"
+        },
+        {
+          "id": "AT-006",
+          "given": "User tries to access report or dashboard without authentication",
+          "when": "User navigates to protected routes or API endpoints",
+          "then": "Access is denied with appropriate error or redirect to login"
+        },
+        {
+          "id": "AT-007",
+          "given": "Background job fails due to malformed data",
+          "when": "Job retries exceed limit",
+          "then": "User is notified of failure and error details logged"
+        },
+        {
+          "id": "AT-008",
+          "given": "User saves preferences on /settings page",
+          "when": "Preferences are submitted",
+          "then": "Preferences are validated, saved, and confirmation is shown"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models: UploadedDataset, BiasReport, UserSettings",
+        "Implement authentication and authorization middleware",
+        "Develop /upload page UI with file input, validation, and feedback",
+        "Create POST /api/upload endpoint with file validation and storage",
+        "Implement background job infrastructure and BiasDetectionProcessing job",
+        "Develop POST /api/bias-detection/start and GET /api/bias-detection/status endpoints",
+        "Implement BiasReport persistence and ReportGeneration job",
+        "Develop /report/:reportId page UI and GET /api/report/:reportId endpoint",
+        "Create /dashboard page UI and GET /api/dashboard/data endpoint with filtering",
+        "Implement POST /api/user/settings endpoint and /settings page UI",
+        "Implement DataRetentionCleanup scheduled job",
+        "Add integration hooks for psychometric tools (future extension)",
+        "Implement error handling and user notifications across UI and APIs",
+        "Add security hardening, rate limiting, and logging",
+        "Write acceptance tests and perform end-to-end testing"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/report/[reportId]",
+          "/dashboard",
+          "/settings",
+          "/"
+        ],
+        "apiFilesToCreate": [
+          "api/upload.ts",
+          "api/bias-detection/start.ts",
+          "api/bias-detection/status.ts",
+          "api/report/[reportId].ts",
+          "api/dashboard/data.ts",
+          "api/user/settings.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model UploadedDataset { id String @id userId String uploadTimestamp DateTime fileType String fileName String status String errorDetails String? @@index([userId]) @@index([uploadTimestamp]) }",
+          "model BiasReport { id String @id datasetId String generatedAt DateTime biasMetrics Json visualizationData Json recommendations Json @@index([datasetId]) @@index([generatedAt]) }",
+          "model UserSettings { userId String @id preferences Json @@index([userId]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to gather missing constraints or details about the tool requirements and user needs.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}, identify any missing constraints, edge cases, or user needs. Ask the user: {{USER_INPUT}} for clarifications and additional requirements."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and confirm the final set of UI pages, data models, and API endpoints needed for the multi-page app.",
+        "promptTemplate": "Using the idea and blueprint provided: {{IDEA_SPEC}} and {{BLUEPRINT}}, finalize the list of pages, data models, and API routes required. Incorporate user clarifications {{USER_INPUT}}. Produce a detailed architecture outline."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code or stub templates for each UI page and API endpoint to accelerate development.",
+        "promptTemplate": "Based on finalized architecture {{BLUEPRINT}} and expanded specs {{EXPANDED}}, generate code stubs for the front-end pages and API endpoints. Use user context {{USER_INPUT}} to customize naming and structure."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Create integration code connecting the UI pages to backend APIs and database models with authentication and validation.",
+        "promptTemplate": "Given the code stubs and architecture {{BLUEPRINT}} and data models {{EXPANDED}}, generate integration code to connect UI pages with APIs and the database. Ensure security, validation, and error handling. Use user notes {{USER_INPUT}} for specifics."
+      }
+    ]
+  }
+}

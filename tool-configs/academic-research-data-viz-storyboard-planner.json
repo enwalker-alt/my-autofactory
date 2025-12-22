@@ -1,0 +1,580 @@
+{
+  "slug": "academic-research-data-viz-storyboard-planner",
+  "title": "Academic Research Data Visualization Storyboard Planner",
+  "description": "Plan and design coherent multi-visualization storyboards tailored to academic audiences by uploading chart files, entering dataset metadata and research notes, and receiving structured storyboard sequences with narrative suggestions.",
+  "inputLabel": "Upload chart images or sanitized code snippets and enter dataset metadata, research questions, key messages, and audience details",
+  "outputLabel": "Generated storyboard plan with recommended chart sequence, narrative text linking visualizations, and audience-tailored storytelling guidance",
+  "systemPrompt": "You are an expert assistant helping academic researchers plan coherent data visualization storyboards for presentations or publications. Input includes dataset metadata, research questions, key messages, target audience profile, and uploaded chart files (images or sanitized code snippets). Your output is a structured storyboard plan recommending the logical sequence of visualizations, concise narrative text blocks linking charts with key messages, and guidance tailored to the specified audience expertise and interests. Refuse any requests that attempt to expose raw sensitive data or perform unauthorized data analysis. Validate inputs for clarity and safety. Output plain text summarizing the storyboard plan and narrative suggestions. Do not generate actual chart code or raw datasets. Always ensure outputs support effective communication of research findings without misinformation or data overinterpretation.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Storyboard Draft",
+      "prompt": "Create a coherent storyboard plan sequencing the uploaded visualizations with linked narrative blocks based on the provided dataset metadata, research questions, key messages, and audience profile."
+    },
+    {
+      "label": "Audience-Tailored Narrative",
+      "prompt": "Generate narrative text suggestions for the storyboard that are tailored to the specified audience's expertise level and interests to enhance clarity and engagement."
+    },
+    {
+      "label": "Presentation Format Outline",
+      "prompt": "Provide an outline for a multi-slide presentation storyboard layout based on the visualization sequence and narrative, suitable for academic presentations."
+    }
+  ],
+  "clarifyPrompt": "Please provide dataset metadata summary, research questions, key messages, target audience profile, and upload chart images or sanitized code snippets to generate a storyboard plan.",
+  "finalizePrompt": "Review the generated storyboard plan and narrative suggestions. Confirm or provide additional inputs to refine the storyboard for your academic presentation or publication.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Visualization Storyboard Planner",
+      "niche": {
+        "role": "Academic researchers and data analysts",
+        "scenario": "Designing and planning coherent data visualization storyboards to communicate research findings effectively for presentations, publications, or public outreach"
+      },
+      "problem": "Researchers often struggle to plan the narrative flow and logical sequencing of multiple data visualizations across complex research projects. Existing tools focus on single charts or dashboards but do not assist in integrating multiple charts into a cohesive storyboard with contextual narrative and audience-tailored messaging. This leads to fragmented or confusing visualization presentations that reduce the impact and clarity of communicated research findings.",
+      "inputs": [
+        "Dataset metadata and summary",
+        "Draft or finalized individual charts or visualization files (images or code snippets)",
+        "Research questions and key messages",
+        "Target audience profile",
+        "Presentation or publication format details"
+      ],
+      "outputs": [
+        "Structured storyboard plan with recommended sequence and transitions between visualizations",
+        "Narrative text blocks linking visualizations with key messages",
+        "Audience-tailored storytelling guidance",
+        "Exportable multi-slide or multi-section layout outline for presentations or reports"
+      ],
+      "whyItWins": [
+        "Fills a gap by focusing on multi-visualization narrative planning rather than single chart design",
+        "Supports researchers in crafting coherent and compelling data stories enhancing communication effectiveness",
+        "Lightweight initial inputs enable quick storyboard drafts with clear upgrade paths",
+        "Improves audience engagement and comprehension by tailoring visualization stories to user-defined audience profiles",
+        "Facilitates reuse and adaptation of visualization storyboards across formats and contexts"
+      ],
+      "upgradePath": {
+        "today": "Single-page tool to upload chart files and research notes, outputting a basic storyboard sequence with narrative text suggestions",
+        "in90Days": "Add interactive storyboard editor with drag-and-drop chart ordering, audience profile presets, and export to presentation outline formats (e.g., PowerPoint, PDF)",
+        "in12Months": "Develop a multi-page web app integrating data visualization authoring, collaborative storyboard editing, version control, audience feedback integration, and multi-format publishing workflows"
+      },
+      "riskNotes": [
+        "Avoid direct data exposure by only processing metadata and chart images or sanitized code snippets",
+        "Ensure narrative suggestions do not overinterpret data beyond user inputs to prevent misinformation",
+        "Maintain user privacy by not storing uploaded sensitive data beyond session scope",
+        "Not a substitute for data analysis or visualization software; focuses on planning and narrative structuring"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An academic research data visualization storyboard planner that helps researchers design coherent multi-chart narratives tailored to audience profiles, facilitating effective communication of complex research findings through structured storyboard sequencing, narrative linking text, and exportable presentation/report outlines.",
+      "primaryUser": "Academic researchers and data analysts planning visualization storyboards for presentations, publications, or outreach.",
+      "successMetrics": [
+        "User adoption rate among academic researchers",
+        "Reduction in time taken to create coherent visualization storyboards",
+        "Positive user feedback on narrative clarity and audience tailoring",
+        "Number of storyboard exports generated",
+        "Frequency of storyboard reuse and adaptation across projects"
+      ],
+      "components": [
+        {
+          "id": "ui_main",
+          "name": "User Interface",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for uploading charts and metadata, editing storyboard sequences, adding narrative text, managing audience profiles, and exporting storyboards.",
+          "dependsOn": [
+            "api_storyboard",
+            "api_user",
+            "data_session"
+          ],
+          "notes": [
+            "Pages include upload, storyboard editor, audience profile manager, export options",
+            "Supports drag-and-drop chart ordering and inline narrative editing",
+            "Responsive design for desktop use"
+          ]
+        },
+        {
+          "id": "api_storyboard",
+          "name": "Storyboard API",
+          "type": "api",
+          "responsibility": "Handle creation, retrieval, updating, and deletion of storyboard plans, narrative blocks, and sequencing logic.",
+          "dependsOn": [
+            "data_storyboard",
+            "data_audienceProfile"
+          ],
+          "notes": [
+            "Generates narrative text suggestions based on user inputs without overinterpretation",
+            "Supports audience-tailored storytelling guidance",
+            "Validates inputs to avoid misinformation"
+          ]
+        },
+        {
+          "id": "api_user",
+          "name": "User & Session API",
+          "type": "api",
+          "responsibility": "Manage user sessions, authentication, and ephemeral storage of uploaded chart metadata and sanitized inputs without storing sensitive raw data.",
+          "dependsOn": [
+            "data_session"
+          ],
+          "notes": [
+            "Ensures privacy by limiting data persistence to session scope unless user opts in for saving",
+            "Supports anonymous or authenticated sessions"
+          ]
+        },
+        {
+          "id": "data_storyboard",
+          "name": "Storyboard Data Store",
+          "type": "data",
+          "responsibility": "Persist storyboard plans, chart metadata references, narrative text blocks, sequencing order, and audience profile associations.",
+          "dependsOn": [],
+          "notes": [
+            "Stores only metadata and sanitized inputs, not raw datasets or sensitive data",
+            "Indexes support efficient retrieval by user and project"
+          ]
+        },
+        {
+          "id": "data_audienceProfile",
+          "name": "Audience Profile Store",
+          "type": "data",
+          "responsibility": "Persist user-defined audience profiles and presets to tailor storytelling guidance and narrative suggestions.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multiple profiles per user",
+            "Profiles include audience expertise, interests, and format preferences"
+          ]
+        },
+        {
+          "id": "data_session",
+          "name": "Session Data Store",
+          "type": "data",
+          "responsibility": "Ephemeral storage for uploaded chart files metadata, draft narrative inputs, and temporary user data during active sessions.",
+          "dependsOn": [],
+          "notes": [
+            "Data cleared after session expiration to protect privacy",
+            "No raw data or sensitive files persisted beyond session"
+          ]
+        },
+        {
+          "id": "job_export",
+          "name": "Export Job Processor",
+          "type": "job",
+          "responsibility": "Generate exportable storyboard outlines in multiple formats (e.g., PowerPoint, PDF) based on finalized storyboard plans.",
+          "dependsOn": [
+            "data_storyboard",
+            "data_audienceProfile"
+          ],
+          "notes": [
+            "Runs asynchronously to handle complex export formatting",
+            "Handles failure modes such as export format errors or missing data gracefully"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Storyboard",
+          "purpose": "Represents a visualization storyboard plan including chart references, narrative blocks, sequence order, and associated audience profile.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "charts",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "narrativeBlocks",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "sequenceOrder",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "audienceProfileId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId",
+            "audienceProfileId"
+          ]
+        },
+        {
+          "name": "AudienceProfile",
+          "purpose": "Stores user-defined or preset audience characteristics to tailor storytelling guidance.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "expertiseLevel",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "interests",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "formatPreferences",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        },
+        {
+          "name": "SessionData",
+          "purpose": "Ephemeral storage for temporary user uploads and draft inputs during active sessions.",
+          "fields": [
+            {
+              "name": "sessionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedChartsMetadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "draftNarratives",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "expiresAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "sessionId",
+            "expiresAt"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Charts & Metadata",
+          "purpose": "Allow users to upload chart images or sanitized code snippets and enter dataset metadata and research notes.",
+          "inputs": [
+            "chart files",
+            "dataset metadata",
+            "research questions",
+            "key messages"
+          ],
+          "outputs": [
+            "uploaded chart metadata",
+            "draft storyboard creation"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/storyboard-editor",
+          "title": "Storyboard Editor",
+          "purpose": "Interactive drag-and-drop editor for sequencing charts, adding narrative text blocks, and linking key messages.",
+          "inputs": [
+            "uploaded charts metadata",
+            "draft narratives",
+            "audience profile"
+          ],
+          "outputs": [
+            "updated storyboard plan",
+            "narrative suggestions"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/audience-profiles",
+          "title": "Audience Profile Manager",
+          "purpose": "Manage audience profiles and presets to tailor storytelling guidance.",
+          "inputs": [
+            "audience profile details"
+          ],
+          "outputs": [
+            "saved audience profiles",
+            "profile presets"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/export",
+          "title": "Export Storyboard",
+          "purpose": "Select export format and generate multi-slide or multi-section presentation/report outlines.",
+          "inputs": [
+            "finalized storyboard plan",
+            "export format choice"
+          ],
+          "outputs": [
+            "export files (PPT, PDF, etc.)"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/storyboards",
+          "method": "POST",
+          "purpose": "Create or update a storyboard plan with charts, narrative blocks, and sequencing.",
+          "requestShape": "JSON with storyboard details",
+          "responseShape": "JSON with saved storyboard ID and status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/storyboards/{id}",
+          "method": "GET",
+          "purpose": "Retrieve a storyboard plan by ID.",
+          "requestShape": "Storyboard ID in URL",
+          "responseShape": "JSON with storyboard details",
+          "auth": "user"
+        },
+        {
+          "route": "/api/audience-profiles",
+          "method": "POST",
+          "purpose": "Create or update an audience profile.",
+          "requestShape": "JSON with profile details",
+          "responseShape": "JSON with saved profile ID and status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/audience-profiles/{id}",
+          "method": "GET",
+          "purpose": "Retrieve an audience profile by ID.",
+          "requestShape": "Profile ID in URL",
+          "responseShape": "JSON with profile details",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export",
+          "method": "POST",
+          "purpose": "Trigger export job for a finalized storyboard in a chosen format.",
+          "requestShape": "JSON with storyboard ID and export format",
+          "responseShape": "JSON with export job status and download link",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ExportJob",
+          "trigger": "Triggered by export API request",
+          "purpose": "Generate export files (PowerPoint, PDF) from finalized storyboard plans asynchronously."
+        }
+      ],
+      "edgeCases": [
+        "User uploads corrupted or unsupported chart files - provide clear error messages and reject uploads.",
+        "Narrative suggestion engine produces overly generic or irrelevant text - allow user overrides and manual editing.",
+        "Session expiration before user saves storyboard - warn users and offer export or save options.",
+        "Export job fails due to unsupported characters or formatting - provide fallback export or error details.",
+        "Multiple users editing same storyboard concurrently - implement locking or version conflict resolution in future upgrades."
+      ],
+      "nonGoals": [
+        "Performing raw data analysis or visualization authoring beyond metadata and chart file handling.",
+        "Storing or processing sensitive raw datasets or personally identifiable information.",
+        "Replacing specialized data visualization or statistical software.",
+        "Real-time collaborative editing or audience feedback integration in initial versions."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /upload page to upload chart files and enter dataset metadata and research notes.",
+        "Uploaded chart metadata and draft storyboard data are stored temporarily in SessionData store via api_user endpoints.",
+        "User navigates to /storyboard-editor page where uploaded charts metadata and draft narratives are fetched from SessionData or persisted Storyboard if saved.",
+        "User edits storyboard sequences, narrative blocks, and links key messages; updates are sent to /api/storyboards POST endpoint to create or update storyboard plans.",
+        "/api/storyboards validates input, persists sanitized storyboard data in Storyboard data store, associating with user and optionally an audience profile.",
+        "User manages audience profiles on /audience-profiles page; creates or updates profiles via /api/audience-profiles POST endpoint, persisted in AudienceProfile store.",
+        "Storyboard editor fetches audience profiles from /api/audience-profiles GET endpoints to tailor narrative suggestions.",
+        "User selects export format on /export page and triggers export via /api/export POST endpoint with storyboard ID and format.",
+        "ExportJob background job asynchronously processes export request, generating files (PPT, PDF) using data from Storyboard and AudienceProfile stores.",
+        "Export job status and download link are returned via /api/export response and displayed to user.",
+        "Session data is cleared after expiration to protect privacy; unsaved storyboard or uploads are lost unless user saves explicitly."
+      ],
+      "validationRules": [
+        "Chart uploads must be validated for supported file types and non-corruption before accepting; reject unsupported or corrupted files with clear errors.",
+        "Storyboard creation/update requests must include valid userId, non-empty title, charts array with valid metadata references, narrativeBlocks as structured JSON, and sequenceOrder matching charts.",
+        "Audience profile creation/update requires valid userId, non-empty name, expertiseLevel from predefined set (e.g., novice, intermediate, expert), and optional interests and formatPreferences as JSON.",
+        "Export requests must include existing storyboardId owned by user and exportFormat from supported formats (e.g., ppt, pdf).",
+        "Session data inputs must be sanitized to prevent injection or sensitive data leakage.",
+        "Narrative text inputs should be checked for length limits and disallowed content (e.g., scripts)."
+      ],
+      "errorHandling": [
+        "On file upload errors (unsupported format, corruption), respond with HTTP 400 and user-friendly error messages on /upload page.",
+        "API endpoints return HTTP 401 if user authentication fails or session invalid.",
+        "API endpoints return HTTP 404 if requested storyboard or audience profile ID does not exist or does not belong to user.",
+        "Validation failures return HTTP 422 with detailed field error messages.",
+        "Export job failures (format errors, missing data) are logged; user receives error status with fallback instructions or retry options.",
+        "Session expiration triggers warning modals on UI pages with options to save or export before data loss.",
+        "Concurrency conflicts are noted as future enhancement; currently last write wins with warning to users."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication except /upload and /storyboard-editor which allow anonymous sessions with ephemeral data storage.",
+        "Sensitive raw chart files are never persisted beyond session scope; only sanitized metadata is stored.",
+        "User input is sanitized to prevent injection attacks.",
+        "Session expiration and data clearing protect user privacy.",
+        "Export job runs asynchronously with access control to ensure only authorized users can request exports.",
+        "Indexes on userId and sessionId fields optimize secure data retrieval scoped to authenticated users."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT1",
+          "given": "User visits /upload page with valid chart files and metadata",
+          "when": "User uploads supported chart files and enters dataset metadata",
+          "then": "Uploaded chart metadata is stored in session and user can proceed to storyboard editor"
+        },
+        {
+          "id": "AT2",
+          "given": "User is authenticated and has saved audience profiles",
+          "when": "User creates or updates an audience profile via /api/audience-profiles POST",
+          "then": "Profile is validated, saved, and retrievable via GET with correct data"
+        },
+        {
+          "id": "AT3",
+          "given": "User has uploaded charts and draft narratives in session",
+          "when": "User edits storyboard sequences and narrative blocks and submits via /api/storyboards POST",
+          "then": "Storyboard is validated, saved in data store, and returns storyboard ID"
+        },
+        {
+          "id": "AT4",
+          "given": "User requests export with valid storyboard ID and format",
+          "when": "User triggers export via /api/export POST",
+          "then": "Export job is queued, processes asynchronously, and user receives status and download link"
+        },
+        {
+          "id": "AT5",
+          "given": "User uploads corrupted or unsupported chart file",
+          "when": "Upload is attempted",
+          "then": "System rejects upload with clear error message and no data is stored"
+        },
+        {
+          "id": "AT6",
+          "given": "User session expires before saving storyboard",
+          "when": "User attempts to continue editing",
+          "then": "User is warned about session expiration and offered options to save or export data"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma models for Storyboard, AudienceProfile, SessionData",
+        "Implement api_user routes for session management and ephemeral data storage",
+        "Implement /upload page with file upload handling and session storage integration",
+        "Implement api_storyboard routes for CRUD operations on storyboards with validation",
+        "Implement /storyboard-editor page with drag-and-drop UI and narrative editing",
+        "Implement api_audience-profiles routes for managing audience profiles",
+        "Implement /audience-profiles page for profile management UI",
+        "Implement job_export background job processor for export generation",
+        "Implement /export page and /api/export route to trigger export jobs and show status",
+        "Add validation and error handling across API routes and UI forms",
+        "Add session expiration handling and user warnings",
+        "Add security measures and authentication enforcement",
+        "Write acceptance tests and perform end-to-end testing"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/storyboard-editor",
+          "/audience-profiles",
+          "/export"
+        ],
+        "apiFilesToCreate": [
+          "/api/storyboards/index.ts",
+          "/api/storyboards/[id].ts",
+          "/api/audience-profiles/index.ts",
+          "/api/audience-profiles/[id].ts",
+          "/api/export.ts",
+          "/api/user/session.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Storyboard { id String @id @default(cuid()) userId String title String charts Json narrativeBlocks Json sequenceOrder Json audienceProfileId String? createdAt DateTime updatedAt DateTime @@index([userId]) @@index([audienceProfileId]) }",
+          "model AudienceProfile { id String @id @default(cuid()) userId String name String expertiseLevel String interests Json? formatPreferences Json? createdAt DateTime updatedAt DateTime @@index([userId]) }",
+          "model SessionData { sessionId String @id uploadedChartsMetadata Json? draftNarratives Json? createdAt DateTime expiresAt DateTime @@index([sessionId]) @@index([expiresAt]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to identify missing or ambiguous constraints in the current storyboard planner requirements.",
+        "promptTemplate": "Given the current blueprint and idea, ask detailed clarifying questions to refine the requirements for the Academic Research Data Visualization Storyboard Planner. Focus on any missing constraints, user scenarios, or safety considerations. User input: {{USER_INPUT}}. Blueprint: {{BLUEPRINT}}."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and confirm the final set of pages, data models, and API routes needed to implement the storyboard planner.",
+        "promptTemplate": "Based on the refined requirements and blueprint, produce a detailed specification of the pages, data models, and API endpoints required for the Academic Research Data Visualization Storyboard Planner. Include validation rules and security notes. User input: {{USER_INPUT}}. Blueprint: {{BLUEPRINT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffolding code and UI stubs for the main pages of the storyboard planner application.",
+        "promptTemplate": "Generate code stubs and UI scaffolding for the following pages: /upload, /storyboard-editor, /audience-profiles, and /export. Include form fields, upload handlers, and placeholders for narrative editing. User input: {{USER_INPUT}}. Blueprint: {{BLUEPRINT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration of frontend pages with backend API endpoints and data persistence layers.",
+        "promptTemplate": "Provide detailed instructions and code snippets to connect frontend pages to backend API routes and data stores. Include session management, validation, error handling, and security enforcement for the Academic Research Data Visualization Storyboard Planner. User input: {{USER_INPUT}}. Blueprint: {{BLUEPRINT}}."
+      }
+    ]
+  }
+}

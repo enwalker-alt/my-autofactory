@@ -1,0 +1,817 @@
+{
+  "slug": "academic-grant-budget-discrepancy-resolver",
+  "title": "Academic Research Grant Budget Discrepancy Resolver",
+  "description": "Upload multiple institutional budget drafts (CSV, Excel, PDF) and funder rules text/files to detect numeric conflicts and assumption mismatches. Receive a structured discrepancy report highlighting conflicts and compliance alerts to aid finance coordinators in resolving multi-institutional grant budget discrepancies efficiently.",
+  "inputLabel": "Upload budget draft files and optional narrative notes",
+  "outputLabel": "Discrepancy report with numeric conflicts, assumption mismatches, and compliance alerts",
+  "systemPrompt": "You are a secure assistant specialized in analyzing multi-institutional academic research grant budget drafts for discrepancies. Accept user uploads of CSV, Excel, or PDF budget draft files and optional narrative notes explaining assumptions, plus funder budget rules as text or file. Validate and parse these inputs strictly, rejecting unsupported or corrupted files with clear messages. Analyze numeric discrepancies, conflicting allocations, and mismatched assumptions across uploaded budgets according to funder rules. Generate a detailed plain-text discrepancy report highlighting conflicts and compliance alerts without providing legal or financial advice. Enforce strict security and input sanitization. Refuse any requests unrelated to budget discrepancy detection or that attempt to obtain sensitive data or advice. Output must be plain text only. Use a professional and concise tone.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary View",
+      "prompt": "Provide a concise summary of all detected numeric conflicts, assumption mismatches, and compliance alerts in the uploaded budget drafts.",
+      "hint": "Use this preset for a quick overview highlighting key discrepancies."
+    },
+    {
+      "label": "Detailed Report",
+      "prompt": "Generate a detailed structured discrepancy report listing all conflicting line items, assumption differences, and rule violations with clear explanations.",
+      "hint": "Use this preset for comprehensive analysis and audit purposes."
+    },
+    {
+      "label": "Compliance Focus",
+      "prompt": "Emphasize detection and explanation of compliance rule violations based on the uploaded funder budget rules.",
+      "hint": "Use this preset when compliance alerts are the priority."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, produce JSON with keys: numericConflicts (array), assumptionMismatches (array), complianceAlerts (array), each with detailed entries.",
+  "clarifyPrompt": "Please upload supported budget draft files (CSV, Excel, PDF) and optionally provide narrative notes and funder rules text or files. Ensure files are under 10MB and not corrupted. Describe any specific concerns or focus areas for discrepancy detection.",
+  "finalizePrompt": "Review the discrepancy report carefully. Remember outputs are advisory and require human validation before budget consensus decisions. Export or save the report as needed.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Budget Discrepancy Resolver",
+      "niche": {
+        "role": "Academic Research Grant Finance Coordinator",
+        "scenario": "During multi-institutional grant proposal preparation, collaborators upload their individual budget drafts which often contain numeric discrepancies, conflicting allocations, and hidden assumptions that delay consensus and submission readiness."
+      },
+      "problem": "Collaborators submit separate budget drafts with conflicting numbers and assumptions. Detecting, highlighting, and resolving these discrepancies manually is time-consuming and error-prone, risking submission delays and compliance issues.",
+      "inputs": [
+        "Multiple institutional budget draft files (CSV, Excel, or PDF)",
+        "Narrative notes explaining budget assumptions (optional text)",
+        "Funder budget rules and constraints (upload or text)"
+      ],
+      "outputs": [
+        "Structured discrepancy report highlighting numeric conflicts and assumption mismatches",
+        "Interactive reconciliation dashboard to compare line items side-by-side with comment threads",
+        "Suggested resolution options and alerts for compliance or rule violations",
+        "Exportable consensus budget draft with tracked resolution history"
+      ],
+      "whyItWins": [
+        "Directly targets the frequent and high-impact pain point of budget conflicts in multi-institutional grant proposals",
+        "Moves beyond static compliance checks by enabling dynamic collaboration and resolution within one system",
+        "Reduces iteration cycles and risk of errors that cause costly proposal delays or rejections",
+        "Lays foundation for richer workflow management and audit trails supporting funder compliance"
+      ],
+      "upgradePath": {
+        "today": "Lightweight web tool to upload and compare multiple budget drafts, generate discrepancy reports, and export annotated summaries.",
+        "in90Days": "Add interactive side-by-side reconciliation interface with comment threads, collaborator role assignments, and basic conflict resolution suggestions.",
+        "in12Months": "Develop a full multi-page collaborative budgeting platform integrating real-time editing, version control, automated compliance validations, multi-currency support, and integration with grant proposal document generators and funder portals."
+      },
+      "riskNotes": [
+        "Must carefully handle sensitive budget and institutional data with secure upload and storage",
+        "Avoid generating any legal or financial advice; outputs should be advisory and require human validation",
+        "Interface complexity must be managed to avoid overwhelming users unfamiliar with budget reconciliation tools"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research grant finance coordinators to upload, compare, and reconcile multi-institutional budget drafts by detecting numeric discrepancies and assumption mismatches, enabling interactive resolution, compliance alerts, and exportable consensus budgets.",
+      "primaryUser": "Academic Research Grant Finance Coordinator",
+      "successMetrics": [
+        "Reduction in time spent identifying and resolving budget discrepancies",
+        "Number of collaborative reconciliation sessions completed successfully",
+        "User satisfaction scores regarding ease of discrepancy detection and resolution",
+        "Decrease in proposal submission delays due to budget conflicts",
+        "Volume of consensus budgets exported with tracked resolution history"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Budget Upload & Parsing UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload multiple budget draft files (CSV, Excel, PDF) and funder rules; provide input for narrative notes; display upload status and parsing feedback.",
+          "dependsOn": [],
+          "notes": [
+            "Handle file validation and format detection.",
+            "Provide clear error messages for unsupported or corrupted files.",
+            "Support secure file upload with encryption in transit."
+          ]
+        },
+        {
+          "id": "api-upload-parse",
+          "name": "Upload & Parsing API",
+          "type": "api",
+          "responsibility": "Receive uploaded files, parse budget data and funder rules into structured formats, extract numeric line items and assumptions, and store parsed data securely.",
+          "dependsOn": [
+            "data-budgetDraft",
+            "data-funderRules"
+          ],
+          "notes": [
+            "Use robust parsing libraries for Excel, CSV, and PDF extraction.",
+            "Flag parsing ambiguities and notify users for manual input if needed.",
+            "Sanitize and validate all inputs to prevent injection or corruption."
+          ]
+        },
+        {
+          "id": "data-budgetDraft",
+          "name": "Budget Draft Data Store",
+          "type": "data",
+          "responsibility": "Persist parsed budget drafts, including line items, numeric values, assumptions, and metadata about the submitting institution and user.",
+          "dependsOn": [],
+          "notes": [
+            "Store original file references securely for audit.",
+            "Support versioning for future upgrades.",
+            "Encrypt sensitive financial data at rest."
+          ]
+        },
+        {
+          "id": "data-funderRules",
+          "name": "Funder Rules Data Store",
+          "type": "data",
+          "responsibility": "Persist funder budget rules and constraints in structured format to enable compliance checks and alerts.",
+          "dependsOn": [],
+          "notes": [
+            "Allow updates and versioning of rules.",
+            "Support structured and semi-structured rule representations."
+          ]
+        },
+        {
+          "id": "api-discrepancyDetection",
+          "name": "Discrepancy Detection & Analysis API",
+          "type": "api",
+          "responsibility": "Analyze multiple budget drafts to detect numeric conflicts, assumption mismatches, and rule violations; generate structured discrepancy reports.",
+          "dependsOn": [
+            "data-budgetDraft",
+            "data-funderRules"
+          ],
+          "notes": [
+            "Implement configurable tolerance thresholds for numeric discrepancies.",
+            "Identify hidden assumptions by comparing narrative notes and metadata.",
+            "Flag compliance rule violations with clear explanations."
+          ]
+        },
+        {
+          "id": "ui-reconciliationDashboard",
+          "name": "Interactive Reconciliation Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide side-by-side comparison of budget line items, highlight discrepancies, enable comment threads, and suggest resolution options.",
+          "dependsOn": [
+            "api-discrepancyDetection",
+            "api-commenting",
+            "data-resolutionHistory"
+          ],
+          "notes": [
+            "Design for usability to avoid overwhelming users.",
+            "Support real-time updates in future versions.",
+            "Enable filtering and sorting of discrepancies."
+          ]
+        },
+        {
+          "id": "api-commenting",
+          "name": "Commenting & Collaboration API",
+          "type": "api",
+          "responsibility": "Manage comment threads linked to specific budget line items and discrepancies, supporting collaborator role assignments and notifications.",
+          "dependsOn": [
+            "data-comments",
+            "data-users"
+          ],
+          "notes": [
+            "Support edit and delete with audit trails.",
+            "Implement notification triggers for new comments."
+          ]
+        },
+        {
+          "id": "data-comments",
+          "name": "Comments Data Store",
+          "type": "data",
+          "responsibility": "Persist comment threads, user metadata, timestamps, and linkage to budget items and discrepancies.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure data integrity and access control."
+          ]
+        },
+        {
+          "id": "data-resolutionHistory",
+          "name": "Resolution History Data Store",
+          "type": "data",
+          "responsibility": "Track changes, resolutions, and consensus decisions made during reconciliation sessions for audit and export.",
+          "dependsOn": [],
+          "notes": [
+            "Support versioning and rollback in future upgrades."
+          ]
+        },
+        {
+          "id": "api-export",
+          "name": "Consensus Budget Export API",
+          "type": "api",
+          "responsibility": "Generate exportable consensus budget drafts with tracked resolution history in user-friendly formats (Excel, PDF).",
+          "dependsOn": [
+            "data-resolutionHistory",
+            "data-budgetDraft"
+          ],
+          "notes": [
+            "Include disclaimers that outputs are advisory and require human validation.",
+            "Support export customization options."
+          ]
+        },
+        {
+          "id": "integration-auth",
+          "name": "Authentication & Authorization Integration",
+          "type": "integration",
+          "responsibility": "Manage secure user authentication, role-based access control, and secure data access.",
+          "dependsOn": [],
+          "notes": [
+            "Implement strong encryption and session management.",
+            "Support collaborator role assignments and permissions."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "BudgetDraft",
+          "purpose": "Store parsed budget draft details from each institution including line items, numeric values, assumptions, and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lineItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "narrativeNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "originalFileReference",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "institution",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "FunderRule",
+          "purpose": "Persist funder budget rules and constraints to validate budgets and detect compliance issues.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ruleName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "ruleDefinition",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "ruleName",
+            "effectiveDate"
+          ]
+        },
+        {
+          "name": "DiscrepancyReport",
+          "purpose": "Structured report highlighting numeric conflicts, assumption mismatches, and compliance alerts across budget drafts.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedBudgetDraftIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "numericConflicts",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "assumptionMismatches",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "complianceAlerts",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "generatedAt"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Store comments linked to budget line items or discrepancies for collaboration and resolution.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetDraftId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lineItemId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "discrepancyId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "editedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "budgetDraftId",
+            "authorId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "ResolutionHistory",
+          "purpose": "Track resolutions and consensus decisions made during reconciliation sessions for audit and export.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetDraftIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "resolutionDetails",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "resolvedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "resolvedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "resolvedAt",
+            "resolvedBy"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user identity, roles, and permissions for access control and collaboration.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Budget Drafts and Funder Rules",
+          "purpose": "Allow users to upload multiple budget draft files and funder rules, input narrative notes, and initiate parsing.",
+          "inputs": [
+            "budget draft files (CSV, Excel, PDF)",
+            "funder rules file or text",
+            "narrative notes"
+          ],
+          "outputs": [
+            "upload status",
+            "parsing feedback",
+            "error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/discrepancy-report",
+          "title": "Discrepancy Report",
+          "purpose": "Display structured report of detected numeric conflicts, assumption mismatches, and compliance alerts across uploaded budget drafts.",
+          "inputs": [
+            "selected budget drafts",
+            "funder rules"
+          ],
+          "outputs": [
+            "discrepancy report with highlights and explanations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reconciliation",
+          "title": "Reconciliation Dashboard",
+          "purpose": "Interactive side-by-side comparison of budget line items with discrepancy highlights, comment threads, and resolution suggestions.",
+          "inputs": [
+            "discrepancy report",
+            "user comments",
+            "resolution actions"
+          ],
+          "outputs": [
+            "updated reconciliation view",
+            "comment threads",
+            "resolution status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/export",
+          "title": "Export Consensus Budget",
+          "purpose": "Export the consensus budget draft with tracked resolution history in user-selected formats.",
+          "inputs": [
+            "finalized reconciliation data",
+            "export format selection"
+          ],
+          "outputs": [
+            "exported budget file (Excel, PDF)"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system securely.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "login status"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Receive and parse uploaded budget drafts and funder rules.",
+          "requestShape": "{ files: [File], narrativeNotes: string }",
+          "responseShape": "{ status: string, parsedDataSummary: json, errors: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/discrepancy-report",
+          "method": "POST",
+          "purpose": "Generate discrepancy report from selected budget drafts and funder rules.",
+          "requestShape": "{ budgetDraftIds: string[], funderRuleIds: string[] }",
+          "responseShape": "{ discrepancyReport: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "POST",
+          "purpose": "Add a comment to a budget line item or discrepancy.",
+          "requestShape": "{ budgetDraftId: string, lineItemId?: string, discrepancyId?: string, content: string }",
+          "responseShape": "{ commentId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "GET",
+          "purpose": "Retrieve comments for a budget draft or discrepancy.",
+          "requestShape": "{ budgetDraftId: string, discrepancyId?: string }",
+          "responseShape": "{ comments: [json] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reconciliation/resolve",
+          "method": "POST",
+          "purpose": "Submit resolution decisions for discrepancies.",
+          "requestShape": "{ discrepancyId: string, resolutionDetails: json }",
+          "responseShape": "{ status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export",
+          "method": "POST",
+          "purpose": "Export consensus budget with resolution history.",
+          "requestShape": "{ resolutionHistoryId: string, format: string }",
+          "responseShape": "{ exportUrl: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: json }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "DiscrepancyReportGeneration",
+          "trigger": "Triggered after successful budget draft uploads or updates",
+          "purpose": "Asynchronously generate or update discrepancy reports to avoid blocking user interactions."
+        },
+        {
+          "name": "ComplianceAlertNotifications",
+          "trigger": "On detection of new compliance rule violations",
+          "purpose": "Notify relevant users about compliance alerts via email or in-app notifications."
+        },
+        {
+          "name": "DataRetentionCleanup",
+          "trigger": "Scheduled periodic job (e.g., monthly)",
+          "purpose": "Archive or delete old budget drafts and related data according to retention policies."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded budget files contain unsupported or corrupted formats requiring user correction.",
+        "Conflicting numeric values that fall within tolerance thresholds and require user judgment.",
+        "Narrative notes missing or ambiguous, limiting assumption mismatch detection.",
+        "Multiple collaborators editing or commenting simultaneously causing race conditions.",
+        "Compliance rules that are complex or ambiguous, leading to false positives or negatives.",
+        "User uploads sensitive data but loses access credentials, requiring secure recovery options.",
+        "Export failures due to large file sizes or format incompatibilities.",
+        "Partial uploads or network interruptions during file submission."
+      ],
+      "nonGoals": [
+        "Providing legal or financial advice based on budget data.",
+        "Real-time collaborative editing in the initial lightweight version.",
+        "Full integration with external funder portals or grant proposal document generators in the initial release.",
+        "Multi-currency automatic conversions and exchange rate management in the initial phases.",
+        "Automated resolution of discrepancies without human validation."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving auth token for subsequent requests.",
+        "User uploads budget draft files and funder rules via /upload page, which sends files and narrative notes to /api/upload POST endpoint.",
+        "/api/upload validates files, parses budget data and funder rules, stores parsed data in BudgetDraft and FunderRule data stores with metadata and versioning.",
+        "Upon successful upload, background job DiscrepancyReportGeneration triggers to analyze stored budget drafts and funder rules, generating DiscrepancyReport entries.",
+        "User navigates to /discrepancy-report page, which requests discrepancy reports via /api/discrepancy-report POST endpoint with selected budgetDraftIds and funderRuleIds.",
+        "/api/discrepancy-report returns structured discrepancy report highlighting numeric conflicts, assumption mismatches, and compliance alerts.",
+        "User accesses /reconciliation dashboard, which fetches discrepancy reports and existing comments via /api/comments GET endpoint, enabling side-by-side comparison and collaboration.",
+        "Users post comments on budget line items or discrepancies via /api/comments POST endpoint; comments are stored in Comments data store with audit metadata.",
+        "Users submit resolution decisions on discrepancies via /api/reconciliation/resolve POST endpoint; resolution details are stored in ResolutionHistory data store.",
+        "User exports consensus budget via /export page, which calls /api/export POST endpoint with resolutionHistoryId and desired format; API generates export file and returns download URL.",
+        "Background job ComplianceAlertNotifications monitors new compliance alerts and sends notifications to relevant users.",
+        "DataRetentionCleanup job runs periodically to archive or delete old budget drafts and related data per retention policies."
+      ],
+      "validationRules": [
+        "File uploads must be validated for supported formats: CSV, Excel (.xls, .xlsx), PDF; reject unsupported or corrupted files with clear error messages.",
+        "Narrative notes input is optional but if provided, must be sanitized to prevent injection attacks.",
+        "Uploaded files must be scanned for malware and validated for size limits (e.g., max 10MB per file).",
+        "Parsing results must be checked for completeness; ambiguous or missing numeric data triggers user notification for manual input.",
+        "API request payloads must be validated for required fields and correct types (e.g., budgetDraftIds as non-empty string arrays).",
+        "Comments content must be non-empty strings with length limits (e.g., max 2000 characters).",
+        "Resolution details must conform to defined JSON schema specifying resolution actions and metadata.",
+        "Export format must be validated against supported types (Excel, PDF).",
+        "Authentication tokens must be validated on all protected API routes; unauthorized requests return 401.",
+        "Role-based access control enforced on all data modifications and sensitive data retrieval."
+      ],
+      "errorHandling": [
+        "Upload errors (unsupported format, corrupted file, size limit exceeded) return 400 with descriptive messages displayed on upload UI.",
+        "Parsing ambiguities or failures return 422 with details on problematic data points and suggestions for user correction.",
+        "Authentication failures return 401 Unauthorized with prompts to login.",
+        "Authorization failures return 403 Forbidden with explanation of insufficient permissions.",
+        "API validation errors return 400 Bad Request with field-specific error messages.",
+        "Concurrency conflicts (e.g., simultaneous comment edits) return 409 Conflict with instructions to refresh data.",
+        "Background job failures are logged with alerts to admins; user-facing APIs return generic 500 errors with retry suggestions.",
+        "Export failures due to large file size or format issues return 500 with user-friendly messages and fallback options.",
+        "Network interruptions during upload or API calls trigger client-side retries with exponential backoff and user notifications.",
+        "Unhandled exceptions return sanitized 500 Internal Server Error responses without exposing sensitive details."
+      ],
+      "securityNotes": [
+        "All API routes require HTTPS to ensure encryption in transit.",
+        "File uploads are scanned and stored securely with encryption at rest.",
+        "Authentication uses secure token-based sessions with expiration and refresh mechanisms.",
+        "Role-based access control restricts data access and modification based on user roles.",
+        "Input sanitization prevents injection attacks on narrative notes, comments, and JSON payloads.",
+        "Audit trails maintained for comments edits/deletions and resolution submissions.",
+        "Sensitive financial data encrypted in database and access logged.",
+        "Rate limiting applied on authentication and upload endpoints to prevent abuse.",
+        "Secure password storage with salted hashing and multi-factor authentication recommended.",
+        "Recovery mechanisms for lost credentials implemented outside scope but planned."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with valid budget draft files and funder rules",
+          "when": "The user uploads multiple files and submits narrative notes",
+          "then": "The system accepts files, parses data successfully, stores parsed data, and displays upload status with parsing feedback"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user selects budget drafts and funder rules on /discrepancy-report page",
+          "when": "The user requests a discrepancy report",
+          "then": "The system returns a structured discrepancy report highlighting numeric conflicts, assumption mismatches, and compliance alerts"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /reconciliation dashboard with an existing discrepancy report",
+          "when": "The user views side-by-side budget line items and adds comments to discrepancies",
+          "then": "Comments are saved, displayed in threads, and linked correctly to budget items or discrepancies"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user submits resolution decisions for discrepancies",
+          "when": "The user posts resolution details via the reconciliation API",
+          "then": "The system stores resolution history and updates reconciliation status accordingly"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on /export page with finalized reconciliation data",
+          "when": "The user selects export format and initiates export",
+          "then": "The system generates and returns an export file URL with consensus budget including resolution history"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthenticated user attempts to access protected pages or APIs",
+          "when": "The user requests access",
+          "then": "The system denies access with 401 Unauthorized and redirects to login"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user uploads an unsupported or corrupted file",
+          "when": "The upload is submitted",
+          "then": "The system rejects the file and displays a clear error message prompting correction"
+        },
+        {
+          "id": "AT-008",
+          "given": "Multiple users comment simultaneously on the same discrepancy",
+          "when": "Comments are submitted concurrently",
+          "then": "The system handles concurrency without data loss and maintains comment order with audit trails"
+        }
+      ],
+      "buildOrder": [
+        "integration-auth",
+        "data-budgetDraft",
+        "data-funderRules",
+        "api-upload-parse",
+        "ui-upload",
+        "backgroundJobs: DiscrepancyReportGeneration",
+        "api-discrepancyDetection",
+        "ui-reconciliationDashboard",
+        "data-comments",
+        "api-commenting",
+        "data-resolutionHistory",
+        "api-reconciliation/resolve",
+        "api-export",
+        "ui-discrepancyReport",
+        "ui-export",
+        "pages-login"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/discrepancy-report",
+          "/reconciliation",
+          "/export",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload.js",
+          "/api/discrepancy-report.js",
+          "/api/comments.js",
+          "/api/reconciliation/resolve.js",
+          "/api/export.js",
+          "/api/auth/login.js"
+        ],
+        "prismaModelsToAdd": [
+          "BudgetDraft",
+          "FunderRule",
+          "DiscrepancyReport",
+          "Comment",
+          "ResolutionHistory",
+          "User"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints, edge cases, and user needs for the budget discrepancy resolver tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs {{BLUEPRINT}} and {{EXPANDED}}, ask detailed questions to clarify any missing requirements, constraints, or user scenarios relevant to the Academic Research Grant Budget Discrepancy Resolver. Focus on edge cases, security, and user workflow gaps. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design final page routes, UI components, and data models based on refined requirements.",
+        "promptTemplate": "Using the refined requirements and blueprint {{BLUEPRINT}}, produce a finalized list of pages with routes, inputs, outputs, and a detailed data model schema for the Academic Research Grant Budget Discrepancy Resolver. Incorporate user input {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code stubs for UI pages and API endpoints.",
+        "promptTemplate": "Based on the finalized pages and API definitions {{BLUEPRINT}}, generate code stubs with minimal UI and API skeletons for the Academic Research Grant Budget Discrepancy Resolver. Include placeholders for authentication and file upload handling. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages with API endpoints and database models to enable end-to-end workflows.",
+        "promptTemplate": "Given the code stubs and data models {{BLUEPRINT}}, provide integration guidance and code samples to wire frontend UI pages to backend API routes and data stores securely. Ensure authentication, validation, and error handling are included. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,727 @@
+{
+  "slug": "academic-fieldwork-weather-risk-forecaster",
+  "title": "Academic Research Fieldwork Weather Risk Forecaster",
+  "description": "Input your field site coordinates, scheduled fieldwork dates, activity types, equipment sensitivity profiles, and team availability to receive a tailored weather risk forecast with basic scheduling suggestions and contingency recommendations to help plan safe and effective academic field research.",
+  "inputLabel": "Enter project details in JSON or upload a JSON file containing field site coordinates, scheduled field activities, equipment sensitivity profiles, and team availability.",
+  "outputLabel": "Weather risk forecast, alerts, and basic scheduling recommendations",
+  "systemPrompt": "You are a specialized assistant for academic field research project managers. Given the project details including site geolocation coordinates, scheduled fieldwork dates and activity types, equipment sensitivity profiles, and team availability, generate a tailored weather risk forecast for the scheduled field activities. Provide clear probabilistic risk summaries, alerts for high-risk weather windows, and basic scheduling suggestions to mitigate weather risks. Include advisory contingency recommendations such as backup equipment or safety protocols. Refuse to provide any medical or safety-critical decisions. Validate all inputs for correctness and completeness. If inputs are missing or invalid, respond with a clear error message and do not proceed. Output must be plain text by default; if structured-output feature is enabled, provide a valid JSON object with forecast details. Always communicate forecast uncertainty clearly to avoid overconfidence.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Risk Forecast",
+      "prompt": "Analyze the provided project details and return a tailored weather risk forecast with alerts and simple scheduling suggestions."
+    },
+    {
+      "label": "Detailed Contingency Plan",
+      "prompt": "Generate a detailed contingency plan including backup equipment recommendations and safety protocols based on the weather risk forecast."
+    },
+    {
+      "label": "Scheduling Optimization Suggestions",
+      "prompt": "Provide optimized scheduling suggestions considering weather risks, equipment sensitivity, and team availability."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output enabled, respond with JSON containing keys: fieldActivityId, riskScore (0-1), riskSummary, alerts (array), schedulingSuggestions, contingencyRecommendations, advisoryNotes.",
+  "clarifyPrompt": "Please provide complete project details including site coordinates, scheduled field activities with dates and types, equipment sensitivity profiles, and team availability. Ensure all inputs are valid and correctly formatted.",
+  "finalizePrompt": "Review the generated weather risk forecast and scheduling suggestions. Confirm if you want to save or refine your input data for more accurate results.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Fieldwork Weather Risk Forecaster",
+      "niche": {
+        "role": "Academic field research project managers",
+        "scenario": "Planning and managing outdoor field research activities with variable weather conditions"
+      },
+      "problem": "Academic field research teams often face unexpected weather disruptions that cause delays, damage equipment, or compromise data quality. Current tools track logistics and equipment but lack integrated, project-specific weather risk forecasting that can inform proactive scheduling and contingency planning.",
+      "inputs": [
+        "Field site geolocation coordinates",
+        "Scheduled fieldwork dates and activity types",
+        "Historical weather data or local climate profiles",
+        "Critical equipment sensitivity profiles (e.g., temperature/humidity limits)",
+        "Research team availability and travel plans"
+      ],
+      "outputs": [
+        "Tailored weather risk forecasts for each scheduled field activity",
+        "Alerts for high-risk weather windows affecting critical tasks or equipment",
+        "Optimized fieldwork schedule with alternative dates to mitigate weather risks",
+        "Contingency planning recommendations (e.g., backup equipment, safety protocols)",
+        "Visual timeline integrating weather risks with logistics and compliance milestones"
+      ],
+      "whyItWins": [
+        "Integrates weather risk forecasting directly into academic fieldwork management workflow",
+        "Provides actionable, tailored scheduling and contingency guidance beyond generic weather reports",
+        "Supports repeated updates and refinements as project plans evolve and new data arrives",
+        "Improves resource utilization, safety, and data quality by anticipating weather disruptions",
+        "Fills a critical gap not addressed by existing fieldwork logistics or equipment tracking tools"
+      ],
+      "upgradePath": {
+        "today": "A lightweight single-page app where users input site coordinates, dates, and equipment sensitivity to receive a simple weather risk report with basic scheduling suggestions",
+        "in90Days": "Add integration with live weather APIs for dynamic risk updates, user accounts for saving multiple projects, and calendar export features for fieldwork schedules",
+        "in12Months": "Develop a multi-page system with collaborative team access, detailed weather event simulations, integrated equipment and compliance tracking, mobile alerts, and machine learning-powered predictive scheduling optimization"
+      },
+      "riskNotes": [
+        "Must ensure no reliance on precise medical or safety-critical decisions solely from forecasts; provide advisory recommendations only",
+        "Respect user privacy and data security when handling location and project data",
+        "Weather forecasts inherently uncertain; communicate probabilistic risk clearly to avoid overconfidence",
+        "Avoid overcomplexity that impedes ease of use for busy field researchers"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page application designed to help academic field research project managers integrate tailored weather risk forecasting into their fieldwork planning and management. It provides actionable scheduling guidance, contingency recommendations, and visual timelines to mitigate weather-related disruptions.",
+      "primaryUser": "Academic field research project managers",
+      "successMetrics": [
+        "Reduction in weather-related fieldwork delays or cancellations",
+        "User adoption rate and frequency of project updates",
+        "Accuracy and usefulness of weather risk forecasts and scheduling suggestions",
+        "User satisfaction with contingency planning recommendations",
+        "Engagement with visual timeline and alert features"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide an overview of projects, upcoming field activities, weather risk summaries, and alerts.",
+          "dependsOn": [
+            "api-projects",
+            "api-weather-risk",
+            "data-projects"
+          ],
+          "notes": [
+            "Must be responsive and prioritize clarity for busy users",
+            "Show probabilistic risk visually and clearly"
+          ]
+        },
+        {
+          "id": "ui-project-management",
+          "name": "Project & Schedule Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to input and update project details including site coordinates, fieldwork dates, activity types, equipment profiles, and team availability.",
+          "dependsOn": [
+            "api-projects",
+            "api-equipment",
+            "data-projects",
+            "data-equipment"
+          ],
+          "notes": [
+            "Support incremental updates to plans",
+            "Validate inputs for geolocation and date ranges"
+          ]
+        },
+        {
+          "id": "ui-risk-report",
+          "name": "Weather Risk Reporting UI",
+          "type": "ui",
+          "responsibility": "Display detailed weather risk forecasts, alerts, contingency recommendations, and optimized scheduling suggestions.",
+          "dependsOn": [
+            "api-weather-risk",
+            "api-scheduling",
+            "data-weather-risk"
+          ],
+          "notes": [
+            "Communicate uncertainty clearly",
+            "Include visual timeline integrating weather risks with logistics"
+          ]
+        },
+        {
+          "id": "api-projects",
+          "name": "Project Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for projects, field activities, equipment profiles, and team availability data.",
+          "dependsOn": [
+            "data-projects",
+            "data-equipment"
+          ],
+          "notes": [
+            "Ensure data privacy and secure access controls",
+            "Support multi-project and multi-user scenarios"
+          ]
+        },
+        {
+          "id": "api-weather-risk",
+          "name": "Weather Risk Forecasting API",
+          "type": "api",
+          "responsibility": "Generate tailored weather risk forecasts based on project inputs, historical data, and live weather API integration.",
+          "dependsOn": [
+            "integration-weather-api",
+            "data-weather-risk"
+          ],
+          "notes": [
+            "Provide probabilistic risk scores and advisory recommendations",
+            "Update forecasts dynamically as new data arrives"
+          ]
+        },
+        {
+          "id": "api-scheduling",
+          "name": "Scheduling Optimization API",
+          "type": "api",
+          "responsibility": "Produce optimized fieldwork schedules and alternative dates to mitigate weather risks, including contingency planning suggestions.",
+          "dependsOn": [
+            "api-weather-risk",
+            "data-projects"
+          ],
+          "notes": [
+            "Incorporate equipment sensitivity and team availability constraints",
+            "Allow repeated refinements as plans evolve"
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Project Data Store",
+          "type": "data",
+          "responsibility": "Persist project metadata, field activity schedules, equipment sensitivity profiles, and team availability.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage for sensitive location and personnel data",
+            "Support versioning or history for plan updates"
+          ]
+        },
+        {
+          "id": "data-weather-risk",
+          "name": "Weather Risk Data Store",
+          "type": "data",
+          "responsibility": "Store historical weather data, cached forecast results, and risk assessment outputs for projects.",
+          "dependsOn": [
+            "integration-weather-api"
+          ],
+          "notes": [
+            "Cache results to optimize performance",
+            "Track forecast timestamps and data sources"
+          ]
+        },
+        {
+          "id": "integration-weather-api",
+          "name": "External Weather API Integration",
+          "type": "integration",
+          "responsibility": "Fetch live weather data and historical climate profiles from third-party weather service providers.",
+          "dependsOn": [],
+          "notes": [
+            "Handle API rate limits and failures gracefully",
+            "Normalize data formats for internal processing"
+          ]
+        },
+        {
+          "id": "job-forecast-update",
+          "name": "Periodic Forecast Update Job",
+          "type": "job",
+          "responsibility": "Trigger scheduled updates of weather risk forecasts for active projects to keep risk assessments current.",
+          "dependsOn": [
+            "api-weather-risk",
+            "data-projects"
+          ],
+          "notes": [
+            "Run at configurable intervals (e.g., daily or hourly)",
+            "Notify users of significant risk changes"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Project",
+          "purpose": "Represents an academic field research project with associated field activities and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id"
+          ]
+        },
+        {
+          "name": "FieldActivity",
+          "purpose": "Scheduled fieldwork activity with location, dates, and activity type.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteCoordinates",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "activityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId"
+          ]
+        },
+        {
+          "name": "EquipmentProfile",
+          "purpose": "Defines equipment sensitivity limits relevant to weather conditions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "equipmentName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "temperatureLimit",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "humidityLimit",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "otherConstraints",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId"
+          ]
+        },
+        {
+          "name": "TeamAvailability",
+          "purpose": "Tracks availability and travel plans of research team members.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "memberName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "availableDates",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "projectId"
+          ]
+        },
+        {
+          "name": "WeatherRiskForecast",
+          "purpose": "Stores weather risk forecast results and advisory notes for field activities.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fieldActivityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "forecastDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "riskScore",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "riskDetails",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "advisoryNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "fieldActivityId",
+            "forecastDate"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Project Dashboard",
+          "purpose": "Overview of all projects, upcoming activities, weather risk summaries, and alerts.",
+          "inputs": [],
+          "outputs": [
+            "Project summaries",
+            "Risk alerts",
+            "Upcoming activities"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/new",
+          "title": "Create New Project",
+          "purpose": "Form to create a new research project with initial field activities and equipment profiles.",
+          "inputs": [
+            "Project name",
+            "Description",
+            "Field activities",
+            "Equipment profiles"
+          ],
+          "outputs": [
+            "Project created confirmation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/edit",
+          "title": "Edit Project",
+          "purpose": "Edit project details, field schedules, equipment profiles, and team availability.",
+          "inputs": [
+            "Project metadata",
+            "Field activities",
+            "Equipment profiles",
+            "Team availability"
+          ],
+          "outputs": [
+            "Updated project data"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/risk-report",
+          "title": "Weather Risk Report",
+          "purpose": "Display detailed weather risk forecasts, contingency recommendations, and optimized schedules for a project.",
+          "inputs": [
+            "Project ID"
+          ],
+          "outputs": [
+            "Risk forecasts",
+            "Scheduling suggestions",
+            "Contingency plans",
+            "Visual timeline"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access their projects and data.",
+          "inputs": [
+            "Username",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token or session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of projects for authenticated user.",
+          "requestShape": "None",
+          "responseShape": "Array of Project objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project with initial data.",
+          "requestShape": "Project metadata, field activities, equipment profiles",
+          "responseShape": "Created Project object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId",
+          "method": "POST",
+          "purpose": "Update existing project details and related data.",
+          "requestShape": "Updated project metadata and related entities",
+          "responseShape": "Updated Project object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/weather-risk/:fieldActivityId",
+          "method": "GET",
+          "purpose": "Fetch latest weather risk forecast for a specific field activity.",
+          "requestShape": "None",
+          "responseShape": "WeatherRiskForecast object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/scheduling/:projectId",
+          "method": "GET",
+          "purpose": "Get optimized scheduling suggestions for a project based on weather risk and constraints.",
+          "requestShape": "None",
+          "responseShape": "Optimized schedule and contingency recommendations",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Periodic Forecast Update",
+          "trigger": "Scheduled timer (e.g., every 6 hours)",
+          "purpose": "Refresh weather risk forecasts for active field activities and notify users of significant changes."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or invalid geolocation inputs gracefully with user feedback.",
+        "Dealing with missing or outdated historical weather data by falling back to climate profiles.",
+        "Managing API failures or rate limits from external weather services with retries and cached data.",
+        "Communicating forecast uncertainty clearly to prevent overconfidence in scheduling decisions.",
+        "Supporting overlapping or conflicting team availability and equipment constraints in scheduling.",
+        "Ensuring data privacy and secure access when multiple users access shared projects.",
+        "Handling daylight saving time or timezone differences in scheduling and date inputs."
+      ],
+      "nonGoals": [
+        "Providing medical or safety-critical decision making based solely on weather forecasts.",
+        "Replacing comprehensive field logistics or equipment tracking systems.",
+        "Offering real-time weather monitoring or emergency alerting beyond advisory notifications.",
+        "Supporting non-academic or non-fieldwork use cases.",
+        "Building complex machine learning models beyond basic scheduling optimization in initial phases."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receives session token for API access.",
+        "Dashboard page fetches project summaries, upcoming activities, and weather risk alerts from /api/projects and /api/weather-risk endpoints.",
+        "Project creation page submits new project metadata, field activities, and equipment profiles to POST /api/projects.",
+        "Project edit page loads existing project data via GET /api/projects, allows incremental updates, then submits changes via POST /api/projects/:projectId.",
+        "Weather risk report page fetches detailed weather risk forecasts from GET /api/weather-risk/:fieldActivityId and scheduling suggestions from GET /api/scheduling/:projectId.",
+        "Scheduling API integrates weather risk data, equipment constraints, and team availability to generate optimized schedules and contingency plans.",
+        "External weather API integration fetches live and historical weather data, normalizes it, and caches results in WeatherRisk data store.",
+        "Periodic background job triggers weather risk forecast updates for active projects, updates data store, and notifies users of significant risk changes.",
+        "All data flows enforce user authentication and authorization to ensure data privacy and multi-user access control."
+      ],
+      "validationRules": [
+        "Project name: required, non-empty string, max length 255.",
+        "Description: optional string, max length 1000.",
+        "FieldActivity siteCoordinates: required JSON object with valid latitude (-90 to 90) and longitude (-180 to 180).",
+        "FieldActivity startDate and endDate: required dates, startDate <= endDate, dates must be valid ISO 8601 format.",
+        "ActivityType: required string, must be from predefined allowed activity types list.",
+        "EquipmentProfile temperatureLimit and humidityLimit: optional JSON with numeric min/max values, if present must be valid ranges.",
+        "TeamAvailability availableDates: required JSON array of date ranges, each with valid start and end dates, no overlaps.",
+        "API endpoints require authenticated user context; project and related data must belong to the requesting user or their authorized projects.",
+        "Incremental updates must validate partial inputs and reject invalid or inconsistent data.",
+        "Date inputs must handle timezone offsets and daylight saving time correctly.",
+        "Login inputs: username and password required, non-empty strings.",
+        "Scheduling API input constraints: equipment sensitivity and team availability must be respected in optimization logic."
+      ],
+      "errorHandling": [
+        "API endpoints return 401 Unauthorized if user is not authenticated.",
+        "API endpoints return 403 Forbidden if user attempts to access or modify projects they do not own or have access to.",
+        "Validation errors return 400 Bad Request with detailed error messages specifying invalid fields.",
+        "External weather API failures trigger retries with exponential backoff; if persistent, fallback to cached historical data.",
+        "Rate limit errors from external APIs are handled gracefully by queuing requests or delaying calls.",
+        "Missing or incomplete geolocation inputs cause UI validation errors with user-friendly messages prompting correction.",
+        "Background job logs errors and alerts system admins on repeated failures; does not block user operations.",
+        "API responses include error codes and human-readable messages for client-side display.",
+        "Uncaught exceptions return 500 Internal Server Error with generic message; detailed logs kept server-side.",
+        "Date parsing errors return validation errors with guidance on correct format."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /login.",
+        "Use secure HTTP-only cookies or JWT tokens for session management.",
+        "Enforce authorization checks on all project-related data access to prevent data leaks.",
+        "Encrypt sensitive fields such as siteCoordinates and personnel data at rest in the database.",
+        "Sanitize all inputs to prevent injection attacks.",
+        "Limit rate of API calls per user to prevent abuse.",
+        "Use HTTPS for all client-server and server-server communications.",
+        "Store external API keys securely in environment variables, not in source code.",
+        "Log access and modification events for audit trails.",
+        "Implement CORS policies to restrict API access to authorized frontends."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /dashboard page with multiple projects",
+          "when": "The page loads",
+          "then": "The user sees a summary list of their projects, upcoming field activities, and current weather risk alerts with clear probabilistic visuals"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user on the /projects/new page",
+          "when": "They submit a new project form with valid project metadata, field activities, and equipment profiles",
+          "then": "The project is created successfully, stored in the database, and the user receives a confirmation message"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user editing an existing project on /projects/:projectId/edit",
+          "when": "They update field activity dates with invalid geolocation data",
+          "then": "The system rejects the update with a validation error indicating the geolocation issue"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user requests weather risk forecast for a field activity via /api/weather-risk/:fieldActivityId",
+          "when": "The external weather API is temporarily unavailable",
+          "then": "The API returns the most recent cached forecast data with a warning about data freshness"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user requests optimized scheduling suggestions for a project via /api/scheduling/:projectId",
+          "when": "The project has overlapping team availability and equipment constraints",
+          "then": "The API returns a schedule that respects constraints and includes contingency recommendations"
+        },
+        {
+          "id": "AT-006",
+          "given": "A background job runs the periodic forecast update",
+          "when": "Significant changes in weather risk are detected for active projects",
+          "then": "The system updates forecasts in the data store and sends notifications to affected users"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user attempts to access /dashboard or any project API",
+          "when": "They make a request",
+          "then": "The system responds with 401 Unauthorized and redirects to /login if applicable"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user inputs dates with timezone differences and daylight saving time changes",
+          "when": "They save or update project schedules",
+          "then": "The system correctly stores and displays dates respecting timezone and DST adjustments"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma data models for Project, FieldActivity, EquipmentProfile, TeamAvailability, WeatherRiskForecast",
+        "Implement authentication system and /login page",
+        "Develop API routes for /api/projects with GET, POST, and POST/:projectId including validation and authorization",
+        "Create UI pages for /projects/new and /projects/:projectId/edit with forms and validation",
+        "Integrate external weather API with normalization and caching in data-weather-risk store",
+        "Implement /api/weather-risk/:fieldActivityId GET endpoint to fetch and serve forecasts",
+        "Build /api/scheduling/:projectId GET endpoint for optimized scheduling logic",
+        "Develop /dashboard page to display project summaries, upcoming activities, and risk alerts",
+        "Create /projects/:projectId/risk-report page to show detailed weather risk and scheduling suggestions",
+        "Implement background job for periodic forecast updates and user notifications",
+        "Add comprehensive error handling, logging, and security enforcement across all layers",
+        "Conduct acceptance testing and fix issues",
+        "Deploy and monitor system"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/projects/new",
+          "/projects/[projectId]/edit",
+          "/projects/[projectId]/risk-report",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "/api/projects/index.ts",
+          "/api/projects/[projectId].ts",
+          "/api/weather-risk/[fieldActivityId].ts",
+          "/api/scheduling/[projectId].ts",
+          "/api/auth/login.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Project { id String @id @default(uuid()) name String description String? createdAt DateTime updatedAt DateTime fieldActivities FieldActivity[] equipmentProfiles EquipmentProfile[] teamAvailabilities TeamAvailability[] }",
+          "model FieldActivity { id String @id @default(uuid()) projectId String siteCoordinates Json startDate DateTime endDate DateTime activityType String notes String? project Project @relation(fields: [projectId], references: [id]) weatherRiskForecasts WeatherRiskForecast[] }",
+          "model EquipmentProfile { id String @id @default(uuid()) projectId String equipmentName String temperatureLimit Json? humidityLimit Json? otherConstraints Json? project Project @relation(fields: [projectId], references: [id]) }",
+          "model TeamAvailability { id String @id @default(uuid()) projectId String memberName String availableDates Json project Project @relation(fields: [projectId], references: [id]) }",
+          "model WeatherRiskForecast { id String @id @default(uuid()) fieldActivityId String forecastDate DateTime riskScore Float riskDetails Json advisoryNotes String? lastUpdated DateTime fieldActivity FieldActivity @relation(fields: [fieldActivityId], references: [id]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, user preferences, or edge cases regarding academic fieldwork weather risk forecasting and scheduling.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}}, please provide additional constraints, preferences, or details missing from the project requirements to improve the weather risk forecasting tool. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages, API endpoints, and data models needed to implement the academic fieldwork weather risk forecaster.",
+        "promptTemplate": "Using the idea spec and blueprint: {{IDEA}}, {{BLUEPRINT}}, plus expansions: {{EXPANDED}}, produce a detailed design of pages, data models, and APIs to implement the project. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create scaffold code and page stubs for the planned UI pages for the academic fieldwork weather risk forecaster.",
+        "promptTemplate": "Based on the finalized design documents: {{BLUEPRINT}}, {{EXPANDED}}, generate code stubs and scaffolds for the UI pages and forms of the project. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages to backend APIs and the database, ensuring data flow and security for the weather risk forecasting tool.",
+        "promptTemplate": "Given the scaffolded UI and API designs: {{BLUEPRINT}}, {{EXPANDED}}, integrate all components to enable data flow from UI input through APIs to database storage and back. Ensure security and validation. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,811 @@
+{
+  "slug": "academic-grant-budget-simulator",
+  "title": "Academic Research Grant Budget Scenario Simulator",
+  "description": "A lightweight single-page web app for academic research grant finance coordinators to upload multiple institutional budget drafts and budget rules, and simulate a consolidated grant budget scenario with basic conflict detection and compliance alerts.",
+  "inputLabel": "Upload your institutional budget drafts (CSV/Excel) and budget rules (JSON or text). You may also enter notes or edits.",
+  "outputLabel": "Consolidated Budget Scenario Simulation Results, Conflict Alerts, and Compliance Warnings",
+  "systemPrompt": "You are a collaborative budget scenario simulator assistant for academic research grant finance coordinators. Accept multiple institutional budget drafts and budget rules as input. Validate inputs for correctness and completeness. Simulate a consolidated budget scenario, detecting conflicts and compliance violations. Provide detailed, clear, and actionable alerts for conflicts and compliance issues. Refuse any requests that contain disallowed or unsafe content. Output results in plain text or valid JSON when structured output is enabled. Always enforce input validation and security constraints. Do not generate or infer missing financial data. Do not perform user authentication or real-time collaboration in this version. Focus on scenario consolidation, conflict detection, and compliance alerts only. If input is malformed or incomplete, respond with clear error messages explaining the problem.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Consolidation",
+      "prompt": "Consolidate the uploaded institutional budget drafts and apply the provided budget rules. Detect any conflicts or compliance violations and summarize them clearly with explanations.",
+      "hint": "Use this preset to generate a consolidated budget scenario with alerts."
+    },
+    {
+      "label": "Detailed Compliance Report",
+      "prompt": "Analyze the consolidated budget scenario in detail against all provided budget rules. Provide a structured JSON report listing all compliance violations with explanations and references to budget line items.",
+      "hint": "Use for comprehensive compliance validation output."
+    },
+    {
+      "label": "Conflict Resolution Suggestions",
+      "prompt": "Identify all budget item conflicts between institutional drafts. Provide clear suggestions on how to resolve each conflict to achieve a consistent consolidated budget scenario.",
+      "hint": "Use to help identify and resolve budget draft conflicts."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "When structured output is enabled, output JSON with fields: consolidatedBudget (json), conflictAlerts (array), complianceAlerts (array), each alert containing description, affectedItems, and severity.",
+  "clarifyPrompt": "Please provide your institutional budget drafts and budget rules. Indicate if you want a plain text summary or structured JSON output. Ensure files are valid CSV, Excel, or JSON as appropriate.",
+  "finalizePrompt": "Review the consolidated budget scenario and alerts. Confirm if you want to save this scenario or upload revised budgets or rules for further simulation.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Budget Scenario Simulator with Real-Time Collaborative Editing",
+      "niche": {
+        "role": "Academic Research Grant Finance Coordinator",
+        "scenario": "Collaboratively planning and simulating multi-institutional grant budgets with frequent iterations and stakeholder inputs"
+      },
+      "problem": "Current grant budget simulation tools largely support single-user uploads and static scenario generation without real-time collaboration, making it difficult for multi-institutional teams to iteratively refine budgets together and resolve conflicts promptly.",
+      "inputs": [
+        "Multiple institutional budget drafts (CSV/Excel)",
+        "Funder/institutional budget rules and constraints documents",
+        "User edits and revision proposals in real-time",
+        "Comments and negotiation notes from collaborators"
+      ],
+      "outputs": [
+        "Dynamic, real-time updated consolidated budget scenario",
+        "Conflict detection and resolution suggestions",
+        "Compliance violation alerts with detailed explanations",
+        "Version history and change logs",
+        "Collaborator-specific task and approval tracking dashboards"
+      ],
+      "whyItWins": [
+        "Enables true collaborative budget planning reducing communication delays and version conflicts",
+        "Real-time conflict and compliance alerts accelerate consensus and reduce funding risks",
+        "Integrates negotiation and comment threads within the budgeting workflow, improving transparency",
+        "Supports multiple iterations with version control, enhancing accountability and audit readiness",
+        "Scalable from a simple scenario simulator to a full multi-page budget management system"
+      ],
+      "upgradePath": {
+        "today": "Develop a lightweight single-page app that allows upload of multiple budgets and rules to simulate consolidated scenarios with basic conflict and compliance alerts.",
+        "in90Days": "Add real-time collaborative editing support, in-app commenting, version history tracking, and user roles with task assignments.",
+        "in12Months": "Expand into a multi-page system with dashboards for budget negotiation status, advanced compliance scenario planning, integration with institutional finance systems, and automated report generation for funders."
+      },
+      "riskNotes": [
+        "Handling sensitive financial data securely with role-based access controls is essential to maintain confidentiality.",
+        "Real-time collaboration features require robust concurrency control to prevent data loss or overwrite.",
+        "Complex budget rules and compliance constraints may require ongoing updates to support diverse funders and institutions.",
+        "User training may be needed to ensure effective adoption of collaborative budgeting workflows."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research grant finance coordinators to jointly plan, simulate, and negotiate multi-institutional grant budgets in real-time with compliance checks, version control, and task tracking.",
+      "primaryUser": "Academic Research Grant Finance Coordinator",
+      "successMetrics": [
+        "Reduction in budget planning cycle time through real-time collaboration",
+        "Decrease in version conflicts and redundant communications",
+        "Increase in compliance violations detected and resolved before submission",
+        "User adoption rate and active collaboration sessions per grant project",
+        "Number of successfully tracked and completed approval tasks"
+      ],
+      "components": [
+        {
+          "id": "ui-budget-editor",
+          "name": "Budget Scenario Editor UI",
+          "type": "ui",
+          "responsibility": "Provide an interactive interface for uploading budgets, editing budget items collaboratively in real-time, viewing conflict and compliance alerts, and managing comments and negotiation threads.",
+          "dependsOn": [
+            "api-budget",
+            "api-collaboration",
+            "api-comments",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports real-time updates via WebSocket or similar technology",
+            "Includes visual indicators for conflicts and compliance issues",
+            "Handles concurrent edits with optimistic concurrency control"
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "User Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display collaborator-specific tasks, approval statuses, version history, and summary of negotiation progress for each grant budget scenario.",
+          "dependsOn": [
+            "api-tasks",
+            "api-versions",
+            "api-auth"
+          ],
+          "notes": [
+            "Personalized views based on user roles and permissions",
+            "Includes notifications for pending actions and alerts"
+          ]
+        },
+        {
+          "id": "api-budget",
+          "name": "Budget Management API",
+          "type": "api",
+          "responsibility": "Handle upload, consolidation, simulation, validation, and storage of budget scenarios including conflict detection and compliance checking.",
+          "dependsOn": [
+            "data-budget",
+            "data-rules",
+            "job-conflict-compliance"
+          ],
+          "notes": [
+            "Exposes endpoints for budget CRUD and simulation requests",
+            "Triggers background jobs for complex compliance validation"
+          ]
+        },
+        {
+          "id": "api-collaboration",
+          "name": "Real-Time Collaboration API",
+          "type": "api",
+          "responsibility": "Manage real-time editing sessions, concurrency control, and synchronization of budget edits and comments among multiple users.",
+          "dependsOn": [
+            "data-sessions",
+            "data-comments",
+            "api-auth"
+          ],
+          "notes": [
+            "Implements WebSocket or similar protocol for push updates",
+            "Handles conflict resolution strategies and edit merging"
+          ]
+        },
+        {
+          "id": "api-comments",
+          "name": "Comments and Negotiation API",
+          "type": "api",
+          "responsibility": "Support creation, retrieval, and management of comment threads, negotiation notes, and resolution statuses linked to budget items and versions.",
+          "dependsOn": [
+            "data-comments",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports threaded discussions and mentions",
+            "Integrates with task assignments for negotiation follow-up"
+          ]
+        },
+        {
+          "id": "api-tasks",
+          "name": "Task and Approval Tracking API",
+          "type": "api",
+          "responsibility": "Manage collaborator-specific tasks, approvals, and notifications related to budget review and negotiation workflows.",
+          "dependsOn": [
+            "data-tasks",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports task assignment, status updates, and reminders",
+            "Tracks approval history and audit trails"
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication and Authorization API",
+          "type": "api",
+          "responsibility": "Provide secure user authentication, role-based access control, and session management to protect sensitive financial data.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multi-factor authentication and secure password policies",
+            "Enforces permissions for budget access and editing"
+          ]
+        },
+        {
+          "id": "data-budget",
+          "name": "Budget Data Store",
+          "type": "data",
+          "responsibility": "Persist budget drafts, consolidated scenarios, version histories, and simulation results.",
+          "dependsOn": [],
+          "notes": [
+            "Stores structured budget line items with metadata",
+            "Maintains versioned snapshots for audit and rollback"
+          ]
+        },
+        {
+          "id": "data-rules",
+          "name": "Budget Rules and Constraints Store",
+          "type": "data",
+          "responsibility": "Store funder and institutional budget rules, constraints, and compliance criteria used for validation.",
+          "dependsOn": [],
+          "notes": [
+            "Supports extensible and updatable rule definitions",
+            "May integrate with external rule management systems in future"
+          ]
+        },
+        {
+          "id": "data-comments",
+          "name": "Comments and Negotiation Data Store",
+          "type": "data",
+          "responsibility": "Persist comment threads, negotiation notes, and resolution statuses linked to budgets and versions.",
+          "dependsOn": [],
+          "notes": [
+            "Supports threading, timestamps, and user metadata"
+          ]
+        },
+        {
+          "id": "data-tasks",
+          "name": "Task and Approval Data Store",
+          "type": "data",
+          "responsibility": "Persist task assignments, statuses, approval records, and notification logs.",
+          "dependsOn": [],
+          "notes": [
+            "Tracks task lifecycle and user interactions"
+          ]
+        },
+        {
+          "id": "data-sessions",
+          "name": "Collaboration Session Store",
+          "type": "data",
+          "responsibility": "Temporarily store real-time collaboration session state and locks to coordinate concurrent edits.",
+          "dependsOn": [],
+          "notes": [
+            "Ephemeral storage optimized for low latency",
+            "Supports session recovery and conflict prevention"
+          ]
+        },
+        {
+          "id": "job-conflict-compliance",
+          "name": "Conflict Detection and Compliance Validation Job",
+          "type": "job",
+          "responsibility": "Periodically or on-demand analyze consolidated budgets for conflicts, compliance violations, and generate alerts with explanations.",
+          "dependsOn": [
+            "data-budget",
+            "data-rules"
+          ],
+          "notes": [
+            "Handles complex rule evaluation asynchronously",
+            "Feeds results back to API and UI for user action"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "BudgetScenario",
+          "purpose": "Represents a consolidated grant budget scenario including multiple institutional drafts and simulation results.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionBudgets",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "consolidatedItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "conflictAlerts",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "complianceAlerts",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "title",
+            "createdBy"
+          ]
+        },
+        {
+          "name": "BudgetRule",
+          "purpose": "Defines a funder or institutional budget rule or constraint for validation.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funder",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ruleDefinition",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "funder"
+          ]
+        },
+        {
+          "name": "CommentThread",
+          "purpose": "Stores comment threads and negotiation notes linked to budget items and versions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetScenarioId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parentCommentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "budgetScenarioId",
+            "parentCommentId"
+          ]
+        },
+        {
+          "name": "Task",
+          "purpose": "Represents a collaborator-specific task or approval related to budget negotiation and review.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedTo",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetScenarioId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "assignedTo",
+            "budgetScenarioId",
+            "status"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Stores user identity, roles, and permissions for authentication and authorization.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/budget-editor/:scenarioId",
+          "title": "Budget Scenario Editor",
+          "purpose": "Allow users to collaboratively edit and simulate grant budget scenarios with real-time updates and alerts.",
+          "inputs": [
+            "budget uploads",
+            "user edits",
+            "comments"
+          ],
+          "outputs": [
+            "consolidated budget view",
+            "conflict alerts",
+            "compliance alerts",
+            "comment threads"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "User Dashboard",
+          "purpose": "Provide personalized task lists, approval statuses, version history, and negotiation summaries.",
+          "inputs": [
+            "user identity"
+          ],
+          "outputs": [
+            "task lists",
+            "notifications",
+            "version logs"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system securely.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/budget-scenarios",
+          "title": "Budget Scenarios List",
+          "purpose": "List all accessible budget scenarios with summary info and access to editing or review.",
+          "inputs": [
+            "user identity"
+          ],
+          "outputs": [
+            "budget scenario summaries"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/budgets",
+          "method": "POST",
+          "purpose": "Upload and create a new budget scenario or add institutional budget drafts.",
+          "requestShape": "{ scenarioTitle: string, institutionBudgets: json }",
+          "responseShape": "{ scenarioId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets/:scenarioId",
+          "method": "GET",
+          "purpose": "Retrieve consolidated budget scenario details including versions and alerts.",
+          "requestShape": "{}",
+          "responseShape": "{ budgetScenario: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets/:scenarioId/edits",
+          "method": "POST",
+          "purpose": "Submit real-time edits to a budget scenario.",
+          "requestShape": "{ edits: json }",
+          "responseShape": "{ success: boolean, conflicts: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "POST",
+          "purpose": "Add a comment or negotiation note to a budget scenario or item.",
+          "requestShape": "{ budgetScenarioId: string, parentCommentId?: string, content: string }",
+          "responseShape": "{ commentId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments/:budgetScenarioId",
+          "method": "GET",
+          "purpose": "Retrieve all comments and negotiation threads for a budget scenario.",
+          "requestShape": "{}",
+          "responseShape": "{ comments: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "GET",
+          "purpose": "Get tasks assigned to the authenticated user.",
+          "requestShape": "{}",
+          "responseShape": "{ tasks: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Create or update a task related to budget negotiation or approval.",
+          "requestShape": "{ task: json }",
+          "responseShape": "{ success: boolean, taskId?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Conflict and Compliance Validator",
+          "trigger": "On budget scenario update or periodically scheduled",
+          "purpose": "Analyze consolidated budgets to detect conflicts and compliance violations, generating alerts for users."
+        }
+      ],
+      "edgeCases": [
+        "Simultaneous conflicting edits by multiple users requiring conflict resolution UI and merging strategies.",
+        "Partial or malformed budget uploads that must be validated and rejected gracefully with clear error messages.",
+        "Rule updates that invalidate existing budgets requiring re-validation and user notification.",
+        "Network interruptions during real-time collaboration sessions causing temporary data desynchronization.",
+        "User role changes mid-negotiation affecting access and editing permissions dynamically.",
+        "Handling large budget files and complex rules without performance degradation."
+      ],
+      "nonGoals": [
+        "Providing full institutional finance system integration in initial versions (planned for long-term upgrades).",
+        "Automated budget generation or AI-driven budget recommendations.",
+        "Supporting offline editing or mobile app versions initially.",
+        "Replacing formal funder submission portals; focus is on internal collaboration and simulation.",
+        "Handling non-financial grant management aspects such as research progress tracking."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving a token for session management.",
+        "Authenticated user accesses /dashboard and /budget-scenarios pages, triggering API calls to /api/tasks, /api-versions, and /api/budgets for personalized data.",
+        "User navigates to /budget-editor/:scenarioId, which fetches consolidated budget data from /api/budgets/:scenarioId and comments from /api/comments/:scenarioId.",
+        "Budget Scenario Editor UI establishes a WebSocket connection to /api-collaboration for real-time edits and synchronization.",
+        "User uploads or edits budget items; edits are sent via /api/budgets/:scenarioId/edits POST endpoint and broadcasted via WebSocket to collaborators.",
+        "On budget updates, the Conflict and Compliance Validator job triggers asynchronously to analyze budgets against rules in data-rules, updating conflictAlerts and complianceAlerts in data-budget.",
+        "Comments and negotiation notes are created via /api/comments POST and retrieved via /api/comments/:budgetScenarioId GET, linked to budget scenarios and versions.",
+        "Tasks related to budget negotiation and approvals are managed via /api/tasks GET and POST endpoints, reflecting in the user dashboard.",
+        "Authentication and authorization checks are enforced on all protected API routes, verifying user roles and permissions dynamically.",
+        "Background job results feed alerts back into the budget scenario data, which the UI consumes to display visual indicators and notifications."
+      ],
+      "validationRules": [
+        "Authentication endpoints validate email format and password strength; reject invalid credentials with clear error messages.",
+        "Budget uploads must include a non-empty scenarioTitle string and institutionBudgets JSON conforming to schema; reject malformed or incomplete uploads.",
+        "Edits submitted to /api/budgets/:scenarioId/edits must include valid JSON edits with required fields; validate optimistic concurrency tokens to detect conflicts.",
+        "Comments require budgetScenarioId, authorId from session, and non-empty content; parentCommentId is optional but if present must reference an existing comment.",
+        "Tasks must include assignedTo user ID, budgetScenarioId, description, and status from allowed values (e.g., pending, in-progress, completed); dueDate is optional but if present must be a valid future date.",
+        "User roles and permissions are validated on each API call to ensure access control for budget scenarios and editing capabilities.",
+        "Background job input budgets and rules are validated for completeness and consistency before processing.",
+        "All date fields must be valid ISO 8601 strings and checked for logical consistency (e.g., createdAt <= updatedAt)."
+      ],
+      "errorHandling": [
+        "API endpoints return standardized error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 403 for forbidden, 404 for not found, 409 for conflicts, 500 for server errors).",
+        "Validation errors include detailed messages specifying invalid fields and expected formats.",
+        "Conflict errors during edits return conflict details to enable client-side merge UI.",
+        "Authentication failures return generic messages to avoid information leakage.",
+        "Background job failures are logged and retried with exponential backoff; critical failures notify admins.",
+        "Network interruptions during real-time collaboration trigger client reconnection attempts and local state reconciliation.",
+        "Malformed requests or missing parameters result in early rejection with clear feedback.",
+        "Role changes mid-session trigger session refresh or forced logout to enforce updated permissions."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/login require valid JWT or session tokens.",
+        "Passwords are stored hashed with a strong algorithm (e.g., bcrypt) and never logged or exposed.",
+        "Role-based access control enforces least privilege for budget scenario access and editing.",
+        "Multi-factor authentication support is implemented for user login flows.",
+        "WebSocket connections validate user tokens on connection and enforce permissions on each message.",
+        "Sensitive data such as budget details and user info are transmitted over HTTPS only.",
+        "Input sanitization prevents injection attacks in comments and budget edits.",
+        "Audit trails are maintained for task updates, budget changes, and user logins for compliance."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user with edit permissions on a budget scenario",
+          "when": "The user uploads a new institutional budget draft via /api/budgets POST",
+          "then": "The system creates a new budget scenario or updates existing, returns scenarioId and status, and the budget appears in the consolidated view"
+        },
+        {
+          "id": "AT-002",
+          "given": "Multiple users connected to the same budget scenario editor",
+          "when": "One user submits edits to budget items",
+          "then": "All other users receive real-time updates via WebSocket, and conflicts are detected and resolved or reported"
+        },
+        {
+          "id": "AT-003",
+          "given": "A budget scenario with updated institutional budgets",
+          "when": "The Conflict and Compliance Validator job runs",
+          "then": "Conflict and compliance alerts are generated and visible in the budget editor UI"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user submits a comment linked to a budget item",
+          "when": "The comment is posted via /api/comments POST",
+          "then": "The comment is stored with correct metadata and retrievable via /api/comments/:budgetScenarioId GET"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user accesses the dashboard page",
+          "when": "The system fetches tasks and notifications via /api/tasks GET",
+          "then": "The user sees a personalized list of pending tasks and approval statuses"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user attempts to edit a budget without proper permissions",
+          "when": "The user submits edits or accesses restricted data",
+          "then": "The system returns a 403 Forbidden error and denies the operation"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user submits malformed budget upload data",
+          "when": "The API receives the request",
+          "then": "The system rejects the request with 400 Bad Request and descriptive error messages"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user logs in with valid credentials",
+          "when": "The user submits /api/auth/login POST",
+          "then": "The system returns a valid authentication token and userId"
+        },
+        {
+          "id": "AT-009",
+          "given": "Network interruption occurs during real-time collaboration",
+          "when": "The client loses WebSocket connection",
+          "then": "The client attempts reconnection and synchronizes edits upon recovery"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for User, BudgetScenario, BudgetRule, CommentThread, Task, and Collaboration Session data stores.",
+        "Implement API-auth with secure user registration, login, session management, and role-based access control.",
+        "Develop API-budget endpoints for budget scenario CRUD, upload, and retrieval with validation.",
+        "Implement background job for conflict and compliance validation integrating with data-budget and data-rules.",
+        "Build API-comments for comment thread creation and retrieval with threading support.",
+        "Develop API-tasks for task and approval tracking with assignment and status updates.",
+        "Create API-collaboration with WebSocket support for real-time editing sessions and concurrency control.",
+        "Build UI components: login page, dashboard page, budget scenarios list page.",
+        "Develop budget editor UI with real-time collaboration, conflict and compliance alerts, and comment integration.",
+        "Integrate all components with authentication and authorization enforcement.",
+        "Implement error handling and validation feedback across UI and API layers.",
+        "Conduct acceptance testing and edge case validation.",
+        "Optimize performance for large budgets and complex rule evaluations."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/budget-scenarios",
+          "/budget-editor/[scenarioId]"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/budgets/index.ts",
+          "/api/budgets/[scenarioId].ts",
+          "/api/budgets/[scenarioId]/edits.ts",
+          "/api/comments/index.ts",
+          "/api/comments/[budgetScenarioId].ts",
+          "/api/tasks/index.ts",
+          "/api/collaboration/ws.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "BudgetScenario",
+          "BudgetRule",
+          "CommentThread",
+          "Task",
+          "CollaborationSession"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints or clarifications about the collaborative budget scenario simulator requirements.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}, ask the user to clarify any missing constraints, edge cases, or desired features for the Academic Research Grant Budget Scenario Simulator. Include questions about collaboration needs, compliance rules, input formats, and output expectations. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the detailed page routes, UI components, and data models for the system.",
+        "promptTemplate": "Using the refined requirements and blueprint: {{BLUEPRINT}}, design the detailed page routes, UI components, and data models needed for the Academic Research Grant Budget Scenario Simulator. Include authentication flows, budget editing UI, dashboards, and collaboration features. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code stubs for the defined pages and API endpoints.",
+        "promptTemplate": "Based on the finalized architecture and data models: {{BLUEPRINT}}, generate starter code stubs and API endpoint templates for the pages and APIs of the Academic Research Grant Budget Scenario Simulator. Include login, dashboard, budget editor, and collaboration APIs. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to API endpoints and database models with authentication and validation.",
+        "promptTemplate": "Given the page stubs, API endpoints, and data models: {{BLUEPRINT}}, write integration logic to connect UI pages to backend APIs and database models securely, including authentication, authorization, input validation, and error handling for the Academic Research Grant Budget Scenario Simulator. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

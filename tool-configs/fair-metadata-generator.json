@@ -1,0 +1,629 @@
+{
+  "slug": "fair-metadata-generator",
+  "title": "Academic Research Data FAIRness Metadata Generator",
+  "description": "Generate skeleton metadata records with embedded FAIRness annotations for academic datasets to accelerate FAIR-compliant dataset publication. Upload dataset files and partial metadata, select target repository schema, and receive standardized metadata with guidance to refine and export.",
+  "inputLabel": "Upload dataset files, partial metadata JSON, and select repository schema",
+  "outputLabel": "Generated skeleton metadata with embedded FAIRness annotations",
+  "systemPrompt": "You are an expert assistant helping academic research data managers generate skeleton metadata records for datasets that comply with FAIR principles (Findable, Accessible, Interoperable, Reusable). Given dataset files, partial metadata, and a chosen repository metadata schema template, produce a comprehensive, standardized metadata JSON skeleton embedding FAIRness annotations linked to metadata elements. Do not include or infer any sensitive or personally identifiable information. Return only valid JSON output. If inputs are invalid or disallowed (e.g., PII detected), refuse with clear error message. Enforce metadata completeness per schema and embed FAIR guidance notes. Output must be a single JSON object with two fields: \"metadataJson\" (the skeleton metadata) and \"fairnessAnnotations\" (the linked FAIRness notes).",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Skeleton Generation",
+      "prompt": "Generate a skeleton metadata record with embedded FAIRness annotations based on the uploaded dataset files, partial metadata, and selected repository schema. Ensure no PII or sensitive data is included."
+    },
+    {
+      "label": "Detailed FAIR Guidance",
+      "prompt": "Provide detailed FAIR principle annotations linked to each metadata element, explaining how it supports Findability, Accessibility, Interoperability, and Reusability."
+    },
+    {
+      "label": "Validation Focus",
+      "prompt": "Generate skeleton metadata and include embedded FAIRness annotations, highlighting areas that commonly cause validation errors or FAIR compliance issues."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output a JSON object with fields: metadataJson (object), fairnessAnnotations (object).",
+  "clarifyPrompt": "Please upload your dataset files (if any), provide partial metadata JSON (optional), and specify the target repository schema ID to generate FAIR-compliant metadata skeletons. Avoid including any sensitive or personal data.",
+  "finalizePrompt": "Review the generated metadata skeleton and embedded FAIRness annotations. Confirm if you want to save, refine, validate, or export the metadata record.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data FAIRness Metadata Generator",
+      "niche": {
+        "role": "Academic research data managers",
+        "scenario": "Preparing datasets for publication with full FAIR (Findable, Accessible, Interoperable, Reusable) compliance in data repositories"
+      },
+      "problem": "While FAIRness evaluators identify gaps and suggest improvements, academic research data managers face significant challenges manually creating detailed, standardized metadata records that fully implement FAIR principles across diverse datasets and repositories. This metadata creation is highly repetitive, error-prone, and requires specialized knowledge, slowing dataset publication and reducing compliance quality.",
+      "inputs": [
+        "Raw dataset files and sample data",
+        "Existing partial metadata records (if any)",
+        "Repository metadata schema specifications or templates",
+        "FAIR principles guidelines and best practices documentation"
+      ],
+      "outputs": [
+        "Comprehensive, standardized metadata records formatted per target repository schema",
+        "Embedded FAIRness compliance annotations linked to metadata elements",
+        "Validation reports confirming metadata completeness and FAIR alignment",
+        "Exportable metadata files ready for repository submission (e.g., JSON-LD, XML)"
+      ],
+      "whyItWins": [
+        "Fills a critical gap by automating detailed metadata creation beyond FAIRness evaluation, accelerating dataset readiness for publication",
+        "Reduces manual, repetitive, and error-prone metadata entry, improving metadata quality and consistency",
+        "Supports multiple repository schemas and custom templates, increasing versatility and adoption",
+        "Facilitates training and upskilling of data managers in FAIR metadata standards through interactive guidance",
+        "Lays foundation for integrated metadata lifecycle management, linking with dataset versioning and sharing workflows"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web tool that assists data managers by parsing dataset files and partial metadata to generate skeleton metadata records with embedded FAIRness annotations for manual refinement and export",
+        "in90Days": "Add interactive metadata editing UI with schema validation, FAIR principle explanations, example suggestions, and repository submission format export options; integrate common repository APIs for metadata preview",
+        "in12Months": "Evolve into a multi-page metadata lifecycle management system with user roles, collaborative editing, version tracking, automated FAIRness scoring linked to metadata elements, cross-repository publishing pipelines, and training modules for FAIR metadata best practices"
+      },
+      "riskNotes": [
+        "Must avoid generating or suggesting sensitive or personally identifiable information in metadata to ensure privacy compliance",
+        "Requires clear disclaimers that final metadata review and repository submission responsibility remains with users",
+        "Metadata schemas evolve; system must be regularly updated to reflect repository requirements and FAIR standards changes",
+        "Balancing automation with user control is critical to prevent incorrect or misleading metadata generation"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A web-based tool for academic research data managers to automate and assist in creating comprehensive, standardized FAIR-compliant metadata records for dataset publication across multiple repositories, featuring metadata generation, interactive editing, validation, export, and FAIRness guidance.",
+      "primaryUser": "Academic research data managers preparing datasets for publication",
+      "successMetrics": [
+        "Reduction in time required to produce compliant metadata records",
+        "Increase in metadata completeness and FAIR compliance scores",
+        "User adoption rate among academic data managers",
+        "Number of supported repository schemas and export formats",
+        "User satisfaction with metadata quality and guidance features"
+      ],
+      "components": [
+        {
+          "id": "ui_metadataEditor",
+          "name": "Metadata Editor UI",
+          "type": "ui",
+          "responsibility": "Provide an interactive interface for users to view, edit, and refine generated metadata with schema validation, FAIR principle explanations, and example suggestions.",
+          "dependsOn": [
+            "api_metadataGeneration",
+            "api_metadataValidation",
+            "data_repositorySchemas",
+            "api_fairnessAnnotations"
+          ],
+          "notes": [
+            "Supports manual refinement and inline FAIRness guidance",
+            "Handles partial metadata import and editing",
+            "Includes export options for multiple repository formats"
+          ]
+        },
+        {
+          "id": "ui_dashboard",
+          "name": "User Dashboard UI",
+          "type": "ui",
+          "responsibility": "Serve as the landing page for authenticated users to manage datasets, access metadata projects, view validation reports, and navigate to editing and export features.",
+          "dependsOn": [
+            "api_userManagement",
+            "data_metadataRecords"
+          ],
+          "notes": [
+            "Supports dataset versioning overview",
+            "Shows FAIRness scoring summaries",
+            "Facilitates collaborative editing in future upgrades"
+          ]
+        },
+        {
+          "id": "api_metadataGeneration",
+          "name": "Metadata Generation API",
+          "type": "api",
+          "responsibility": "Parse raw dataset files, partial metadata, and repository schema templates to generate skeleton metadata records with embedded FAIRness annotations.",
+          "dependsOn": [
+            "data_repositorySchemas",
+            "api_fairnessAnnotations"
+          ],
+          "notes": [
+            "Handles multiple file types and partial metadata inputs",
+            "Ensures no sensitive or PII data is generated",
+            "Returns metadata in intermediate JSON format for editing"
+          ]
+        },
+        {
+          "id": "api_metadataValidation",
+          "name": "Metadata Validation API",
+          "type": "api",
+          "responsibility": "Validate metadata records against repository schema specifications and FAIR principles, generating completeness and compliance reports.",
+          "dependsOn": [
+            "data_repositorySchemas",
+            "api_fairnessAnnotations"
+          ],
+          "notes": [
+            "Supports validation of user-edited metadata",
+            "Generates detailed error and warning messages",
+            "Updates FAIRness compliance scores linked to metadata elements"
+          ]
+        },
+        {
+          "id": "api_fairnessAnnotations",
+          "name": "FAIRness Annotation Service",
+          "type": "api",
+          "responsibility": "Provide FAIR principles guidelines, best practice explanations, and link annotations to metadata elements to support user guidance and validation.",
+          "dependsOn": [],
+          "notes": [
+            "Delivers contextual FAIRness tips and examples",
+            "Updates regularly to reflect evolving FAIR standards"
+          ]
+        },
+        {
+          "id": "data_repositorySchemas",
+          "name": "Repository Schema Definitions",
+          "type": "data",
+          "responsibility": "Store metadata schema specifications and templates for supported data repositories to enable generation, validation, and export.",
+          "dependsOn": [],
+          "notes": [
+            "Versioned to track schema evolution",
+            "Supports custom templates upload"
+          ]
+        },
+        {
+          "id": "data_metadataRecords",
+          "name": "Metadata Records Store",
+          "type": "data",
+          "responsibility": "Persist user metadata projects, including generated skeletons, user edits, validation reports, FAIRness scores, and export history.",
+          "dependsOn": [],
+          "notes": [
+            "Supports version tracking of metadata records",
+            "Stores exportable metadata files in multiple formats"
+          ]
+        },
+        {
+          "id": "job_metadataExport",
+          "name": "Metadata Export Job",
+          "type": "job",
+          "responsibility": "Process user requests to export metadata records into repository-specific formats (e.g., JSON-LD, XML) and prepare files for download or submission.",
+          "dependsOn": [
+            "data_metadataRecords",
+            "data_repositorySchemas"
+          ],
+          "notes": [
+            "Handles format conversion and schema compliance",
+            "Queues export jobs to manage load"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "RepositorySchema",
+          "purpose": "Store metadata schema definitions and templates for supported repositories",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "schemaDefinition",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "templateFiles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "name",
+            "version"
+          ]
+        },
+        {
+          "name": "MetadataRecord",
+          "purpose": "Persist user metadata projects including generated and edited metadata, validation results, and FAIRness annotations",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "repositorySchemaId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "metadataJson",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "fairnessAnnotations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "validationReport",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "userId",
+            "datasetId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user account information and roles",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "User Dashboard",
+          "purpose": "Landing page for users to manage datasets, metadata projects, and view FAIRness summaries",
+          "inputs": [],
+          "outputs": [
+            "List of metadata projects",
+            "Validation summary",
+            "Navigation to editor and export"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/metadata/edit/:id",
+          "title": "Metadata Editor",
+          "purpose": "Interactive page to edit and refine metadata records with FAIRness guidance and validation",
+          "inputs": [
+            "Metadata record ID"
+          ],
+          "outputs": [
+            "Editable metadata form",
+            "Validation messages",
+            "FAIRness annotations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/metadata/generate",
+          "title": "Metadata Generation",
+          "purpose": "Page to upload dataset files and partial metadata to generate skeleton metadata records",
+          "inputs": [
+            "Dataset files",
+            "Partial metadata",
+            "Repository schema selection"
+          ],
+          "outputs": [
+            "Generated skeleton metadata",
+            "FAIRness annotations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/metadata/export/:id",
+          "title": "Metadata Export",
+          "purpose": "Page to select export format and download metadata files ready for repository submission",
+          "inputs": [
+            "Metadata record ID",
+            "Export format selection"
+          ],
+          "outputs": [
+            "Exported metadata files"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token or session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/metadata/generate",
+          "method": "POST",
+          "purpose": "Generate skeleton metadata from dataset files and partial metadata",
+          "requestShape": "{ datasetFiles: File[], partialMetadata: json, repositorySchemaId: string }",
+          "responseShape": "{ metadataJson: json, fairnessAnnotations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/metadata/validate",
+          "method": "POST",
+          "purpose": "Validate metadata against repository schema and FAIR principles",
+          "requestShape": "{ metadataJson: json, repositorySchemaId: string }",
+          "responseShape": "{ validationReport: json, fairnessScore: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/metadata/save",
+          "method": "POST",
+          "purpose": "Save or update user metadata records",
+          "requestShape": "{ metadataRecord: json }",
+          "responseShape": "{ success: boolean, metadataRecordId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/metadata/export",
+          "method": "POST",
+          "purpose": "Request export of metadata in selected repository format",
+          "requestShape": "{ metadataRecordId: string, exportFormat: string }",
+          "responseShape": "{ exportFileUrl: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/user/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "MetadataExportProcessor",
+          "trigger": "On user export request",
+          "purpose": "Convert metadata records into repository-specific export formats and prepare downloadable files"
+        }
+      ],
+      "edgeCases": [
+        "Partial or malformed input metadata requiring robust parsing and error handling",
+        "Dataset files containing sensitive or personally identifiable information must not be included in metadata generation",
+        "Repository schema updates causing validation failures on existing metadata records",
+        "User edits that break schema compliance requiring clear validation feedback",
+        "Simultaneous edits by multiple users leading to version conflicts (future upgrade)",
+        "Export format conversion errors or unsupported schema features",
+        "Network failures during API calls or file uploads/downloads",
+        "Users attempting to submit metadata without final review despite disclaimers"
+      ],
+      "nonGoals": [
+        "Automated submission of metadata to repositories (only export and preview supported)",
+        "Full dataset content management or hosting",
+        "Automatic correction of metadata errors without user approval",
+        "Handling of sensitive or confidential data beyond metadata generation safeguards",
+        "Real-time collaborative editing in initial versions (planned for future upgrades)",
+        "Comprehensive training modules (planned as a future extension)"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User logs in via /login page, sending email and password to /api/user/login; receives auth token and userId.",
+        "Authenticated user accesses /dashboard to fetch list of metadata projects from data_metadataRecords filtered by userId via API.",
+        "User navigates to /metadata/generate to upload dataset files, partial metadata, and select repository schema; data sent to /api/metadata/generate.",
+        "/api/metadata/generate parses inputs, references data_repositorySchemas and api_fairnessAnnotations to produce skeleton metadataJson and fairnessAnnotations, returns to UI.",
+        "User edits metadata on /metadata/edit/:id page; UI fetches metadata record by ID from data_metadataRecords.",
+        "User submits edits; UI sends updated metadataJson and metadataRecord info to /api/metadata/save to persist changes.",
+        "User triggers validation via /api/metadata/validate sending current metadataJson and repositorySchemaId; API returns validationReport and fairnessScore.",
+        "User requests export on /metadata/export/:id with export format; UI calls /api/metadata/export with metadataRecordId and format.",
+        "Export job queued and processed by MetadataExportProcessor background job referencing data_metadataRecords and data_repositorySchemas; generates exportFileUrl.",
+        "UI provides exportFileUrl for user to download exported metadata files."
+      ],
+      "validationRules": [
+        "Login API: email must be valid format; password non-empty.",
+        "Metadata generation API: datasetFiles must be valid file types; partialMetadata must be valid JSON; repositorySchemaId must exist in RepositorySchema.",
+        "Metadata validation API: metadataJson must conform to selected repository schema structure; no PII or sensitive data included; FAIRness principles compliance checked.",
+        "Metadata save API: metadataRecord must include required fields (id, userId, datasetId, repositorySchemaId, metadataJson, version); userId must match authenticated user; version incremented correctly.",
+        "Metadata export API: metadataRecordId must exist and belong to user; exportFormat must be supported for selected repository schema.",
+        "Page route parameters (e.g., :id) must correspond to existing records accessible by user.",
+        "All JSON inputs validated for schema correctness and completeness before processing."
+      ],
+      "errorHandling": [
+        "API returns structured error responses with HTTP status codes (400 for validation errors, 401 for auth failures, 404 for not found, 500 for server errors).",
+        "Validation errors include detailed messages specifying fields and issues for UI display.",
+        "Partial or malformed metadata inputs cause descriptive error messages without system crash.",
+        "Sensitive data detected in dataset files or metadata generation triggers rejection with clear user guidance.",
+        "Version conflicts on metadata save return conflict error with instructions to refresh or resolve.",
+        "Export failures return error with retry or contact support instructions.",
+        "Network failures handled with retry logic on client; user informed of connectivity issues.",
+        "Unauthorized access attempts redirect to login or show access denied messages."
+      ],
+      "securityNotes": [
+        "All API routes except /api/user/login require authentication via token/session.",
+        "UserId in requests validated against authenticated user to prevent unauthorized data access.",
+        "Password stored hashed securely; no plaintext storage.",
+        "Dataset files scanned or filtered to exclude sensitive or PII data before metadata generation.",
+        "Metadata editing and saving enforce ownership checks to prevent unauthorized modifications.",
+        "Export jobs sanitized to avoid injection or malicious content in generated files.",
+        "Rate limiting and input size limits applied to prevent abuse or denial of service.",
+        "HTTPS enforced for all client-server communications."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "The user logs in via /login with correct email and password",
+          "then": "The system authenticates the user and returns a valid auth token and userId"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /metadata/generate page",
+          "when": "The user uploads valid dataset files, partial metadata, and selects a repository schema",
+          "then": "The system generates skeleton metadata with FAIRness annotations and displays them for editing"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user editing metadata on /metadata/edit/:id",
+          "when": "The user modifies metadata and submits changes",
+          "then": "The system validates the metadata, saves the updated record, and returns success confirmation"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user viewing /dashboard",
+          "when": "The user accesses the page",
+          "then": "The system displays a list of the user's metadata projects with validation summaries and navigation options"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user requesting metadata export on /metadata/export/:id",
+          "when": "The user selects an export format and submits the request",
+          "then": "The system queues the export job, processes it, and provides a downloadable export file URL"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user submits malformed metadata JSON to /api/metadata/validate",
+          "when": "The API receives the request",
+          "then": "The system returns a 400 error with detailed validation error messages"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to access /metadata/edit/:id for a metadata record they do not own",
+          "when": "The page loads",
+          "then": "The system denies access and redirects to an error or dashboard page"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads dataset files containing PII",
+          "when": "The user submits files for metadata generation",
+          "then": "The system detects sensitive data and rejects the generation request with a clear error message"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma models: User, RepositorySchema, MetadataRecord",
+        "Implement authentication API (/api/user/login) and session management",
+        "Create data_repositorySchemas storage and management logic",
+        "Develop /dashboard page with metadata project listing and summaries",
+        "Implement /api/metadata/generate API with dataset file parsing and skeleton metadata generation",
+        "Build /metadata/generate page UI integrating metadata generation API",
+        "Develop /api/metadata/validate API with schema and FAIRness validation",
+        "Create /metadata/edit/:id page with editable metadata form, validation messages, and FAIRness guidance",
+        "Implement /api/metadata/save API for persisting user metadata edits",
+        "Develop /api/metadata/export API and MetadataExportProcessor background job for export file generation",
+        "Create /metadata/export/:id page for export format selection and download",
+        "Add error handling and validation across all APIs and pages",
+        "Implement security checks and authorization enforcement",
+        "Write acceptance tests and perform QA"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/metadata/generate",
+          "/metadata/edit/[id]",
+          "/metadata/export/[id]"
+        ],
+        "apiFilesToCreate": [
+          "/api/user/login.ts",
+          "/api/metadata/generate.ts",
+          "/api/metadata/validate.ts",
+          "/api/metadata/save.ts",
+          "/api/metadata/export.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { id String @id @default(uuid()) email String @unique hashedPassword String roles Json createdAt DateTime @default(now()) }",
+          "model RepositorySchema { id String @id name String version String schemaDefinition Json templateFiles Json? lastUpdated DateTime }",
+          "model MetadataRecord { id String @id userId String datasetId String repositorySchemaId String metadataJson Json fairnessAnnotations Json? validationReport Json? version Int createdAt DateTime updatedAt DateTime }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner_refine_requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify missing constraints and gather more specific user needs for the metadata generator tool.",
+        "promptTemplate": "Given the current blueprint and idea:\n{{BLUEPRINT}}\n{{IDEA}}\n\nPlease ask the user ({{USER_INPUT}}) detailed questions to refine and clarify any missing requirements or constraints for the metadata generator tool."
+      },
+      {
+        "id": "architect_finalize_design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the complete set of pages, data models, and API endpoints needed to implement the tool based on refined requirements.",
+        "promptTemplate": "Using the expanded blueprint and refined idea:\n{{EXPANDED}}\n\nDraft a finalized design of pages, data models, and API routes that fully support the metadata generation workflow. Include detailed field definitions and relationships."
+      },
+      {
+        "id": "builder_generate_page_stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code and UI layout stubs for each page defined in the blueprint to jumpstart frontend development.",
+        "promptTemplate": "Based on the finalized pages:\n{{BLUEPRINT.pages}}\n\nGenerate React/Next.js page stub code with placeholders for UI components and hooks for API integration."
+      },
+      {
+        "id": "integrator_wire_pages_api_db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Create detailed implementation plans and code snippets to connect frontend pages with backend APIs and database models.",
+        "promptTemplate": "Given the API routes and data models:\n{{BLUEPRINT.apiRoutes}}\n{{BLUEPRINT.dataModels}}\n\nGenerate integration code and instructions to wire frontend pages to backend API endpoints and database persistence layers."
+      }
+    ]
+  }
+}

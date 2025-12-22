@@ -1,0 +1,891 @@
+{
+  "slug": "academic-poster-logistics-coordinator",
+  "title": "Academic Poster Logistics & Inventory Coordinator",
+  "description": "Coordinate and track physical poster printing schedules, material inventories, transport logistics, and collaborator task assignments for academic conference poster presentations.",
+  "inputLabel": "Enter your event, poster, inventory, transport, and collaborator details below (JSON or plain text):",
+  "outputLabel": "Generated consolidated schedules, packing checklists, inventory alerts, and task summaries:",
+  "systemPrompt": "You are an expert academic poster logistics assistant. Given input about conference events, poster specs, printing vendors, inventory items, transport logistics, and collaborator responsibilities, you generate consolidated printing and material schedules, inventory usage alerts with reorder recommendations, transport packing checklists per event, and collaborator task deadline summaries. You must validate inputs strictly: dates must be consistent, quantities non-negative, emails valid, and no conflicting events or deadlines. Refuse any input requesting venue compliance management or poster content creation. Output plain text summaries or JSON if requested. Never expose sensitive contact data beyond what the user provides. Enforce safety and data integrity rules carefully.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Summary Schedule",
+      "prompt": "Generate a consolidated multi-event poster printing and material request schedule from the input data, highlighting print deadlines and shipment dates.",
+      "hint": "Use this to get a high-level timeline overview."
+    },
+    {
+      "label": "Inventory Status & Alerts",
+      "prompt": "Analyze the inventory data provided and generate usage summaries, reorder alerts, and recommendations to optimize material reuse.",
+      "hint": "Use this to track supplies and avoid shortages."
+    },
+    {
+      "label": "Packing Checklist",
+      "prompt": "Create an event-specific packing checklist based on poster specifications and inventory usage logs, including transport materials needed.",
+      "hint": "Use this to prepare physical materials for each event."
+    },
+    {
+      "label": "Collaborator Task Overview",
+      "prompt": "Summarize collaborator assignments, upcoming task deadlines, and potential conflicts from the input task and contact data.",
+      "hint": "Use this to monitor team responsibilities and deadlines."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, respond with JSON including fields: schedules, inventoryAlerts, packingChecklist, tasksSummary.",
+  "clarifyPrompt": "Please provide missing or unclear details about your events, posters, inventory, transport logistics, or collaborator assignments. Ensure dates and quantities are accurate.",
+  "finalizePrompt": "Confirm that all event, poster, inventory, transport, and collaborator data is complete and accurate before generating the consolidated logistics output.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Poster Material Logistics & Inventory Coordinator",
+      "niche": {
+        "role": "Academic conference poster presenter and research lab manager",
+        "scenario": "Coordinating and tracking physical poster printing, transport, and display materials logistics for recurring academic conferences or multiple simultaneous events"
+      },
+      "problem": "Academic researchers frequently present posters at multiple conferences and must manage complex logistics involving printing vendors, material inventories (e.g., poster tubes, stands, adhesives), transport arrangements, and deadlines. Existing tools focus on poster content creation or design quality but do not support the end-to-end physical preparation and logistics coordination workflow. Manual tracking leads to missed deadlines, lost materials, duplicated orders, and inefficient reuse of supplies.",
+      "inputs": [
+        "Conference event dates and venue logistics",
+        "Poster specifications (size, format, printing vendor details)",
+        "Inventory data for poster-related physical materials (tubes, stands, labels, adhesives)",
+        "Shipping and transport schedules or constraints",
+        "Collaborator and presenter contact info and responsibilities"
+      ],
+      "outputs": [
+        "Consolidated multi-event poster printing and material request schedules",
+        "Inventory usage and replenishment alerts with reorder recommendations",
+        "Transport packing checklists customized per event",
+        "Collaborator task assignment and deadline tracking dashboards",
+        "Alerts for potential conflicts (e.g., overlapping deadlines, insufficient materials)"
+      ],
+      "whyItWins": [
+        "Fills a unique gap by focusing on physical poster logistics rather than content or presentation aspects",
+        "Supports repeated, multi-event workflows common to active research groups",
+        "Improves resource utilization by tracking inventory and enabling material reuse",
+        "Facilitates team coordination with transparent task tracking and role assignments",
+        "Reduces costly errors like missed print deadlines or forgotten materials at venues"
+      ],
+      "upgradePath": {
+        "today": "Lightweight single-page tool to manually input event, poster, and inventory details, generating packing lists and schedules",
+        "in90Days": "Add collaborative multi-user management with shared dashboards, automated email reminders, and vendor integration for print order status tracking",
+        "in12Months": "Develop comprehensive multi-event logistics system with transport vendor APIs, barcode inventory scanning, real-time status tracking, predictive inventory forecasting, and mobile app support for on-the-go coordination"
+      },
+      "riskNotes": [
+        "Requires secure handling of potentially sensitive collaborator contact data",
+        "Dependent on user diligence for timely data entry to maintain accuracy",
+        "Logistics variability by conference may require flexible customization options",
+        "Not a substitute for venue-specific compliance or shipping regulations"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-event academic poster logistics and inventory coordination system that manages physical poster printing, material inventory, transport arrangements, and collaborator task tracking to reduce errors and improve resource utilization.",
+      "primaryUser": "Academic conference poster presenters and research lab managers coordinating multiple events and teams",
+      "successMetrics": [
+        "Reduction in missed print deadlines and forgotten materials at events",
+        "Improved inventory utilization and reduced redundant orders",
+        "Increased on-time task completion rates by collaborators",
+        "User adoption and frequency of multi-event coordination usage",
+        "Positive user feedback on ease of logistics management"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide an overview of upcoming events, poster schedules, inventory status, and collaborator tasks with alerts and notifications.",
+          "dependsOn": [
+            "api-events",
+            "api-posters",
+            "api-inventory",
+            "api-tasks"
+          ],
+          "notes": [
+            "Must support filtering by event, poster, and collaborator",
+            "Display conflict alerts and reorder recommendations prominently"
+          ]
+        },
+        {
+          "id": "ui-event-management",
+          "name": "Event & Poster Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to create and edit conference events, poster specifications, printing vendor details, and transport logistics.",
+          "dependsOn": [
+            "api-events",
+            "api-posters",
+            "api-vendors"
+          ],
+          "notes": [
+            "Input validation for dates and venue logistics",
+            "Support multiple posters per event and multiple events per user"
+          ]
+        },
+        {
+          "id": "ui-inventory-management",
+          "name": "Inventory Management UI",
+          "type": "ui",
+          "responsibility": "Enable tracking of physical material inventory levels, usage logs, and reorder thresholds.",
+          "dependsOn": [
+            "api-inventory"
+          ],
+          "notes": [
+            "Support manual adjustments and usage logging",
+            "Show reorder alerts and recommendations"
+          ]
+        },
+        {
+          "id": "ui-task-collaboration",
+          "name": "Task & Collaborator Management UI",
+          "type": "ui",
+          "responsibility": "Manage collaborator contacts, assign responsibilities, track task deadlines, and display progress dashboards.",
+          "dependsOn": [
+            "api-collaborators",
+            "api-tasks"
+          ],
+          "notes": [
+            "Must enforce authentication and authorization",
+            "Provide notifications for upcoming deadlines"
+          ]
+        },
+        {
+          "id": "api-events",
+          "name": "Event & Poster API",
+          "type": "api",
+          "responsibility": "CRUD operations for conference events, poster details, and printing vendor info.",
+          "dependsOn": [
+            "data-events",
+            "data-posters",
+            "data-vendors"
+          ],
+          "notes": [
+            "Validate date conflicts and venue logistics consistency",
+            "Support querying by user and event"
+          ]
+        },
+        {
+          "id": "api-inventory",
+          "name": "Inventory API",
+          "type": "api",
+          "responsibility": "Manage inventory data, usage logging, and reorder alert generation.",
+          "dependsOn": [
+            "data-inventory",
+            "job-reorder-alerts"
+          ],
+          "notes": [
+            "Handle concurrent inventory updates safely",
+            "Generate reorder recommendations based on thresholds"
+          ]
+        },
+        {
+          "id": "api-collaborators",
+          "name": "Collaborator & Task API",
+          "type": "api",
+          "responsibility": "Manage collaborator contacts, task assignments, deadlines, and progress tracking.",
+          "dependsOn": [
+            "data-collaborators",
+            "data-tasks",
+            "job-deadline-reminders"
+          ],
+          "notes": [
+            "Ensure secure handling of contact data",
+            "Support task status updates and notifications"
+          ]
+        },
+        {
+          "id": "job-deadline-reminders",
+          "name": "Deadline Reminder Job",
+          "type": "job",
+          "responsibility": "Send automated email reminders to collaborators for upcoming tasks and deadlines.",
+          "dependsOn": [
+            "api-collaborators"
+          ],
+          "notes": [
+            "Run daily and handle failed email retries",
+            "Respect user notification preferences"
+          ]
+        },
+        {
+          "id": "job-reorder-alerts",
+          "name": "Inventory Reorder Alert Job",
+          "type": "job",
+          "responsibility": "Periodically analyze inventory levels and generate reorder alerts and recommendations.",
+          "dependsOn": [
+            "api-inventory"
+          ],
+          "notes": [
+            "Run weekly or on-demand",
+            "Include predictive usage trends in future upgrades"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Event",
+          "purpose": "Store academic conference event details including dates and venue logistics.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "venue",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "logisticsNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "createdBy",
+            "startDate"
+          ]
+        },
+        {
+          "name": "Poster",
+          "purpose": "Store poster specifications and printing vendor details linked to events.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "eventId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "size",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "format",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "printingVendor",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "printDeadline",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "eventId",
+            "printDeadline"
+          ]
+        },
+        {
+          "name": "Vendor",
+          "purpose": "Store printing vendor contact and service details.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contactEmail",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contactPhone",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "serviceNotes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "InventoryItem",
+          "purpose": "Track physical material inventory including quantities and reorder thresholds.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "quantityOnHand",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "reorderThreshold",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "unit",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "name"
+          ]
+        },
+        {
+          "name": "InventoryUsageLog",
+          "purpose": "Log usage and adjustments of inventory items linked to events or posters.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "inventoryItemId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "eventId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "posterId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "quantityUsed",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "usageDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "inventoryItemId",
+            "eventId"
+          ]
+        },
+        {
+          "name": "Collaborator",
+          "purpose": "Store collaborator contact info and roles for task assignments.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "phone",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        },
+        {
+          "name": "Task",
+          "purpose": "Track tasks assigned to collaborators with deadlines and status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedToId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "eventId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "posterId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "assignedToId",
+            "dueDate",
+            "status"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Logistics Dashboard",
+          "purpose": "Provide a consolidated view of upcoming events, poster schedules, inventory alerts, and collaborator tasks.",
+          "inputs": [],
+          "outputs": [
+            "Event summaries",
+            "Poster deadlines",
+            "Inventory alerts",
+            "Task statuses"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/events",
+          "title": "Event & Poster Management",
+          "purpose": "Create, edit, and view conference events and associated posters.",
+          "inputs": [
+            "Event details",
+            "Poster specifications"
+          ],
+          "outputs": [
+            "Event list",
+            "Poster list per event"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/inventory",
+          "title": "Inventory Management",
+          "purpose": "View and update physical material inventory and usage logs.",
+          "inputs": [
+            "Inventory adjustments",
+            "Usage logs"
+          ],
+          "outputs": [
+            "Current inventory levels",
+            "Reorder alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/collaborators",
+          "title": "Collaborator & Task Management",
+          "purpose": "Manage collaborator contacts, assign tasks, and track deadlines.",
+          "inputs": [
+            "Collaborator info",
+            "Task assignments"
+          ],
+          "outputs": [
+            "Task dashboards",
+            "Deadline reminders"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/packing-list",
+          "title": "Packing Checklist",
+          "purpose": "Generate event-specific packing checklists based on poster and inventory data.",
+          "inputs": [
+            "Event selection"
+          ],
+          "outputs": [
+            "Packing checklist"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/events",
+          "method": "GET",
+          "purpose": "Retrieve list of events for the authenticated user.",
+          "requestShape": "None",
+          "responseShape": "Array of Event objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/events",
+          "method": "POST",
+          "purpose": "Create a new conference event.",
+          "requestShape": "Event object without id",
+          "responseShape": "Created Event object with id",
+          "auth": "user"
+        },
+        {
+          "route": "/api/posters",
+          "method": "GET",
+          "purpose": "Retrieve posters linked to a specific event.",
+          "requestShape": "{ eventId: string }",
+          "responseShape": "Array of Poster objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/posters",
+          "method": "POST",
+          "purpose": "Create or update a poster specification.",
+          "requestShape": "Poster object without id for create or with id for update",
+          "responseShape": "Poster object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/inventory",
+          "method": "GET",
+          "purpose": "Retrieve current inventory items and quantities.",
+          "requestShape": "None",
+          "responseShape": "Array of InventoryItem objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/inventory/usage",
+          "method": "POST",
+          "purpose": "Log usage or adjustments of inventory items.",
+          "requestShape": "InventoryUsageLog object without id",
+          "responseShape": "Created InventoryUsageLog object with id",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaborators",
+          "method": "GET",
+          "purpose": "Retrieve collaborator contacts for the user.",
+          "requestShape": "None",
+          "responseShape": "Array of Collaborator objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "GET",
+          "purpose": "Retrieve tasks assigned to collaborators.",
+          "requestShape": "{ collaboratorId?: string }",
+          "responseShape": "Array of Task objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Create or update a task assignment.",
+          "requestShape": "Task object without id for create or with id for update",
+          "responseShape": "Task object",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Deadline Reminder Job",
+          "trigger": "Scheduled daily at 8 AM",
+          "purpose": "Send email reminders for upcoming task deadlines to collaborators."
+        },
+        {
+          "name": "Inventory Reorder Alert Job",
+          "trigger": "Scheduled weekly on Mondays",
+          "purpose": "Analyze inventory levels and send reorder alerts if thresholds are crossed."
+        }
+      ],
+      "edgeCases": [
+        "Overlapping event dates causing resource conflicts",
+        "Inventory usage logged after event completion or with incorrect quantities",
+        "Collaborator contact info changes or invalid email addresses",
+        "Printing vendor delays or changes in print deadlines",
+        "Partial data entry or missing required fields",
+        "Simultaneous edits by multiple users causing race conditions",
+        "Transport logistics changes close to event dates",
+        "Users ignoring or disabling email reminders"
+      ],
+      "nonGoals": [
+        "Venue-specific shipping compliance or customs regulation management",
+        "Poster content creation or design tools",
+        "Real-time transport tracking in the initial version",
+        "Mobile app support in the initial release",
+        "Automated vendor order placement without user confirmation"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages requiring authentication.",
+        "Dashboard UI fetches aggregated data from /api/events, /api/posters, /api/inventory, and /api/tasks filtered by user context.",
+        "Event & Poster Management UI sends create/update requests to /api/events and /api/posters, validating date and venue logistics before submission.",
+        "Inventory Management UI fetches inventory data from /api/inventory and posts usage logs to /api/inventory/usage, handling concurrency and reorder alerts.",
+        "Task & Collaborator Management UI fetches collaborators and tasks from /api/collaborators and /api/tasks, posts task assignments to /api/tasks, enforcing auth and notifying users.",
+        "Packing Checklist page requests event-specific data to generate packing lists based on posters and inventory usage.",
+        "Background jobs run independently: Deadline Reminder Job queries tasks and collaborators via /api-collaborators to send emails respecting preferences; Inventory Reorder Alert Job analyzes inventory via /api-inventory and triggers reorder alerts.",
+        "APIs validate inputs, enforce authorization, handle concurrency, and return structured responses or errors to UIs.",
+        "UI components display data, alerts, and notifications based on API responses and background job outputs."
+      ],
+      "validationRules": [
+        "Event dates: startDate must be before or equal to endDate; no overlapping events for the same user at the same venue.",
+        "Poster printDeadline must be before event endDate and after event startDate.",
+        "Vendor contactEmail must be a valid email format; phone optional but if present must be valid format.",
+        "Inventory quantityOnHand and reorderThreshold must be non-negative integers; usage logs quantityUsed must be positive and not exceed quantityOnHand at log time.",
+        "Task dueDate must be in the future or present; status must be one of predefined states (e.g., pending, in-progress, completed).",
+        "Collaborator email must be valid; phone optional but validated if present.",
+        "All create/update API requests must include required fields; partial data rejected with clear error messages.",
+        "Concurrent inventory updates must be serialized or use optimistic concurrency control to prevent race conditions.",
+        "Authentication required for all protected API routes; authorization checks ensure users can only access or modify their own data.",
+        "Input dates and strings sanitized to prevent injection or malformed data."
+      ],
+      "errorHandling": [
+        "API routes return HTTP 400 for validation errors with detailed messages per field.",
+        "API routes return HTTP 401 for unauthorized access attempts.",
+        "API routes return HTTP 404 when requested resources (e.g., event, poster) do not exist or do not belong to the user.",
+        "API routes return HTTP 409 for conflicts such as overlapping events or concurrent inventory update conflicts.",
+        "Background jobs log failures and retry sending emails or alerts with exponential backoff; failures do not block system operation.",
+        "UI displays user-friendly error messages and highlights invalid inputs on forms.",
+        "API responses include error codes and messages in JSON to allow UI to handle gracefully.",
+        "System logs critical errors for monitoring and debugging.",
+        "Race conditions handled by database transactions or locking mechanisms where applicable."
+      ],
+      "securityNotes": [
+        "All API routes require authentication; use JWT or session-based auth consistent with Next.js best practices.",
+        "Authorization checks ensure users can only access and modify their own events, posters, inventory, collaborators, and tasks.",
+        "Collaborator contact data is handled securely; sensitive data not exposed to unauthorized users.",
+        "Email sending respects user notification preferences and privacy.",
+        "Input validation and sanitization prevent injection attacks.",
+        "Use HTTPS for all client-server communications.",
+        "Background jobs run with least privilege and secure access to APIs and email services.",
+        "Rate limiting on APIs to prevent abuse.",
+        "Store sensitive configuration such as email credentials and API keys in environment variables."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user with no existing events",
+          "when": "They create a new event with valid dates and venue",
+          "then": "The event is created successfully and appears in their event list"
+        },
+        {
+          "id": "AT-002",
+          "given": "An event exists with a defined date range",
+          "when": "The user attempts to create another event overlapping the same venue and dates",
+          "then": "The API rejects the creation with a conflict error indicating overlapping event dates"
+        },
+        {
+          "id": "AT-003",
+          "given": "A poster is created with a printDeadline after the event endDate",
+          "when": "The user submits the poster data",
+          "then": "The API returns a validation error preventing the poster creation"
+        },
+        {
+          "id": "AT-004",
+          "given": "Inventory quantityOnHand is 10",
+          "when": "A usage log is submitted to use 15 units",
+          "then": "The API rejects the usage log with an error indicating insufficient inventory"
+        },
+        {
+          "id": "AT-005",
+          "given": "A collaborator has tasks due tomorrow",
+          "when": "The Deadline Reminder Job runs at 8 AM",
+          "then": "The collaborator receives an email reminder respecting their notification preferences"
+        },
+        {
+          "id": "AT-006",
+          "given": "Inventory items have quantities below reorderThreshold",
+          "when": "The Inventory Reorder Alert Job runs weekly",
+          "then": "Reorder alerts are generated and visible in the dashboard UI"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to access /dashboard without authentication",
+          "when": "They navigate to the route",
+          "then": "They are redirected to the login page"
+        },
+        {
+          "id": "AT-008",
+          "given": "Multiple users attempt to update the same inventory item simultaneously",
+          "when": "Concurrent updates occur",
+          "then": "The system prevents race conditions and maintains consistent inventory quantities"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user submits a task with missing required fields",
+          "when": "The API receives the request",
+          "then": "The API returns a 400 error with field-specific validation messages"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user views the packing checklist page and selects an event",
+          "when": "The event data is fetched",
+          "then": "A packing checklist is generated accurately based on posters and inventory usage logs for that event"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Event, Poster, Vendor, InventoryItem, InventoryUsageLog, Collaborator, Task",
+        "Implement authentication and authorization middleware for API routes",
+        "Build API routes for events and posters with validation and conflict checks",
+        "Build API routes for inventory management including usage logging with concurrency control",
+        "Build API routes for collaborators and tasks with secure contact handling and status updates",
+        "Implement background jobs for deadline reminders and reorder alerts with retry logic",
+        "Develop UI pages: Event & Poster Management, Inventory Management, Task & Collaborator Management, Dashboard, Packing Checklist",
+        "Integrate UI with API routes, implement filtering, alerts, and notifications",
+        "Implement input validation and error handling in UI forms",
+        "Test concurrency scenarios and edge cases",
+        "Deploy and monitor background jobs and API endpoints"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/events",
+          "/inventory",
+          "/collaborators",
+          "/reports/packing-list"
+        ],
+        "apiFilesToCreate": [
+          "/api/events/index.ts",
+          "/api/posters/index.ts",
+          "/api/inventory/index.ts",
+          "/api/inventory/usage.ts",
+          "/api/collaborators/index.ts",
+          "/api/tasks/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Event",
+          "Poster",
+          "Vendor",
+          "InventoryItem",
+          "InventoryUsageLog",
+          "Collaborator",
+          "Task"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints, customization needs, or specific workflow details to clarify the tool's scope and inputs.",
+        "promptTemplate": "Given the current blueprint: {{BLUEPRINT}}\nAnd existing idea: {{IDEA}}\nPlease provide any additional constraints, feature requests, or clarifications needed to refine the requirements for the academic poster logistics tool.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define final UI pages, data models, and API routes structure based on refined requirements.",
+        "promptTemplate": "Using the refined requirements and current blueprint: {{BLUEPRINT}}\nPropose the finalized list of UI pages, data models, and API routes needed for the academic poster logistics application.\nInclude detailed field definitions and relationships.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs for the UI pages with placeholders for API integration and validation.",
+        "promptTemplate": "Based on finalized pages and models: {{BLUEPRINT}}\nGenerate code stubs for each UI page, including input forms and output placeholders.\nInclude validation rules and sample data formats.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages with API endpoints and database models, ensuring data flow and security.",
+        "promptTemplate": "Using the built page stubs and API routes: {{BLUEPRINT}}\nDescribe the integration steps to connect UI components to API endpoints and database models.\nInclude authentication, authorization, error handling, and concurrency control.\nUser input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

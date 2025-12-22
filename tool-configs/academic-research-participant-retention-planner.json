@@ -1,0 +1,982 @@
+{
+  "slug": "academic-research-participant-retention-planner",
+  "title": "Academic Research Participant Retention & Engagement Planner",
+  "description": "Plan and draft phase-specific participant retention and engagement strategies for academic clinical trials. Input study protocols, participant metadata, and engagement activity templates to generate customized retention plans with basic risk flags.",
+  "inputLabel": "Enter or upload study protocol details, participant metadata, and engagement activity templates (JSON format recommended).",
+  "outputLabel": "Generated retention and engagement plan draft with basic dropout risk flags and validation feedback.",
+  "systemPrompt": "You are an assistant specialized in academic clinical trial participant retention and engagement planning. Given structured or semi-structured input describing study protocols, participant metadata, and engagement activity templates, generate a clear, phase-specific retention and engagement plan draft. Identify participants at potential risk of dropout using simple flagging based on input data. Enforce strict data privacy: refuse generating or handling any medical or diagnostic advice. Validate input completeness and consistency, and provide detailed feedback on any missing or invalid data. Output plain text summary with JSON structured sections if requested. Do not accept requests lacking study protocol or participant information. Always maintain confidentiality and comply with clinical trial regulatory constraints.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Retention Plan Draft",
+      "prompt": "Generate a phase-specific participant retention and engagement plan draft based on the provided study protocol, participant metadata, and engagement activity templates. Include simple dropout risk flags and validation feedback.",
+      "hint": "Use this preset to produce an initial retention plan draft with basic risk assessment."
+    },
+    {
+      "label": "Validate Input Data",
+      "prompt": "Analyze the provided input data for completeness, consistency, and compliance with clinical trial data requirements. List all validation errors and warnings.",
+      "hint": "Use this preset to check the quality and correctness of your input data before planning."
+    },
+    {
+      "label": "Summarize Study Protocol",
+      "prompt": "Summarize the study protocol details including phases, visit schedules, and cohorts in an easy-to-understand format.",
+      "hint": "Use this preset to review the trial design before planning retention activities."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output a JSON object with keys: 'retentionPlan' (object), 'riskFlags' (array), and 'validationFeedback' (array of messages).",
+  "clarifyPrompt": "Please provide the study protocol details, participant metadata, and engagement activity templates in JSON or text format. Ensure all required fields are included. If any information is missing or unclear, specify what you can provide.",
+  "finalizePrompt": "Based on the inputs and validation feedback, generate a finalized draft retention and engagement plan, highlighting participants at risk of dropout and suggested engagement activities per study phase.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Participant Retention & Engagement Planner",
+      "niche": {
+        "role": "Academic Clinical Trial Coordinator",
+        "scenario": "Planning and managing participant retention and engagement strategies throughout multi-phase clinical trials"
+      },
+      "problem": "Clinical trial coordinators struggle to design, track, and optimize participant retention and engagement plans across multiple study phases, leading to high dropout rates, incomplete data, and increased costs. Existing tools focus on scheduling or consent tracking but lack a centralized system for retention strategy planning, monitoring participant engagement activities, and analyzing dropout risk factors in a structured way.",
+      "inputs": [
+        "Study protocol details including phases and visit schedules",
+        "Participant demographic and contact metadata",
+        "Historical retention and dropout data (if available)",
+        "Engagement activity templates and resources (e.g., reminder messages, incentives)",
+        "Real-time participant status updates and feedback notes"
+      ],
+      "outputs": [
+        "Customized, phase-specific participant retention and engagement plans",
+        "Risk scores and alerts for participants at high risk of dropout",
+        "Automated, personalized communication drafts (e.g., reminders, motivational messages)",
+        "Engagement activity tracking dashboard with adherence metrics",
+        "Summary reports with retention strategy effectiveness and improvement recommendations"
+      ],
+      "whyItWins": [
+        "Fills a critical gap by integrating retention strategy design, tracking, and analytics into one workflow",
+        "Supports repeated use across multiple study phases and participant cohorts",
+        "Enables proactive dropout risk management through data-driven alerts and personalized interventions",
+        "Reduces trial costs and improves data quality by enhancing participant adherence",
+        "Offers scalable upgrade path from lightweight planning tool to comprehensive multi-phase engagement management system"
+      ],
+      "upgradePath": {
+        "today": "A single-page tool to input study phases, participant lists, and draft retention activities producing basic engagement plans and simple risk flags.",
+        "in90Days": "Add participant status tracking, automated personalized message generation, and a dashboard summarizing engagement adherence and dropout risk trends.",
+        "in12Months": "Develop a multi-page app supporting multi-cohort and multi-site trials with integration to trial management systems, advanced predictive analytics for dropout risk, multi-channel communication automation, and detailed retention strategy impact reporting."
+      },
+      "riskNotes": [
+        "Must ensure strict data privacy and secure handling of sensitive participant information",
+        "No medical or diagnostic advice provided; solely supports engagement planning and monitoring",
+        "Compliance with relevant clinical trial regulations and institutional review board requirements must be maintained"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A centralized system for academic clinical trial coordinators to design, track, and optimize participant retention and engagement plans across multi-phase clinical trials, integrating planning, monitoring, risk analytics, and communication automation.",
+      "primaryUser": "Academic Clinical Trial Coordinator",
+      "successMetrics": [
+        "Reduction in participant dropout rates across trials",
+        "Increased participant adherence to visit schedules and engagement activities",
+        "User adoption rate among clinical trial coordinators",
+        "Accuracy and timeliness of dropout risk alerts",
+        "Improvement in data completeness and quality from trials"
+      ],
+      "components": [
+        {
+          "id": "ui-planning",
+          "name": "Retention & Engagement Planning UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces to input study protocols, participant data, and design phase-specific retention and engagement plans.",
+          "dependsOn": [
+            "api-planning",
+            "data-study",
+            "data-participant",
+            "data-engagement"
+          ],
+          "notes": [
+            "Initial single-page input evolving into multi-page forms.",
+            "Supports draft creation and editing of retention strategies.",
+            "Includes validation for protocol and participant data completeness."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Engagement Tracking & Analytics Dashboard",
+          "type": "ui",
+          "responsibility": "Display real-time participant status, adherence metrics, dropout risk scores, and summary reports for retention strategy effectiveness.",
+          "dependsOn": [
+            "api-tracking",
+            "api-analytics",
+            "data-participantStatus",
+            "data-engagementActivity",
+            "data-riskScores"
+          ],
+          "notes": [
+            "Visualizes trends and alerts for proactive intervention.",
+            "Supports filtering by study phase, cohort, and site.",
+            "Includes export options for reports."
+          ]
+        },
+        {
+          "id": "api-planning",
+          "name": "Planning API",
+          "type": "api",
+          "responsibility": "Handle creation, retrieval, and updating of study protocols, participant metadata, and retention engagement plans.",
+          "dependsOn": [
+            "data-study",
+            "data-participant",
+            "data-engagement"
+          ],
+          "notes": [
+            "Validates input data and enforces data privacy rules.",
+            "Supports versioning of plans for multi-phase trials."
+          ]
+        },
+        {
+          "id": "api-tracking",
+          "name": "Participant Status & Engagement Tracking API",
+          "type": "api",
+          "responsibility": "Manage real-time participant status updates, engagement activity tracking, and feedback notes.",
+          "dependsOn": [
+            "data-participantStatus",
+            "data-engagementActivity"
+          ],
+          "notes": [
+            "Supports frequent updates and concurrency control.",
+            "Handles edge cases such as missing updates or inconsistent statuses."
+          ]
+        },
+        {
+          "id": "api-analytics",
+          "name": "Analytics & Risk Scoring API",
+          "type": "api",
+          "responsibility": "Calculate dropout risk scores, generate alerts, and produce retention strategy effectiveness reports.",
+          "dependsOn": [
+            "data-riskScores",
+            "data-historicalData",
+            "data-engagementActivity"
+          ],
+          "notes": [
+            "Implements data-driven models with configurable parameters.",
+            "Ensures no medical advice is inferred or provided."
+          ]
+        },
+        {
+          "id": "data-study",
+          "name": "Study Protocol Data Store",
+          "type": "data",
+          "responsibility": "Persist study protocols including phases, visit schedules, and multi-site/cohort metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Supports versioning and audit trails for protocol changes.",
+            "Sensitive to regulatory compliance for clinical trial data."
+          ]
+        },
+        {
+          "id": "data-participant",
+          "name": "Participant Metadata Store",
+          "type": "data",
+          "responsibility": "Store participant demographic, contact information, and cohort assignments securely.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive fields and limit access per compliance requirements.",
+            "Supports bulk import and updates."
+          ]
+        },
+        {
+          "id": "data-engagement",
+          "name": "Engagement Activity Templates & Plans Store",
+          "type": "data",
+          "responsibility": "Store templates for engagement activities and finalized retention plans per study phase.",
+          "dependsOn": [],
+          "notes": [
+            "Supports customizable templates and versioning.",
+            "Links to communication drafts and scheduling."
+          ]
+        },
+        {
+          "id": "data-participantStatus",
+          "name": "Participant Status & Feedback Store",
+          "type": "data",
+          "responsibility": "Persist real-time participant status updates, feedback notes, and adherence records.",
+          "dependsOn": [],
+          "notes": [
+            "Stores time-stamped status changes and notes.",
+            "Supports audit logs for updates."
+          ]
+        },
+        {
+          "id": "data-engagementActivity",
+          "name": "Engagement Activity Tracking Store",
+          "type": "data",
+          "responsibility": "Record execution and outcomes of engagement activities per participant.",
+          "dependsOn": [],
+          "notes": [
+            "Tracks activity completion, response, and effectiveness.",
+            "Supports linkage to communication logs."
+          ]
+        },
+        {
+          "id": "data-riskScores",
+          "name": "Dropout Risk Scores & Alerts Store",
+          "type": "data",
+          "responsibility": "Store calculated dropout risk scores and generated alerts for participants.",
+          "dependsOn": [],
+          "notes": [
+            "Supports historical tracking of risk trends.",
+            "Enables alert lifecycle management."
+          ]
+        },
+        {
+          "id": "data-historicalData",
+          "name": "Historical Retention & Dropout Data Store",
+          "type": "data",
+          "responsibility": "Persist historical trial data for use in analytics and predictive modeling.",
+          "dependsOn": [],
+          "notes": [
+            "Supports import from external sources.",
+            "Ensures anonymization or pseudonymization as needed."
+          ]
+        },
+        {
+          "id": "job-riskCalculation",
+          "name": "Dropout Risk Calculation Job",
+          "type": "job",
+          "responsibility": "Periodically compute and update participant dropout risk scores based on latest data.",
+          "dependsOn": [
+            "data-participantStatus",
+            "data-engagementActivity",
+            "data-historicalData",
+            "data-riskScores"
+          ],
+          "notes": [
+            "Runs on schedule or triggered by data updates.",
+            "Handles incomplete or missing data gracefully."
+          ]
+        },
+        {
+          "id": "job-communicationAutomation",
+          "name": "Personalized Communication Automation Job",
+          "type": "job",
+          "responsibility": "Generate and queue personalized engagement messages (reminders, motivational content) based on plans and participant status.",
+          "dependsOn": [
+            "data-engagement",
+            "data-participant",
+            "data-participantStatus"
+          ],
+          "notes": [
+            "Supports multi-channel communication integration in future upgrades.",
+            "Ensures privacy and opt-out compliance."
+          ]
+        },
+        {
+          "id": "integration-trialManagement",
+          "name": "Trial Management System Integration",
+          "type": "integration",
+          "responsibility": "Interface with external clinical trial management systems to import/export study and participant data.",
+          "dependsOn": [
+            "api-planning",
+            "api-tracking"
+          ],
+          "notes": [
+            "Planned for long-term upgrade path.",
+            "Handles data mapping and synchronization conflicts."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "StudyProtocol",
+          "purpose": "Represent multi-phase clinical trial protocols including phases, visit schedules, and site/cohort metadata.",
+          "fields": [
+            {
+              "name": "protocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "phases",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "visitSchedules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "sites",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "cohorts",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "protocolId",
+            "title"
+          ]
+        },
+        {
+          "name": "Participant",
+          "purpose": "Store participant demographic and contact metadata securely.",
+          "fields": [
+            {
+              "name": "participantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyProtocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "cohortId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "demographics",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "contactInfo",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "enrollmentDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "consentStatus",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "participantId",
+            "studyProtocolId",
+            "cohortId"
+          ]
+        },
+        {
+          "name": "EngagementTemplate",
+          "purpose": "Define reusable templates for engagement activities and communication drafts.",
+          "fields": [
+            {
+              "name": "templateId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "activityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "templateId",
+            "name"
+          ]
+        },
+        {
+          "name": "RetentionPlan",
+          "purpose": "Store finalized retention and engagement plans per study phase.",
+          "fields": [
+            {
+              "name": "planId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyProtocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "phaseId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "engagementActivities",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "planId",
+            "studyProtocolId",
+            "phaseId"
+          ]
+        },
+        {
+          "name": "ParticipantStatus",
+          "purpose": "Record real-time status updates and feedback notes for participants.",
+          "fields": [
+            {
+              "name": "statusId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "participantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "statusId",
+            "participantId",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "EngagementActivityRecord",
+          "purpose": "Track execution and outcomes of engagement activities per participant.",
+          "fields": [
+            {
+              "name": "activityRecordId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "participantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "planId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "activityTemplateId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scheduledAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "completedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "response",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "activityRecordId",
+            "participantId",
+            "planId"
+          ]
+        },
+        {
+          "name": "DropoutRiskScore",
+          "purpose": "Persist calculated dropout risk scores and alerts for participants.",
+          "fields": [
+            {
+              "name": "riskScoreId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "participantId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "score",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "riskLevel",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "calculatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "alertSent",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "riskScoreId",
+            "participantId",
+            "calculatedAt"
+          ]
+        },
+        {
+          "name": "HistoricalRetentionData",
+          "purpose": "Store anonymized historical retention and dropout data for analytics.",
+          "fields": [
+            {
+              "name": "recordId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "studyProtocolId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "participantData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "retentionOutcome",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "collectedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "recordId",
+            "studyProtocolId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/planning",
+          "title": "Retention & Engagement Planning",
+          "purpose": "Input study protocols, participant lists, and design retention and engagement plans.",
+          "inputs": [
+            "Study protocol details",
+            "Participant metadata",
+            "Engagement activity templates"
+          ],
+          "outputs": [
+            "Draft retention plans",
+            "Validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Engagement Tracking Dashboard",
+          "purpose": "View participant status, adherence metrics, dropout risk alerts, and summary reports.",
+          "inputs": [
+            "Real-time participant status",
+            "Engagement activity data",
+            "Risk scores"
+          ],
+          "outputs": [
+            "Visualized metrics",
+            "Alerts",
+            "Reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/participants/:id",
+          "title": "Participant Detail",
+          "purpose": "View and update individual participant status, engagement activities, and feedback notes.",
+          "inputs": [
+            "Participant metadata",
+            "Status updates",
+            "Engagement activity records"
+          ],
+          "outputs": [
+            "Participant profile",
+            "Status history",
+            "Engagement history"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Retention Strategy Reports",
+          "purpose": "Generate and export reports on retention strategy effectiveness and improvement recommendations.",
+          "inputs": [
+            "Engagement data",
+            "Risk analytics",
+            "Historical data"
+          ],
+          "outputs": [
+            "Summary reports",
+            "Export files"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/planning/protocols",
+          "method": "POST",
+          "purpose": "Create or update study protocols.",
+          "requestShape": "{ protocolId?, title, phases, visitSchedules, sites?, cohorts?, version }",
+          "responseShape": "{ success: boolean, protocolId, errors? }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/planning/participants",
+          "method": "POST",
+          "purpose": "Import or update participant metadata.",
+          "requestShape": "{ participantList: [{ participantId?, studyProtocolId, demographics, contactInfo, cohortId? }] }",
+          "responseShape": "{ success: boolean, importedCount, errors? }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/planning/retention-plans",
+          "method": "POST",
+          "purpose": "Create or update retention and engagement plans.",
+          "requestShape": "{ planId?, studyProtocolId, phaseId, engagementActivities, createdBy }",
+          "responseShape": "{ success: boolean, planId, errors? }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tracking/status",
+          "method": "POST",
+          "purpose": "Submit participant status updates and feedback notes.",
+          "requestShape": "{ participantId, status, notes?, timestamp }",
+          "responseShape": "{ success: boolean, statusId, errors? }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tracking/engagement-activities",
+          "method": "POST",
+          "purpose": "Record engagement activity execution and outcomes.",
+          "requestShape": "{ participantId, planId, activityTemplateId, scheduledAt, completedAt?, response? }",
+          "responseShape": "{ success: boolean, activityRecordId, errors? }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/analytics/risk-scores",
+          "method": "GET",
+          "purpose": "Retrieve dropout risk scores and alerts for participants.",
+          "requestShape": "{ studyProtocolId, phaseId?, cohortId? }",
+          "responseShape": "{ riskScores: [{ participantId, score, riskLevel, calculatedAt, alertSent }] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/retention-effectiveness",
+          "method": "GET",
+          "purpose": "Generate retention strategy effectiveness reports.",
+          "requestShape": "{ studyProtocolId, phaseId?, dateRange? }",
+          "responseShape": "{ reportData: json }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Dropout Risk Calculation Job",
+          "trigger": "Scheduled (e.g., daily) or triggered by participant status/engagement updates",
+          "purpose": "Compute and update dropout risk scores for participants to enable proactive alerts."
+        },
+        {
+          "name": "Personalized Communication Automation Job",
+          "trigger": "Scheduled or triggered by retention plan schedules and participant status changes",
+          "purpose": "Generate and queue personalized engagement messages such as reminders and motivational content."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or missing participant status updates leading to stale risk scores.",
+        "Conflicting updates from multiple coordinators on participant status or engagement activities.",
+        "Participant withdrawal or loss to follow-up requiring plan adjustments and data archiving.",
+        "Data import errors or mismatches when integrating with external trial management systems.",
+        "Ensuring data privacy and access control when multiple sites or cohorts access the system.",
+        "System downtime or delayed background job execution causing outdated risk alerts.",
+        "Handling participants with multiple concurrent cohorts or protocol amendments."
+      ],
+      "nonGoals": [
+        "Providing medical or diagnostic advice related to participant health or trial outcomes.",
+        "Replacing existing clinical trial management systems or consent tracking tools.",
+        "Directly managing participant scheduling or visit logistics beyond engagement planning.",
+        "Supporting patient-facing communication channels or mobile apps in initial versions.",
+        "Handling regulatory submissions or audit compliance beyond data security and privacy."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses /planning page to input or edit study protocols, participant metadata, and engagement activity templates.",
+        "Planning UI sends POST requests to /api/planning/protocols, /api/planning/participants, and /api/planning/retention-plans to create or update data.",
+        "Planning API validates inputs, enforces privacy rules, and persists data to StudyProtocol, Participant, EngagementTemplate, and RetentionPlan data stores.",
+        "Background job 'Dropout Risk Calculation' runs periodically or triggered by participant status or engagement updates, reads ParticipantStatus, EngagementActivityRecord, HistoricalRetentionData, and updates DropoutRiskScore store.",
+        "Background job 'Personalized Communication Automation' runs on schedule or triggers, reads RetentionPlan, Participant, ParticipantStatus data, generates messages queued for sending.",
+        "User accesses /dashboard page to view real-time participant status, adherence metrics, dropout risk scores, and reports.",
+        "Dashboard UI fetches data from /api/tracking/status, /api/tracking/engagement-activities, and /api/analytics/risk-scores endpoints.",
+        "Tracking API manages participant status updates and engagement activity records, handling concurrency and edge cases.",
+        "Analytics API calculates and serves dropout risk scores and alerts, ensuring no medical advice is given.",
+        "User accesses /participants/:id page to view and update individual participant data, status, and engagement history.",
+        "Participant detail UI fetches participant metadata, status updates, and engagement activity records via Planning and Tracking APIs.",
+        "User accesses /reports page to generate and export retention strategy effectiveness reports.",
+        "Reports API generates reports based on engagement data, risk analytics, and historical data, returning JSON and export files.",
+        "Future integration with external trial management systems planned to synchronize study and participant data via API endpoints."
+      ],
+      "validationRules": [
+        "StudyProtocol: protocolId (unique, required if updating), title (non-empty string), phases (valid JSON array with phase details), visitSchedules (valid JSON array), version (positive number), sites and cohorts optional but if present must be valid JSON.",
+        "Participant: participantId (unique if updating), studyProtocolId (must reference existing StudyProtocol), demographics and contactInfo (non-empty JSON), cohortId optional but if present must exist in StudyProtocol cohorts, enrollmentDate optional date, consentStatus optional string with allowed values (e.g., 'consented', 'withdrawn').",
+        "EngagementTemplate: templateId (unique if updating), name (non-empty string), content (non-empty string), activityType (predefined set of activity types), createdAt and updatedAt valid dates.",
+        "RetentionPlan: planId (unique if updating), studyProtocolId and phaseId must reference existing StudyProtocol and phase, engagementActivities valid JSON array with valid activity references, createdBy non-empty string (user id), timestamps valid.",
+        "ParticipantStatus: participantId must exist, status non-empty string from allowed statuses, notes optional string, timestamp required and valid date.",
+        "EngagementActivityRecord: participantId and planId must exist, activityTemplateId must exist, scheduledAt required date, completedAt optional date (if present must be >= scheduledAt), response optional string.",
+        "DropoutRiskScore: participantId must exist, score number between 0 and 1 or defined scale, riskLevel from predefined categories (e.g., low, medium, high), calculatedAt required date, alertSent optional boolean.",
+        "HistoricalRetentionData: recordId unique, studyProtocolId must exist, participantData anonymized JSON, retentionOutcome from allowed values, collectedAt required date.",
+        "API requests must include authentication token and user authorization checked.",
+        "For multi-phase and versioned data, version increments enforced on updates to prevent overwrites.",
+        "Bulk participant import validates each record individually, reporting errors per record without failing entire batch.",
+        "Date fields validated for ISO 8601 format.",
+        "Engagement activities and templates cross-validated to ensure referenced templates exist."
+      ],
+      "errorHandling": [
+        "API endpoints return HTTP 400 with detailed error messages for validation failures.",
+        "Return HTTP 401 Unauthorized if user authentication or authorization fails.",
+        "Return HTTP 404 Not Found for requests referencing non-existent resources.",
+        "Handle concurrency conflicts with HTTP 409 Conflict, e.g., version mismatch on updates.",
+        "Bulk import endpoints report partial successes with counts and per-record error details.",
+        "Background jobs log errors and retry transient failures with exponential backoff.",
+        "APIs sanitize and log unexpected errors internally, returning generic HTTP 500 with safe error message to clients.",
+        "Client UI displays validation feedback inline with field-level messages.",
+        "Edge cases such as missing participant status updates handled gracefully with warnings and fallback defaults.",
+        "Conflicting updates from multiple coordinators resolved via optimistic concurrency control and user notifications.",
+        "Data import errors from external systems logged and surfaced for manual review.",
+        "System downtime or delayed background jobs trigger alerts for administrators."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user sessions with role-based access control.",
+        "Sensitive participant data fields (demographics, contactInfo) encrypted at rest in database.",
+        "Access to participant data restricted by study site and cohort membership per user permissions.",
+        "Audit trails maintained for all create/update/delete operations on clinical data.",
+        "Background jobs and APIs enforce data privacy rules, no medical advice or sensitive health data inference.",
+        "Communication automation respects participant opt-out preferences and privacy regulations.",
+        "Data imports and external integrations validate and sanitize all incoming data to prevent injection attacks.",
+        "Use HTTPS for all client-server communications.",
+        "Implement rate limiting on APIs to prevent abuse.",
+        "Regular security reviews and compliance checks aligned with clinical trial data regulations."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-01",
+          "given": "A logged-in clinical trial coordinator on the /planning page",
+          "when": "They submit a new study protocol with valid phases and visit schedules",
+          "then": "The protocol is saved successfully, versioned, and visible in the system with no validation errors"
+        },
+        {
+          "id": "AT-02",
+          "given": "A logged-in user submits a bulk participant import with some invalid records",
+          "when": "The API processes the import request",
+          "then": "The response indicates success with count of imported records and detailed errors for invalid entries"
+        },
+        {
+          "id": "AT-03",
+          "given": "A participant status update is submitted concurrently by two coordinators",
+          "when": "Both updates are processed",
+          "then": "The system detects conflict, rejects one update with a 409 error, and notifies the user to refresh data"
+        },
+        {
+          "id": "AT-04",
+          "given": "The Dropout Risk Calculation Job runs after participant status and engagement updates",
+          "when": "It completes successfully",
+          "then": "Dropout risk scores are updated in the database, and alerts are generated for high-risk participants"
+        },
+        {
+          "id": "AT-05",
+          "given": "A user accesses the /dashboard page with valid authentication",
+          "when": "They apply filters for study phase and cohort",
+          "then": "The dashboard displays filtered participant statuses, adherence metrics, risk alerts, and allows report export"
+        },
+        {
+          "id": "AT-06",
+          "given": "A participant withdraws from the study",
+          "when": "Their status is updated to 'withdrawn'",
+          "then": "The system archives their engagement plans and excludes them from active retention calculations"
+        },
+        {
+          "id": "AT-07",
+          "given": "An API request is made without authentication",
+          "when": "The request is processed",
+          "then": "The API returns HTTP 401 Unauthorized"
+        },
+        {
+          "id": "AT-08",
+          "given": "A user attempts to update a study protocol with an outdated version number",
+          "when": "The update request is submitted",
+          "then": "The API rejects the update with a 409 Conflict error indicating version mismatch"
+        },
+        {
+          "id": "AT-09",
+          "given": "A user views a participant detail page",
+          "when": "They request participant metadata, status history, and engagement history",
+          "then": "The page displays accurate and complete data fetched from respective APIs"
+        },
+        {
+          "id": "AT-10",
+          "given": "The Personalized Communication Automation Job runs",
+          "when": "It processes retention plans and participant statuses",
+          "then": "Personalized messages are generated and queued respecting privacy and opt-out settings"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models for all data stores (StudyProtocol, Participant, EngagementTemplate, RetentionPlan, ParticipantStatus, EngagementActivityRecord, DropoutRiskScore, HistoricalRetentionData).",
+        "Implement authentication and authorization middleware for API routes.",
+        "Develop Planning API endpoints (/api/planning/protocols, /api/planning/participants, /api/planning/retention-plans) with validation and persistence logic.",
+        "Build Planning UI (/planning page) with multi-step forms, validation feedback, and API integration.",
+        "Develop Tracking API endpoints (/api/tracking/status, /api/tracking/engagement-activities) with concurrency control and edge case handling.",
+        "Build Participant Detail UI (/participants/:id) to display and update participant data via APIs.",
+        "Develop Analytics API (/api/analytics/risk-scores) to serve dropout risk scores and alerts.",
+        "Build Dashboard UI (/dashboard) to visualize participant status, adherence, risk alerts, and reports.",
+        "Develop Reports API (/api/reports/retention-effectiveness) to generate and export retention strategy reports.",
+        "Implement background jobs: Dropout Risk Calculation and Personalized Communication Automation with scheduling and triggers.",
+        "Add audit logging and encryption for sensitive data fields.",
+        "Implement error handling and user notifications for conflicts and validation errors.",
+        "Prepare integration scaffolds for future Trial Management System integration.",
+        "Conduct acceptance testing and security reviews.",
+        "Deploy and monitor system with alerting for job failures and data inconsistencies."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/planning",
+          "/dashboard",
+          "/participants/[id]",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "api/planning/protocols.ts",
+          "api/planning/participants.ts",
+          "api/planning/retention-plans.ts",
+          "api/tracking/status.ts",
+          "api/tracking/engagement-activities.ts",
+          "api/analytics/risk-scores.ts",
+          "api/reports/retention-effectiveness.ts"
+        ],
+        "prismaModelsToAdd": [
+          "StudyProtocol",
+          "Participant",
+          "EngagementTemplate",
+          "RetentionPlan",
+          "ParticipantStatus",
+          "EngagementActivityRecord",
+          "DropoutRiskScore",
+          "HistoricalRetentionData"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints and clarify details about participant retention and engagement planning needs.",
+        "promptTemplate": "You are an academic clinical trial coordinator refining retention and engagement planning requirements. Given the current blueprint and idea: {{BLUEPRINT}} and {{IDEA}}, ask detailed questions to clarify missing constraints, data inputs, or workflow needs. Include context from user input: {{USER_INPUT}}."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and refine the pages and data models needed for the retention planning system.",
+        "promptTemplate": "As the system architect, review the blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}. Finalize the page routes, UI components, API endpoints, and database models required for the application. Provide a detailed plan with rationale."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code for the main pages of the retention planning application.",
+        "promptTemplate": "You are a builder tasked with creating initial page stubs for the retention planner. Using the finalized pages from {{BLUEPRINT.pages}}, generate minimal React or Next.js component code for each page route, including placeholders for input forms and output display. Use user input for customization: {{USER_INPUT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI pages to API endpoints and underlying database models.",
+        "promptTemplate": "As the integrator, connect the UI pages with backend APIs and database models. Use the API routes from {{BLUEPRINT.apiRoutes}} and data models from {{BLUEPRINT.dataModels}}. Provide code snippets or integration steps to wire data flow from user input through API calls to database persistence, including validation and error handling. Consider user input: {{USER_INPUT}}."
+      }
+    ]
+  }
+}

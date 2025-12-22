@@ -1,0 +1,645 @@
+{
+  "slug": "academic-protocol-version-compare",
+  "title": "Academic Protocol Version Compare & Approval",
+  "description": "Upload and compare two experimental protocol versions with annotated change rationale and manual collaborator approval inputs. Supports PDF, DOCX, and text files. Outputs detailed side-by-side text diffs with change summaries and tracks collaborator approvals for active collaborative research projects.",
+  "inputLabel": "Upload two protocol versions and enter change rationales and collaborator approvals",
+  "outputLabel": "Side-by-side diff, change summary, and approval status report",
+  "systemPrompt": "You are a helpful assistant for academic research team leads managing collaborative experimental protocol versions. Your task is to safely compare two uploaded protocol document versions (PDF, DOCX, or text) by extracting and diffing their text content, generating a clear side-by-side text diff with change rationale annotations, and summarizing categorized changes. Additionally, track collaborator approval statuses and comments for each version. Reject any request missing required inputs or containing unsupported file formats. Enforce strict privacy: do not output any sensitive data beyond the diff and approval summaries. Ensure all outputs are safe, free of private data leakage, and formatted as plain text. Do not provide medical, legal, or content advice. Refuse any disallowed or unsafe requests clearly. Use the provided collaborator inputs to annotate approvals. Output must be plain text unless structured-output is enabled. Keep responses concise, professional, and focused on version comparison and approval tracking only.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Show full diff with change rationale",
+      "prompt": "Compare the two uploaded protocol versions and produce a detailed side-by-side text diff highlighting changes with the provided change rationales for each version. Also summarize categorized changes by type (e.g., text addition, deletion, modification). Include collaborator approval statuses and comments. Output as structured JSON if enabled; otherwise plain text."
+    },
+    {
+      "label": "Summarize changes only",
+      "prompt": "Provide a categorized summary of changes between the two protocol versions, highlighting major modifications and their rationales. Exclude full diff. Include collaborator approval overview."
+    },
+    {
+      "label": "Approval status report",
+      "prompt": "Generate a report of collaborator approval statuses and comments for the two protocol versions, highlighting pending approvals and conflicts."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON with fields: { diffHtml: string, changeSummary: object, approvalStatus: object }",
+  "clarifyPrompt": "Please provide two protocol documents (PDF, DOCX, or text), change rationales for each version, and collaborator approval information. Ensure files are valid and not corrupted.",
+  "finalizePrompt": "Confirm that the uploaded protocol versions were compared correctly with annotated changes and collaborator approvals included. Provide the output in the requested format.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Collaborative Experiment Protocol Version Manager",
+      "niche": {
+        "role": "Academic Research Team Lead",
+        "scenario": "Managing and tracking iterative updates to multi-lab experimental protocols during active collaborative projects"
+      },
+      "problem": "Collaborative academic research projects often involve multiple labs updating and refining experimental protocols over time. Without a centralized system, tracking protocol versions, changes, rationales, and consensus approvals becomes cumbersome, error-prone, and risks poor reproducibility and compliance. Existing tools handle single protocol comparison but lack ongoing collaborative version control and coordination features.",
+      "inputs": [
+        "Experimental protocol document versions (PDF, DOCX, or text)",
+        "Change rationale notes per version",
+        "Collaborator metadata and role assignments",
+        "Approval status and comments from collaborators"
+      ],
+      "outputs": [
+        "Detailed version history timeline with side-by-side textual diff of protocol versions",
+        "Categorized summary of changes with impact annotations",
+        "Collaborator approval and comment tracking dashboard",
+        "Automated alerts for conflicting changes or missing approvals",
+        "Exportable consolidated, consensus-approved protocol version"
+      ],
+      "whyItWins": [
+        "Fills a collaborative protocol version management gap not addressed by existing single-use comparison or compliance tools",
+        "Supports active multi-user coordination reducing miscommunication and protocol drift",
+        "Provides clear visualizations and audit trails improving transparency and reproducibility",
+        "Lightweight start with document diff and approval tracking, scalable to integrated workflow system",
+        "Enhances compliance confidence by documenting change rationales and consensus status"
+      ],
+      "upgradePath": {
+        "today": "Provide a single-page app to upload and compare two protocol versions with change annotations and manual approval inputs from collaborators",
+        "in90Days": "Add multi-version timeline view, collaborator role-based access, automated conflict detection, and approval reminders",
+        "in12Months": "Develop a multi-page collaborative platform with real-time editing suggestions, integrated communication channels, protocol compliance checklists, and export of finalized consensus protocols with detailed audit logs"
+      },
+      "riskNotes": [
+        "Ensure strict privacy and access controls as protocols may contain sensitive or proprietary information",
+        "Avoid legal or medical advisory by focusing solely on version management and collaboration, not protocol content recommendations",
+        "Maintain data integrity with version locking and clear provenance metadata",
+        "User training may be necessary for teams unfamiliar with version control concepts"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research teams to manage, track, and approve iterative experimental protocol versions across multiple labs, ensuring transparency, reproducibility, and compliance.",
+      "primaryUser": "Academic Research Team Lead",
+      "successMetrics": [
+        "Number of active collaborative projects using the platform",
+        "Reduction in protocol version conflicts and miscommunications",
+        "User engagement with approval and comment tracking features",
+        "Frequency of exported consensus-approved protocols",
+        "User satisfaction with version history visualizations and audit trails"
+      ],
+      "components": [
+        {
+          "id": "ui-protocol-versioning",
+          "name": "Protocol Versioning UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for uploading protocols, viewing version timelines, side-by-side diffs, change annotations, and approval dashboards.",
+          "dependsOn": [
+            "api-protocol-management",
+            "api-user-management"
+          ],
+          "notes": [
+            "Supports multiple document formats (PDF, DOCX, text) with text extraction for diffing.",
+            "Visual diffing should handle text and highlight changes with rationale annotations.",
+            "Approval dashboard shows collaborator statuses and comments."
+          ]
+        },
+        {
+          "id": "api-protocol-management",
+          "name": "Protocol Management API",
+          "type": "api",
+          "responsibility": "Handle protocol version uploads, storage, diff generation, change categorization, approval tracking, and export of consensus-approved versions.",
+          "dependsOn": [
+            "data-protocols",
+            "data-users"
+          ],
+          "notes": [
+            "Implements version locking and provenance metadata to ensure data integrity.",
+            "Supports conflict detection and approval reminders.",
+            "Generates side-by-side diffs and categorized change summaries."
+          ]
+        },
+        {
+          "id": "api-user-management",
+          "name": "User and Collaborator Management API",
+          "type": "api",
+          "responsibility": "Manage collaborator metadata, roles, authentication, authorization, and access control to protocols.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Enforces strict privacy and role-based access controls.",
+            "Supports collaborator comments and approval status updates."
+          ]
+        },
+        {
+          "id": "data-protocols",
+          "name": "Protocol Versions Data Store",
+          "type": "data",
+          "responsibility": "Persist protocol documents, version metadata, change rationales, approval statuses, and audit logs.",
+          "dependsOn": [],
+          "notes": [
+            "Stores original documents and extracted text for diffing.",
+            "Maintains version history timeline and provenance data."
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User and Collaborator Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, collaborator roles, authentication credentials, and access permissions.",
+          "dependsOn": [],
+          "notes": [
+            "Supports role-based access control and collaborator metadata."
+          ]
+        },
+        {
+          "id": "job-approval-reminders",
+          "name": "Approval Reminder Job",
+          "type": "job",
+          "responsibility": "Periodically scan protocols for pending approvals and send automated reminders to collaborators.",
+          "dependsOn": [
+            "api-protocol-management",
+            "api-user-management"
+          ],
+          "notes": [
+            "Configurable reminder frequency and escalation policies."
+          ]
+        },
+        {
+          "id": "job-conflict-detection",
+          "name": "Conflict Detection Job",
+          "type": "job",
+          "responsibility": "Analyze protocol versions for conflicting changes and alert relevant users.",
+          "dependsOn": [
+            "api-protocol-management"
+          ],
+          "notes": [
+            "Runs on version upload or scheduled intervals to detect conflicts early."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "ProtocolVersion",
+          "purpose": "Represents a single version of an experimental protocol with metadata and content.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "documentType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documentContent",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "extractedText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "changeRationale",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "approvalStatus",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "provenanceMetadata",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "locked",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents a user or collaborator with roles and access permissions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "authCredentials",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "accessPermissions",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Represents a collaborative research project encompassing multiple protocol versions and collaborators.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "collaborators",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "title"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Protocol Version",
+          "purpose": "Allow users to upload new protocol versions with change rationale and assign collaborators for approval.",
+          "inputs": [
+            "protocol document file",
+            "change rationale text",
+            "collaborator assignments"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "version metadata summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/timeline",
+          "title": "Protocol Version Timeline",
+          "purpose": "Display multi-version timeline with side-by-side diffs and categorized change summaries.",
+          "inputs": [
+            "selected project or protocol"
+          ],
+          "outputs": [
+            "version timeline visualization",
+            "diff views",
+            "change annotations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/approvals",
+          "title": "Approval Dashboard",
+          "purpose": "Show collaborator approval statuses, comments, and allow updating approvals.",
+          "inputs": [
+            "selected protocol version"
+          ],
+          "outputs": [
+            "approval status list",
+            "comment threads",
+            "approval action buttons"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/export",
+          "title": "Export Consensus Protocol",
+          "purpose": "Export the finalized, consensus-approved protocol version with audit logs.",
+          "inputs": [
+            "selected protocol version"
+          ],
+          "outputs": [
+            "exported protocol file",
+            "audit log report"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the platform.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "user session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/protocols/upload",
+          "method": "POST",
+          "purpose": "Upload a new protocol version with metadata and change rationale.",
+          "requestShape": "{ projectId: string, documentFile: file, changeRationale: string, collaborators: string[] }",
+          "responseShape": "{ success: boolean, protocolVersionId: string, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/protocols/:projectId/versions",
+          "method": "GET",
+          "purpose": "Retrieve all protocol versions for a project with metadata.",
+          "requestShape": "{ projectId: string }",
+          "responseShape": "{ versions: ProtocolVersion[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/protocols/diff",
+          "method": "POST",
+          "purpose": "Generate side-by-side diff and categorized change summary between two protocol versions.",
+          "requestShape": "{ versionIdA: string, versionIdB: string }",
+          "responseShape": "{ diffHtml: string, changeSummary: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/approvals/update",
+          "method": "POST",
+          "purpose": "Update approval status and comments for a protocol version by a collaborator.",
+          "requestShape": "{ protocolVersionId: string, userId: string, approvalStatus: string, comment: string }",
+          "responseShape": "{ success: boolean, message: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export/:protocolVersionId",
+          "method": "GET",
+          "purpose": "Export the consensus-approved protocol version with audit logs.",
+          "requestShape": "{ protocolVersionId: string }",
+          "responseShape": "{ exportFileUrl: string, auditLog: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Approval Reminder Job",
+          "trigger": "Scheduled (e.g., daily)",
+          "purpose": "Send automated reminders to collaborators for pending approvals on protocol versions."
+        },
+        {
+          "name": "Conflict Detection Job",
+          "trigger": "On protocol version upload or scheduled intervals",
+          "purpose": "Detect conflicting changes between protocol versions and notify relevant collaborators."
+        }
+      ],
+      "edgeCases": [
+        "Simultaneous uploads of protocol versions causing race conditions — mitigated by version locking and conflict detection.",
+        "Collaborators with revoked access attempting to view or approve protocols — enforced by strict role-based access control.",
+        "Corrupted or unsupported document formats during upload — validate and reject with clear error messages.",
+        "Missing or ambiguous change rationales — require rationale input on upload with validation.",
+        "Partial approvals where some collaborators approve and others do not respond — support reminders and escalation workflows.",
+        "Network failures during upload or approval updates — implement retry mechanisms and user notifications.",
+        "Exporting protocols with unresolved conflicts or incomplete approvals — block export and notify users."
+      ],
+      "nonGoals": [
+        "Providing medical or legal advice regarding protocol content.",
+        "Implementing full document editing or authoring tools.",
+        "Replacing comprehensive laboratory information management systems (LIMS).",
+        "Handling raw data analysis or experimental results management.",
+        "Supporting real-time collaborative editing in the initial phase (planned for long term)."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving a session token for API access.",
+        "On /upload page, user submits protocol document file, change rationale, and collaborator assignments.",
+        "The frontend sends a POST request to /api/protocols/upload with the file and metadata.",
+        "Protocol Management API validates, extracts text from the document, stores original and extracted text in ProtocolVersions data store, and creates version metadata with provenance and locked=false.",
+        "Collaborator assignments are saved in Project collaborators and approvalStatus fields in ProtocolVersion.",
+        "Conflict Detection Job triggers on upload to analyze new version against existing versions for conflicts; if conflicts found, notifications are sent via User Management API.",
+        "Approval Reminder Job runs daily to scan ProtocolVersions for pending approvals and sends reminders via User Management API.",
+        "On /timeline page, user selects a project; frontend calls GET /api/protocols/:projectId/versions to retrieve all versions.",
+        "User selects two versions to compare; frontend calls POST /api/protocols/diff with version IDs to get side-by-side diff HTML and change summary JSON.",
+        "On /approvals page, user selects a protocol version; frontend fetches approval statuses and comments via API calls.",
+        "User updates approval status or comments; frontend calls POST /api/approvals/update with userId, protocolVersionId, approvalStatus, and comment.",
+        "On /export page, user selects a consensus-approved protocol version; frontend calls GET /api/export/:protocolVersionId to retrieve export file URL and audit log.",
+        "All API routes enforce authentication and authorization via User Management API, validating user roles and access permissions before processing requests.",
+        "Audit logs are maintained in ProtocolVersions provenanceMetadata and approvalStatus fields for transparency and compliance."
+      ],
+      "validationRules": [
+        "On protocol upload: require non-empty projectId, valid document file (PDF, DOCX, or text), non-empty change rationale, and at least one collaborator assigned.",
+        "Reject unsupported or corrupted document formats with clear error messages.",
+        "Extracted text must be non-empty for diffing; reject upload if extraction fails.",
+        "Approval updates require valid protocolVersionId, userId matching authenticated user, valid approvalStatus (e.g., 'approved', 'rejected', 'pending'), and optional comment.",
+        "User login requires valid email format and non-empty password.",
+        "Export requests require protocolVersionId of a consensus-approved and locked protocol version; block export if conflicts or incomplete approvals exist.",
+        "All inputs must be sanitized to prevent injection attacks.",
+        "Role-based access control enforced on all API endpoints to restrict data access and actions based on user roles and project membership.",
+        "Concurrent uploads must check version locking status to prevent race conditions; reject upload if protocol version is locked."
+      ],
+      "errorHandling": [
+        "Return HTTP 400 with descriptive messages for validation failures (e.g., missing fields, invalid file format).",
+        "Return HTTP 401 Unauthorized for unauthenticated requests or invalid tokens.",
+        "Return HTTP 403 Forbidden for unauthorized access attempts based on roles or permissions.",
+        "Return HTTP 409 Conflict when version locking prevents upload or conflicting versions detected.",
+        "Return HTTP 500 Internal Server Error for unexpected failures with logging for diagnostics.",
+        "API responses include success boolean and message fields to inform frontend of operation results.",
+        "Frontend displays user-friendly error notifications based on API response messages.",
+        "Retry mechanisms implemented on network failures during uploads and approval updates, with user notifications on persistent failures.",
+        "Export attempts blocked with clear notification if protocol version is not consensus-approved or has unresolved conflicts."
+      ],
+      "securityNotes": [
+        "Enforce HTTPS for all client-server communications to protect data in transit.",
+        "Implement JWT or session-based authentication with secure token storage on client side.",
+        "Apply strict role-based access control checks on all API routes to prevent unauthorized data access or modifications.",
+        "Sanitize all inputs to prevent injection attacks (SQL, XSS).",
+        "Store authentication credentials securely with salted hashing.",
+        "Limit file upload size and validate file types to prevent denial-of-service or malware uploads.",
+        "Audit all critical actions (uploads, approvals, exports) with timestamps and user identifiers for compliance.",
+        "Use CSRF tokens or same-site cookies to prevent cross-site request forgery.",
+        "Log and monitor suspicious activities such as repeated failed logins or unauthorized access attempts.",
+        "Ensure background jobs have restricted access and run with least privilege."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with a valid protocol document and change rationale",
+          "when": "The user submits the upload form with assigned collaborators",
+          "then": "The system stores the protocol version, extracts text, creates metadata, and returns a success confirmation with protocolVersionId"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user requests the protocol versions timeline for a project they have access to",
+          "when": "The user visits /timeline and selects the project",
+          "then": "The system returns all protocol versions with metadata and displays a timeline visualization"
+        },
+        {
+          "id": "AT-003",
+          "given": "Two protocol versions selected for comparison",
+          "when": "The user requests a diff via /api/protocols/diff",
+          "then": "The system returns a side-by-side diff HTML and a categorized change summary highlighting text changes with annotations"
+        },
+        {
+          "id": "AT-004",
+          "given": "A collaborator views the approval dashboard for a protocol version",
+          "when": "The user accesses /approvals with a selected protocolVersionId",
+          "then": "The system displays current approval statuses, comments, and allows the user to update their approval and add comments"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user attempts to export a protocol version that is consensus-approved and locked",
+          "when": "The user requests export on /export page",
+          "then": "The system provides the export file URL and audit log report"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user attempts to upload a protocol with unsupported file format",
+          "when": "The user submits the upload form",
+          "then": "The system rejects the upload with a clear error message indicating unsupported format"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user without proper role attempts to access protocol data",
+          "when": "The user calls any protected API endpoint",
+          "then": "The system returns HTTP 403 Forbidden and denies access"
+        },
+        {
+          "id": "AT-008",
+          "given": "Multiple users attempt simultaneous uploads for the same project",
+          "when": "Uploads occur concurrently",
+          "then": "The system enforces version locking and rejects conflicting uploads with HTTP 409 Conflict"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user tries to export a protocol version with unresolved conflicts or incomplete approvals",
+          "when": "The user requests export",
+          "then": "The system blocks export and notifies the user with the reason"
+        },
+        {
+          "id": "AT-010",
+          "given": "A collaborator has pending approval on a protocol version",
+          "when": "The Approval Reminder Job runs",
+          "then": "The system sends an automated reminder notification to the collaborator"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models for User, Project, ProtocolVersion with indexes and relations.",
+        "Implement User and Collaborator Management API with authentication, authorization, and role-based access control.",
+        "Implement Protocol Management API endpoints for upload, version retrieval, diff generation, approval updates, and export.",
+        "Develop document upload handling with validation, text extraction, and storage in ProtocolVersions data store.",
+        "Implement conflict detection logic and version locking in Protocol Management API.",
+        "Create Next.js pages for /login, /upload, /timeline, /approvals, and /export with required inputs and outputs.",
+        "Integrate frontend with API routes including authentication token handling and error display.",
+        "Implement background jobs: Approval Reminder Job and Conflict Detection Job with scheduling and notification triggers.",
+        "Add comprehensive validation and error handling in API routes and frontend forms.",
+        "Implement audit logging and provenance metadata tracking in ProtocolVersions.",
+        "Conduct acceptance testing and edge case validation.",
+        "Deploy with HTTPS and security configurations."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/upload",
+          "/timeline",
+          "/approvals",
+          "/export"
+        ],
+        "apiFilesToCreate": [
+          "/api/users/login.ts",
+          "/api/protocols/upload.ts",
+          "/api/protocols/[projectId]/versions.ts",
+          "/api/protocols/diff.ts",
+          "/api/approvals/update.ts",
+          "/api/export/[protocolVersionId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "ProtocolVersion"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to better understand missing constraints, edge cases, or user needs for the protocol version manager.",
+        "promptTemplate": "Given the current blueprint and idea:\n\n{{BLUEPRINT}}\n\n{{IDEA}}\n\nPlease ask clarifying questions or identify missing requirements to refine the project scope or constraints.\nUser Input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define detailed page routes, data models, and API shapes needed for the collaborative protocol version manager.",
+        "promptTemplate": "Based on the refined requirements and blueprint:\n\n{{REFINED_REQUIREMENTS}}\n\n{{BLUEPRINT}}\n\nDraft final detailed page definitions with inputs/outputs, and Prisma data models with field types and relations.\nUser Input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial Next.js page stubs for each defined route with placeholder UI components and input forms.",
+        "promptTemplate": "Given the finalized page definitions:\n\n{{FINAL_PAGES}}\n\nGenerate Next.js page stub code with basic UI scaffolding and form inputs.\nUser Input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration between frontend pages, API endpoints, and database models for full functionality.",
+        "promptTemplate": "With the page stubs and data models ready:\n\n{{PAGE_STUBS}}\n\n{{DATA_MODELS}}\n\nImplement API route handlers and connect frontend forms to backend logic and database.\nUser Input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

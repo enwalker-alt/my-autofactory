@@ -1,0 +1,641 @@
+{
+  "slug": "academic-protocol-deviation-tracker",
+  "title": "Academic Research Protocol Deviation Tracker",
+  "description": "A single-page tool for academic research study coordinators to manually log protocol deviations during multi-site data collection, upload supporting files, and generate standardized deviation reports for compliance.",
+  "inputLabel": "Enter protocol deviation details and attach supporting files",
+  "outputLabel": "Deviation log confirmation and standardized report",
+  "systemPrompt": "You are an assistant for academic research coordinators to safely and accurately log protocol deviations. Validate all required deviation fields for completeness and correctness. Reject any requests that include medical or legal advice or violate privacy. Only allow file uploads of PDFs, JPGs, or PNGs up to 10MB each. Enforce severity and status from predefined lists: Severity options: Low, Medium, High, Critical. Status options: Open, In Progress, Resolved, Closed. Confirm submission with a unique deviation ID and provide a standardized report summary in plain text. Refuse disallowed requests clearly and politely. Never expose sensitive data. Use only the provided features and labels.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Log New Deviation",
+      "prompt": "Please help me log a new protocol deviation. Here is the protocol section: {{protocolSection}}. The site ID is {{siteId}}. Deviation description: {{deviationDescription}}. Category: {{deviationCategory}}. Severity (Low, Medium, High, Critical): {{severity}}. Date occurred (YYYY-MM-DD): {{dateOccurred}}. Corrective actions (if any): {{correctiveActions}}. Attachments: {{attachments}}.",
+      "hint": "Fill all required fields accurately and attach relevant files."
+    },
+    {
+      "label": "Generate Deviation Report",
+      "prompt": "Generate a standardized deviation report filtered by site: {{siteId}}, severity: {{severity}}, and date range from {{startDate}} to {{endDate}}. Export format: {{format}} (PDF or CSV).",
+      "hint": "Use this preset to create compliance-ready deviation reports."
+    },
+    {
+      "label": "Update Deviation Status",
+      "prompt": "Update deviation with ID {{deviationId}}: set status to {{status}} and add corrective actions: {{correctiveActions}}.",
+      "hint": "Use valid status values: Open, In Progress, Resolved, Closed."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON conforms to { deviationId: string, confirmationMessage: string, reportSummary?: string }",
+  "clarifyPrompt": "Please provide all required deviation details, including protocol section, site ID, description, category, severity, date occurred, and attachments if available. Use valid values for severity and status.",
+  "finalizePrompt": "Confirm that the deviation has been logged with ID {{deviationId}} and provide a summary of the logged deviation and any generated report.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Protocol Deviation Tracker",
+      "niche": {
+        "role": "Academic Research Study Coordinator",
+        "scenario": "During ongoing multi-site data collection, coordinators need to systematically track, document, and report deviations from approved data collection protocols to maintain compliance and ensure data integrity."
+      },
+      "problem": "No existing tool focuses specifically on managing ongoing protocol deviations during active data collection, which causes coordinators to rely on fragmented manual logs or inconsistent reports, increasing compliance risks and inefficiencies in multi-site research projects.",
+      "inputs": [
+        "Protocol documents or sections defining expected procedures",
+        "Site-level data collection logs and deviation incident descriptions",
+        "Deviation categorization criteria (e.g., minor, major, critical)",
+        "Corrective action notes and follow-up status updates",
+        "Optional file uploads (photos, scanned deviation reports)"
+      ],
+      "outputs": [
+        "Structured deviation tracking dashboard summarizing deviations by site, type, and severity",
+        "Standardized deviation report templates for regulatory submission",
+        "Alerts for unresolved or critical deviations needing immediate attention",
+        "Trend analytics identifying common deviation causes and risks",
+        "Exportable compliance documentation and audit-ready logs"
+      ],
+      "whyItWins": [
+        "Fills a critical gap by focusing exclusively on real-time deviation tracking during data collection rather than pre- or post-study compliance",
+        "Structured, centralized logging reduces risk of missed or inconsistent deviation reporting",
+        "Automated reporting and alerts support timely corrective actions and enhance regulatory compliance",
+        "Facilitates multi-site coordination by aggregating site-specific deviations with clear summaries",
+        "Starts lightweight with manual entry and basic reports but readily scales to full workflow management with role-based access, integrations, and analytics"
+      ],
+      "upgradePath": {
+        "today": "A simple single-page tool for coordinators to manually log deviations and generate standardized reports for immediate compliance needs.",
+        "in90Days": "Add user roles for site coordinators and central managers, implement deviation status workflows with automated alerts and a dashboard showing aggregated site data.",
+        "in12Months": "Develop a multi-page system integrating protocol versioning, electronic data capture systems, automated deviation detection from data feeds, detailed analytics for root cause analysis, and regulatory submission portals."
+      },
+      "riskNotes": [
+        "Must strictly avoid any medical or legal advice—tool focuses only on administrative protocol deviation tracking.",
+        "Data privacy must be enforced with secure handling of sensitive research site and participant information.",
+        "User inputs should be validated to prevent erroneous or incomplete deviation records.",
+        "Ensure clear disclaimers that the tool aids compliance documentation but does not replace institutional compliance officers or regulatory review."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A dedicated system for academic research study coordinators to systematically track, document, and report protocol deviations during ongoing multi-site data collection, ensuring compliance and data integrity through structured logging, reporting, alerts, and analytics.",
+      "primaryUser": "Academic Research Study Coordinator",
+      "successMetrics": [
+        "Reduction in missed or late deviation reports across sites",
+        "User adoption rate among coordinators and site managers",
+        "Time saved in generating standardized deviation reports",
+        "Number of critical deviations resolved within SLA",
+        "Accuracy and completeness of deviation data logged"
+      ],
+      "components": [
+        {
+          "id": "ui-logging",
+          "name": "Deviation Logging UI",
+          "type": "ui",
+          "responsibility": "Provide forms and interfaces for coordinators to manually enter deviation incidents, upload supporting files, and update corrective actions.",
+          "dependsOn": [
+            "api-deviation",
+            "data-deviation"
+          ],
+          "notes": [
+            "Must include validation to ensure completeness and correctness of input.",
+            "Support file uploads with size/type restrictions.",
+            "Allow editing and status updates on existing deviation records."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Deviation Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display aggregated deviation data by site, type, severity, and status with filtering and sorting capabilities; show alerts for critical/unresolved deviations.",
+          "dependsOn": [
+            "api-deviation",
+            "data-deviation"
+          ],
+          "notes": [
+            "Visual summaries (charts, tables) to identify trends and risks.",
+            "Accessible to different user roles with role-based views."
+          ]
+        },
+        {
+          "id": "ui-reporting",
+          "name": "Reporting UI",
+          "type": "ui",
+          "responsibility": "Enable generation and export of standardized deviation reports and compliance documentation for regulatory submission and audits.",
+          "dependsOn": [
+            "api-report",
+            "data-deviation"
+          ],
+          "notes": [
+            "Support export formats like PDF and CSV.",
+            "Include filters for date ranges, sites, deviation severity."
+          ]
+        },
+        {
+          "id": "api-deviation",
+          "name": "Deviation Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for deviation records, including creation, updates, status changes, and retrieval for UI components.",
+          "dependsOn": [
+            "data-deviation"
+          ],
+          "notes": [
+            "Enforce input validation and authorization.",
+            "Support query parameters for filtering and pagination."
+          ]
+        },
+        {
+          "id": "api-report",
+          "name": "Reporting API",
+          "type": "api",
+          "responsibility": "Generate structured deviation reports and exportable compliance documents based on stored deviation data.",
+          "dependsOn": [
+            "data-deviation"
+          ],
+          "notes": [
+            "Generate reports on demand with current data snapshot.",
+            "Support multiple export formats."
+          ]
+        },
+        {
+          "id": "data-deviation",
+          "name": "Deviation Data Store",
+          "type": "data",
+          "responsibility": "Persist all deviation records, including metadata, categorization, corrective actions, file attachments references, and status history.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure data privacy and encryption at rest.",
+            "Maintain audit trails for edits and status changes."
+          ]
+        },
+        {
+          "id": "job-alerts",
+          "name": "Deviation Alert Job",
+          "type": "job",
+          "responsibility": "Periodically scan deviations to identify critical or unresolved issues and trigger alerts/notifications to responsible users.",
+          "dependsOn": [
+            "data-deviation",
+            "api-notification"
+          ],
+          "notes": [
+            "Configurable alert thresholds and escalation policies.",
+            "Handle failure cases like notification delivery errors."
+          ]
+        },
+        {
+          "id": "integration-notification",
+          "name": "Notification Integration",
+          "type": "integration",
+          "responsibility": "Interface with email/SMS/push notification services to deliver alerts and reminders to users about deviation statuses.",
+          "dependsOn": [],
+          "notes": [
+            "Support retries and failure logging.",
+            "Respect user notification preferences and privacy."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "DeviationRecord",
+          "purpose": "Store detailed information about each protocol deviation reported during data collection.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "protocolSection",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportedByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviationDescription",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviationCategory",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "severity",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dateOccurred",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "correctiveActions",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "statusUpdatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "attachments",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "severity",
+            "status",
+            "dateOccurred"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represent users with roles such as study coordinator, site coordinator, and central manager.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "notificationPreferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "role",
+            "siteId"
+          ]
+        },
+        {
+          "name": "ProtocolSection",
+          "purpose": "Store sections or documents of the approved protocol relevant to deviations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "version"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/log-deviation",
+          "title": "Log Protocol Deviation",
+          "purpose": "Allow users to enter new deviation incidents with all required details and upload supporting files.",
+          "inputs": [
+            "protocolSection",
+            "site",
+            "deviationDescription",
+            "deviationCategory",
+            "severity",
+            "dateOccurred",
+            "correctiveActions",
+            "attachments"
+          ],
+          "outputs": [
+            "confirmation",
+            "deviationId"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Deviation Dashboard",
+          "purpose": "Provide an overview of deviations across sites with filtering, sorting, and alert notifications.",
+          "inputs": [
+            "filters (site, severity, status, date range)"
+          ],
+          "outputs": [
+            "deviation summaries",
+            "charts",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Deviation Reports",
+          "purpose": "Generate and export standardized reports for regulatory submission and audits.",
+          "inputs": [
+            "filters (site, severity, date range)"
+          ],
+          "outputs": [
+            "report files (PDF, CSV)"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/deviation/:id",
+          "title": "Deviation Detail",
+          "purpose": "View and update details of a specific deviation record, including status and corrective actions.",
+          "inputs": [
+            "deviationId"
+          ],
+          "outputs": [
+            "deviation data",
+            "update confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/deviations",
+          "method": "POST",
+          "purpose": "Create a new deviation record.",
+          "requestShape": "JSON with deviation details and optional attachments metadata",
+          "responseShape": "JSON with created deviation ID and status",
+          "auth": "user"
+        },
+        {
+          "route": "/api/deviations",
+          "method": "GET",
+          "purpose": "Retrieve deviation records with optional filters and pagination.",
+          "requestShape": "Query parameters for siteId, severity, status, date range, pagination",
+          "responseShape": "JSON list of deviation records",
+          "auth": "user"
+        },
+        {
+          "route": "/api/deviations/:id",
+          "method": "POST",
+          "purpose": "Update an existing deviation record's details or status.",
+          "requestShape": "JSON with fields to update",
+          "responseShape": "JSON with updated deviation data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/deviations",
+          "method": "POST",
+          "purpose": "Generate deviation report based on filters and export format.",
+          "requestShape": "JSON with filters and export format",
+          "responseShape": "File stream or download link",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "CriticalDeviationAlertJob",
+          "trigger": "Scheduled (e.g., hourly)",
+          "purpose": "Scan deviations for critical or unresolved statuses and send alerts to responsible users."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or invalid deviation data submitted by users",
+        "File upload failures or unsupported file types",
+        "Simultaneous edits causing data conflicts on deviation records",
+        "Delayed or failed notification deliveries",
+        "Users attempting unauthorized access to deviation data",
+        "Protocol version changes affecting deviation categorization",
+        "Handling large volumes of deviations causing performance degradation"
+      ],
+      "nonGoals": [
+        "Providing medical or legal advice regarding deviations",
+        "Replacing institutional compliance officers or regulatory review processes",
+        "Automated detection of deviations from raw data feeds in the initial version",
+        "Full electronic data capture system integration in the initial release",
+        "Managing participant-level sensitive health data beyond deviation metadata"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /log-deviation page and fills deviation form with required fields and attachments.",
+        "Form data is validated client-side for completeness, correctness, and file constraints before submission.",
+        "On submit, the page calls POST /api/deviations with JSON payload including deviation details and attachments metadata.",
+        "API validates input, checks user authorization, stores deviation record in data store with audit trail, and returns created deviation ID and status.",
+        "User receives confirmation and deviation ID on the UI.",
+        "User can view /dashboard page, which calls GET /api/deviations with filters and pagination to retrieve aggregated deviation data.",
+        "Dashboard renders charts, tables, and alerts based on response data, respecting user role-based views.",
+        "User accesses /deviation/:id page to view or update a specific deviation record.",
+        "Page fetches deviation data via GET /api/deviations with id filter or dedicated endpoint, displays current data.",
+        "User submits updates via POST /api/deviations/:id with changed fields; API validates, authorizes, updates record with audit trail, and returns updated data.",
+        "User accesses /reports page to generate reports by submitting filters and export format.",
+        "Page calls POST /api/reports/deviations with filters and format; API generates report snapshot and returns file stream or download link.",
+        "Background job CriticalDeviationAlertJob runs on schedule, queries data store for critical/unresolved deviations, applies alert thresholds and escalation policies.",
+        "Job calls Notification Integration to send alerts respecting user preferences, logs failures and retries as needed."
+      ],
+      "validationRules": [
+        "All required deviation fields (protocolSection, siteId, reportedByUserId, deviationDescription, deviationCategory, severity, dateOccurred, status, statusUpdatedAt) must be present and non-empty.",
+        "Date fields (dateOccurred, statusUpdatedAt, createdAt, updatedAt) must be valid ISO 8601 dates and logical (e.g., statusUpdatedAt >= createdAt).",
+        "Severity and status must be from predefined enumerations (e.g., severity: Low, Medium, High, Critical; status: Open, In Progress, Resolved, Closed).",
+        "Attachments must be validated for allowed file types (e.g., PDF, JPG, PNG) and size limits (e.g., max 10MB per file).",
+        "CorrectiveActions field is optional but if present must be a non-empty string.",
+        "User input on update must only include allowed fields; immutable fields like createdAt cannot be changed.",
+        "Pagination parameters must be positive integers; filters must match expected formats.",
+        "Report generation filters must include valid date ranges and supported export formats (PDF, CSV).",
+        "Authentication tokens/session must be validated on all API calls.",
+        "Role-based access control enforced: only authorized roles can create, update, or view deviations and reports."
+      ],
+      "errorHandling": [
+        "Client-side form validation errors show inline messages with clear instructions.",
+        "API returns 400 Bad Request with detailed error messages for validation failures.",
+        "API returns 401 Unauthorized if user is not authenticated or lacks permission.",
+        "API returns 404 Not Found if requested deviation record or resource does not exist.",
+        "API returns 409 Conflict if simultaneous edits cause data version conflicts.",
+        "File upload failures return descriptive errors; client retries or prompts user to retry.",
+        "Background job logs notification delivery failures and retries according to configured policy; alerts system administrators on repeated failures.",
+        "Unexpected server errors return 500 Internal Server Error with generic message; detailed logs stored for diagnostics.",
+        "APIs implement rate limiting and input sanitization to prevent abuse and injection attacks.",
+        "UI pages show user-friendly error pages or modals on API failures, with options to retry or contact support."
+      ],
+      "securityNotes": [
+        "All API routes require authentication and validate user session tokens.",
+        "Role-based access control restricts data visibility and modification according to user roles and site associations.",
+        "Sensitive data fields are encrypted at rest in the database.",
+        "File uploads are scanned and stored securely with access controls; direct file URLs are protected.",
+        "Audit trails record user ID, timestamp, and changes for all create/update operations on deviation records.",
+        "Notification preferences are respected to avoid unwanted communications and comply with privacy regulations.",
+        "API inputs are sanitized to prevent injection attacks.",
+        "Use HTTPS for all client-server communications.",
+        "Implement CSRF protection on state-changing API endpoints.",
+        "Limit data returned in API responses to only necessary fields to minimize data exposure."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A logged-in study coordinator on /log-deviation page",
+          "when": "They submit a fully completed deviation form with valid attachments",
+          "then": "The system creates a new deviation record, returns a confirmation with deviation ID, and the UI displays success message"
+        },
+        {
+          "id": "AT-002",
+          "given": "A logged-in user on /dashboard page with filters applied",
+          "when": "They request deviation data",
+          "then": "The system returns filtered deviation summaries, charts, and alerts appropriate to the user's role"
+        },
+        {
+          "id": "AT-003",
+          "given": "A logged-in user accesses /deviation/:id page for an existing deviation",
+          "when": "They update the status and corrective actions and submit",
+          "then": "The system validates input, updates the record with audit trail, and returns updated deviation data confirming changes"
+        },
+        {
+          "id": "AT-004",
+          "given": "A logged-in user on /reports page",
+          "when": "They generate a deviation report with valid filters and select PDF export",
+          "then": "The system generates the report and provides a downloadable PDF file"
+        },
+        {
+          "id": "AT-005",
+          "given": "The scheduled CriticalDeviationAlertJob runs",
+          "when": "There are critical/unresolved deviations exceeding thresholds",
+          "then": "The system sends alerts to responsible users respecting notification preferences and logs delivery status"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user submits incomplete or invalid deviation data",
+          "when": "They attempt to create or update a deviation record",
+          "then": "The system rejects the request with detailed validation error messages and no data is saved"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to access deviation data without proper authorization",
+          "when": "They call any deviation API endpoint",
+          "then": "The system returns 401 Unauthorized and denies access"
+        },
+        {
+          "id": "AT-008",
+          "given": "Two users attempt simultaneous edits on the same deviation record",
+          "when": "The second update conflicts with the first",
+          "then": "The system returns a 409 Conflict error to the second user with instructions to reload data"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models for DeviationRecord, User, ProtocolSection with indexes and audit fields",
+        "Implement authentication and role-based authorization middleware for API routes",
+        "Develop API routes for deviations (POST /api/deviations, GET /api/deviations, POST /api/deviations/:id) with validation and error handling",
+        "Develop API route for report generation (POST /api/reports/deviations) with export functionality",
+        "Implement file upload handling with validation and secure storage",
+        "Build /log-deviation page with form, client-side validation, and integration with deviation API",
+        "Build /dashboard page with filters, charts, tables, and alerts consuming deviation API",
+        "Build /deviation/:id page for viewing and updating deviation details",
+        "Build /reports page for report generation and export",
+        "Implement background job CriticalDeviationAlertJob with alert logic and integration with notification service",
+        "Implement Notification Integration with retry and failure logging",
+        "Add audit trail logging on create/update operations",
+        "Implement security hardening: encryption, input sanitization, CSRF protection",
+        "Write comprehensive acceptance and edge case tests",
+        "Perform load and performance testing to handle large deviation volumes"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/log-deviation",
+          "/dashboard",
+          "/reports",
+          "/deviation/[id]"
+        ],
+        "apiFilesToCreate": [
+          "/api/deviations/index.ts",
+          "/api/deviations/[id].ts",
+          "/api/reports/deviations.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model DeviationRecord { id String @id protocolSection String siteId String reportedByUserId String deviationDescription String deviationCategory String severity String dateOccurred DateTime correctiveActions String? status String statusUpdatedAt DateTime attachments Json? createdAt DateTime updatedAt DateTime @@index([siteId]) @@index([severity]) @@index([status]) @@index([dateOccurred]) }",
+          "model User { id String @id email String name String role String siteId String? notificationPreferences Json? @@index([email]) @@index([role]) @@index([siteId]) }",
+          "model ProtocolSection { id String @id title String content String version String effectiveDate DateTime @@index([version]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, edge cases, or clarifications needed to finalize the tool requirements.",
+        "promptTemplate": "Please review the current blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}. Identify any missing constraints, edge cases, or clarifications required. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the complete set of pages, data models, and API routes needed for the multi-page system.",
+        "promptTemplate": "Using the idea: {{IDEA}}, blueprint: {{BLUEPRINT}}, and expansions: {{EXPANDED}}, finalize the detailed pages, data models, and API routes. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs and UI scaffolds for the defined pages and forms.",
+        "promptTemplate": "Given the finalized pages and data models: {{BLUEPRINT.pages}}, generate starter code stubs and UI scaffolds. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring between frontend pages, backend API endpoints, and the database models.",
+        "promptTemplate": "Using the API routes: {{BLUEPRINT.apiRoutes}} and data models: {{BLUEPRINT.dataModels}}, wire the frontend pages to backend API and database. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

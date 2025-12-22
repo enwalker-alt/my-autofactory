@@ -1,0 +1,875 @@
+{
+  "slug": "academic-grant-task-timeline-optimizer",
+  "title": "Academic Research Grant Task & Timeline Optimizer",
+  "description": "Optimize complex interdependent academic research grant project tasks, visualize dependencies, identify critical paths, and flag potential scheduling conflicts and resource bottlenecks.",
+  "inputLabel": "Enter project tasks, dependencies, collaborator availability, milestones, and resource constraints as structured text or JSON below. Optionally upload a JSON file with the project data.",
+  "outputLabel": "Optimized project timeline with critical path, dependency graph summary, and scheduling/resource conflict alerts.",
+  "systemPrompt": "You are an expert academic research grant project planning assistant. Given the user's input of project tasks, dependencies, collaborator availability, milestones, and resource constraints in structured text or JSON format, generate a detailed optimized project timeline highlighting the critical path. Provide a clear textual summary of the dependency graph and identify any potential schedule conflicts or resource over-allocations. Validate all inputs for completeness and correctness; refuse to process if circular dependencies or invalid data are detected, explaining the issues clearly. Do not provide legal or financial advice. Output must be plain text describing the optimized timeline, critical path, alerts, and a summary of dependencies. If structured-output feature is enabled, also provide a JSON object with timeline details, critical path list, and alerts. Always ensure user data privacy and safety. Reject inputs lacking required fields or with invalid formats with clear error messages.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "structured-output",
+    "presets",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Optimization",
+      "prompt": "Optimize the following academic research grant project tasks and dependencies. Generate an optimized timeline with critical path and highlight any schedule or resource conflicts. Input:\n{{USER_INPUT}}"
+    },
+    {
+      "label": "Detailed Dependency Analysis",
+      "prompt": "Analyze the given tasks and dependencies for the academic grant project. Provide a detailed dependency graph summary, identify circular dependencies if any, and suggest corrections. Input:\n{{USER_INPUT}}"
+    },
+    {
+      "label": "What-If Scenario Report",
+      "prompt": "Given the project tasks and a set of task schedule overrides, generate a what-if scenario report showing timeline changes, critical path shifts, and new conflicts. Input tasks and overrides:\n{{USER_INPUT}}"
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output JSON must have keys: 'timeline' (object), 'criticalPath' (array of task IDs), and 'alerts' (array of strings).",
+  "clarifyPrompt": "Please provide the project tasks, dependencies, collaborator availability schedules, milestone deadlines, and resource constraints in clear structured text or JSON format. Ensure all required fields are present and valid. If any information is missing or ambiguous, please clarify.",
+  "finalizePrompt": "Review the optimized timeline, critical path, and alerts generated. Confirm if you want to proceed with this schedule or provide additional input for refinement.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Task Dependency & Timeline Optimizer",
+      "niche": {
+        "role": "Academic research grant project manager",
+        "scenario": "Planning and coordinating multi-institutional grant project tasks with complex dependencies, deadlines, and resource constraints"
+      },
+      "problem": "Academic research grant project managers struggle to efficiently plan and coordinate interdependent tasks across multiple collaborators and institutions. Existing tools track tasks or deadlines but lack automated dependency mapping, critical path identification, and dynamic timeline optimization to proactively manage schedule risks and resource bottlenecks.",
+      "inputs": [
+        "List of project tasks with descriptions and assigned collaborators",
+        "Task dependencies (which tasks must precede others)",
+        "Estimated durations for each task",
+        "Collaborator availability schedules",
+        "Funding milestone deadlines",
+        "Resource constraints (e.g., equipment, budget limits)"
+      ],
+      "outputs": [
+        "Optimized project task timeline with critical path highlighted",
+        "Visual dependency graph of tasks and milestones",
+        "Alerts for potential schedule conflicts or resource over-allocations",
+        "What-if scenario reports for timeline adjustments under different assumptions",
+        "Role-specific task dashboards with deadlines and priorities"
+      ],
+      "whyItWins": [
+        "Automates complex task dependency and timeline optimization beyond simple checklist or calendar tools",
+        "Integrates collaborator availability and resource constraints to produce realistic, actionable schedules",
+        "Supports proactive risk management by identifying critical path bottlenecks and schedule slack",
+        "Facilitates multi-institution coordination with clear visualization and tailored task assignments",
+        "Lightweight for initial use but designed to scale into a comprehensive project management system"
+      ],
+      "upgradePath": {
+        "today": "Single-page web app where managers manually input tasks, dependencies, and availability to generate optimized timelines and visual dependency graphs",
+        "in90Days": "Add collaboration features allowing multiple users to jointly edit tasks and update timelines, with real-time conflict detection and communication briefs",
+        "in12Months": "Develop a multi-page web platform integrating automated data imports (e.g., from grant management systems), resource usage tracking, milestone reporting, and predictive schedule risk analytics with AI-driven recommendations"
+      },
+      "riskNotes": [
+        "Must ensure data privacy and access controls to protect sensitive grant project information",
+        "Avoid providing legal or financial advice; focus is solely on project planning and scheduling",
+        "User input accuracy is critical; tool should include validation and guidance to minimize erroneous data entry"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative web platform for academic research grant project managers to input, visualize, and optimize complex interdependent tasks, timelines, and resources across multiple institutions, enabling proactive risk management and scalable coordination.",
+      "primaryUser": "Academic research grant project managers coordinating multi-institutional projects",
+      "successMetrics": [
+        "Reduction in project schedule conflicts and missed deadlines",
+        "User adoption rate among grant project managers",
+        "Accuracy and usefulness of optimized timelines and critical path identification",
+        "Frequency of scenario analyses and what-if report generation",
+        "User satisfaction with visualization clarity and collaboration features"
+      ],
+      "components": [
+        {
+          "id": "ui-task-dashboard",
+          "name": "Task Management & Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for task input, editing, dependency mapping, collaborator assignment, and role-specific dashboards showing deadlines, priorities, and alerts.",
+          "dependsOn": [
+            "api-task",
+            "api-user",
+            "api-optimization"
+          ],
+          "notes": [
+            "Supports manual input and editing of tasks and dependencies.",
+            "Displays visual dependency graphs and critical path highlights.",
+            "Role-specific views filter tasks by collaborator and priority."
+          ]
+        },
+        {
+          "id": "ui-scenario-planner",
+          "name": "What-If Scenario & Timeline Visualization UI",
+          "type": "ui",
+          "responsibility": "Enable users to create, modify, and compare alternative timeline scenarios with dynamic visualization of impacts on deadlines, resources, and critical paths.",
+          "dependsOn": [
+            "api-scenario",
+            "api-optimization"
+          ],
+          "notes": [
+            "Supports saving and loading multiple scenarios.",
+            "Visualizes schedule changes and resource reallocations in real-time."
+          ]
+        },
+        {
+          "id": "api-task",
+          "name": "Task & Project Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for tasks, dependencies, collaborators, availability schedules, milestones, and resource constraints with validation and access control.",
+          "dependsOn": [
+            "data-db",
+            "api-auth"
+          ],
+          "notes": [
+            "Validates input data to minimize erroneous entries.",
+            "Enforces user permissions and data privacy per project."
+          ]
+        },
+        {
+          "id": "api-optimization",
+          "name": "Timeline Optimization & Critical Path API",
+          "type": "api",
+          "responsibility": "Compute optimized task timelines considering dependencies, collaborator availability, resource constraints, and funding milestones; identify critical paths and potential bottlenecks.",
+          "dependsOn": [
+            "api-task",
+            "data-db"
+          ],
+          "notes": [
+            "Implements algorithms for dependency mapping and critical path method.",
+            "Returns alerts for schedule conflicts and resource over-allocations."
+          ]
+        },
+        {
+          "id": "api-scenario",
+          "name": "Scenario Management API",
+          "type": "api",
+          "responsibility": "Manage creation, storage, retrieval, and comparison of what-if timeline scenarios and their impact reports.",
+          "dependsOn": [
+            "data-db",
+            "api-optimization"
+          ],
+          "notes": [
+            "Supports ephemeral and persisted scenarios.",
+            "Allows rollback and versioning of scenarios."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Manage user authentication, session management, and enforce role-based access control to protect sensitive project data.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multi-institution user roles and permissions.",
+            "Integrates with institutional single sign-on if needed."
+          ]
+        },
+        {
+          "id": "data-db",
+          "name": "Persistent Data Storage",
+          "type": "data",
+          "responsibility": "Store all persistent data including projects, tasks, dependencies, collaborators, availability schedules, milestones, resource constraints, scenarios, and user accounts securely.",
+          "dependsOn": [],
+          "notes": [
+            "Ensures data encryption at rest and in transit.",
+            "Indexes optimize queries on tasks, dependencies, and timelines."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents system users including project managers and collaborators with roles and access rights.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Represents a grant project with multiple tasks, collaborators, milestones, and resource constraints.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "ownerUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "ownerUserId"
+          ]
+        },
+        {
+          "name": "Task",
+          "purpose": "Represents a project task with description, assigned collaborators, estimated duration, and status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedUserIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "estimatedDurationDays",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "assignedUserIds"
+          ]
+        },
+        {
+          "name": "Dependency",
+          "purpose": "Represents a directed dependency between two tasks within a project.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "predecessorTaskId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "successorTaskId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "predecessorTaskId",
+            "successorTaskId"
+          ]
+        },
+        {
+          "name": "CollaboratorAvailability",
+          "purpose": "Represents availability schedules for collaborators to inform task scheduling.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "availabilityWindows",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        },
+        {
+          "name": "Milestone",
+          "purpose": "Represents key funding or project milestones with deadlines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deadline",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId"
+          ]
+        },
+        {
+          "name": "ResourceConstraint",
+          "purpose": "Represents constraints on resources such as equipment or budget impacting task scheduling.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "resourceType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "limit",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "usageSchedule",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "resourceType"
+          ]
+        },
+        {
+          "name": "Scenario",
+          "purpose": "Represents saved or ephemeral what-if timeline scenarios with task schedule variations and analysis results.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "taskScheduleOverrides",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "analysisResults",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "createdByUserId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the platform.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/projects",
+          "title": "Project List & Selection",
+          "purpose": "Display user's projects and allow creation or selection of a project.",
+          "inputs": [],
+          "outputs": [
+            "list of projects"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/tasks",
+          "title": "Task Management & Dependency Mapping",
+          "purpose": "Manage tasks, assign collaborators, define dependencies, and view task dashboards.",
+          "inputs": [
+            "task details",
+            "dependency edits"
+          ],
+          "outputs": [
+            "updated task list",
+            "dependency graph",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/timeline",
+          "title": "Optimized Timeline & Critical Path Visualization",
+          "purpose": "View optimized project timeline with critical path and resource allocation insights.",
+          "inputs": [],
+          "outputs": [
+            "optimized timeline chart",
+            "critical path highlights",
+            "resource usage alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/projects/:projectId/scenarios",
+          "title": "What-If Scenario Planning",
+          "purpose": "Create, modify, compare, and save alternative timeline scenarios.",
+          "inputs": [
+            "scenario parameters",
+            "task schedule overrides"
+          ],
+          "outputs": [
+            "scenario comparison reports",
+            "visualizations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/profile",
+          "title": "User Profile & Settings",
+          "purpose": "Manage user account, preferences, and institution affiliations.",
+          "inputs": [
+            "profile updates"
+          ],
+          "outputs": [
+            "confirmation",
+            "error messages"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of projects for authenticated user.",
+          "requestShape": "none",
+          "responseShape": "Project[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects",
+          "method": "POST",
+          "purpose": "Create a new project.",
+          "requestShape": "{ title: string, description?: string }",
+          "responseShape": "Project",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/tasks",
+          "method": "GET",
+          "purpose": "Get all tasks and dependencies for a project.",
+          "requestShape": "none",
+          "responseShape": "{ tasks: Task[], dependencies: Dependency[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/tasks",
+          "method": "POST",
+          "purpose": "Create or update a task.",
+          "requestShape": "Task",
+          "responseShape": "Task",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/dependencies",
+          "method": "POST",
+          "purpose": "Create or update task dependencies.",
+          "requestShape": "Dependency[]",
+          "responseShape": "Dependency[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/optimize-timeline",
+          "method": "POST",
+          "purpose": "Generate optimized timeline and critical path based on current tasks, dependencies, availability, and constraints.",
+          "requestShape": "none",
+          "responseShape": "{ timeline: json, criticalPath: string[], alerts: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/scenarios",
+          "method": "GET",
+          "purpose": "List saved what-if scenarios for a project.",
+          "requestShape": "none",
+          "responseShape": "Scenario[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/scenarios",
+          "method": "POST",
+          "purpose": "Create or update a what-if scenario.",
+          "requestShape": "Scenario",
+          "responseShape": "Scenario",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users/me",
+          "method": "GET",
+          "purpose": "Retrieve current user profile.",
+          "requestShape": "none",
+          "responseShape": "User",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users/me",
+          "method": "POST",
+          "purpose": "Update current user profile.",
+          "requestShape": "{ name?: string, password?: string }",
+          "responseShape": "User",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "PeriodicTimelineRecalculation",
+          "trigger": "Scheduled (e.g., nightly or on task updates)",
+          "purpose": "Recalculate optimized timelines and critical paths for projects with recent changes to keep alerts and schedules up to date."
+        },
+        {
+          "name": "ResourceConflictDetection",
+          "trigger": "On task or resource constraint update",
+          "purpose": "Analyze resource usage to detect and alert on over-allocations or conflicts."
+        },
+        {
+          "name": "ScenarioCleanup",
+          "trigger": "Scheduled (e.g., weekly)",
+          "purpose": "Remove ephemeral or stale what-if scenarios to optimize storage."
+        }
+      ],
+      "edgeCases": [
+        "Circular dependencies between tasks must be detected and prevented with clear user feedback.",
+        "Collaborator availability changes after timeline optimization require timeline recalculation and user alerts.",
+        "Resource constraints that cannot be satisfied should trigger warnings and suggestions for task rescheduling.",
+        "Partial or inconsistent user input (e.g., missing durations or dependencies) should be validated and flagged before optimization.",
+        "Simultaneous edits by multiple users require conflict detection and resolution mechanisms.",
+        "Handling tasks spanning multiple institutions with differing calendars and holidays.",
+        "Scenario comparisons must handle incompatible or outdated task sets gracefully."
+      ],
+      "nonGoals": [
+        "Providing legal, financial, or compliance advice related to grant management.",
+        "Replacing full-featured enterprise project management suites.",
+        "Automating collaborator availability input beyond manual or imported schedules.",
+        "Handling non-academic or non-grant project types.",
+        "Supporting offline usage or mobile apps in initial phases."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/auth/login via POST; receives authentication token and user info on success.",
+        "Authenticated user accesses /projects page; frontend calls /api/projects GET to fetch user's projects.",
+        "User selects or creates a project; projectId is stored in client state for subsequent requests.",
+        "On /projects/:projectId/tasks, frontend fetches tasks and dependencies via /api/projects/:projectId/tasks GET; displays task dashboard with dependency graph.",
+        "User creates or updates tasks via /api/projects/:projectId/tasks POST; updates reflected in UI after successful response.",
+        "User creates or updates dependencies via /api/projects/:projectId/dependencies POST; dependency graph updates accordingly.",
+        "On /projects/:projectId/timeline, frontend calls /api/projects/:projectId/optimize-timeline POST to get optimized timeline, critical path, and alerts; renders visualization.",
+        "On /projects/:projectId/scenarios, frontend fetches scenarios via /api/projects/:projectId/scenarios GET; user can create/update scenarios via POST to same endpoint.",
+        "Scenario creation or updates include task schedule overrides; backend runs optimization and returns analysis results.",
+        "User profile data fetched and updated via /api/users/me GET and POST respectively.",
+        "Background jobs periodically recalculate timelines, detect resource conflicts, and clean up stale scenarios, updating database and triggering alerts as needed.",
+        "APIs enforce authentication and authorization on all protected routes, validating user permissions per project and role.",
+        "UI components consume API data and handle errors, showing alerts or validation messages to users."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "Project creation: title required, non-empty string; description optional.",
+        "Task creation/update: projectId required and must exist; title required; estimatedDurationDays positive number; status in predefined set (e.g., 'Not Started', 'In Progress', 'Completed'); assignedUserIds must be valid user IDs within project collaborators; startDate and endDate optional but if provided, startDate <= endDate.",
+        "Dependency creation/update: projectId required; predecessorTaskId and successorTaskId must be valid tasks within the same project; no circular dependencies allowed (detect cycles before saving).",
+        "Scenario creation/update: projectId required; name required; taskScheduleOverrides must match existing tasks and contain valid date overrides; analysisResults optional and generated by backend.",
+        "User profile update: name optional but if provided non-empty; password optional but if provided must meet complexity rules (e.g., min length, character types).",
+        "API requests must include valid authentication tokens for protected routes; user must have access rights to the referenced project.",
+        "Input JSON fields must be type-checked and sanitized to prevent injection attacks.",
+        "Collaborator availability windows must be valid date ranges and non-overlapping.",
+        "Resource constraints: limit must be positive number; usageSchedule if provided must be valid JSON with date ranges.",
+        "Partial or missing required fields in task or dependency inputs must cause validation errors with clear messages."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with message 'Invalid credentials' or 'Authentication required'.",
+        "Authorization failures return 403 Forbidden with message 'Access denied to this project or resource'.",
+        "Validation errors return 400 Bad Request with detailed field-level error messages.",
+        "Circular dependency detection returns 409 Conflict with message 'Circular dependency detected between tasks'.",
+        "Resource constraint conflicts and scheduling conflicts return 422 Unprocessable Entity with descriptive alerts.",
+        "Not found errors (e.g., project, task, user) return 404 Not Found with message 'Resource not found'.",
+        "Server errors return 500 Internal Server Error with generic message; detailed errors logged internally.",
+        "API responses include error codes and human-readable messages for frontend display.",
+        "Frontend displays error messages contextually near inputs or as global alerts.",
+        "Simultaneous edit conflicts detected via versioning or timestamps return 409 Conflict with instructions to reload or merge changes.",
+        "Scenario incompatibility or outdated task sets return warnings and prevent saving until resolved.",
+        "Background job failures are logged and trigger alerts to admins; do not block user operations."
+      ],
+      "securityNotes": [
+        "All API routes except /api/auth/login require valid JWT or session token.",
+        "Role-based access control enforced on all project-related data; users can only access projects they belong to.",
+        "Passwords stored as salted hashes; never returned in API responses.",
+        "Input data sanitized to prevent injection (SQL, XSS).",
+        "Data encrypted at rest and in transit (TLS).",
+        "Session tokens have expiration and refresh mechanisms.",
+        "Institutional SSO integration supports federated login with secure token exchange.",
+        "Rate limiting on authentication endpoints to prevent brute force attacks.",
+        "Audit logging of critical actions (task changes, scenario saves).",
+        "Cross-origin requests restricted to trusted domains.",
+        "CSRF protection enabled on state-changing API routes.",
+        "Collaborator availability and resource constraints access limited to authorized users.",
+        "Background jobs run with least privilege and access only necessary data."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "The user submits correct email and password on /login",
+          "then": "The user receives an authentication token and is redirected to /projects"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /projects",
+          "when": "The user creates a new project with a valid title",
+          "then": "The project is created and appears in the project list"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /projects/:projectId/tasks",
+          "when": "The user adds a task with valid details and assigns collaborators",
+          "then": "The task is saved and displayed in the task list and dependency graph"
+        },
+        {
+          "id": "AT-004",
+          "given": "A project with multiple tasks",
+          "when": "The user creates dependencies that form a cycle",
+          "then": "The API rejects the request with a circular dependency error and the UI shows a clear message"
+        },
+        {
+          "id": "AT-005",
+          "given": "A project with tasks and dependencies",
+          "when": "The user requests timeline optimization",
+          "then": "The API returns an optimized timeline, critical path, and any scheduling alerts"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user on /projects/:projectId/scenarios",
+          "when": "The user creates a what-if scenario with valid overrides",
+          "then": "The scenario is saved and analysis results are returned and visualized"
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated user attempts to access a project they do not belong to",
+          "when": "They request tasks or scenarios for that project",
+          "then": "The API returns 403 Forbidden and the UI shows an access denied message"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user updates their profile with an invalid password",
+          "when": "They submit the update form",
+          "then": "The API returns validation errors and the UI displays error messages"
+        },
+        {
+          "id": "AT-009",
+          "given": "Multiple users edit the same task simultaneously",
+          "when": "Conflicting updates are submitted",
+          "then": "The API detects conflict and returns 409 with instructions to resolve"
+        },
+        {
+          "id": "AT-010",
+          "given": "A collaborator's availability changes after timeline optimization",
+          "when": "The background job runs or user triggers optimization",
+          "then": "The timeline is recalculated and alerts about availability conflicts are generated"
+        }
+      ],
+      "buildOrder": [
+        "Set up data-db with Prisma models and migrations for all data models",
+        "Implement api-auth with user authentication, JWT/session management, and role-based access control",
+        "Implement api-task for CRUD operations on projects, tasks, dependencies, collaborators with validation and access control",
+        "Implement api-optimization for timeline optimization, critical path calculation, and alert generation",
+        "Implement api-scenario for scenario management including creation, storage, versioning, and comparison",
+        "Develop UI components for login and user profile pages integrating with api-auth and api-user",
+        "Develop UI for project list and selection integrating with api-task",
+        "Develop task dashboard UI with dependency graph integrating with api-task and api-optimization",
+        "Develop timeline visualization UI integrating with api-optimization",
+        "Develop scenario planner UI integrating with api-scenario and api-optimization",
+        "Implement background jobs for periodic timeline recalculation, resource conflict detection, and scenario cleanup",
+        "Implement error handling and validation feedback across all APIs and UI components",
+        "Implement security hardening including input sanitization, encryption, and access controls",
+        "Write and run acceptance tests to verify all critical flows and edge cases",
+        "Deploy and monitor system with logging and alerting"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/projects",
+          "/projects/[projectId]/tasks",
+          "/projects/[projectId]/timeline",
+          "/projects/[projectId]/scenarios",
+          "/profile"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/projects/index.ts",
+          "/api/projects/[projectId]/tasks.ts",
+          "/api/projects/[projectId]/dependencies.ts",
+          "/api/projects/[projectId]/optimize-timeline.ts",
+          "/api/projects/[projectId]/scenarios.ts",
+          "/api/users/me.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "Task",
+          "Dependency",
+          "CollaboratorAvailability",
+          "Milestone",
+          "ResourceConstraint",
+          "Scenario"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather missing constraints or details about project tasks, dependencies, availability, and resources.",
+        "promptTemplate": "Given the current blueprint:\n{{BLUEPRINT}}\n\nPlease provide any missing constraints, assumptions, or clarifications needed to finalize the project planning requirements. User input:\n{{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and confirm all UI pages and data models needed for the platform.",
+        "promptTemplate": "Based on the idea and blueprint:\n{{IDEA}}\n{{BLUEPRINT}}\n\nPlease finalize the list of UI pages, their purposes, and the detailed data models with fields and relationships for implementation."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs or templates for the defined UI pages.",
+        "promptTemplate": "Given the finalized pages:\n{{PAGES}}\n\nGenerate starter code stubs and basic UI layout components for each page to accelerate frontend development."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Plan the integration of frontend pages with backend APIs and database models.",
+        "promptTemplate": "Using the blueprint and expanded data flow:\n{{BLUEPRINT}}\n{{EXPANDED}}\n\nDescribe how to connect UI pages with API routes and database models, including data flow, validation, and error handling."
+      }
+    ]
+  }
+}

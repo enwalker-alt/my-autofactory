@@ -1,0 +1,727 @@
+{
+  "slug": "academic-fieldwork-sample-tracker",
+  "title": "Academic Fieldwork Sample Collection & Chain-of-Custody Tracker",
+  "description": "A lightweight single-page tool for academic field research technicians to manually enter and update sample metadata and chain-of-custody events, ensuring traceability and compliance readiness with validation and safe input handling.",
+  "inputLabel": "Enter sample metadata and/or chain-of-custody event details (JSON or plain text)",
+  "outputLabel": "Sample record and chain-of-custody log with validation feedback",
+  "systemPrompt": "You are a secure academic field research sample tracking assistant. Only accept requests for metadata entry or chain-of-custody event logging conforming to academic research fieldwork scenarios. Validate all required fields: unique Sample ID, Sample Type, Collection DateTime (not future), Collector ID for samples; and for events Event Type, Timestamp (not future), Operator ID, and Sample ID referencing an existing sample. Reject any request with clinical, diagnostic, or unrelated content. Refuse entries missing required fields or containing unsafe data. Output plain text summaries or JSON if requested. Enforce role-based access assumption: user is authenticated technician. Do not generate labels, dashboards, or reports. Confirm success or return detailed error messages for invalid input. Use only the features: text-input, file-upload, presets, structured-output, clarify-first, saved-history. Do not access external data or services. Always sanitize inputs to prevent injection or data leaks. This tool supports manual sample and event entry only, no compliance automation or multi-user sync.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "New Sample Entry",
+      "prompt": "Create a new sample record with the following details:\nSample ID: {{sampleId}}\nSample Type: {{sampleType}}\nCollection Date and Time: {{collectionDateTime}}\nGPS Coordinates or Site Metadata (optional): {{gpsCoordinates}}\nCollector ID: {{collectorId}}\nCondition Notes (optional): {{conditionNotes}}\nPhotos or Barcode/QR Code data (optional): {{photosOrBarcode}}\nPermit Documents (optional): {{permitDocuments}}",
+      "hint": "Fill in sample metadata fields to create a new sample record."
+    },
+    {
+      "label": "Add Chain-of-Custody Event",
+      "prompt": "Add a new chain-of-custody event for sample {{sampleId}} with:\nEvent Type: {{eventType}}\nTimestamp: {{timestamp}}\nOperator ID: {{operatorId}}\nLocation (optional): {{location}}\nStorage Conditions (optional): {{storageConditions}}\nNotes (optional): {{notes}}",
+      "hint": "Provide details of a handling, processing, storage, or transfer event."
+    },
+    {
+      "label": "Update Sample Metadata",
+      "prompt": "Update sample {{sampleId}} metadata with the following changes:\n{{metadataUpdates}}",
+      "hint": "Specify fields and new values to update an existing sample."
+    },
+    {
+      "label": "Help: Validation Rules",
+      "prompt": "Explain the validation rules required for sample and chain-of-custody event data entry in this tool.",
+      "hint": "Show required fields and constraints for valid input."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON will contain { success: boolean, message: string, errors?: array, sampleRecord?: object, chainOfCustodyEvents?: array }",
+  "clarifyPrompt": "Please provide the sample or event data you want to enter or update. Include all required fields. If unsure, ask for help on validation rules.",
+  "finalizePrompt": "Confirm submission of the sample or event data. Validate all required fields and reject unsafe or incomplete data. Respond with success confirmation or detailed errors.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Fieldwork Sample Collection Tracker & Chain-of-Custody Manager",
+      "niche": {
+        "role": "Academic Field Research Technician",
+        "scenario": "During multi-site field research studies involving biological, geological, or environmental sample collection, technicians must track each sample’s metadata, location, handling steps, storage conditions, and transfer events to ensure data integrity, compliance, and reproducibility."
+      },
+      "problem": "Field researchers currently rely on disparate manual logs, spreadsheets, or paper forms to record detailed sample collection and chain-of-custody information, leading to risks of data loss, sample misidentification, compliance gaps, and difficulty aggregating and auditing sample histories across sites and collaborators.",
+      "inputs": [
+        "Sample ID and type",
+        "Collection date and time",
+        "GPS coordinates or site metadata",
+        "Collector identity",
+        "Sample condition notes",
+        "Handling and processing steps (timestamps, operator IDs)",
+        "Storage location and conditions",
+        "Transfer and custody handoff records",
+        "Photos or barcode/QR code scans of samples",
+        "Optional compliance or permit documents"
+      ],
+      "outputs": [
+        "Structured, timestamped sample metadata record",
+        "Chain-of-custody log with detailed transfer history",
+        "Compliance and audit readiness reports highlighting missing or incomplete data",
+        "Sample tracking dashboards with location and status visualizations",
+        "Printable/exportable sample labels with unique identifiers and QR codes",
+        "Alerts or reminders for critical handling steps or storage condition deviations"
+      ],
+      "whyItWins": [
+        "Fills a critical gap in sample traceability and integrity management in field research workflows where existing tools focus on device, data, or protocol tracking but not detailed sample chain-of-custody",
+        "Supports repeated, multi-site use by individual technicians and teams with collaborative data synchronization",
+        "Combines manual entry ease with barcode/QR code integration for real-world field usability and error reduction",
+        "Enhances compliance with ethical, regulatory, and reproducibility standards through automated completeness and consistency checks",
+        "Allows gradual adoption from simple sample logs to full chain-of-custody management with rich reporting and visualization"
+      ],
+      "upgradePath": {
+        "today": "Lightweight single-page app for manual sample metadata entry, basic chain-of-custody logging, and label generation with exportable CSV reports.",
+        "in90Days": "Add mobile-friendly barcode/QR code scanning integration, site-level sample tracking dashboards, and basic compliance alerting.",
+        "in12Months": "Develop a full multi-user web platform with role-based access, offline mobile data capture syncing, advanced analytics on sample handling patterns, integration with lab information management systems (LIMS), and customizable compliance documentation workflows."
+      },
+      "riskNotes": [
+        "Must ensure data privacy and security for sensitive samples, particularly biological or human-subject related materials.",
+        "Avoid any clinical or diagnostic interpretations; strictly metadata and process tracking.",
+        "Requires clear disclaimers that the tool supports documentation but does not replace institutional compliance or regulatory approvals.",
+        "Potential user resistance to new digital workflows in field environments with connectivity challenges; offline capabilities are essential."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A comprehensive multi-user platform to track academic research fieldwork sample collection and chain-of-custody, combining manual metadata entry, barcode/QR code integration, compliance monitoring, and reporting to ensure sample traceability, integrity, and audit readiness across multi-site studies.",
+      "primaryUser": "Academic Field Research Technicians and Research Teams",
+      "successMetrics": [
+        "Reduction in sample misidentification and data loss incidents",
+        "User adoption rate across multiple field sites and teams",
+        "Percentage of samples with complete chain-of-custody records",
+        "Number of compliance audit issues detected and resolved",
+        "Frequency of label generation and sample tracking dashboard usage"
+      ],
+      "components": [
+        {
+          "id": "ui-sample-entry",
+          "name": "Sample Metadata Entry UI",
+          "type": "ui",
+          "responsibility": "Provide forms and interfaces for manual entry and editing of sample metadata, handling steps, storage info, and transfer records, including photo and barcode/QR code input.",
+          "dependsOn": [
+            "api-sample-management",
+            "integration-barcode-scanner"
+          ],
+          "notes": [
+            "Must support offline data entry with local caching and sync",
+            "Validation for required fields and data consistency",
+            "Mobile-friendly design for field use"
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Sample Tracking & Compliance Dashboard UI",
+          "type": "ui",
+          "responsibility": "Visualize sample locations, statuses, chain-of-custody histories, and compliance alerts; provide export and label generation features.",
+          "dependsOn": [
+            "api-reporting",
+            "api-sample-management"
+          ],
+          "notes": [
+            "Interactive maps for GPS-based location visualization",
+            "Filters for site, sample type, and compliance status",
+            "Export options for CSV, PDF labels with QR codes"
+          ]
+        },
+        {
+          "id": "api-sample-management",
+          "name": "Sample Metadata & Chain-of-Custody API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for samples, chain-of-custody events, storage info, and associated media; enforce data validation and access control.",
+          "dependsOn": [
+            "data-sample-db",
+            "integration-auth"
+          ],
+          "notes": [
+            "Support batch operations for multi-sample updates",
+            "Ensure atomicity for chain-of-custody event sequences",
+            "Handle offline sync conflict resolution"
+          ]
+        },
+        {
+          "id": "api-reporting",
+          "name": "Reporting & Compliance API",
+          "type": "api",
+          "responsibility": "Generate audit readiness reports, compliance alerts, and analytics on sample handling patterns; provide data for dashboards and exports.",
+          "dependsOn": [
+            "data-sample-db",
+            "api-sample-management"
+          ],
+          "notes": [
+            "Run completeness and consistency checks on sample records",
+            "Trigger alerts for missing or inconsistent data",
+            "Support scheduled report generation"
+          ]
+        },
+        {
+          "id": "integration-barcode-scanner",
+          "name": "Barcode/QR Code Scanner Integration",
+          "type": "integration",
+          "responsibility": "Interface with device camera or external scanners to capture sample IDs and automate data entry or lookup.",
+          "dependsOn": [],
+          "notes": [
+            "Must support offline scanning with local data caching",
+            "Fallback manual entry if scanning fails"
+          ]
+        },
+        {
+          "id": "integration-auth",
+          "name": "Authentication & Authorization",
+          "type": "integration",
+          "responsibility": "Manage user identity, roles, and permissions to secure access to sample data and features.",
+          "dependsOn": [],
+          "notes": [
+            "Role-based access control for technicians, supervisors, and auditors",
+            "Support single sign-on and password policies"
+          ]
+        },
+        {
+          "id": "data-sample-db",
+          "name": "Sample & Chain-of-Custody Database",
+          "type": "data",
+          "responsibility": "Persist all sample metadata, chain-of-custody events, media references, user info, and compliance documentation.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure data encryption at rest and in transit",
+            "Index on sample IDs, timestamps, and site metadata for query performance"
+          ]
+        },
+        {
+          "id": "job-sync-offline-data",
+          "name": "Offline Data Sync Job",
+          "type": "job",
+          "responsibility": "Process and reconcile data collected offline on mobile devices, resolving conflicts and merging with central database.",
+          "dependsOn": [
+            "data-sample-db",
+            "api-sample-management"
+          ],
+          "notes": [
+            "Handle partial sync failures and retries",
+            "Notify users of conflicts requiring manual resolution"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Sample",
+          "purpose": "Represents a collected research sample with metadata and identifiers.",
+          "fields": [
+            {
+              "name": "sampleId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sampleType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "collectionDateTime",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "gpsCoordinates",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "siteMetadata",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "collectorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "conditionNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "photos",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "barcodeData",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "permitDocuments",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "sampleId",
+            "collectionDateTime",
+            "gpsCoordinates"
+          ]
+        },
+        {
+          "name": "ChainOfCustodyEvent",
+          "purpose": "Records a handling, processing, storage, or transfer event for a sample.",
+          "fields": [
+            {
+              "name": "eventId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sampleId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "eventType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "operatorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "storageConditions",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "sampleId",
+            "timestamp",
+            "eventType"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents a system user with roles and permissions.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "email"
+          ]
+        },
+        {
+          "name": "ComplianceAlert",
+          "purpose": "Tracks alerts generated for missing or inconsistent sample data or handling steps.",
+          "fields": [
+            {
+              "name": "alertId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sampleId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "alertType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "sampleId",
+            "alertType",
+            "resolved"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/samples/new",
+          "title": "New Sample Entry",
+          "purpose": "Form for entering new sample metadata and initial chain-of-custody data.",
+          "inputs": [
+            "Sample ID",
+            "Sample Type",
+            "Collection Date and Time",
+            "GPS Coordinates or Site Metadata",
+            "Collector Identity",
+            "Condition Notes",
+            "Photos or Barcode/QR Code"
+          ],
+          "outputs": [
+            "Saved Sample Record",
+            "Initial Chain-of-Custody Event"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/samples/:sampleId",
+          "title": "Sample Detail & Chain-of-Custody",
+          "purpose": "View and edit sample metadata, chain-of-custody events, storage info, and transfer history.",
+          "inputs": [
+            "Sample metadata edits",
+            "New chain-of-custody event inputs",
+            "Photo uploads",
+            "Barcode scans"
+          ],
+          "outputs": [
+            "Updated sample record",
+            "Updated chain-of-custody log"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Sample Tracking Dashboard",
+          "purpose": "Visualize sample locations, statuses, and compliance alerts across sites.",
+          "inputs": [
+            "Filters by site, sample type, date range, compliance status"
+          ],
+          "outputs": [
+            "Map and list views of samples",
+            "Compliance alert summaries",
+            "Export options for reports and labels"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports/compliance",
+          "title": "Compliance & Audit Reports",
+          "purpose": "Generate and view reports on data completeness, chain-of-custody integrity, and compliance issues.",
+          "inputs": [
+            "Date range",
+            "Site or project filters"
+          ],
+          "outputs": [
+            "Compliance reports",
+            "Exportable PDFs or CSVs"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "Username/email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token/session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/samples",
+          "method": "POST",
+          "purpose": "Create a new sample record with initial metadata.",
+          "requestShape": "{ sampleId, sampleType, collectionDateTime, gpsCoordinates?, siteMetadata?, collectorId, conditionNotes?, photos?, barcodeData?, permitDocuments? }",
+          "responseShape": "{ success: boolean, sampleId, errors? }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/samples/:sampleId",
+          "method": "GET",
+          "purpose": "Retrieve full sample metadata and chain-of-custody events.",
+          "requestShape": "N/A",
+          "responseShape": "{ sample: Sample, chainOfCustodyEvents: ChainOfCustodyEvent[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/samples/:sampleId/events",
+          "method": "POST",
+          "purpose": "Add a new chain-of-custody event for a sample.",
+          "requestShape": "{ eventType, timestamp, operatorId, location?, storageConditions?, notes? }",
+          "responseShape": "{ success: boolean, eventId, errors? }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/compliance",
+          "method": "GET",
+          "purpose": "Generate compliance and audit readiness reports.",
+          "requestShape": "{ dateRange?, siteFilter? }",
+          "responseShape": "{ reports: ComplianceAlert[], summary: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue session token.",
+          "requestShape": "{ username, password }",
+          "responseShape": "{ success: boolean, token?, errors? }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Offline Data Sync Processor",
+          "trigger": "Periodic or on-demand sync from mobile devices",
+          "purpose": "Merge offline-collected sample data and chain-of-custody events into central database, resolving conflicts and notifying users of issues."
+        },
+        {
+          "name": "Compliance Alert Generator",
+          "trigger": "Scheduled daily job",
+          "purpose": "Scan sample records for missing or inconsistent data and generate compliance alerts for user review."
+        },
+        {
+          "name": "Report Scheduler",
+          "trigger": "Scheduled or manual trigger",
+          "purpose": "Generate and archive compliance and audit readiness reports for distribution."
+        }
+      ],
+      "edgeCases": [
+        "Offline data entry conflicts where multiple users edit same sample or event before sync",
+        "Barcode/QR code scanning failures or misreads in field conditions",
+        "Incomplete or missing GPS/site metadata requiring manual override",
+        "Handling of sensitive sample data requiring strict access controls and encryption",
+        "Partial data loss due to interrupted sync or device failures",
+        "User errors in entering timestamps or operator IDs leading to chain-of-custody gaps",
+        "Network outages preventing real-time data sync and alert delivery",
+        "Export or label generation failures due to malformed data or missing fields"
+      ],
+      "nonGoals": [
+        "Performing any clinical or diagnostic analysis of samples",
+        "Replacing institutional compliance or regulatory approval processes",
+        "Managing laboratory analysis results or LIMS data beyond sample metadata and custody tracking",
+        "Providing real-time GPS tracking hardware integration",
+        "Supporting non-academic or commercial sample tracking use cases"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits credentials to /api/auth/login; receives auth token on success.",
+        "Authenticated user navigates to /samples/new to enter new sample metadata; form submits to POST /api/samples.",
+        "API validates sample data, creates Sample record and initial ChainOfCustodyEvent atomically in database.",
+        "User can view or edit sample details at /samples/:sampleId; page fetches sample and chain-of-custody events via GET /api/samples/:sampleId.",
+        "User adds new chain-of-custody events via POST /api/samples/:sampleId/events; API validates and appends event.",
+        "Barcode/QR code scanning integration captures sample IDs and metadata, feeding into sample entry or editing forms with offline caching.",
+        "Dashboard at /dashboard fetches aggregated sample data, compliance alerts, and supports filtering via API endpoints (e.g., /api/samples with query params, /api/reports/compliance).",
+        "Compliance reports generated on-demand or scheduled via /api/reports/compliance; results displayed and exportable as CSV or PDF.",
+        "Offline data collected on mobile devices cached locally; sync job processes and merges data into central DB, resolving conflicts and notifying users.",
+        "Background jobs generate compliance alerts daily and schedule report generation, updating database and notifying users via dashboard."
+      ],
+      "validationRules": [
+        "Sample creation requires unique sampleId, non-empty sampleType, valid collectionDateTime (not future), and valid collectorId.",
+        "GPS coordinates and siteMetadata are optional but if provided must conform to geoJSON or defined JSON schema.",
+        "Photos and permitDocuments must be valid JSON arrays of URLs or base64-encoded images; barcodeData must match expected barcode format.",
+        "ChainOfCustodyEvent requires unique eventId, valid sampleId referencing existing Sample, eventType from predefined set, timestamp not in future, and operatorId referencing existing User.",
+        "StorageConditions JSON must conform to defined schema if provided.",
+        "User login requires valid email format and password meeting password policy.",
+        "API endpoints enforce role-based access control: technicians can create/edit samples and events; supervisors and auditors have read or elevated permissions.",
+        "Batch operations validate all items; reject entire batch if any item fails validation to ensure atomicity.",
+        "Offline sync resolves conflicts by timestamp and user role precedence; conflicts needing manual resolution flagged and notified."
+      ],
+      "errorHandling": [
+        "API returns HTTP 400 with detailed error messages for validation failures.",
+        "Authentication failures return HTTP 401 Unauthorized with generic error to avoid information leakage.",
+        "Authorization failures return HTTP 403 Forbidden with explanation of missing permissions.",
+        "Database errors return HTTP 500 with generic message; detailed errors logged server-side.",
+        "Sync job logs partial failures and retries; notifies users via dashboard alerts for unresolved conflicts.",
+        "Barcode scanning failures fallback to manual entry with user notification.",
+        "Export or label generation errors return user-friendly messages and log details for debugging.",
+        "Client-side forms display inline validation errors and prevent submission until resolved.",
+        "Network outages handled by offline caching with retry logic; user informed of sync status."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /api/auth/login; tokens validated on each request.",
+        "Role-based access control enforced server-side for all data mutations and sensitive reads.",
+        "Data encrypted at rest in database and in transit via HTTPS.",
+        "Sensitive fields such as permitDocuments and user info access restricted to authorized roles only.",
+        "Offline data stored encrypted on device; sync uses secure channels with authentication.",
+        "Password policies enforced on user creation and password changes.",
+        "Audit logs maintained for all sample and chain-of-custody modifications with user and timestamp.",
+        "CSRF protection implemented on state-changing API routes.",
+        "Input sanitization to prevent injection attacks on all user inputs.",
+        "Session tokens have expiration and refresh mechanisms."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated technician on /samples/new page",
+          "when": "They enter valid sample metadata and submit the form",
+          "then": "A new Sample record and initial ChainOfCustodyEvent are created; user receives confirmation and sample detail page loads"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user views /samples/:sampleId for an existing sample",
+          "when": "They add a new chain-of-custody event with valid data",
+          "then": "The event is saved and appears in the chain-of-custody log without errors"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user scans a barcode with the integrated scanner on a mobile device offline",
+          "when": "They enter additional sample data and save",
+          "then": "Data is cached locally and synced successfully when network is restored"
+        },
+        {
+          "id": "AT-004",
+          "given": "A supervisor accesses /dashboard with filters applied",
+          "when": "They view sample locations and compliance alerts",
+          "then": "Filtered data is displayed accurately with export options enabled"
+        },
+        {
+          "id": "AT-005",
+          "given": "A compliance alert generator job runs overnight",
+          "when": "It detects samples with missing chain-of-custody events",
+          "then": "ComplianceAlert records are created and visible on dashboard for review"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user attempts to create a sample with duplicate sampleId",
+          "when": "They submit the form",
+          "then": "The API rejects the request with a validation error indicating duplicate sampleId"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user requests /samples/new",
+          "when": "They attempt to access the page",
+          "then": "They are redirected to the /login page"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to add a chain-of-custody event with a future timestamp",
+          "when": "They submit the event",
+          "then": "The API returns a validation error preventing creation"
+        },
+        {
+          "id": "AT-009",
+          "given": "Offline data sync job encounters conflicting edits from multiple users",
+          "when": "It processes the sync batch",
+          "then": "Conflicts are flagged and users are notified for manual resolution"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user exports compliance reports as PDF",
+          "when": "The export is triggered",
+          "then": "A correctly formatted PDF file is generated and downloadable without errors"
+        }
+      ],
+      "buildOrder": [
+        "integration-auth",
+        "data-sample-db",
+        "api-sample-management",
+        "integration-barcode-scanner",
+        "ui-sample-entry",
+        "ui-dashboard",
+        "api-reporting",
+        "pages /login, /samples/new, /samples/:sampleId, /dashboard, /reports/compliance",
+        "job-sync-offline-data",
+        "background jobs: Compliance Alert Generator, Report Scheduler"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/samples/new",
+          "/samples/[sampleId]",
+          "/dashboard",
+          "/reports/compliance"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.js",
+          "/api/samples/index.js",
+          "/api/samples/[sampleId].js",
+          "/api/samples/[sampleId]/events.js",
+          "/api/reports/compliance.js"
+        ],
+        "prismaModelsToAdd": [
+          "model Sample { sampleId String @id @unique sampleType String collectionDateTime DateTime gpsCoordinates Json? siteMetadata Json? collectorId String conditionNotes String? photos Json? barcodeData String? permitDocuments Json? chainOfCustodyEvents ChainOfCustodyEvent[] }",
+          "model ChainOfCustodyEvent { eventId String @id @unique sampleId String eventType String timestamp DateTime operatorId String location String? storageConditions Json? notes String? sample Sample @relation(fields: [sampleId], references: [sampleId]) }",
+          "model User { userId String @id @unique name String email String @unique role String lastLogin DateTime? }",
+          "model ComplianceAlert { alertId String @id @unique sampleId String alertType String description String createdAt DateTime resolved Boolean }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask missing constraints or clarify ambiguous requirements for the sample tracking tool.",
+        "promptTemplate": "You are the planner refining the requirements for the Academic Fieldwork Sample Tracker. Given the current blueprint:\n{{BLUEPRINT}}\nAnd the user input:\n{{USER_INPUT}}\nList any missing constraints, edge cases, or clarifications needed to ensure a safe, compliant, and usable tool."
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize pages, data models, and API contracts based on refined requirements.",
+        "promptTemplate": "You are the architect for the Academic Fieldwork Sample Tracker. Given the refined requirements:\n{{REFINED_REQUIREMENTS}}\nFinalize the page routes, data models, and API endpoints with detailed field definitions and validation rules."
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code stubs for UI pages based on the finalized design.",
+        "promptTemplate": "You are the builder tasked with generating page stubs. Using the finalized pages and data models:\n{{FINALIZED_DESIGN}}\nGenerate React or Next.js page stubs with placeholder UI and form fields to capture sample metadata and chain-of-custody events."
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring between UI pages, API routes, and the database for data persistence and validation.",
+        "promptTemplate": "You are the integrator connecting the system components. Given the page stubs and API definitions:\n{{PAGE_STUBS}}\n{{API_DEFINITIONS}}\nImplement the wiring logic to connect UI forms to API endpoints and ensure data is stored and retrieved correctly from the database with validation and error handling."
+      }
+    ]
+  }
+}

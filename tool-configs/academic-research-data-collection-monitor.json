@@ -1,0 +1,667 @@
+{
+  "slug": "academic-research-data-collection-monitor",
+  "title": "Academic Research Data Collection Monitor",
+  "description": "A lightweight single-page web app for academic field data collectors to upload data submission logs and site metadata, generating real-time dashboards of data completeness, prioritized missing or delayed entries, and communication briefs to support efficient coordination with site coordinators.",
+  "inputLabel": "Upload your site metadata and data submission logs (CSV or JSON files) or paste data below",
+  "outputLabel": "Generated data completeness summary, prioritized action list, and communication briefs",
+  "systemPrompt": "You are an expert assistant for academic research field data collectors. Given uploaded site metadata and data submission logs, analyze submission completeness per site and date, identify missing or delayed entries with urgency flags, and generate prioritized action lists and communication briefs tailored for site coordinators. Enforce data validation rules strictly and reject disallowed or corrupt inputs with detailed feedback. Output a clear, concise plain-text summary including completeness status, missing/delayed entries with urgency levels, and communication brief drafts. Refuse any request that lacks required data fields or attempts unauthorized actions. Do not output anything but the requested summary report and briefs. Use only the uploaded data; do not assume external data sources. Maintain privacy and security of all data.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary View",
+      "prompt": "Generate a concise summary report of data submission completeness across all uploaded sites, highlighting any missing or delayed submissions with urgency flags.",
+      "hint": "Quick overview of submission status and key issues"
+    },
+    {
+      "label": "Prioritized Action List",
+      "prompt": "List missing or delayed data submissions prioritized by urgency, including site IDs, affected collection dates, and recommended actions for field data collectors.",
+      "hint": "Focused task list to address data gaps"
+    },
+    {
+      "label": "Communication Briefs for Site Coordinators",
+      "prompt": "Generate role-specific communication briefs addressing data submission gaps and delays, suitable for sending to site coordinators with clear urgency indicators.",
+      "hint": "Automated messages to improve coordination"
+    },
+    {
+      "label": "Detailed Validation Feedback",
+      "prompt": "Validate the uploaded site metadata and data submission logs thoroughly. If any errors or missing fields are found, provide detailed, user-friendly validation feedback explaining each issue.",
+      "hint": "Ensure data quality before analysis"
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output may include JSON with keys: completenessSummary, prioritizedActions (array), communicationBriefs (array with urgency flags), validationErrors (if any).",
+  "clarifyPrompt": "Please upload valid site metadata and data submission logs in CSV or JSON format, or paste the data directly. If you have questions about required formats or fields, ask before submitting.",
+  "finalizePrompt": "Review the generated summary, action list, and communication briefs. Confirm if you want to export or send these reports, or upload additional data for updated analysis.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Data Collection Workflow Optimizer",
+      "niche": {
+        "role": "Academic Research Field Data Collector",
+        "scenario": "During active multi-site data collection phases, field data collectors need to monitor data submission completeness, identify missing or delayed data entries, and coordinate with site coordinators to ensure timely, high-quality data capture."
+      },
+      "problem": "Field data collectors currently lack a lightweight, integrated tool to track real-time data submission status across multiple sites, identify gaps or delays in data entry, and generate prioritized action lists and communication briefs for site coordinators, resulting in inefficiencies, data quality risks, and coordination challenges.",
+      "inputs": [
+        "Site metadata (site IDs, locations)",
+        "Scheduled data collection dates and target sample sizes",
+        "Data submission logs (timestamps, completeness status, data file references)",
+        "Field team member assignments and contact details"
+      ],
+      "outputs": [
+        "Real-time data submission completeness dashboard per site",
+        "Prioritized list of missing or delayed data entries with urgency flags",
+        "Automated, role-specific communication briefs and reminders for site coordinators",
+        "Summary reports highlighting trends in data entry delays and quality issues"
+      ],
+      "whyItWins": [
+        "Fills a gap by integrating data completeness tracking with communication coordination tailored for field data collectors",
+        "Reduces manual monitoring efforts and miscommunications, increasing data quality and collection efficiency",
+        "Supports repeated use in ongoing data collection phases, ensuring timely interventions",
+        "Lightweight initial design with immediate practical value; can scale to comprehensive workflow management"
+      ],
+      "upgradePath": {
+        "today": "Single-page web app to manually upload data submission logs and site metadata, generating dashboards and prioritized action lists with exportable communication briefs.",
+        "in90Days": "Add automated data ingestion from common data capture platforms (e.g., REDCap, Qualtrics), user authentication, role-based dashboards, and in-app messaging templates to streamline coordination.",
+        "in12Months": "Develop a multi-page system with real-time integration to data capture systems, team task management, automated alerts, detailed analytics on data quality trends, and collaborative communication tools with audit trails."
+      },
+      "riskNotes": [
+        "Must ensure secure handling of potentially sensitive research data and compliance with data privacy regulations.",
+        "Avoid functionality overlap with existing compliance or data quality tools by focusing on active data submission tracking and field coordination.",
+        "Requires clear user access controls to protect data integrity and confidentiality across multiple sites."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A workflow optimization system for academic research field data collectors to monitor real-time data submission completeness across multiple sites, identify gaps or delays, and coordinate efficiently with site coordinators via prioritized action lists and automated communication briefs.",
+      "primaryUser": "Academic Research Field Data Collector",
+      "successMetrics": [
+        "Reduction in delayed or missing data submissions across sites",
+        "Increased data completeness percentage per collection phase",
+        "User adoption rate among field data collectors and site coordinators",
+        "Reduction in manual monitoring time spent by field teams",
+        "Improved timeliness and clarity of communication with site coordinators"
+      ],
+      "components": [
+        {
+          "id": "ui_dashboard",
+          "name": "Data Submission Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide real-time visualization of data submission completeness, site statuses, prioritized missing/delayed entries, and communication briefs; enable data upload and report export.",
+          "dependsOn": [
+            "api_data",
+            "api_communication"
+          ],
+          "notes": [
+            "Initial version supports manual data upload; future versions integrate automated ingestion.",
+            "Must support role-based views (field collectors vs site coordinators)."
+          ]
+        },
+        {
+          "id": "api_data",
+          "name": "Data Management API",
+          "type": "api",
+          "responsibility": "Handle ingestion, validation, storage, and retrieval of site metadata, data submission logs, schedules, and team assignments.",
+          "dependsOn": [
+            "data_models"
+          ],
+          "notes": [
+            "Supports both manual uploads and automated ingestion endpoints.",
+            "Implements data validation and completeness checks."
+          ]
+        },
+        {
+          "id": "api_communication",
+          "name": "Communication & Notification API",
+          "type": "api",
+          "responsibility": "Generate prioritized action lists, urgency flags, and automated communication briefs; manage messaging templates and dispatch reminders to site coordinators.",
+          "dependsOn": [
+            "data_models",
+            "api_data"
+          ],
+          "notes": [
+            "Supports role-specific communication generation.",
+            "Future integration with in-app messaging and audit trails."
+          ]
+        },
+        {
+          "id": "data_models",
+          "name": "Core Data Models & Persistence",
+          "type": "data",
+          "responsibility": "Persist site metadata, data submission logs, schedules, team member info, communication briefs, and audit records securely.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure encryption and access controls for sensitive data.",
+            "Design indexes for efficient querying by site, date, and status."
+          ]
+        },
+        {
+          "id": "job_data_quality_monitor",
+          "name": "Data Quality Monitoring Job",
+          "type": "job",
+          "responsibility": "Periodically analyze data submission logs to identify missing or delayed entries, update urgency flags, and trigger communication brief generation.",
+          "dependsOn": [
+            "data_models",
+            "api_communication"
+          ],
+          "notes": [
+            "Runs on schedule or triggered by new data ingestion.",
+            "Handles edge cases like partial submissions or data corrections."
+          ]
+        },
+        {
+          "id": "integration_external_platforms",
+          "name": "External Data Capture Platform Integration",
+          "type": "integration",
+          "responsibility": "Connect with common data capture systems (e.g., REDCap, Qualtrics) to automate ingestion of data submission logs and metadata.",
+          "dependsOn": [
+            "api_data"
+          ],
+          "notes": [
+            "Initial version may support manual CSV uploads; later versions enable API-based sync.",
+            "Must handle authentication and error recovery for external systems."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Site",
+          "purpose": "Store metadata about each research site.",
+          "fields": [
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId"
+          ]
+        },
+        {
+          "name": "DataCollectionSchedule",
+          "purpose": "Define scheduled data collection dates and target sample sizes per site.",
+          "fields": [
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "collectionDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "targetSampleSize",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "collectionDate"
+          ]
+        },
+        {
+          "name": "DataSubmissionLog",
+          "purpose": "Record data submission events including timestamps, completeness status, and file references.",
+          "fields": [
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "submissionDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "completenessStatus",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dataFileReference",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "submittedBy",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "submissionDate"
+          ]
+        },
+        {
+          "name": "TeamMember",
+          "purpose": "Store field team member assignments and contact details.",
+          "fields": [
+            {
+              "name": "memberId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "contactInfo",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "assignedSites",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "memberId"
+          ]
+        },
+        {
+          "name": "CommunicationBrief",
+          "purpose": "Store generated communication briefs and reminders for site coordinators.",
+          "fields": [
+            {
+              "name": "briefId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "siteId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "urgencyFlag",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sentStatus",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "siteId",
+            "generatedDate"
+          ]
+        },
+        {
+          "name": "AuditLog",
+          "purpose": "Track system actions for compliance and troubleshooting.",
+          "fields": [
+            {
+              "name": "logId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "performedBy",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "logId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Data Submission Dashboard",
+          "purpose": "Display real-time completeness status, missing/delayed data entries, and communication briefs per site.",
+          "inputs": [
+            "User filters (site, date range)",
+            "Manual data uploads (initial version)"
+          ],
+          "outputs": [
+            "Completeness charts",
+            "Prioritized action lists",
+            "Communication brief previews"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/upload",
+          "title": "Data Upload",
+          "purpose": "Allow manual upload of site metadata and data submission logs.",
+          "inputs": [
+            "CSV or JSON files for site metadata and submission logs"
+          ],
+          "outputs": [
+            "Upload status and validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Summary Reports",
+          "purpose": "Provide trend analysis on data entry delays and quality issues over time.",
+          "inputs": [
+            "Date range",
+            "Site selection"
+          ],
+          "outputs": [
+            "Trend charts",
+            "Exportable summary reports"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User & Team Settings",
+          "purpose": "Manage team member assignments, contact details, and communication templates.",
+          "inputs": [
+            "Team member info",
+            "Messaging templates"
+          ],
+          "outputs": [
+            "Save confirmation",
+            "Template previews"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/sites",
+          "method": "GET",
+          "purpose": "Retrieve site metadata.",
+          "requestShape": "None or filters by siteId",
+          "responseShape": "List of Site objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/submissions",
+          "method": "POST",
+          "purpose": "Ingest data submission logs (manual upload or automated).",
+          "requestShape": "List of DataSubmissionLog objects",
+          "responseShape": "Ingestion status and validation results",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comms/briefs",
+          "method": "GET",
+          "purpose": "Fetch generated communication briefs and prioritized action lists.",
+          "requestShape": "Filters by siteId and date range",
+          "responseShape": "List of CommunicationBrief objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/team",
+          "method": "GET",
+          "purpose": "Retrieve team member assignments and contact details.",
+          "requestShape": "None",
+          "responseShape": "List of TeamMember objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/trends",
+          "method": "GET",
+          "purpose": "Retrieve trend data on data submission delays and quality issues.",
+          "requestShape": "Date range and site filters",
+          "responseShape": "Trend analysis JSON data",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Data Completeness Analyzer",
+          "trigger": "Scheduled (e.g., daily) or on new data ingestion",
+          "purpose": "Analyze submission logs to identify missing/delayed entries, update urgency flags, and generate communication briefs."
+        },
+        {
+          "name": "Automated Reminder Dispatcher",
+          "trigger": "Scheduled or event-driven based on urgency flags",
+          "purpose": "Send automated reminders and communication briefs to site coordinators."
+        }
+      ],
+      "edgeCases": [
+        "Partial or corrupt data uploads requiring validation feedback and rejection.",
+        "Delayed data submissions that arrive after reminders have been sent.",
+        "Multiple submissions for the same scheduled collection date requiring deduplication or versioning.",
+        "User role changes affecting access to sensitive site or team data.",
+        "Network or external platform API failures during automated data ingestion.",
+        "Handling sites with no assigned team members or inactive sites."
+      ],
+      "nonGoals": [
+        "Replacing comprehensive data quality validation tools or compliance systems.",
+        "Providing full-fledged task management or project management features beyond coordination briefs.",
+        "Handling raw data capture or storage beyond metadata and submission logs.",
+        "Supporting offline data collection or mobile app functionality in initial versions."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses the /dashboard page.",
+        "Dashboard UI calls /api/sites GET to fetch site metadata filtered by user role and selected filters.",
+        "Dashboard UI calls /api/submissions GET (if implemented) or relies on cached data to display submission completeness and delays.",
+        "Dashboard UI calls /api/comms/briefs GET with siteId and date range filters to retrieve prioritized action lists and communication briefs.",
+        "User uploads data files on /upload page; files are parsed client-side and sent as POST to /api/submissions with a list of DataSubmissionLog objects.",
+        "API /api/submissions validates and stores submission logs, triggers background job Data Completeness Analyzer asynchronously.",
+        "Background job analyzes logs, updates urgency flags, generates communication briefs, and stores them in CommunicationBrief model.",
+        "Automated Reminder Dispatcher job runs on schedule or event triggers to send reminders based on urgency flags.",
+        "User accesses /reports page, which calls /api/reports/trends GET with filters to retrieve trend analysis data for visualization.",
+        "User accesses /settings page to manage team members and messaging templates, interacting with /api/team GET and relevant POST/PUT endpoints (to be implemented).",
+        "All API routes enforce role-based access control to ensure users see data appropriate to their role (field collector vs site coordinator)."
+      ],
+      "validationRules": [
+        "Site.siteId must be unique, non-empty string.",
+        "DataCollectionSchedule.siteId must reference an existing Site; collectionDate must be a valid date; targetSampleSize must be a positive integer.",
+        "DataSubmissionLog.siteId must reference an existing Site; submissionDate must be a valid date; completenessStatus must be one of predefined statuses (e.g., 'complete', 'partial', 'missing'); dataFileReference, if present, must be a valid URL or file path; submittedBy must reference a valid TeamMember or user.",
+        "TeamMember.memberId must be unique, non-empty string; role must be from allowed roles (e.g., 'field_collector', 'site_coordinator', 'admin'); contactInfo JSON must include at least one contact method (email or phone).",
+        "CommunicationBrief.briefId must be unique; siteId must reference existing Site; generatedDate must be a valid date; content must be non-empty string; urgencyFlag must be from allowed values (e.g., 'low', 'medium', 'high'); sentStatus must be boolean.",
+        "AuditLog.logId must be unique; action must be a non-empty string; timestamp must be valid date; performedBy, if present, must reference a valid user or system process.",
+        "API input payloads must be validated for required fields and correct types; reject partial or corrupt uploads with detailed validation feedback.",
+        "Duplicate submissions for same site and collectionDate must be detected and either rejected or versioned with clear rules.",
+        "Date ranges in filters must be valid and start date <= end date."
+      ],
+      "errorHandling": [
+        "API endpoints return HTTP 400 with detailed error messages for validation failures.",
+        "API endpoints return HTTP 401 for unauthorized access attempts.",
+        "API endpoints return HTTP 403 for forbidden actions based on user roles.",
+        "API endpoints return HTTP 404 when requested resources (e.g., siteId) are not found.",
+        "API endpoints return HTTP 500 for unexpected server errors with logging for diagnostics.",
+        "Background jobs log errors and retry transient failures; alert admins on repeated failures.",
+        "File upload errors (e.g., corrupt CSV) return validation feedback on /upload page with actionable messages.",
+        "External platform integration failures (e.g., authentication errors, API downtime) are logged and surfaced in admin dashboards or alerts.",
+        "Network timeouts and failures in API calls are handled with retries and user-friendly error messages.",
+        "Edge cases like delayed submissions after reminders are flagged and logged for manual review."
+      ],
+      "securityNotes": [
+        "All API routes require authentication; use JWT or session-based auth with secure cookies.",
+        "Role-based access control enforced on all data access and mutations.",
+        "Sensitive data fields (e.g., contactInfo) stored encrypted at rest using Prisma middleware or DB encryption features.",
+        "AuditLog captures all data mutations and critical actions with user identity and timestamps for compliance.",
+        "Rate limiting on API endpoints to prevent abuse.",
+        "Input sanitization to prevent injection attacks.",
+        "Secure file upload handling with virus scanning and size limits.",
+        "Use HTTPS for all client-server communications.",
+        "External platform credentials stored securely in environment variables or secrets manager.",
+        "Regular security audits and dependency updates."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated field data collector user on /dashboard",
+          "when": "They select a site and date range filter",
+          "then": "The dashboard displays updated completeness charts, prioritized action lists, and communication briefs relevant to their role and filters"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /upload page",
+          "when": "They upload a valid CSV file with data submission logs",
+          "then": "The system validates, stores the data, returns success status, and triggers background analysis"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user attempts to upload a corrupt or partial data file",
+          "when": "They submit the upload form",
+          "then": "The system rejects the upload with detailed validation error messages without storing invalid data"
+        },
+        {
+          "id": "AT-004",
+          "given": "The Data Completeness Analyzer job runs after new data ingestion",
+          "when": "It detects missing or delayed submissions",
+          "then": "It updates urgency flags and generates communication briefs stored in the database"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on /reports page",
+          "when": "They select a date range and site filter",
+          "then": "The system returns accurate trend analysis data and displays exportable summary reports"
+        },
+        {
+          "id": "AT-006",
+          "given": "An unauthorized user attempts to access /api/submissions POST",
+          "when": "They send a request without valid authentication",
+          "then": "The API returns HTTP 401 Unauthorized"
+        },
+        {
+          "id": "AT-007",
+          "given": "Multiple submissions for the same site and collection date are uploaded",
+          "when": "The system processes the submissions",
+          "then": "It detects duplicates and either rejects or versions them according to defined rules, notifying the user"
+        },
+        {
+          "id": "AT-008",
+          "given": "An external platform integration fails due to API downtime",
+          "when": "The system attempts automated ingestion",
+          "then": "It logs the failure, retries as per policy, and alerts administrators"
+        },
+        {
+          "id": "AT-009",
+          "given": "A site coordinator user views the dashboard",
+          "when": "They access data for sites they are assigned to",
+          "then": "They see role-appropriate views with communication briefs and action lists relevant to their sites only"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user updates team member assignments on /settings",
+          "when": "They save changes",
+          "then": "The system validates inputs, stores updates, and returns confirmation with updated previews"
+        }
+      ],
+      "buildOrder": [
+        "Define and implement Prisma data models with indexes and encryption middleware",
+        "Implement authentication and role-based access control middleware",
+        "Develop API routes for /api/sites, /api/team, /api/submissions, /api/comms/briefs, /api/reports/trends with validation and error handling",
+        "Build background jobs: Data Completeness Analyzer and Automated Reminder Dispatcher with integration to data models and APIs",
+        "Create Next.js pages: /dashboard, /upload, /reports, /settings with client-side data fetching and UI components",
+        "Implement file upload parsing and validation logic on /upload page",
+        "Integrate communication brief generation and prioritized action list display in dashboard",
+        "Develop external platform integration module with manual CSV upload support and error recovery",
+        "Add audit logging for all data mutations and critical actions",
+        "Implement acceptance tests and perform security audits"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/dashboard",
+          "/upload",
+          "/reports",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "/api/sites.ts",
+          "/api/submissions.ts",
+          "/api/comms/briefs.ts",
+          "/api/team.ts",
+          "/api/reports/trends.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Site",
+          "DataCollectionSchedule",
+          "DataSubmissionLog",
+          "TeamMember",
+          "CommunicationBrief",
+          "AuditLog"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather any missing constraints or specific needs for the data collection workflow optimizer to ensure complete and precise requirements.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}} What additional constraints, user needs, or edge cases should be considered for the Academic Research Data Collection Workflow Optimizer? Please elaborate in detail.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and confirm the final set of UI pages, API endpoints, and data models with fields and validation to support the workflow optimizer effectively.",
+        "promptTemplate": "Based on the idea and blueprint: {{IDEA}} {{BLUEPRINT}} Draft a definitive design for the required pages, API routes, and data models, including validation rules and indexes, to implement the Academic Research Data Collection Workflow Optimizer. Include role-based access considerations.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Produce scaffolded code or detailed outlines for the Next.js pages and React components for the main UI screens to accelerate development.",
+        "promptTemplate": "Using the finalized blueprint and data models: {{BLUEPRINT}} {{EXPANDED}} Generate page stubs and component outlines for the /dashboard, /upload, /reports, and /settings pages suitable for Next.js framework.\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Plan and specify the integration details connecting frontend pages with APIs and the Prisma data models, including data fetching, validation, and error handling.",
+        "promptTemplate": "Given the API routes, data models, and UI pages: {{BLUEPRINT}} {{EXPANDED}} Detail the wiring plan to connect the frontend pages with backend API endpoints and database models, including authentication, validation, and error handling strategies.\nUser input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

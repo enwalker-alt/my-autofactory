@@ -1,0 +1,853 @@
+{
+  "slug": "academic-grant-compliance-negotiator-lite",
+  "title": "Academic Research Grant Compliance Conflict Reporter",
+  "description": "A lightweight single-page tool for academic research grant project managers to upload multi-institutional compliance documents and proposal drafts, and generate consolidated compliance conflict reports to support manual negotiation and alignment.",
+  "inputLabel": "Upload compliance documents and proposal draft text",
+  "outputLabel": "Consolidated compliance conflict report",
+  "systemPrompt": "You are a compliance conflict report generator for academic research grant project managers. Accept uploaded compliance documents and draft proposal text. Identify and summarize overlapping or conflicting compliance requirements across institutions and funders. Do NOT provide legal advice or definitive decisions. Output a clear, concise plain text report listing conflicts and discrepancies found. Refuse requests that seek legal advice or unauthorized access. Enforce strict data privacy and do not retain sensitive details beyond the session.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summarize compliance conflicts",
+      "prompt": "Analyze the uploaded compliance documents and proposal draft. Identify and list the key compliance conflicts or discrepancies across institutions and funders. Provide a clear, itemized summary report."
+    },
+    {
+      "label": "Highlight potential negotiation points",
+      "prompt": "From the uploaded documents, identify compliance areas likely to require negotiation or alignment among collaborators. Summarize these points with brief explanations."
+    },
+    {
+      "label": "Generate harmonized compliance checklist",
+      "prompt": "Using the uploaded compliance policies and proposal draft, produce a harmonized checklist of compliance requirements with annotations for institution-specific notes and discrepancies."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output a JSON object with keys: conflicts (array of conflict descriptions), negotiationPoints (array), and checklist (array of compliance items with annotations).",
+  "clarifyPrompt": "Please provide the compliance documents (PDF or text) and the draft proposal sections you want analyzed. Mention any known institutions or funders involved.",
+  "finalizePrompt": "Generate the consolidated compliance conflict report based on the uploaded documents and draft proposal text.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Compliance Negotiator",
+      "niche": {
+        "role": "Academic research grant project managers",
+        "scenario": "Managing multi-institutional grant proposals with overlapping but divergent compliance requirements and collaborator policies"
+      },
+      "problem": "Multi-institutional academic grant proposals often face complex, conflicting compliance requirements across institutions and funders, leading to time-consuming manual negotiation and alignment efforts. Project managers lack a dedicated tool to collaboratively identify, negotiate, and harmonize these compliance discrepancies in real-time while maintaining audit trails and role-based access.",
+      "inputs": [
+        "Uploaded institutional compliance policy documents",
+        "Funder guidelines and mandates",
+        "Draft grant proposal sections",
+        "Collaborator compliance roles and approval statuses",
+        "Comments and negotiation notes from collaborators"
+      ],
+      "outputs": [
+        "Consolidated compliance discrepancy and conflict report",
+        "Interactive negotiation dashboard showing conflicting items with comment threads",
+        "Harmonized compliance checklist with collaborator-specific annotations",
+        "Audit trail of decisions, approvals, and unresolved issues",
+        "Exportable compliance summary reports tailored for each institution and funder"
+      ],
+      "whyItWins": [
+        "Addresses a gap in collaborative compliance negotiation which is currently handled by manual emails and spreadsheets",
+        "Enables real-time multi-party collaboration and conflict resolution with auditability",
+        "Reduces risk of overlooked compliance conflicts and late-stage proposal rework",
+        "Supports complex workflows involving multiple institutions and funders with differing rules",
+        "Lays foundation for integration with grant management and submission systems enhancing end-to-end workflow"
+      ],
+      "upgradePath": {
+        "today": "A lightweight web tool that allows manual upload of compliance documents and proposal drafts to generate conflict reports and support manual comment threads for small teams.",
+        "in90Days": "Add interactive negotiation interface with real-time collaborator comments, role-based access, version history, and approval tracking to facilitate coordinated resolution.",
+        "in12Months": "Develop a full multi-page system integrating with institutional compliance databases, automated document parsing, AI-assisted conflict resolution suggestions, real-time notifications, and export integration with grant submission platforms."
+      },
+      "riskNotes": [
+        "Must strictly avoid providing legal advice; only supports collaborative negotiation and identification of discrepancies.",
+        "Sensitive institutional documents should be securely stored and access-controlled to protect confidentiality.",
+        "Must clearly disclaim that ultimate compliance responsibility lies with institutional compliance officers and grant managers.",
+        "Requires robust version control to avoid data loss or miscommunication during negotiation."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative web platform enabling academic research grant project managers and collaborators to identify, negotiate, and harmonize multi-institutional compliance discrepancies in grant proposals with audit trails, role-based access, and exportable reports.",
+      "primaryUser": "Academic research grant project managers coordinating multi-institutional proposals",
+      "successMetrics": [
+        "Reduction in time spent resolving compliance conflicts across institutions",
+        "Number of active collaborative negotiation sessions per proposal",
+        "User satisfaction with negotiation interface and audit trail clarity",
+        "Frequency of compliance conflicts identified and resolved before submission",
+        "Adoption rate by multi-institutional grant teams"
+      ],
+      "components": [
+        {
+          "id": "ui-portal",
+          "name": "User Interface Portal",
+          "type": "ui",
+          "responsibility": "Provide multi-page web UI for uploading documents, viewing conflict reports, participating in negotiation threads, managing approvals, and exporting reports.",
+          "dependsOn": [
+            "api-auth",
+            "api-compliance",
+            "api-negotiation",
+            "data-storage"
+          ],
+          "notes": [
+            "Pages separated by function: upload, dashboard, negotiation, approvals, reports",
+            "Supports role-based UI elements and access control",
+            "Responsive design for desktop and tablet use"
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication and Authorization API",
+          "type": "api",
+          "responsibility": "Manage user authentication, role-based access control, and session management to secure sensitive compliance data.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Supports institution-specific roles and granular permissions",
+            "Integrates with institutional SSO if available (future upgrade)",
+            "Ensures secure token handling and session expiry"
+          ]
+        },
+        {
+          "id": "api-compliance",
+          "name": "Compliance Data Management API",
+          "type": "api",
+          "responsibility": "Handle upload, storage, versioning, and retrieval of compliance documents, funder guidelines, proposal drafts, and consolidated conflict reports.",
+          "dependsOn": [
+            "data-compliance",
+            "data-proposals"
+          ],
+          "notes": [
+            "Implements document version control and metadata tracking",
+            "Supports secure storage with encryption at rest",
+            "Validates document formats and sizes"
+          ]
+        },
+        {
+          "id": "api-negotiation",
+          "name": "Negotiation and Collaboration API",
+          "type": "api",
+          "responsibility": "Manage negotiation threads, comments, collaborator roles/statuses, approval tracking, and audit trail data.",
+          "dependsOn": [
+            "data-negotiation",
+            "data-users"
+          ],
+          "notes": [
+            "Supports real-time collaboration via polling or websockets (future upgrade)",
+            "Maintains immutable audit logs of decisions and status changes",
+            "Enforces role-based permissions for commenting and approvals"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Central Data Storage",
+          "type": "data",
+          "responsibility": "Persist all core data including users, compliance documents, proposals, negotiation threads, roles, approvals, and audit trails.",
+          "dependsOn": [],
+          "notes": [
+            "Relational DB preferred for complex queries and relations",
+            "Encrypted storage for sensitive documents and notes",
+            "Backups and disaster recovery plans mandatory"
+          ]
+        },
+        {
+          "id": "job-report-generation",
+          "name": "Report Generation Background Job",
+          "type": "job",
+          "responsibility": "Generate consolidated compliance discrepancy reports, harmonized checklists, and exportable summaries tailored to institutions and funders.",
+          "dependsOn": [
+            "data-storage"
+          ],
+          "notes": [
+            "Runs on-demand or scheduled after negotiation updates",
+            "Handles export formats like PDF and CSV",
+            "Includes error handling for incomplete or inconsistent data"
+          ]
+        },
+        {
+          "id": "integration-grant-systems",
+          "name": "Grant Management System Integration",
+          "type": "integration",
+          "responsibility": "Future integration point for syncing with institutional compliance databases and grant submission platforms.",
+          "dependsOn": [
+            "api-compliance",
+            "api-auth"
+          ],
+          "notes": [
+            "Planned for 12-month upgrade",
+            "Requires secure API endpoints and data mapping",
+            "Supports import/export of compliance data and submission status"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represent system users with roles and institution affiliations",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "institutionId"
+          ]
+        },
+        {
+          "name": "Institution",
+          "purpose": "Represent academic institutions participating in proposals",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "complianceContacts",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "name"
+          ]
+        },
+        {
+          "name": "ComplianceDocument",
+          "purpose": "Store uploaded compliance policies and funder guidelines with versioning",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "filePath",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "institutionId",
+            "funderId",
+            "title"
+          ]
+        },
+        {
+          "name": "GrantProposal",
+          "purpose": "Represents a multi-institutional grant proposal with drafts and compliance roles",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "leadInstitutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "draftSections",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "leadInstitutionId",
+            "title"
+          ]
+        },
+        {
+          "name": "NegotiationThread",
+          "purpose": "Tracks conflict items, comments, collaborator statuses, and decisions",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "conflictItem",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "comments",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "status"
+          ]
+        },
+        {
+          "name": "ApprovalRecord",
+          "purpose": "Records approvals and unresolved issues per collaborator and proposal",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "approvalStatus",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "userId"
+          ]
+        },
+        {
+          "name": "AuditTrailEntry",
+          "purpose": "Immutable log entries for all negotiation and approval actions",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "entityId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "performedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "details",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "entityType",
+            "entityId",
+            "timestamp"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/upload",
+          "title": "Upload Compliance Documents and Proposal Drafts",
+          "purpose": "Allow users to upload institutional policies, funder guidelines, and proposal drafts",
+          "inputs": [
+            "file upload",
+            "document metadata"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "version info",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Compliance Conflict Dashboard",
+          "purpose": "Display consolidated compliance discrepancy reports and status summaries",
+          "inputs": [
+            "filter criteria",
+            "proposal selection"
+          ],
+          "outputs": [
+            "conflict reports",
+            "summary metrics",
+            "navigation to negotiation threads"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/negotiation/:proposalId",
+          "title": "Interactive Negotiation Interface",
+          "purpose": "Enable collaborators to view conflicts, comment, negotiate, and track approvals",
+          "inputs": [
+            "comments",
+            "status updates",
+            "approval actions"
+          ],
+          "outputs": [
+            "real-time comment threads",
+            "conflict item details",
+            "approval statuses"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/approvals",
+          "title": "Approval Management",
+          "purpose": "Manage collaborator roles, approval tracking, and unresolved issues",
+          "inputs": [
+            "role assignments",
+            "approval status updates"
+          ],
+          "outputs": [
+            "approval summaries",
+            "pending items"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Export Compliance Reports",
+          "purpose": "Generate and download harmonized compliance checklists and summary reports",
+          "inputs": [
+            "proposal selection",
+            "report format options"
+          ],
+          "outputs": [
+            "exported files (PDF, CSV)"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/compliance/upload",
+          "method": "POST",
+          "purpose": "Upload compliance documents or proposal drafts with metadata",
+          "requestShape": "{ file: binary, metadata: json }",
+          "responseShape": "{ success: boolean, documentId: string, version: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance/conflicts",
+          "method": "GET",
+          "purpose": "Retrieve consolidated compliance conflict report for a proposal",
+          "requestShape": "{ proposalId: string }",
+          "responseShape": "{ conflicts: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/negotiation/comments",
+          "method": "POST",
+          "purpose": "Add a comment or update status on a negotiation thread",
+          "requestShape": "{ threadId: string, comment: string, statusUpdate?: string }",
+          "responseShape": "{ success: boolean, updatedThread: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/approvals/update",
+          "method": "POST",
+          "purpose": "Update approval status for a collaborator on a proposal",
+          "requestShape": "{ proposalId: string, userId: string, status: string, notes?: string }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Trigger generation of exportable compliance reports",
+          "requestShape": "{ proposalId: string, format: string }",
+          "responseShape": "{ success: boolean, reportUrl?: string, error?: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "GenerateComplianceReports",
+          "trigger": "On-demand or scheduled after negotiation updates",
+          "purpose": "Produce consolidated discrepancy reports, harmonized checklists, and exportable summaries for download"
+        }
+      ],
+      "edgeCases": [
+        "Conflicting compliance documents uploaded with overlapping but contradictory clauses",
+        "Simultaneous edits and comments causing race conditions in negotiation threads",
+        "User role changes mid-negotiation affecting access and approval rights",
+        "Incomplete or missing compliance documents delaying conflict identification",
+        "Export failures due to inconsistent or partial data",
+        "Unauthorized access attempts to sensitive institutional documents",
+        "Version conflicts when multiple users upload new drafts or policies concurrently"
+      ],
+      "nonGoals": [
+        "Providing legal advice or definitive compliance decisions",
+        "Automated parsing or AI-based conflict resolution in initial release",
+        "Full integration with institutional SSO or grant submission systems in MVP",
+        "Mobile app support in initial phases",
+        "Handling financial or budgetary aspects of grant proposals"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses UI portal pages, authenticates via /api/auth/login to obtain session token.",
+        "Authenticated user uploads compliance documents or proposal drafts via /api/compliance/upload with file and metadata.",
+        "Uploaded documents are stored in data-storage with versioning and metadata; encryption applied.",
+        "User views dashboard (/dashboard) which fetches consolidated compliance conflict reports from /api/compliance/conflicts using proposalId and filter criteria.",
+        "User navigates to negotiation page (/negotiation/:proposalId) to view conflict items and comment threads; comments and status updates are sent to /api/negotiation/comments.",
+        "Approval management page (/approvals) allows role assignments and approval status updates sent to /api/approvals/update.",
+        "Report generation page (/reports) triggers /api/reports/generate to produce exportable reports in PDF or CSV formats.",
+        "Background job 'GenerateComplianceReports' runs on-demand or scheduled after negotiation updates to create consolidated reports stored and made available for download.",
+        "AuditTrailEntry records are created immutably for all negotiation and approval actions for traceability.",
+        "Role-based access control enforced at API and UI layers based on user roles and institution affiliations.",
+        "Error and validation feedback flows from API responses back to UI pages for user correction."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "File uploads: accepted file types (e.g., PDF, DOCX); max file size limit (e.g., 10MB); metadata must include required fields (title, type).",
+        "Compliance document versioning: new uploads for same title and institution/funder increment version number.",
+        "Proposal selection: proposalId must exist and user must have access rights.",
+        "Negotiation comments: comment text non-empty; statusUpdate if provided must be one of allowed statuses (e.g., 'open', 'resolved', 'pending').",
+        "Approval updates: status must be one of predefined statuses (e.g., 'approved', 'rejected', 'pending'); role assignments validated against allowed roles per institution.",
+        "Report generation: format must be one of supported types ('pdf', 'csv'); proposalId must be valid and accessible.",
+        "All API requests requiring authentication must include valid session token.",
+        "Input JSON fields must conform to expected types and required fields enforced.",
+        "Prevent concurrent version conflicts by checking latest version before accepting new uploads."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "File upload errors return 400 Bad Request with validation error details (e.g., invalid file type, size exceeded).",
+        "Access denied due to insufficient roles returns 403 Forbidden with explanation.",
+        "Not found errors (e.g., invalid proposalId) return 404 Not Found.",
+        "Conflict errors (e.g., version conflicts) return 409 Conflict with instructions to refresh or retry.",
+        "Server errors return 500 Internal Server Error with generic message; detailed logs stored server-side.",
+        "API responses include success flags and error messages for UI to display.",
+        "Background job failures log errors with retry mechanisms; notify admins if persistent.",
+        "Race conditions in negotiation threads handled with optimistic concurrency controls and conflict resolution messages.",
+        "Export failures return error field in response with user-friendly message and retry option."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all client-server communications.",
+        "Store passwords securely hashed and salted; do not expose in API responses.",
+        "Use JWT or secure session tokens with expiry for authentication.",
+        "Enforce role-based access control at API route level and UI rendering.",
+        "Encrypt sensitive documents and notes at rest in data-storage.",
+        "Sanitize all user inputs to prevent injection attacks.",
+        "Implement rate limiting on authentication and sensitive endpoints to prevent brute force.",
+        "AuditTrailEntry records immutable and tamper-evident for compliance and forensic purposes.",
+        "Plan for future integration with institutional SSO for enhanced security.",
+        "Ensure file uploads scanned for malware and restricted to safe types."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and user details"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /upload page",
+          "when": "They upload a valid compliance document with required metadata",
+          "then": "The system stores the document, returns success with documentId and version info"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /dashboard",
+          "when": "They select a proposal and apply filters",
+          "then": "They see consolidated conflict reports and summary metrics relevant to the proposal"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated collaborator on /negotiation/:proposalId",
+          "when": "They add a comment and update negotiation status",
+          "then": "The comment appears in real-time and status updates are reflected with audit trail entry"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on /approvals",
+          "when": "They update approval status for a collaborator",
+          "then": "The approval summary updates accordingly and reflects pending items"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user on /reports",
+          "when": "They request report generation in PDF format for a proposal",
+          "then": "The system generates the report and provides a downloadable link"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to access /upload without authentication",
+          "when": "They try to upload a document",
+          "then": "They are redirected to /login or receive 401 Unauthorized"
+        },
+        {
+          "id": "AT-008",
+          "given": "Two users upload new versions of the same compliance document simultaneously",
+          "when": "Both uploads are processed",
+          "then": "Version conflict is detected and one upload is rejected with conflict error"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user with insufficient role tries to update approval status",
+          "when": "They submit the update request",
+          "then": "They receive 403 Forbidden error and no changes occur"
+        },
+        {
+          "id": "AT-010",
+          "given": "Background job runs after negotiation updates",
+          "when": "Report generation is triggered",
+          "then": "Consolidated reports are generated successfully or errors are logged with notifications"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database (data-storage).",
+        "Implement api-auth routes and user session management.",
+        "Develop api-compliance routes for document upload and conflict retrieval.",
+        "Build UI portal pages for login and upload with integration to auth and compliance APIs.",
+        "Implement api-negotiation routes for comments and status updates.",
+        "Develop negotiation UI page with real-time comment display and status controls.",
+        "Implement api-approvals routes and approvals management UI page.",
+        "Develop dashboard page to display conflict reports using compliance API.",
+        "Implement report generation API and background job integration.",
+        "Develop reports page for export and download functionality.",
+        "Add audit trail logging in all relevant API actions.",
+        "Implement comprehensive validation and error handling across APIs.",
+        "Add role-based access control enforcement in API and UI.",
+        "Test concurrency and race conditions handling.",
+        "Prepare security hardening and encryption for sensitive data.",
+        "Document API contracts and validation rules.",
+        "Conduct acceptance testing and fix issues."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/upload",
+          "/dashboard",
+          "/negotiation/[proposalId]",
+          "/approvals",
+          "/reports"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/compliance/upload.ts",
+          "api/compliance/conflicts.ts",
+          "api/negotiation/comments.ts",
+          "api/approvals/update.ts",
+          "api/reports/generate.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Institution",
+          "ComplianceDocument",
+          "GrantProposal",
+          "NegotiationThread",
+          "ApprovalRecord",
+          "AuditTrailEntry"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints, clarify unclear requirements, and gather additional inputs for the project.",
+        "promptTemplate": "You are a project planner refining the requirements for the Academic Research Grant Collaborative Compliance Negotiator. Given the current blueprint and expansion: {{BLUEPRINT}} and {{EXPANDED}}, ask the user for any missing constraints, priorities, or clarifications needed to finalize the specification. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design and confirm the final set of pages, data models, and API endpoints needed for the system.",
+        "promptTemplate": "You are the system architect finalizing the design for the Academic Research Grant Collaborative Compliance Negotiator. Using the refined requirements and blueprint: {{BLUEPRINT}}, expansion details: {{EXPANDED}}, and user clarifications {{USER_INPUT}}, produce a finalized list of pages, data models, and APIs."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create basic page stub templates and UI scaffolds for the planned pages to start frontend development.",
+        "promptTemplate": "You are the builder tasked with generating page stubs for the Academic Research Grant Collaborative Compliance Negotiator. Based on the architect's finalized design {{BLUEPRINT}} and expanded specs {{EXPANDED}}, generate starter code or templates for each planned page. User notes: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the frontend pages with backend APIs and the database, ensuring data flows correctly and securely.",
+        "promptTemplate": "You are the integrator connecting pages, APIs, and database for the Academic Research Grant Collaborative Compliance Negotiator. Using the blueprint {{BLUEPRINT}}, expanded specs {{EXPANDED}}, and builder outputs {{USER_INPUT}}, plan the wiring and integration steps to enable seamless data flow and secure access."
+      }
+    ]
+  }
+}

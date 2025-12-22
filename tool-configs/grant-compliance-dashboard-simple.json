@@ -1,0 +1,692 @@
+{
+  "slug": "grant-compliance-dashboard-simple",
+  "title": "Grant Compliance Dashboard - Manual Entry & Upload",
+  "description": "A single-page tool for academic research grant project managers to manually enter and upload compliance tasks, documents, and deadlines, and view a consolidated compliance status summary.",
+  "inputLabel": "Enter compliance tasks, collaborator info, deadlines, or upload compliance documents (PDF/DOCX)",
+  "outputLabel": "Compliance Status Summary and Task Overview",
+  "systemPrompt": "You are a compliance dashboard assistant for academic research grant project managers. Accept manual text input describing compliance tasks, deadlines, collaborator roles, or upload compliance documents in PDF or DOCX format. Validate all inputs strictly: tasks must have titles and future due dates; documents must be PDF or DOCX; collaborator info must include name and valid email. Refuse any request that attempts to provide legal or regulatory advice. Output a clear, consolidated summary of compliance tasks status, upcoming deadlines, and document versions in plain text. Do not generate any interactive UI or multi-page content. Only use data given in the input. If input is ambiguous or incomplete, ask clarifying questions before proceeding.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets"
+  ],
+  "presets": [
+    {
+      "label": "Summarize Compliance Tasks",
+      "prompt": "Summarize the compliance tasks and deadlines from the following input, highlighting overdue or high priority items and any missing assignments:\n\n{{USER_INPUT}}",
+      "hint": "Paste your task list or descriptions here."
+    },
+    {
+      "label": "Validate and Summarize Uploaded Document",
+      "prompt": "Validate the uploaded compliance document metadata and summarize its version history and annotations:\n\n{{USER_INPUT}}",
+      "hint": "Upload or describe your document details here."
+    },
+    {
+      "label": "List Collaborator Roles and Contact Info",
+      "prompt": "Extract and list collaborator names, roles, emails, and institution affiliations from the input:\n\n{{USER_INPUT}}",
+      "hint": "Provide a list of collaborators or paste collaborator data."
+    },
+    {
+      "label": "Generate Compliance Deadline Overview",
+      "prompt": "Generate an overview of upcoming compliance deadlines and milestones from the input, flagging any that are within 7 days or overdue:\n\n{{USER_INPUT}}",
+      "hint": "Enter deadlines or milestone dates here."
+    }
+  ],
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Compliance Dashboard",
+      "niche": {
+        "role": "Academic Research Grant Project Manager",
+        "scenario": "Managing multi-institutional grant compliance tasks, deadlines, and documentation with multiple collaborators and funder-specific requirements"
+      },
+      "problem": "Grant project managers struggle to maintain an up-to-date, unified overview of compliance obligations, document versions, task assignments, and deadline statuses across multiple institutions and funder requirements. Existing tools offer manual tracking or isolated compliance checklists but lack an integrated, interactive dashboard that supports active collaboration, dynamic updates, and role-based views to reduce compliance risks and administrative overhead.",
+      "inputs": [
+        "Uploaded funder compliance guidelines (PDF, DOCX)",
+        "Multi-institutional grant award documents",
+        "Collaborator roles and contact information",
+        "Manually entered and uploaded compliance task items",
+        "Compliance document versions and status updates",
+        "Deadline and milestone dates"
+      ],
+      "outputs": [
+        "Interactive, multi-page compliance dashboard with real-time task status and deadline tracking",
+        "Role-specific compliance task lists and alerts",
+        "Version-controlled document repository with annotations",
+        "Aggregated compliance risk heatmaps and overdue task flags",
+        "Automated reminders and escalation workflows",
+        "Exportable compliance summary reports for funders and institutions"
+      ],
+      "whyItWins": [
+        "Fills the gap between simple checklist trackers and complex project management systems by focusing specifically on grant compliance collaboration",
+        "Reduces manual coordination effort by centralizing documents, tasks, and communications with role-based access",
+        "Supports multi-institutional and multi-funder complexity with dynamic updates and version control",
+        "Enables proactive risk management with visual alerts and escalation workflows",
+        "Provides clear audit trails and exportable reports to satisfy funder and institutional oversight"
+      ],
+      "upgradePath": {
+        "today": "Offer a single-page app for manual entry and upload of compliance tasks, documents, and deadlines with a consolidated status view",
+        "in90Days": "Add multi-user collaboration features, role-based task assignment, interactive dashboards, and automated email reminders",
+        "in12Months": "Develop a full multi-page system integrating document version control, funder guideline parsing for automated task generation, compliance risk heatmaps, workflow automation, and audit-ready reporting with user permissions and collaboration analytics"
+      },
+      "riskNotes": [
+        "Must strictly avoid providing legal or regulatory advice; all compliance content is managed as administrative tracking only",
+        "Data privacy and security for institutional documents and personnel information require strong safeguards",
+        "User interface complexity must be balanced to avoid overwhelming non-technical grant managers",
+        "Integration with institutional or funder systems should be optional and carefully managed to avoid data inconsistencies"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative compliance dashboard tailored for academic research grant project managers to centrally manage multi-institutional grant compliance tasks, deadlines, documents, and collaborator roles with real-time updates, role-based views, version control, risk visualization, and audit-ready reporting.",
+      "primaryUser": "Academic Research Grant Project Manager",
+      "successMetrics": [
+        "Reduction in missed compliance deadlines across managed grants",
+        "User adoption rate among multi-institutional collaborators",
+        "Decrease in manual coordination effort as reported by project managers",
+        "Number of compliance risks proactively identified and mitigated",
+        "Frequency and accuracy of exported compliance summary reports"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Compliance Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide interactive multi-page user interface for task management, document repository, risk heatmaps, alerts, and reporting with role-based access controls.",
+          "dependsOn": [
+            "api-auth",
+            "api-tasks",
+            "api-documents",
+            "api-users",
+            "api-reports"
+          ],
+          "notes": [
+            "Pages include task lists, document version views with annotations, risk visualization, and export interfaces.",
+            "UI must balance complexity and usability for non-technical users.",
+            "Role-specific views filter data and actions based on user permissions."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Handle user authentication, session management, and enforce role-based authorization for all API endpoints.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Supports secure login and session expiration.",
+            "Role-based access control critical for data privacy and compliance.",
+            "Must integrate with institutional SSO optionally."
+          ]
+        },
+        {
+          "id": "api-tasks",
+          "name": "Compliance Task Management API",
+          "type": "api",
+          "responsibility": "Manage CRUD operations for compliance tasks, deadlines, assignments, status updates, and escalation workflows.",
+          "dependsOn": [
+            "data-tasks",
+            "data-users"
+          ],
+          "notes": [
+            "Supports manual entry and bulk upload of tasks.",
+            "Handles task status transitions, overdue detection, and escalation triggers."
+          ]
+        },
+        {
+          "id": "api-documents",
+          "name": "Document Repository & Version Control API",
+          "type": "api",
+          "responsibility": "Manage upload, storage, versioning, annotation, and retrieval of funder guidelines, award documents, and compliance documents.",
+          "dependsOn": [
+            "data-documents"
+          ],
+          "notes": [
+            "Supports multiple file formats (PDF, DOCX).",
+            "Version control enables audit trails and rollback.",
+            "Annotations linked to specific document versions."
+          ]
+        },
+        {
+          "id": "api-users",
+          "name": "User & Collaborator Management API",
+          "type": "api",
+          "responsibility": "Manage collaborator profiles, roles, contact information, and institution affiliations.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Supports role assignment and updates.",
+            "Enables multi-institutional collaborator grouping."
+          ]
+        },
+        {
+          "id": "api-reports",
+          "name": "Reporting & Export API",
+          "type": "api",
+          "responsibility": "Generate aggregated compliance reports, risk heatmaps, and exportable summaries for funders and institutions.",
+          "dependsOn": [
+            "data-tasks",
+            "data-documents",
+            "data-users"
+          ],
+          "notes": [
+            "Reports must be exportable in common formats (PDF, CSV).",
+            "Supports filtering by institution, funder, or project."
+          ]
+        },
+        {
+          "id": "job-reminders",
+          "name": "Automated Reminder & Escalation Job",
+          "type": "job",
+          "responsibility": "Periodically scan tasks and deadlines to send automated reminders and trigger escalation workflows for overdue or at-risk compliance items.",
+          "dependsOn": [
+            "api-tasks",
+            "api-users"
+          ],
+          "notes": [
+            "Configurable reminder schedules per user role and task priority.",
+            "Must handle failure/retry for email delivery."
+          ]
+        },
+        {
+          "id": "integration-institutional",
+          "name": "Optional Institutional & Funder System Integration",
+          "type": "integration",
+          "responsibility": "Facilitate optional data synchronization with institutional or funder systems to import/export compliance data and documents.",
+          "dependsOn": [
+            "api-documents",
+            "api-tasks",
+            "api-users"
+          ],
+          "notes": [
+            "Integration is optional and must be carefully managed to avoid data inconsistencies.",
+            "Supports secure API connections and data mapping."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents collaborators including project managers and institutional users with roles and contact info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email",
+            "role",
+            "institution"
+          ]
+        },
+        {
+          "name": "ComplianceTask",
+          "purpose": "Tracks individual compliance tasks with assignments, deadlines, status, and escalation flags.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedToUserId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "dueDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "priority",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "relatedDocumentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "escalationFlag",
+              "type": "boolean",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "assignedToUserId",
+            "dueDate",
+            "status",
+            "escalationFlag"
+          ]
+        },
+        {
+          "name": "Document",
+          "purpose": "Stores uploaded compliance documents with versioning and annotations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versions",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "uploadedByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "title",
+            "uploadedByUserId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the compliance dashboard.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "login success/failure message"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Compliance Dashboard",
+          "purpose": "Provide an overview of compliance tasks, deadlines, risk heatmaps, and alerts tailored by user role.",
+          "inputs": [],
+          "outputs": [
+            "task status summaries",
+            "risk heatmaps",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/tasks",
+          "title": "Compliance Task List",
+          "purpose": "View, create, update, assign, and track compliance tasks with filtering by institution, funder, and status.",
+          "inputs": [
+            "task filters",
+            "new task data",
+            "task updates"
+          ],
+          "outputs": [
+            "task lists",
+            "task details",
+            "update confirmations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/documents",
+          "title": "Document Repository",
+          "purpose": "Upload, browse, version, annotate, and download compliance documents and funder guidelines.",
+          "inputs": [
+            "document upload",
+            "annotation data",
+            "version selection"
+          ],
+          "outputs": [
+            "document lists",
+            "version history",
+            "annotations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reports",
+          "title": "Compliance Reports",
+          "purpose": "Generate and export compliance summary reports and audit trails for funders and institutions.",
+          "inputs": [
+            "report filters",
+            "export format selection"
+          ],
+          "outputs": [
+            "report previews",
+            "exported files"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/users",
+          "title": "User & Collaborator Management",
+          "purpose": "Manage collaborator profiles, roles, and institution affiliations.",
+          "inputs": [
+            "user data",
+            "role assignments"
+          ],
+          "outputs": [
+            "user lists",
+            "update confirmations"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "GET",
+          "purpose": "Retrieve list of compliance tasks with optional filters.",
+          "requestShape": "{ filters?: json }",
+          "responseShape": "{ tasks: ComplianceTask[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Create a new compliance task.",
+          "requestShape": "{ taskData: ComplianceTask }",
+          "responseShape": "{ task: ComplianceTask }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents",
+          "method": "GET",
+          "purpose": "Retrieve documents with version info and annotations.",
+          "requestShape": "{ filters?: json }",
+          "responseShape": "{ documents: Document[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/documents/upload",
+          "method": "POST",
+          "purpose": "Upload a new document or new version.",
+          "requestShape": "{ file: binary, metadata: json }",
+          "responseShape": "{ document: Document }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users",
+          "method": "GET",
+          "purpose": "Retrieve user and collaborator profiles.",
+          "requestShape": "{}",
+          "responseShape": "{ users: User[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reports/generate",
+          "method": "POST",
+          "purpose": "Generate compliance summary or audit report.",
+          "requestShape": "{ filters: json, format: string }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ReminderAndEscalationJob",
+          "trigger": "Scheduled (e.g., daily at midnight)",
+          "purpose": "Send automated reminders for upcoming deadlines and escalate overdue compliance tasks."
+        }
+      ],
+      "edgeCases": [
+        "Handling simultaneous edits to compliance tasks or documents by multiple collaborators (conflict resolution).",
+        "Partial or failed document uploads requiring retry or rollback.",
+        "Users with multiple roles or institution affiliations requiring complex access control.",
+        "Data synchronization conflicts when integrating with external institutional or funder systems.",
+        "Expired sessions or revoked access during active collaboration sessions.",
+        "Handling large document files and version histories without performance degradation."
+      ],
+      "nonGoals": [
+        "Providing legal or regulatory compliance advice or interpretation.",
+        "Replacing full-featured project management or document management systems.",
+        "Automated parsing and interpretation of funder guidelines beyond basic task generation.",
+        "Mandatory integration with institutional or funder IT systems.",
+        "Supporting offline access or mobile native apps in initial versions."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/auth/login POST endpoint.",
+        "API authenticates user, returns session token and user profile with roles and institution info.",
+        "Authenticated user accesses /dashboard, /tasks, /documents, /reports, or /users pages.",
+        "Each page fetches required data from respective API endpoints (/api/tasks, /api-documents, /api-users, /api-reports) using session token for authorization.",
+        "User actions on UI (e.g., create/update task, upload document, assign roles) send POST/PUT requests to corresponding API endpoints with validated payloads.",
+        "APIs enforce role-based access control, validate inputs, update database via Prisma models, and return updated data or confirmation.",
+        "Background job ReminderAndEscalationJob runs daily, queries tasks via API or directly on data layer, sends reminder emails or escalates tasks based on rules.",
+        "Optional integration syncs data bidirectionally with external institutional/funder systems via secure API connections, mapping external data to internal models.",
+        "Real-time updates can be implemented via polling or websockets to refresh task statuses, document versions, and alerts on UI."
+      ],
+      "validationRules": [
+        "Login: email must be valid format, password non-empty.",
+        "User creation/update: name non-empty, email unique and valid, role from predefined set, institution optional but if present must match known institutions.",
+        "ComplianceTask creation/update: title non-empty, dueDate must be a valid future date, status must be one of predefined statuses (e.g., pending, in-progress, completed, overdue), assignedToUserId must reference existing user or be null, priority optional but if present must be from allowed values (e.g., low, medium, high), escalationFlag boolean.",
+        "Document upload: file must be PDF or DOCX, metadata must include title non-empty, fileType matching uploaded file, uploadedByUserId must be authenticated user, versions array must be well-formed with version numbers and timestamps.",
+        "Report generation: filters must be valid JSON with allowed filter keys (institution, funder, project), format must be one of supported export formats (PDF, CSV).",
+        "API requests must include valid authentication tokens except for /api/auth/login.",
+        "Bulk task upload must validate each task record individually and reject entire batch if any invalid.",
+        "Annotation data must reference existing document version and include valid coordinates or text references."
+      ],
+      "errorHandling": [
+        "API returns HTTP 400 with descriptive error messages for validation failures.",
+        "API returns HTTP 401 Unauthorized if authentication token missing or invalid.",
+        "API returns HTTP 403 Forbidden if user lacks permission for requested operation.",
+        "API returns HTTP 404 Not Found if requested resource (task, document, user) does not exist.",
+        "API returns HTTP 409 Conflict for concurrent modification conflicts with clear message to retry.",
+        "Document upload failures return HTTP 500 with retry instructions; partial uploads rolled back to maintain consistency.",
+        "Background job logs failures and retries email delivery with exponential backoff; alerts admin on repeated failures.",
+        "Integration sync detects data conflicts and logs them for manual resolution; does not overwrite without confirmation.",
+        "UI displays user-friendly error messages based on API responses and guides corrective actions.",
+        "Expired sessions redirect user to /login with session expiration message."
+      ],
+      "securityNotes": [
+        "All API endpoints except login require valid JWT or session token.",
+        "Role-based access control enforced on all data access and modification endpoints.",
+        "Sensitive data such as passwords stored hashed and never returned in API responses.",
+        "File uploads scanned for malware and restricted to allowed file types and sizes.",
+        "Session expiration and refresh implemented to prevent unauthorized long-lived access.",
+        "Integration APIs use secure authentication (e.g., OAuth or API keys) and encrypted connections.",
+        "Audit logs maintained for critical actions such as task updates, document uploads, and role changes.",
+        "Cross-site scripting (XSS) and injection attacks mitigated by input sanitization and parameterized queries.",
+        "Rate limiting applied to authentication and sensitive endpoints to prevent brute force attacks.",
+        "Access to document versions and annotations restricted based on user roles and institution affiliation."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials",
+          "when": "they submit correct email and password on /login",
+          "then": "they receive a session token and are redirected to /dashboard"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated project manager on /tasks page",
+          "when": "they create a new compliance task with valid data",
+          "then": "the task is saved, visible in task list, and assigned correctly"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user without admin role",
+          "when": "they attempt to access /users management page",
+          "then": "they receive a 403 Forbidden error and cannot view or modify user data"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user uploads a new version of a document with annotations",
+          "when": "the upload completes successfully",
+          "then": "the document version history is updated and annotations are linked correctly"
+        },
+        {
+          "id": "AT-005",
+          "given": "The ReminderAndEscalationJob runs at scheduled time",
+          "when": "there are tasks nearing deadlines or overdue",
+          "then": "reminder emails are sent to assigned users and escalations triggered as configured"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user requests a compliance report with filters and export format",
+          "when": "the report generation API is called",
+          "then": "a report preview is shown and an exportable file is available for download"
+        },
+        {
+          "id": "AT-007",
+          "given": "Two users attempt to edit the same compliance task simultaneously",
+          "when": "both submit updates",
+          "then": "the system detects conflict and prompts users to resolve or retry"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user session expires during active use",
+          "when": "the user makes an API call",
+          "then": "the system returns 401 Unauthorized and redirects user to /login"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, ComplianceTask, Document with indexes and relations.",
+        "Implement api-auth endpoints with secure login, session management, and role-based authorization middleware.",
+        "Implement api-users endpoints for user profile and role management with access control.",
+        "Implement api-tasks endpoints for CRUD operations, filtering, status transitions, and escalation flags.",
+        "Implement api-documents endpoints for upload, versioning, annotation, and retrieval with file storage integration.",
+        "Implement api-reports endpoints for generating filtered compliance reports and export functionality.",
+        "Develop Next.js pages for /login, /dashboard, /tasks, /documents, /reports, and /users with role-based UI views.",
+        "Implement client-side validation and API integration for each page.",
+        "Develop background job ReminderAndEscalationJob with scheduling, email delivery, and retry logic.",
+        "Implement optional integration module for institutional/funder system synchronization with secure API connectors.",
+        "Add conflict resolution mechanisms for concurrent edits and data sync conflicts.",
+        "Add comprehensive error handling and user-friendly messaging throughout UI and APIs.",
+        "Implement security hardening including input sanitization, rate limiting, and audit logging.",
+        "Write automated acceptance tests covering authentication, task management, document handling, reporting, and error scenarios."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/tasks",
+          "/documents",
+          "/reports",
+          "/users"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/tasks/index.ts",
+          "api/documents/index.ts",
+          "api/documents/upload.ts",
+          "api/users/index.ts",
+          "api/reports/generate.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "ComplianceTask",
+          "Document"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints and detailed requirements from the user for the grant compliance dashboard.",
+        "promptTemplate": "You are the planner refining requirements for the Academic Research Grant Compliance Dashboard. Given the current blueprint:\n\n{{BLUEPRINT}}\n\nUser input:\n\n{{USER_INPUT}}\n\nAsk detailed questions to clarify missing constraints, desired features, and priorities for the system."
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the data models, pages, and API endpoints for the compliance dashboard system.",
+        "promptTemplate": "You are the architect tasked with finalizing the data models, pages, and API routes for the grant compliance dashboard. Here is the current blueprint and expanded specs:\n\n{{BLUEPRINT}}\n\n{{EXPANDED}}\n\nBased on this, produce a detailed specification of pages, data models, and API endpoints."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code stubs for the UI pages defined in the blueprint for the compliance dashboard.",
+        "promptTemplate": "You are the builder generating UI page stubs for the grant compliance dashboard project. Given the finalized pages specification:\n\n{{PAGES_SPEC}}\n\nGenerate React/Next.js page stubs with placeholder components and routing setup."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement API endpoints and connect UI pages to the database models for full functionality.",
+        "promptTemplate": "You are the integrator wiring the UI pages to API endpoints and the database for the grant compliance dashboard. Given the data models and API specs:\n\n{{DATA_MODELS}}\n\n{{API_SPECS}}\n\nGenerate backend API endpoint implementations and front-end data fetching logic."
+      }
+    ]
+  }
+}

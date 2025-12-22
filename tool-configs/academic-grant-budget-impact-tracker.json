@@ -1,0 +1,711 @@
+{
+  "slug": "academic-grant-budget-impact-tracker",
+  "title": "Academic Grant Budget Impact Tracker",
+  "description": "Upload initial multi-institutional grant budgets and sequential revisions to track chronological impacts, compliance status, and generate change logs. Supports CSV and Excel uploads with metadata inputs. Outputs plain text summaries highlighting version increments, detected compliance risks, and impact notes.",
+  "inputLabel": "Upload your initial or revised grant budget file (CSV or Excel) and optionally provide change request metadata (reason, priority).",
+  "outputLabel": "Chronological impact log and compliance summary for the uploaded budget version.",
+  "systemPrompt": "You are an assistant specialized in analyzing academic grant budget uploads and revisions. Accept only CSV or Excel formatted budget files. Validate the file structure for required columns and data types. If invalid or unsupported, refuse with clear error messages. Extract and summarize budget version info including version number, upload date, and parsed data highlights. Identify any basic compliance concerns based on provided metadata and highlight changes from previous versions if given. Output a precise chronological impact log and compliance status summary in plain text. Reject any requests without proper metadata or invalid file formats. Enforce strict input validation and only process authorized, well-formed requests. Do not provide financial or legal advice, only factual summaries and alerts based on the input data.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary View",
+      "prompt": "Summarize the uploaded budget version's key changes, compliance status, and impact highlights in a concise report.",
+      "hint": "Use this to get a quick overview of the budget version impact and compliance."
+    },
+    {
+      "label": "Detailed Impact Log",
+      "prompt": "Provide a detailed chronological log of changes detected in the uploaded budget version compared to the previous version, including compliance alerts and resource allocation shifts.",
+      "hint": "Use this for an in-depth analysis of all changes and compliance issues."
+    },
+    {
+      "label": "Compliance Alert Focus",
+      "prompt": "Focus the output on compliance risks and violations identified in the uploaded budget version, listing each with explanation and potential impact.",
+      "hint": "Use this to highlight potential compliance problems."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, output a JSON object with fields: versionInfo (id, versionNumber, uploadDate), impactLog (array of change entries), complianceStatus (string), and alerts (array of compliance or conflict alerts).",
+  "clarifyPrompt": "Please upload a valid CSV or Excel budget file. Optionally provide change request metadata such as reason for change and priority. If uncertain about file format or metadata, ask for clarification before proceeding.",
+  "finalizePrompt": "Review the parsed budget version summary and impact log. Confirm that all compliance alerts are correctly identified. Return only the requested summary and alerts without additional commentary.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Grant Collaborative Budget Change Impact Tracker",
+      "niche": {
+        "role": "Academic Research Grant Finance Coordinator",
+        "scenario": "Managing dynamic budget modifications across multi-institutional grant proposals with evolving funding constraints"
+      },
+      "problem": "Academic grant finance coordinators often struggle to track and communicate the downstream compliance and resource allocation impacts caused by incremental or negotiated budget changes submitted by multiple collaborators over time. Existing tools consolidate budgets or simulate scenarios but lack a systematic way to log, visualize, and audit the evolving impact of successive budget revisions and change requests in a collaborative environment.",
+      "inputs": [
+        "Initial approved multi-institutional grant budget files (CSV, Excel)",
+        "Subsequent budget revision submissions or change request files",
+        "Funder and institutional budget rules and constraints documents",
+        "Change request metadata (submitter, date, reason, priority)"
+      ],
+      "outputs": [
+        "Chronological change impact log with versioned budget snapshots",
+        "Visual diff and impact summaries highlighting compliance risks and resource shifts",
+        "Collaborator-specific change request status dashboards",
+        "Automated alerts for conflicts, compliance violations, or cascading effects",
+        "Exportable audit trail reports for funding agency review"
+      ],
+      "whyItWins": [
+        "Addresses a nuanced, real-world pain point in collaborative academic grant budgeting not covered by existing consolidated or scenario simulation tools",
+        "Enables continuous, transparent tracking of budget evolution supporting compliance and audit readiness",
+        "Facilitates collaboration by providing clear, role-specific dashboards and impact visualizations",
+        "Starts lightweight with file uploads and basic logs but designed for progressive complexity and integration",
+        "Reduces manual reconciliation workload and miscommunication among multi-institutional grant teams"
+      ],
+      "upgradePath": {
+        "today": "A single-page app allowing manual upload of initial budgets and sequential revisions with basic impact highlighting and change logs.",
+        "in90Days": "Add interactive dashboards for collaborators to submit, comment on, and approve budget changes with automated compliance checks and conflict alerts.",
+        "in12Months": "Develop a multi-page system integrated with institutional financial systems and funder APIs to automate budget versioning, real-time compliance monitoring, multi-user collaboration, and dynamic scenario impact modeling."
+      },
+      "riskNotes": [
+        "Must ensure secure handling of sensitive budget and institutional data with role-based access controls.",
+        "Accuracy depends on consistent, well-structured input files; need robust validation and user guidance.",
+        "Must avoid providing legal or financial advice; tool outputs are advisory and require expert validation.",
+        "Collaborator adoption may require change management given existing informal workflows."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic grant finance coordinators to upload, track, and audit multi-institutional grant budget changes over time, highlighting compliance impacts and facilitating transparent collaboration.",
+      "primaryUser": "Academic Research Grant Finance Coordinator",
+      "successMetrics": [
+        "Reduction in manual reconciliation time for budget changes",
+        "User adoption rate among multi-institutional grant collaborators",
+        "Number of detected compliance issues and conflicts proactively resolved",
+        "Frequency of audit-ready reports generated without manual intervention",
+        "User satisfaction with impact visualization and collaboration features"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "User Interface - Dashboards and Pages",
+          "type": "ui",
+          "responsibility": "Provide pages for uploading budgets, viewing chronological change logs, visualizing impact diffs, managing change requests, and collaborator-specific dashboards.",
+          "dependsOn": [
+            "api-budget",
+            "api-changeRequests",
+            "data-budgetVersions",
+            "data-changeRequests"
+          ],
+          "notes": [
+            "Pages must support role-based access control and sensitive data display.",
+            "Visual diff and impact summaries should be interactive and clear.",
+            "Initial version focuses on file upload and basic logs; later versions add collaboration and approval workflows."
+          ]
+        },
+        {
+          "id": "api-budget",
+          "name": "API - Budget and Version Management",
+          "type": "api",
+          "responsibility": "Handle upload, parsing, validation, storage, and retrieval of initial and revised budget files with versioning and compliance checks.",
+          "dependsOn": [
+            "data-budgetVersions",
+            "data-complianceRules"
+          ],
+          "notes": [
+            "Robust validation for file formats and structure is critical.",
+            "Must generate versioned snapshots and trigger compliance evaluation.",
+            "Handle errors gracefully and provide clear feedback."
+          ]
+        },
+        {
+          "id": "api-changeRequests",
+          "name": "API - Change Request and Collaboration Management",
+          "type": "api",
+          "responsibility": "Manage submission, metadata, status tracking, commenting, and approval workflows for budget change requests.",
+          "dependsOn": [
+            "data-changeRequests",
+            "data-users",
+            "api-budget"
+          ],
+          "notes": [
+            "Support metadata capture: submitter, date, reason, priority.",
+            "Facilitate conflict detection and notification triggers.",
+            "Designed for progressive enhancement from manual logs to interactive approvals."
+          ]
+        },
+        {
+          "id": "data-budgetVersions",
+          "name": "Data Store - Budget Versions and Snapshots",
+          "type": "data",
+          "responsibility": "Persist all uploaded budget versions, parsed data, and computed impact summaries for audit and visualization.",
+          "dependsOn": [],
+          "notes": [
+            "Store raw files and parsed structured data separately.",
+            "Include timestamps and version identifiers.",
+            "Enable efficient retrieval for diff and audit reports."
+          ]
+        },
+        {
+          "id": "data-changeRequests",
+          "name": "Data Store - Change Requests and Collaboration Metadata",
+          "type": "data",
+          "responsibility": "Persist change request metadata, status, comments, and approval history.",
+          "dependsOn": [],
+          "notes": [
+            "Support history tracking for audit trail.",
+            "Link change requests to specific budget versions.",
+            "Store user roles and permissions related data."
+          ]
+        },
+        {
+          "id": "data-complianceRules",
+          "name": "Data Store - Funder and Institutional Compliance Rules",
+          "type": "data",
+          "responsibility": "Store structured representations of budget rules and constraints from funders and institutions for automated compliance checks.",
+          "dependsOn": [],
+          "notes": [
+            "Rules may be updated periodically; version control needed.",
+            "Rules drive automated alerts and impact analysis."
+          ]
+        },
+        {
+          "id": "job-complianceCheck",
+          "name": "Background Job - Automated Compliance and Conflict Checks",
+          "type": "job",
+          "responsibility": "Run automated validation of budget versions and change requests against compliance rules, generating alerts and impact summaries.",
+          "dependsOn": [
+            "data-budgetVersions",
+            "data-changeRequests",
+            "data-complianceRules"
+          ],
+          "notes": [
+            "Triggered on new uploads or change request updates.",
+            "Must handle partial or malformed data gracefully.",
+            "Generate notifications for UI and exportable reports."
+          ]
+        },
+        {
+          "id": "integration-institutionSystems",
+          "name": "Integration - Institutional Financial Systems and Funder APIs",
+          "type": "integration",
+          "responsibility": "Future integration to automate budget versioning, real-time compliance monitoring, and scenario modeling by syncing with external systems.",
+          "dependsOn": [
+            "api-budget",
+            "api-changeRequests"
+          ],
+          "notes": [
+            "Planned for long-term upgrade path.",
+            "Requires secure authentication and data mapping.",
+            "Will reduce manual uploads and improve data freshness."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "BudgetVersion",
+          "purpose": "Represents a parsed and versioned snapshot of a multi-institutional grant budget at a point in time.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedFileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "parsedData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "impactSummary",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "complianceStatus",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "uploadedByUserId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "versionNumber",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "ChangeRequest",
+          "purpose": "Metadata and status tracking for budget revision submissions or change requests from collaborators.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetVersionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "submitterUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "submissionDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "reason",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "priority",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "comments",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "budgetVersionId",
+            "submitterUserId",
+            "status"
+          ]
+        },
+        {
+          "name": "ComplianceRule",
+          "purpose": "Structured representation of funder and institutional budget rules and constraints used for automated compliance checks.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ruleName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "ruleDefinition",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "expirationDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "ruleName",
+            "effectiveDate"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents users including finance coordinators and collaborators with roles and permissions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "email",
+            "role"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Budgets and Revisions",
+          "purpose": "Allow users to upload initial budgets and subsequent revision files with metadata entry.",
+          "inputs": [
+            "budget file (CSV, Excel)",
+            "change request metadata (reason, priority)"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "validation errors",
+            "version creation status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Collaborator Dashboard",
+          "purpose": "Display collaborator-specific change request statuses, alerts, and summaries of budget impacts.",
+          "inputs": [],
+          "outputs": [
+            "change request list",
+            "compliance alerts",
+            "impact summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/budget-history",
+          "title": "Budget Change Log and Version History",
+          "purpose": "Show chronological log of budget versions and changes with visual diffs and impact highlights.",
+          "inputs": [
+            "selected budget version"
+          ],
+          "outputs": [
+            "version details",
+            "visual diff",
+            "compliance status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/change-request/:id",
+          "title": "Change Request Detail and Collaboration",
+          "purpose": "View and manage individual change requests including comments, approval status, and conflict alerts.",
+          "inputs": [
+            "change request id"
+          ],
+          "outputs": [
+            "change request details",
+            "comments",
+            "approval controls",
+            "alerts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/audit-report",
+          "title": "Exportable Audit Trail Reports",
+          "purpose": "Generate and download comprehensive audit reports for funding agency review.",
+          "inputs": [
+            "date range",
+            "budget version(s)"
+          ],
+          "outputs": [
+            "PDF/CSV audit report"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/budgets/upload",
+          "method": "POST",
+          "purpose": "Upload and parse budget files, create new budget version, run validations.",
+          "requestShape": "{ file: binary, metadata: { reason: string, priority: string } }",
+          "responseShape": "{ success: boolean, versionId: string, errors: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets/:versionId",
+          "method": "GET",
+          "purpose": "Retrieve parsed budget version data and impact summary.",
+          "requestShape": "{ }",
+          "responseShape": "{ budgetVersion: BudgetVersion }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/change-requests",
+          "method": "POST",
+          "purpose": "Submit a new budget change request linked to a budget version.",
+          "requestShape": "{ budgetVersionId: string, reason: string, priority: string }",
+          "responseShape": "{ success: boolean, changeRequestId: string, errors: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/change-requests/:id",
+          "method": "GET",
+          "purpose": "Get details, comments, and status of a specific change request.",
+          "requestShape": "{ }",
+          "responseShape": "{ changeRequest: ChangeRequest }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/change-requests/:id/comment",
+          "method": "POST",
+          "purpose": "Add comment to a change request.",
+          "requestShape": "{ commentText: string }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/audit-report",
+          "method": "POST",
+          "purpose": "Generate an exportable audit trail report for selected budget versions and date ranges.",
+          "requestShape": "{ budgetVersionIds: string[], dateRange: { start: date, end: date } }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Compliance and Conflict Checker",
+          "trigger": "On new budget version upload or change request update",
+          "purpose": "Run automated compliance validation and detect conflicts, generating alerts and updating impact summaries."
+        }
+      ],
+      "edgeCases": [
+        "Malformed or inconsistent budget files causing parsing failures",
+        "Conflicting change requests submitted simultaneously by multiple collaborators",
+        "Partial compliance rule definitions or outdated rules leading to false positives/negatives",
+        "Unauthorized access attempts or role escalation attempts",
+        "Network or service failures during file uploads or background job executions",
+        "Users uploading unsupported file formats or corrupted files",
+        "Change requests referencing non-existent or deprecated budget versions"
+      ],
+      "nonGoals": [
+        "Providing legal or financial advice on grant budgeting",
+        "Replacing institutional financial systems or funder portals",
+        "Automated budget negotiation or approval without human oversight",
+        "Real-time multi-user editing of budgets in the initial versions",
+        "Handling budget types outside academic multi-institutional grants"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages based on role and permissions.",
+        "On /upload page, user submits budget file and optional change request metadata.",
+        "Frontend sends POST /api/budgets/upload with file and metadata.",
+        "API parses file, validates format and structure, stores raw file and parsed data as new BudgetVersion with incremented versionNumber and uploadedByUserId.",
+        "API triggers background job Compliance and Conflict Checker asynchronously.",
+        "Background job fetches latest BudgetVersion and ComplianceRules, runs compliance checks, updates BudgetVersion with impactSummary and complianceStatus.",
+        "User can view budget versions and diffs on /budget-history page, which fetches data via GET /api/budgets/:versionId.",
+        "Collaborators submit change requests via POST /api/change-requests with budgetVersionId, reason, priority.",
+        "Change requests stored in ChangeRequest data store linked to BudgetVersion and submitterUserId.",
+        "Background job triggered on change request creation or update to check conflicts and compliance.",
+        "Users view change request details, comments, and approval status on /change-request/:id page via GET /api/change-requests/:id.",
+        "Users add comments via POST /api/change-requests/:id/comment.",
+        "Dashboard page /dashboard fetches collaborator-specific change requests, compliance alerts, and impact summaries via appropriate API calls.",
+        "Audit reports generated by POST /api/audit-report with selected budgetVersionIds and dateRange, returning reportUrl for download."
+      ],
+      "validationRules": [
+        "Uploaded budget files must be CSV or Excel format; reject unsupported formats with clear error messages.",
+        "Budget files must conform to expected schema: required columns, data types, and no missing critical fields.",
+        "Change request metadata fields 'reason' and 'priority' are optional but if present must be non-empty strings.",
+        "BudgetVersion versionNumber must increment sequentially per grant context.",
+        "ComplianceRule effectiveDate must be <= current date and expirationDate, if present, must be > effectiveDate.",
+        "ChangeRequest status must be one of predefined states (e.g., 'Pending', 'Approved', 'Rejected').",
+        "Comments on change requests must be non-empty strings and sanitized to prevent injection.",
+        "API endpoints require authenticated user; user role must be validated for access to sensitive data and actions.",
+        "BudgetVersion and ChangeRequest IDs must be valid UUID strings and exist in database when referenced.",
+        "Date inputs (uploadDate, submissionDate, dateRange) must be valid ISO 8601 dates and logical (start <= end)."
+      ],
+      "errorHandling": [
+        "For file upload parsing errors, return HTTP 400 with detailed validation error messages explaining issues.",
+        "On missing or invalid authentication, return HTTP 401 Unauthorized with message.",
+        "For forbidden access due to role restrictions, return HTTP 403 Forbidden.",
+        "If referenced budgetVersionId or changeRequestId does not exist, return HTTP 404 Not Found.",
+        "On server or database errors, return HTTP 500 with generic error message; log detailed error internally.",
+        "Background job handles partial or malformed data by logging errors and marking impacted BudgetVersions or ChangeRequests with warning status without crashing.",
+        "API responses include 'errors' array with descriptive strings for client display.",
+        "Network or service failures during uploads or job executions trigger retry mechanisms and user notifications.",
+        "Conflict detection returns clear conflict alerts in API responses and UI, preventing silent overwrites."
+      ],
+      "securityNotes": [
+        "All API routes require authentication; use secure session or token-based auth.",
+        "Role-based access control enforced at API and UI layers to restrict sensitive data and actions.",
+        "Sanitize all user inputs, including file contents, metadata, and comments, to prevent injection attacks.",
+        "Store uploaded files securely with access controls; avoid direct public URL exposure.",
+        "Use HTTPS for all client-server communication.",
+        "Implement rate limiting on upload and comment APIs to prevent abuse.",
+        "Audit logs maintained for all uploads, change requests, comments, and approvals for traceability.",
+        "Background jobs run with least privilege and validate all inputs before processing.",
+        "Ensure compliance rules and budget data are versioned and immutable once finalized to prevent tampering.",
+        "Prevent role escalation by validating user roles on every request and UI rendering."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated finance coordinator on the /upload page",
+          "when": "They upload a valid CSV budget file with optional reason and priority metadata",
+          "then": "The system accepts the file, creates a new BudgetVersion with incremented versionNumber, returns success with versionId, and triggers compliance checks"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user requests GET /api/budgets/:versionId with a valid versionId",
+          "when": "The API is called",
+          "then": "The API returns the BudgetVersion data including parsedData and impactSummary"
+        },
+        {
+          "id": "AT-003",
+          "given": "A collaborator submits a change request with valid budgetVersionId, reason, and priority",
+          "when": "POST /api/change-requests is called",
+          "then": "The system stores the change request, returns success with changeRequestId, and triggers conflict detection"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user views /change-request/:id page for an existing change request",
+          "when": "The page loads and calls GET /api/change-requests/:id",
+          "then": "The API returns change request details, comments, status, and alerts"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user adds a comment to a change request",
+          "when": "POST /api/change-requests/:id/comment is called with valid commentText",
+          "then": "The comment is saved and success is returned"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user requests an audit report with valid budgetVersionIds and dateRange",
+          "when": "POST /api/audit-report is called",
+          "then": "The system generates a report, returns a reportUrl, and the report is downloadable"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user attempts to access any protected API or page",
+          "when": "The request is made",
+          "then": "The system returns HTTP 401 Unauthorized and redirects to login"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads an unsupported file format",
+          "when": "POST /api/budgets/upload is called",
+          "then": "The system rejects the upload with HTTP 400 and descriptive error message"
+        },
+        {
+          "id": "AT-009",
+          "given": "Multiple collaborators submit conflicting change requests simultaneously",
+          "when": "Change requests are created",
+          "then": "The system detects conflicts, generates alerts, and prevents silent overwrites"
+        },
+        {
+          "id": "AT-010",
+          "given": "A background job runs compliance checks on a malformed budget version",
+          "when": "The job executes",
+          "then": "The job logs errors, marks the BudgetVersion with warning status, and does not crash"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for BudgetVersion, ChangeRequest, ComplianceRule, User",
+        "Implement authentication and role-based access control middleware",
+        "Build API routes for budget upload and retrieval (/api/budgets/upload, /api/budgets/:versionId)",
+        "Build API routes for change requests management (/api/change-requests, /api/change-requests/:id, /api/change-requests/:id/comment)",
+        "Implement file parsing and validation logic for budget uploads",
+        "Implement background job for compliance and conflict checking",
+        "Build UI pages: /upload, /dashboard, /budget-history, /change-request/:id, /audit-report with data fetching and interaction",
+        "Implement audit report generation API and UI",
+        "Add error handling and user feedback on UI and API layers",
+        "Add security hardening, input sanitization, and logging",
+        "Write acceptance tests and perform end-to-end testing",
+        "Plan for future integration with institutional systems"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/dashboard",
+          "/budget-history",
+          "/change-request/[id]",
+          "/audit-report"
+        ],
+        "apiFilesToCreate": [
+          "api/budgets/upload.ts",
+          "api/budgets/[versionId].ts",
+          "api/change-requests/index.ts",
+          "api/change-requests/[id].ts",
+          "api/change-requests/[id]/comment.ts",
+          "api/audit-report.ts"
+        ],
+        "prismaModelsToAdd": [
+          "BudgetVersion",
+          "ChangeRequest",
+          "ComplianceRule",
+          "User"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints, edge cases, or usage scenarios to clarify the tool requirements.",
+        "promptTemplate": "We have the current blueprint and expanded specs for the Academic Grant Budget Impact Tracker. Please provide any missing constraints, edge cases, or detailed user scenarios to refine the requirements. Here is the current blueprint: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the UI pages and data models needed for the full system based on refined requirements.",
+        "promptTemplate": "Using the refined requirements and blueprint, please finalize the list of UI pages and data models for the Academic Grant Budget Impact Tracker. Include details on fields, relations, and page purposes. Current blueprint: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code stubs or specifications for the UI pages to be implemented.",
+        "promptTemplate": "Generate code stubs or detailed specifications for the UI pages of the Academic Grant Budget Impact Tracker based on the finalized pages list. Current blueprint: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Plan and implement integration between UI pages, API endpoints, and database models.",
+        "promptTemplate": "Plan and describe how to wire the UI pages to API endpoints and database models for the Academic Grant Budget Impact Tracker. Include authentication, validation, and error handling steps. Current blueprint: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

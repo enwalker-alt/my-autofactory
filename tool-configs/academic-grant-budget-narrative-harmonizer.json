@@ -1,0 +1,756 @@
+{
+  "slug": "academic-grant-budget-narrative-harmonizer",
+  "title": "Academic Research Grant Budget Narrative Harmonizer",
+  "description": "Upload up to 3 institutional budget narrative drafts along with funder guidelines to generate a harmonized, conflict-annotated budget narrative draft and compliance gap report. Designed for academic research grant financial managers coordinating multi-institutional proposals.",
+  "inputLabel": "Upload up to 3 budget narrative drafts (DOCX, PDF, or text) and paste funder-specific budget narrative guidelines",
+  "outputLabel": "Harmonized Budget Narrative Draft with Conflict Annotations and Compliance Gap Report",
+  "systemPrompt": "You are an assistant specialized in harmonizing academic research grant budget narratives. Given up to three uploaded institutional budget narrative drafts and pasted funder narrative guidelines, generate a single harmonized budget narrative draft. Highlight inline conflicts or inconsistencies among narratives with clear flags and suggest resolution options. Provide a compliance gap report assessing alignment with the funder guidelines, including a checklist and actionable recommendations. Output must be plain text, optionally structured JSON if requested. Refuse any request that attempts to solicit legal or financial advice. Maintain strict confidentiality and do not output any private data. Only process supported file formats (DOCX, PDF, text). Enforce input validation and refuse unsupported or malformed inputs with clear error messages. Do not generate budget tables or numeric consolidation. Focus solely on narrative harmonization, conflict detection, and compliance feedback based on the supplied inputs.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Harmonize Narratives",
+      "prompt": "Harmonize the following budget narratives and funder guidelines. Provide a single harmonized narrative draft with inline conflict annotations and a compliance gap report.\n\nNarratives:\n{{narratives}}\n\nFunder Guidelines:\n{{guidelines}}",
+      "hint": "Paste or upload multiple narrative drafts and funder guidelines to harmonize."
+    },
+    {
+      "label": "Conflict Resolution Suggestions",
+      "prompt": "Analyze the harmonized budget narrative conflicts and provide suggested resolutions for each flagged inconsistency.\n\nHarmonized Narrative with Conflicts:\n{{harmonizedNarrative}}",
+      "hint": "Input a harmonized narrative with conflict flags to get resolution advice."
+    },
+    {
+      "label": "Compliance Gap Checklist",
+      "prompt": "Based on the funder-specific budget narrative guidelines and the harmonized narrative, generate a detailed compliance gap checklist and actionable recommendations.\n\nFunder Guidelines:\n{{guidelines}}\n\nHarmonized Narrative:\n{{harmonizedNarrative}}",
+      "hint": "Use this to verify compliance and identify gaps."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON includes harmonizedNarrative (string), conflictAnnotations (array of {location, issue, suggestedResolution}), and complianceReport (object with checklist and recommendations).",
+  "clarifyPrompt": "Please upload up to three budget narrative drafts (DOCX, PDF, or text) and paste the funder-specific budget narrative guidelines. Ensure files are valid and guidelines are complete. I can help harmonize and analyze them.",
+  "finalizePrompt": "Confirm you want to generate a harmonized budget narrative draft with conflict annotations and a compliance gap report based on the uploaded narratives and funder guidelines.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Budget Narrative Harmonizer",
+      "niche": {
+        "role": "Academic Research Grant Financial Manager",
+        "scenario": "Multi-institutional grant projects where multiple collaborators submit separate budget narratives that must be harmonized into a single coherent, compliant, and funder-aligned narrative document."
+      },
+      "problem": "Grant financial managers spend significant time manually consolidating and harmonizing multiple institutional budget narratives, which often have inconsistent terminology, conflicting justifications, and overlapping or missing explanations. This leads to inefficiencies, compliance risks, and delays in proposal submission.",
+      "inputs": [
+        "Multiple institutional budget narrative drafts (DOCX, PDF, or text)",
+        "Consolidated budget tables",
+        "Funder-specific budget narrative guidelines and compliance criteria"
+      ],
+      "outputs": [
+        "A single harmonized budget narrative draft aligned with the consolidated budget table",
+        "Conflict and inconsistency flags with suggested resolution options",
+        "Compliance gap report relative to funder narrative requirements",
+        "Version history and collaborator comment summary"
+      ],
+      "whyItWins": [
+        "Unlike simple budget consolidators or category allocators, this tool specifically targets narrative harmonization, a largely manual and error-prone process overlooked by existing tools.",
+        "Supports multi-institution collaboration by tracking narrative versioning, comments, and conflicts to improve coordination and reduce communication overhead.",
+        "Provides actionable compliance feedback tailored to funder narrative requirements, reducing risk of proposal rejection.",
+        "Built to start lightweight (harmonizing a few narratives) but scalable to a multi-page system supporting complex workflows, multi-user collaboration, and integration with budget tables."
+      ],
+      "upgradePath": {
+        "today": "A simple web tool to upload up to 3 budget narrative drafts plus funder guidelines and output a harmonized draft with inline conflict annotations and a compliance checklist.",
+        "in90Days": "Add multi-user collaboration features with comment threads, version control, and side-by-side narrative comparison views, plus integration with consolidated budget tables.",
+        "in12Months": "Develop a full multi-page application supporting unlimited collaborators, real-time editing, automated compliance alerts, narrative template management, role-based access, and export to funder submission formats."
+      },
+      "riskNotes": [
+        "Ensure strict privacy and access controls as narratives may contain sensitive institutional financial information.",
+        "Avoid offering legal or financial advice; focus on harmonization and compliance assistance only.",
+        "Maintain clear disclaimers that final narrative responsibility remains with the grant financial managers and institutional officers."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research grant financial managers to harmonize multiple institutional budget narratives into a single coherent, compliant document with versioning, conflict resolution, and compliance feedback.",
+      "primaryUser": "Academic Research Grant Financial Manager",
+      "successMetrics": [
+        "Reduction in time spent consolidating budget narratives",
+        "Decrease in compliance-related proposal rejections",
+        "User adoption rate among multi-institutional grant teams",
+        "Number of conflicts detected and resolved via the tool",
+        "Frequency of collaborative interactions (comments, versioning)"
+      ],
+      "components": [
+        {
+          "id": "ui-narrative-editor",
+          "name": "Narrative Editor UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for uploading, viewing, editing, and harmonizing budget narratives with inline conflict annotations and comment threads.",
+          "dependsOn": [
+            "api-narrative",
+            "api-user",
+            "data-narrative",
+            "api-compliance"
+          ],
+          "notes": [
+            "Supports side-by-side comparison views in advanced versions.",
+            "Includes version history and collaborator comment summaries.",
+            "Handles DOCX, PDF, and text input formats with parsing fallback."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "User Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display project summaries, upload status, compliance reports, conflict flags, and navigation to narrative editing and collaboration features.",
+          "dependsOn": [
+            "api-user",
+            "api-project",
+            "api-compliance"
+          ],
+          "notes": [
+            "Shows compliance gap reports and conflict resolution status.",
+            "Provides access control based on user roles."
+          ]
+        },
+        {
+          "id": "api-narrative",
+          "name": "Narrative Management API",
+          "type": "api",
+          "responsibility": "Handle upload, parsing, storage, harmonization, conflict detection, versioning, and retrieval of budget narratives.",
+          "dependsOn": [
+            "data-narrative",
+            "api-compliance"
+          ],
+          "notes": [
+            "Implements harmonization logic with conflict detection and annotation.",
+            "Supports version control and comment thread management.",
+            "Handles multi-format narrative input parsing with error handling."
+          ]
+        },
+        {
+          "id": "api-compliance",
+          "name": "Compliance Analysis API",
+          "type": "api",
+          "responsibility": "Analyze harmonized narratives against funder-specific guidelines to generate compliance gap reports and actionable feedback.",
+          "dependsOn": [
+            "data-guidelines"
+          ],
+          "notes": [
+            "Supports configurable funder guideline sets.",
+            "Returns detailed compliance flags and suggestions."
+          ]
+        },
+        {
+          "id": "data-narrative",
+          "name": "Narrative Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded narratives, harmonized drafts, version histories, comments, conflict annotations, and user metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Stores parsed narrative content in structured form for analysis.",
+            "Maintains audit trails for compliance and privacy."
+          ]
+        },
+        {
+          "id": "data-guidelines",
+          "name": "Funder Guidelines Data Store",
+          "type": "data",
+          "responsibility": "Store funder-specific budget narrative guidelines and compliance criteria for use in analysis.",
+          "dependsOn": [],
+          "notes": [
+            "Supports updates and versioning of guideline sets.",
+            "Accessible to compliance analysis API."
+          ]
+        },
+        {
+          "id": "api-user",
+          "name": "User and Access Management API",
+          "type": "api",
+          "responsibility": "Manage user authentication, authorization, roles, and access controls to ensure privacy and security of sensitive narrative data.",
+          "dependsOn": [
+            "data-user"
+          ],
+          "notes": [
+            "Supports role-based access control for collaborators and managers.",
+            "Implements secure authentication flows."
+          ]
+        },
+        {
+          "id": "data-user",
+          "name": "User Data Store",
+          "type": "data",
+          "responsibility": "Persist user profiles, roles, permissions, and authentication credentials.",
+          "dependsOn": [],
+          "notes": [
+            "Stores encrypted credentials and access logs."
+          ]
+        },
+        {
+          "id": "job-harmonization",
+          "name": "Narrative Harmonization Background Job",
+          "type": "job",
+          "responsibility": "Process uploaded narratives asynchronously to perform harmonization, conflict detection, and generate initial conflict annotations.",
+          "dependsOn": [
+            "data-narrative",
+            "api-compliance"
+          ],
+          "notes": [
+            "Handles large or complex narrative inputs without blocking UI.",
+            "Retries on transient failures and logs errors."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "NarrativeDocument",
+          "purpose": "Represents an uploaded or harmonized budget narrative document with metadata, content, and versioning.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploaderUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "originalFormat",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parsedContent",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "harmonizedContent",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "conflictAnnotations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "comments",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "uploaderUserId",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "FunderGuideline",
+          "purpose": "Stores funder-specific budget narrative compliance criteria and guidelines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "guidelineVersion",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "criteria",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName",
+            "guidelineVersion"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Represents a system user with authentication and role information.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Represents a multi-institutional grant project aggregating narratives and users.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "funderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "memberUserIds",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the system.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "User Dashboard",
+          "purpose": "Overview of projects, narratives, compliance reports, and conflict statuses.",
+          "inputs": [],
+          "outputs": [
+            "project summaries",
+            "compliance flags",
+            "conflict notifications"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:projectId/narratives",
+          "title": "Narrative Upload and Management",
+          "purpose": "Upload, view, and manage multiple institutional budget narratives for a project.",
+          "inputs": [
+            "narrative files (DOCX, PDF, text)",
+            "metadata"
+          ],
+          "outputs": [
+            "parsed narrative previews",
+            "upload status",
+            "version history"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:projectId/harmonize",
+          "title": "Harmonized Narrative Editor",
+          "purpose": "Edit and harmonize the consolidated budget narrative with inline conflict annotations and comments.",
+          "inputs": [
+            "selected narrative versions",
+            "user edits",
+            "comments"
+          ],
+          "outputs": [
+            "harmonized narrative draft",
+            "conflict flags",
+            "comment threads"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:projectId/compliance",
+          "title": "Compliance Report",
+          "purpose": "View compliance gap analysis and actionable feedback relative to funder guidelines.",
+          "inputs": [],
+          "outputs": [
+            "compliance checklist",
+            "detailed gap report",
+            "recommendations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/project/:projectId/settings",
+          "title": "Project Settings",
+          "purpose": "Manage project details, collaborators, and funder guideline selection.",
+          "inputs": [
+            "project metadata",
+            "user roles",
+            "funder guideline selection"
+          ],
+          "outputs": [
+            "updated project configuration",
+            "access control settings"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return access token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/projects",
+          "method": "GET",
+          "purpose": "Retrieve list of projects accessible to the authenticated user.",
+          "requestShape": "none",
+          "responseShape": "Project[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/narratives",
+          "method": "POST",
+          "purpose": "Upload a new budget narrative document for a project.",
+          "requestShape": "{ file: binary, metadata: json }",
+          "responseShape": "{ narrativeId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/narratives",
+          "method": "GET",
+          "purpose": "List all narratives and their versions for a project.",
+          "requestShape": "none",
+          "responseShape": "NarrativeDocument[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/harmonize",
+          "method": "POST",
+          "purpose": "Trigger harmonization process for selected narratives.",
+          "requestShape": "{ narrativeIds: string[] }",
+          "responseShape": "{ harmonizedNarrativeId: string, conflictAnnotations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/harmonized-narratives/:id",
+          "method": "GET",
+          "purpose": "Retrieve harmonized narrative content and conflict annotations.",
+          "requestShape": "none",
+          "responseShape": "{ harmonizedContent: json, conflictAnnotations: json, comments: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/compliance-report",
+          "method": "GET",
+          "purpose": "Get compliance gap report for the harmonized narrative.",
+          "requestShape": "none",
+          "responseShape": "{ complianceChecklist: json, gapDetails: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/comments",
+          "method": "POST",
+          "purpose": "Add a comment or reply in narrative collaboration threads.",
+          "requestShape": "{ narrativeId: string, commentText: string, parentCommentId?: string }",
+          "responseShape": "{ commentId: string, timestamp: date }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/projects/:projectId/settings",
+          "method": "POST",
+          "purpose": "Update project settings including collaborators and funder guidelines.",
+          "requestShape": "{ metadata: json, collaborators: json, funderGuidelineId: string }",
+          "responseShape": "{ status: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Narrative Harmonization Job",
+          "trigger": "Triggered asynchronously after narrative uploads or harmonization requests",
+          "purpose": "Parse narrative documents, perform harmonization, detect conflicts, and generate conflict annotations."
+        },
+        {
+          "name": "Compliance Analysis Job",
+          "trigger": "Triggered after harmonized narrative generation or guideline updates",
+          "purpose": "Analyze harmonized narratives against funder guidelines and update compliance reports."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded narratives in unsupported or corrupted file formats causing parsing failures.",
+        "Conflicting narratives with overlapping justifications that cannot be automatically resolved.",
+        "Incomplete or missing funder guideline data resulting in partial compliance analysis.",
+        "Simultaneous edits by multiple collaborators causing version conflicts.",
+        "Unauthorized access attempts to sensitive narrative data.",
+        "Large narrative documents causing performance degradation during harmonization.",
+        "Network failures during file uploads or background job execution.",
+        "Users uploading narratives with sensitive or proprietary information requiring strict privacy controls."
+      ],
+      "nonGoals": [
+        "Providing legal or financial advice on grant budgeting or compliance.",
+        "Automated generation of budget tables or numeric budget consolidation.",
+        "Real-time collaborative editing in the initial release (planned for future upgrades).",
+        "Full integration with external institutional grant management systems at launch.",
+        "Automated submission of grant proposals to funders."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits email and password to /api/auth/login; receives authentication token on success.",
+        "Authenticated user accesses /dashboard; frontend calls /api/projects to fetch accessible projects, compliance flags, and conflict notifications.",
+        "User navigates to /project/:projectId/narratives to upload narrative files; files and metadata are sent to /api/projects/:projectId/narratives POST endpoint.",
+        "Upon upload, the Narrative Harmonization Background Job is triggered asynchronously to parse, harmonize, detect conflicts, and annotate narratives stored in data-narrative.",
+        "User views narrative versions via /api/projects/:projectId/narratives GET; selects versions to harmonize and triggers harmonization via /api/projects/:projectId/harmonize POST.",
+        "Harmonization API processes selected narratives, updates harmonizedContent and conflictAnnotations in NarrativeDocument, returns harmonized narrative ID and annotations.",
+        "User accesses /project/:projectId/harmonize page to edit harmonized narrative; frontend fetches harmonized content and comments from /api/projects/:projectId/harmonized-narratives/:id GET.",
+        "Users add comments or replies via /api/projects/:projectId/comments POST; comments are stored linked to narratives and versions.",
+        "Compliance Analysis Job runs after harmonization or guideline updates, analyzing harmonized narratives against funder guidelines stored in data-guidelines; results stored or returned via /api/projects/:projectId/compliance-report GET.",
+        "User accesses /project/:projectId/compliance to view compliance checklist, gap details, and recommendations.",
+        "Project settings managed via /project/:projectId/settings page; updates sent to /api/projects/:projectId/settings POST to modify project metadata, collaborators, and funder guideline selection."
+      ],
+      "validationRules": [
+        "Login: email must be valid format; password non-empty.",
+        "Project access: user must be member of project to access narratives, harmonization, compliance, or settings endpoints.",
+        "Narrative upload: file must be one of supported formats (DOCX, PDF, text); metadata must include required fields (e.g., uploaderUserId, uploadTimestamp).",
+        "Harmonization request: narrativeIds array must be non-empty and all IDs must belong to the project.",
+        "Comments: commentText must be non-empty; parentCommentId, if provided, must reference an existing comment in the same narrative.",
+        "Project settings update: metadata must conform to schema; collaborators must be valid user IDs; funderGuidelineId must exist.",
+        "All API inputs must be sanitized to prevent injection attacks.",
+        "Version numbers must increment sequentially for NarrativeDocument versions."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Authorization failures return 403 Forbidden when user lacks access to requested resource.",
+        "File upload parsing errors return 400 Bad Request with parsing failure details.",
+        "Background job failures are logged with retry mechanisms; user-facing APIs return 202 Accepted with status updates if processing is pending.",
+        "Conflict detection failures or unresolved conflicts return conflict flags with descriptive messages in harmonization responses.",
+        "Missing or outdated funder guideline data returns partial compliance analysis with warnings.",
+        "Network or server errors return 500 Internal Server Error with generic messages; detailed logs maintained server-side.",
+        "Input validation errors return 400 Bad Request with field-specific error details.",
+        "Simultaneous edit conflicts detected return 409 Conflict with instructions to refresh or merge."
+      ],
+      "securityNotes": [
+        "All authenticated API routes require valid JWT or session tokens.",
+        "Role-based access control enforced on project and narrative resources; only authorized users can view or modify data.",
+        "Sensitive narrative content and user credentials stored encrypted at rest.",
+        "Access logs maintained for audit trails and anomaly detection.",
+        "File uploads scanned for malware and validated for allowed types.",
+        "Comments and user inputs sanitized to prevent XSS and injection attacks.",
+        "Background jobs run with least privilege access to data stores.",
+        "Rate limiting applied on authentication and upload endpoints to prevent brute force and DoS attacks.",
+        "Ensure HTTPS enforced for all client-server communications."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password on /login",
+          "then": "They receive an authentication token and are redirected to /dashboard"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user belonging to multiple projects",
+          "when": "They access /dashboard",
+          "then": "They see a list of their projects with compliance flags and conflict notifications"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /project/:projectId/narratives",
+          "when": "They upload a DOCX narrative file with valid metadata",
+          "then": "The system accepts the upload, returns a narrativeId and status, and triggers background harmonization job"
+        },
+        {
+          "id": "AT-004",
+          "given": "Multiple narrative versions uploaded for a project",
+          "when": "User requests harmonization with selected narrative IDs",
+          "then": "The system returns a harmonizedNarrativeId and conflict annotations, and updates stored harmonized content"
+        },
+        {
+          "id": "AT-005",
+          "given": "A harmonized narrative with conflicts",
+          "when": "User views /project/:projectId/harmonize",
+          "then": "They see the harmonized narrative draft with inline conflict flags and can add comments"
+        },
+        {
+          "id": "AT-006",
+          "given": "A harmonized narrative exists for a project",
+          "when": "User accesses /project/:projectId/compliance",
+          "then": "They receive a compliance checklist, detailed gap report, and actionable recommendations"
+        },
+        {
+          "id": "AT-007",
+          "given": "A project manager on /project/:projectId/settings",
+          "when": "They update project metadata, collaborators, and funder guideline selection with valid data",
+          "then": "The system saves changes and returns a success status"
+        },
+        {
+          "id": "AT-008",
+          "given": "An unauthorized user attempts to access a project narrative",
+          "when": "They call /api/projects/:projectId/narratives GET",
+          "then": "They receive a 403 Forbidden error"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user uploads an unsupported file format",
+          "when": "They submit the file to /api/projects/:projectId/narratives POST",
+          "then": "They receive a 400 Bad Request with parsing error details"
+        },
+        {
+          "id": "AT-010",
+          "given": "Multiple users attempt simultaneous edits on harmonized narrative",
+          "when": "Conflicting edits are submitted",
+          "then": "The system detects conflict and returns 409 Conflict with instructions"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for User, Project, NarrativeDocument, FunderGuideline",
+        "Implement api-user for authentication, authorization, and role management",
+        "Create /login page and authentication flow",
+        "Implement api-projects endpoints for project listing and settings management",
+        "Develop data-narrative persistence and narrative upload API with parsing logic",
+        "Build Narrative Harmonization Background Job to process uploads asynchronously",
+        "Create ui-narrative-editor with upload, version history, and harmonization editing UI",
+        "Implement api-narrative for harmonization, conflict detection, and retrieval",
+        "Develop api-comments for collaboration threads",
+        "Implement data-guidelines and api-compliance for compliance analysis",
+        "Create compliance report UI page",
+        "Develop user dashboard UI integrating projects, compliance flags, and conflict notifications",
+        "Add project settings UI for managing collaborators and funder guidelines",
+        "Implement error handling, validation, and security measures throughout",
+        "Write acceptance tests and perform integration testing",
+        "Deploy and monitor background jobs with retry and logging"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/project/[projectId]/narratives",
+          "/project/[projectId]/harmonize",
+          "/project/[projectId]/compliance",
+          "/project/[projectId]/settings"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/projects/index.ts",
+          "api/projects/[projectId]/narratives.ts",
+          "api/projects/[projectId]/harmonize.ts",
+          "api/projects/[projectId]/harmonized-narratives/[id].ts",
+          "api/projects/[projectId]/compliance-report.ts",
+          "api/projects/[projectId]/comments.ts",
+          "api/projects/[projectId]/settings.ts",
+          "api/user/index.ts",
+          "api/narrative/index.ts",
+          "api/compliance/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "NarrativeDocument",
+          "FunderGuideline"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify and gather any missing constraints or details about the budget narrative harmonization workflow and user needs.",
+        "promptTemplate": "Given the current blueprint {{BLUEPRINT}} and user input {{USER_INPUT}}, please identify any missing or ambiguous requirements, constraints, or edge cases that need to be addressed for the Academic Research Grant Budget Narrative Harmonizer."
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the page routes, UI components, and data models needed to implement the harmonization platform.",
+        "promptTemplate": "Using the refined requirements and blueprint {{BLUEPRINT}}, create a detailed specification of pages, UI features, and data models for the Academic Research Grant Budget Narrative Harmonizer."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code scaffolds and minimal implementations for each page and API endpoint to bootstrap development.",
+        "promptTemplate": "Based on the finalized architecture {{BLUEPRINT}} and data models {{EXPANDED.dataModels}}, generate code stubs and folder structure for the pages and APIs of the Academic Research Grant Budget Narrative Harmonizer."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect front-end pages with backend APIs and databases ensuring data flow and security compliance.",
+        "promptTemplate": "Given the page stubs and API specs {{BLUEPRINT.apiRoutes}}, integrate the frontend UI components with backend APIs and database models to enable full harmonization workflow for the Academic Research Grant Budget Narrative Harmonizer."
+      }
+    ]
+  }
+}

@@ -1,0 +1,894 @@
+{
+  "slug": "academic-seminar-prep-coach",
+  "title": "Academic Seminar Speaker Preparation & Engagement Planner",
+  "description": "Upload seminar presentation drafts and speaker profiles to generate tailored speaker readiness reports and customized audience engagement plans. Designed for academic seminar organizers and presenters to collaboratively improve seminar quality with actionable coaching and engagement strategies.",
+  "inputLabel": "Upload your draft presentation slides or transcript (PDF or text) and enter speaker & seminar details",
+  "outputLabel": "Speaker readiness report and audience engagement plan",
+  "systemPrompt": "You are an academic seminar preparation assistant. Given the uploaded draft presentation slides or transcript and detailed speaker profile along with seminar theme and audience characteristics, generate a structured speaker readiness report highlighting strengths, weaknesses, and tailored coaching tips. Also create a customized audience engagement plan recommending Q&A strategies, interactive activities, and timing suggestions. The output must be safe, avoid medical, legal or sensitive advice, and disclaim it is a coaching aid only. Refuse unsupported file formats or disallowed content. Output in plain text or structured JSON if requested. Enforce strict input validation and only provide presentation skill and audience engagement coaching.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Balanced report and plan",
+      "prompt": "Generate a detailed speaker readiness report along with a comprehensive audience engagement plan including Q&A and interactive activities."
+    },
+    {
+      "label": "Focus on coaching tips",
+      "prompt": "Provide a concise speaker readiness report emphasizing practical coaching tips and improvement areas."
+    },
+    {
+      "label": "Emphasize engagement strategies",
+      "prompt": "Create an audience engagement plan with detailed timing, activities, and question handling strategies."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is requested, provide JSON with keys: 'readinessReport' (summary, strengths[], weaknesses[], coachingTips[]), 'engagementPlan' (activities[], timingRecommendations[], QAStrategies[]), and 'checklist' (tasks[]).",
+  "clarifyPrompt": "Please provide the seminar theme, speaker experience level, and target audience characteristics to tailor the readiness report and engagement plan.",
+  "finalizePrompt": "Confirm all input details are correct and submit to generate the speaker readiness report and audience engagement plan.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Seminar Speaker Preparation & Audience Engagement Planner",
+      "niche": {
+        "role": "Academic research seminar organizer and presenter",
+        "scenario": "Preparing seminar speakers with tailored presentation coaching and planning audience engagement strategies before academic research seminars"
+      },
+      "problem": "Academic seminar organizers and presenters lack a dedicated system to collaboratively prepare seminar presentations with structured feedback, speaker coaching, and audience engagement planning. Existing tools focus on scheduling or content generation but do not integrate speaker readiness assessment, customized coaching tips, and interactive engagement plan generation in a repeatable workflow.",
+      "inputs": [
+        "Uploaded draft seminar presentation slides or transcripts",
+        "Speaker profile and experience details",
+        "Seminar theme and target audience characteristics",
+        "Previous seminar feedback data (optional)",
+        "Organizer input on engagement goals and constraints"
+      ],
+      "outputs": [
+        "Structured speaker readiness report highlighting strengths, weaknesses, and coaching tips",
+        "Customized audience engagement plan including Q&A strategies, interactive activities, and timing recommendations",
+        "Checklists for last-minute speaker preparation tasks",
+        "Collaborative feedback summaries for organizer and speaker review"
+      ],
+      "whyItWins": [
+        "Addresses a critical gap in seminar preparation by combining speaker coaching and audience engagement planning in one workflow",
+        "Supports repeated use for multiple seminars with evolving speaker profiles and feedback integration",
+        "Provides actionable, tailored recommendations rather than generic advice, improving seminar quality",
+        "Facilitates collaboration between organizers and presenters with shared, structured feedback and planning tools",
+        "Lightweight to start but designed to scale into a multi-page app supporting scheduling, speaker management, feedback archives, and live seminar analytics"
+      ],
+      "upgradePath": {
+        "today": "Single-page app to upload draft slides/transcripts and speaker profile to generate a readiness report and basic engagement plan PDF export",
+        "in90Days": "Add collaborative feedback input, version tracking of presentation drafts, and enhanced tailored coaching content based on speaker experience and audience data",
+        "in12Months": "Develop a multi-page platform with integrated seminar scheduling, speaker dashboard, real-time audience interaction tools, feedback archiving, and AI-driven personalized coaching and engagement simulations"
+      },
+      "riskNotes": [
+        "Avoid medical, legal, or sensitive personal advice; focus strictly on presentation skills and engagement strategies",
+        "Ensure privacy and secure handling of uploaded presentation and speaker data",
+        "Do not attempt to automate evaluation of research content accuracy or peer review",
+        "Clearly disclaim the system as a coaching aid, not a definitive assessment of speaker performance or research quality"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic seminar organizers and presenters to prepare and coach seminar speakers with structured feedback, tailored readiness reports, and customized audience engagement plans, evolving from a single-page upload tool to a comprehensive seminar management and coaching system.",
+      "primaryUser": "Academic research seminar organizers and presenters",
+      "successMetrics": [
+        "Number of seminars prepared using the platform",
+        "User satisfaction ratings from organizers and speakers",
+        "Frequency and quality of collaborative feedback submitted",
+        "Repeat usage rate by organizers and speakers",
+        "Improvement in seminar engagement metrics (e.g., audience participation, feedback scores)"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend User Interface",
+          "type": "ui",
+          "responsibility": "Provides multi-page web interface for uploading materials, managing speaker profiles, viewing readiness reports, collaborating on feedback, and planning audience engagement.",
+          "dependsOn": [
+            "api-backend"
+          ],
+          "notes": [
+            "Pages include upload, speaker dashboard, feedback collaboration, engagement planning, and seminar scheduling.",
+            "Handles input validation and user authentication.",
+            "Supports PDF export of reports and plans."
+          ]
+        },
+        {
+          "id": "api-backend",
+          "name": "Backend API Server",
+          "type": "api",
+          "responsibility": "Handles business logic, data processing, report generation, feedback management, user authentication, and serves data to the frontend.",
+          "dependsOn": [
+            "data-db",
+            "integration-ai"
+          ],
+          "notes": [
+            "Processes uploaded slides/transcripts to generate readiness reports.",
+            "Manages speaker profiles, seminar data, and feedback versions.",
+            "Implements role-based access control for organizers and speakers."
+          ]
+        },
+        {
+          "id": "data-db",
+          "name": "Database",
+          "type": "data",
+          "responsibility": "Persists user accounts, speaker profiles, seminar details, uploaded materials metadata, feedback entries, readiness reports, engagement plans, and version histories.",
+          "dependsOn": [],
+          "notes": [
+            "Stores sensitive data securely with encryption at rest.",
+            "Indexes for fast retrieval of seminar and speaker data.",
+            "Supports audit trails for feedback and document versions."
+          ]
+        },
+        {
+          "id": "integration-ai",
+          "name": "AI Coaching & Analysis Integration",
+          "type": "integration",
+          "responsibility": "Provides AI-powered analysis of presentation drafts and speaker profiles to generate tailored readiness reports, coaching tips, and engagement strategies.",
+          "dependsOn": [],
+          "notes": [
+            "Does not evaluate research content accuracy or provide sensitive advice.",
+            "Focuses on presentation skills and audience engagement recommendations.",
+            "Supports incremental enhancement of coaching content based on user feedback."
+          ]
+        },
+        {
+          "id": "job-feedback-aggregation",
+          "name": "Feedback Aggregation Background Job",
+          "type": "job",
+          "responsibility": "Periodically aggregates collaborative feedback inputs into summarized reports for organizers and speakers.",
+          "dependsOn": [
+            "data-db"
+          ],
+          "notes": [
+            "Runs on schedule or triggered by feedback submission volume.",
+            "Handles conflict resolution and version merging.",
+            "Notifies users of updated summaries."
+          ]
+        },
+        {
+          "id": "job-version-tracking",
+          "name": "Presentation Version Tracking Job",
+          "type": "job",
+          "responsibility": "Monitors and archives versions of uploaded presentation drafts and transcripts to enable rollback and comparison.",
+          "dependsOn": [
+            "data-db"
+          ],
+          "notes": [
+            "Triggers on new uploads or edits.",
+            "Maintains metadata for version history.",
+            "Supports diff visualization in UI."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Represents platform users including organizers and speakers with authentication and role data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "SpeakerProfile",
+          "purpose": "Stores details about seminar speakers including experience and preferences.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "biography",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "experienceLevel",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "presentationStyle",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "preferences",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        },
+        {
+          "name": "Seminar",
+          "purpose": "Represents a seminar event with theme, target audience, and scheduling data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "organizerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "theme",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "targetAudience",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "scheduledDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "engagementGoals",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "organizerId",
+            "scheduledDate"
+          ]
+        },
+        {
+          "name": "PresentationDraft",
+          "purpose": "Metadata and storage references for uploaded presentation slides or transcripts with versioning.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "speakerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileLocation",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "seminarId",
+            "speakerId",
+            "version"
+          ]
+        },
+        {
+          "name": "FeedbackEntry",
+          "purpose": "Stores individual feedback comments and ratings from organizers and speakers.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rating",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "relatedDraftVersion",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "seminarId",
+            "authorId"
+          ]
+        },
+        {
+          "name": "ReadinessReport",
+          "purpose": "Generated report summarizing speaker readiness, strengths, weaknesses, and coaching tips.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "speakerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "generatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "summary",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "coachingTips",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "strengths",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "weaknesses",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "seminarId",
+            "speakerId"
+          ]
+        },
+        {
+          "name": "EngagementPlan",
+          "purpose": "Customized plan for audience engagement including Q&A, activities, and timing.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "planDetails",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "constraints",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "seminarId"
+          ]
+        },
+        {
+          "name": "ChecklistItem",
+          "purpose": "Represents a last-minute preparation task for speakers.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "seminarId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "isCompleted",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "assignedToSpeakerId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "seminarId",
+            "assignedToSpeakerId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Presentation Draft",
+          "purpose": "Allow speakers or organizers to upload draft slides or transcripts and input speaker profile data.",
+          "inputs": [
+            "file upload",
+            "speaker profile form",
+            "seminar selection",
+            "seminar theme and audience inputs"
+          ],
+          "outputs": [
+            "upload confirmation",
+            "preliminary readiness report preview"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Speaker & Organizer Dashboard",
+          "purpose": "Overview of upcoming seminars, speaker profiles, readiness reports, and engagement plans.",
+          "inputs": [
+            "user authentication"
+          ],
+          "outputs": [
+            "seminar list",
+            "report summaries",
+            "engagement plan previews"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/feedback",
+          "title": "Collaborative Feedback",
+          "purpose": "Interface for organizers and speakers to submit and review structured feedback on presentations.",
+          "inputs": [
+            "feedback text",
+            "rating",
+            "related draft version"
+          ],
+          "outputs": [
+            "feedback summaries",
+            "notifications of new feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/engagement-plan",
+          "title": "Audience Engagement Planning",
+          "purpose": "Create and edit customized audience engagement plans with interactive activities and timing recommendations.",
+          "inputs": [
+            "engagement goals",
+            "constraints",
+            "seminar details"
+          ],
+          "outputs": [
+            "engagement plan view",
+            "PDF export"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/checklist",
+          "title": "Speaker Preparation Checklist",
+          "purpose": "Manage last-minute preparation tasks with completion tracking.",
+          "inputs": [
+            "task creation",
+            "task completion toggles"
+          ],
+          "outputs": [
+            "checklist status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/seminars",
+          "title": "Seminar Scheduling & Management",
+          "purpose": "Organizers manage seminar scheduling, speaker assignments, and seminar metadata.",
+          "inputs": [
+            "seminar creation/edit forms",
+            "speaker assignment"
+          ],
+          "outputs": [
+            "seminar calendar",
+            "assignment summaries"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/uploadDraft",
+          "method": "POST",
+          "purpose": "Upload presentation draft and associate with seminar and speaker profile.",
+          "requestShape": "{ seminarId: string, speakerId: string, file: binary, notes?: string }",
+          "responseShape": "{ success: boolean, draftId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/generateReadinessReport",
+          "method": "POST",
+          "purpose": "Trigger AI analysis to generate a speaker readiness report based on uploaded drafts and profiles.",
+          "requestShape": "{ seminarId: string, speakerId: string }",
+          "responseShape": "{ success: boolean, reportId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/submitFeedback",
+          "method": "POST",
+          "purpose": "Submit structured feedback for a seminar presentation draft.",
+          "requestShape": "{ seminarId: string, authorId: string, content: string, rating?: number, relatedDraftVersion?: number }",
+          "responseShape": "{ success: boolean, feedbackId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/getFeedbackSummary",
+          "method": "GET",
+          "purpose": "Retrieve aggregated feedback summaries for a seminar.",
+          "requestShape": "{ seminarId: string }",
+          "responseShape": "{ feedbackSummary: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/saveEngagementPlan",
+          "method": "POST",
+          "purpose": "Save or update the customized audience engagement plan for a seminar.",
+          "requestShape": "{ seminarId: string, planDetails: json, constraints?: json }",
+          "responseShape": "{ success: boolean, planId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/getEngagementPlan",
+          "method": "GET",
+          "purpose": "Retrieve the engagement plan for a seminar.",
+          "requestShape": "{ seminarId: string }",
+          "responseShape": "{ planDetails: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/manageChecklist",
+          "method": "POST",
+          "purpose": "Create or update checklist items for speaker preparation.",
+          "requestShape": "{ seminarId: string, description: string, isCompleted: boolean, assignedToSpeakerId?: string }",
+          "responseShape": "{ success: boolean, checklistItemId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/getChecklist",
+          "method": "GET",
+          "purpose": "Retrieve checklist items for a seminar.",
+          "requestShape": "{ seminarId: string }",
+          "responseShape": "{ checklistItems: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/seminarSchedule",
+          "method": "POST",
+          "purpose": "Create or update seminar scheduling and metadata.",
+          "requestShape": "{ seminarId?: string, title: string, theme?: string, targetAudience?: json, scheduledDate?: date, engagementGoals?: json }",
+          "responseShape": "{ success: boolean, seminarId?: string, error?: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/getSeminars",
+          "method": "GET",
+          "purpose": "Retrieve list of seminars for the authenticated organizer.",
+          "requestShape": "{}",
+          "responseShape": "{ seminars: json[] }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Feedback Aggregation",
+          "trigger": "Scheduled (e.g., nightly) or on feedback volume threshold",
+          "purpose": "Aggregate individual feedback entries into summarized reports for easier review."
+        },
+        {
+          "name": "Presentation Version Tracking",
+          "trigger": "On new presentation draft upload or update",
+          "purpose": "Archive and maintain version history of presentation drafts for rollback and comparison."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded files are corrupted or unsupported format - system should reject with clear error.",
+        "Multiple users editing feedback or engagement plans simultaneously - handle conflicts gracefully.",
+        "Speaker profile data incomplete or inconsistent - provide warnings and allow updates.",
+        "AI integration service downtime or slow response - fallback to cached reports or notify users.",
+        "Unauthorized access attempts to seminar data - enforce strict auth and role checks.",
+        "Large presentation files causing upload timeout - implement chunked upload or size limits.",
+        "Missing or incomplete seminar metadata impacting report generation - require minimum fields.",
+        "Version conflicts when multiple presentation drafts uploaded rapidly - ensure atomic version increments."
+      ],
+      "nonGoals": [
+        "Providing medical, legal, or sensitive personal advice.",
+        "Automating evaluation of research content accuracy or peer review.",
+        "Replacing human judgment in speaker performance assessment.",
+        "Handling live seminar streaming or video conferencing.",
+        "Managing general event scheduling outside academic seminars.",
+        "Generating presentation content or slides automatically."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via frontend; auth token/session managed for API calls.",
+        "On /upload page, user submits presentation draft file, speaker profile data, and seminar metadata.",
+        "Frontend validates inputs, sends POST /api/uploadDraft with seminarId, speakerId, file, and optional notes.",
+        "API backend verifies auth, validates data, stores file securely, creates PresentationDraft record with versioning.",
+        "Background job 'Presentation Version Tracking' triggers on new upload to archive version metadata.",
+        "API backend calls AI integration service to generate readiness report on demand via POST /api/generateReadinessReport.",
+        "AI service returns coaching tips, strengths, weaknesses; backend stores ReadinessReport linked to seminar and speaker.",
+        "Frontend dashboard fetches seminars, readiness reports, engagement plans via GET APIs for display.",
+        "Users submit feedback via POST /api/submitFeedback with content, rating, related draft version.",
+        "Feedback entries stored; background job 'Feedback Aggregation' runs periodically to merge and summarize feedback.",
+        "Engagement plans created/edited via POST /api/saveEngagementPlan; retrieved via GET /api/getEngagementPlan.",
+        "Checklist items managed via POST /api/manageChecklist and retrieved via GET /api/getChecklist.",
+        "Seminar scheduling and metadata managed via POST /api/seminarSchedule; list retrieved via GET /api/getSeminars.",
+        "Frontend supports PDF export of reports and engagement plans by fetching data and rendering client-side or server-side."
+      ],
+      "validationRules": [
+        "User authentication required for all API routes; reject unauthorized with 401.",
+        "File uploads must be PDF or supported transcript formats; reject corrupted or unsupported files with clear error.",
+        "Speaker profile fields: email must be valid format; experienceLevel and presentationStyle optional but if present must be from predefined enums.",
+        "Seminar metadata requires at minimum title and organizerId; scheduledDate if present must be a valid future date.",
+        "PresentationDraft version increments atomically per seminarId and speakerId; reject concurrent conflicting uploads.",
+        "Feedback content required, rating optional but if present must be integer between 1 and 5.",
+        "Engagement plan planDetails must be valid JSON with required keys (e.g., activities, timing); constraints optional JSON.",
+        "Checklist item description required; isCompleted boolean required; assignedToSpeakerId optional but if present must reference existing speaker.",
+        "API request bodies validated for required fields and types; reject with 400 and descriptive messages on invalid input.",
+        "Prevent submission of incomplete or inconsistent speaker profile data by warning on frontend and allowing updates."
+      ],
+      "errorHandling": [
+        "API returns structured error responses with { success: false, error: string } on failures.",
+        "File upload errors (size, format, corruption) return 400 with descriptive messages.",
+        "Authentication failures return 401 Unauthorized.",
+        "Authorization failures (accessing seminars or data user is not permitted to) return 403 Forbidden.",
+        "AI integration timeouts or errors return 503 Service Unavailable with fallback to cached reports if available.",
+        "Conflict errors on version increments or simultaneous edits return 409 Conflict with instructions to retry.",
+        "Background jobs log errors and retry on transient failures; notify admins on persistent failures.",
+        "Frontend displays user-friendly error messages and guides corrective actions.",
+        "Validation errors return 400 with field-specific messages to assist user correction."
+      ],
+      "securityNotes": [
+        "All API routes require authentication; use secure session or JWT tokens.",
+        "Role-based access control enforced in backend: organizers can manage seminars and assign speakers; speakers can upload drafts and view own data.",
+        "Sensitive data (passwords) stored hashed with strong algorithm (e.g., bcrypt).",
+        "Data at rest encrypted in database for sensitive fields.",
+        "File uploads scanned and stored securely with access controls.",
+        "Audit trails maintained for feedback and document versions for accountability.",
+        "Rate limiting and input sanitization to prevent abuse and injection attacks.",
+        "Strict CORS policies configured for frontend-backend communication.",
+        "Use HTTPS for all client-server communication.",
+        "Ensure AI integration does not expose sensitive user data; sanitize inputs and outputs."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "Authenticated speaker on /upload page with valid seminar selected",
+          "when": "Speaker uploads a valid PDF presentation draft and submits speaker profile data",
+          "then": "System stores draft with version 1, returns success response, and shows preliminary readiness report preview"
+        },
+        {
+          "id": "AT-002",
+          "given": "Authenticated organizer on /dashboard page",
+          "when": "Organizer views dashboard",
+          "then": "System displays list of upcoming seminars, readiness report summaries, and engagement plan previews relevant to organizer"
+        },
+        {
+          "id": "AT-003",
+          "given": "Authenticated user on /feedback page",
+          "when": "User submits feedback with content and rating for a specific draft version",
+          "then": "System stores feedback entry, returns success, and updates feedback summaries after aggregation job runs"
+        },
+        {
+          "id": "AT-004",
+          "given": "Authenticated user on /engagement-plan page for a seminar",
+          "when": "User creates or updates engagement plan with valid JSON details and optional constraints",
+          "then": "System saves plan, returns success, and allows PDF export of the plan"
+        },
+        {
+          "id": "AT-005",
+          "given": "Authenticated speaker on /checklist page",
+          "when": "Speaker creates a new checklist item and toggles completion status",
+          "then": "System stores checklist item, updates status, and reflects changes in checklist view"
+        },
+        {
+          "id": "AT-006",
+          "given": "Authenticated organizer on /seminars page",
+          "when": "Organizer creates a new seminar with title and scheduled date",
+          "then": "System stores seminar, returns seminarId, and shows seminar in calendar and assignment summaries"
+        },
+        {
+          "id": "AT-007",
+          "given": "User attempts to upload unsupported file format",
+          "when": "User submits upload",
+          "then": "System rejects upload with clear error message about supported formats"
+        },
+        {
+          "id": "AT-008",
+          "given": "Multiple users submit feedback simultaneously",
+          "when": "Feedback aggregation job runs",
+          "then": "System merges feedback without conflicts and notifies users of updated summaries"
+        },
+        {
+          "id": "AT-009",
+          "given": "AI integration service is down",
+          "when": "User requests readiness report generation",
+          "then": "System returns error with fallback to cached report if available and notifies user of delay"
+        },
+        {
+          "id": "AT-010",
+          "given": "Unauthorized user attempts to access seminar data",
+          "when": "User calls protected API",
+          "then": "System returns 403 Forbidden and denies access"
+        }
+      ],
+      "buildOrder": [
+        "Setup database schema with Prisma models for all data models",
+        "Implement user authentication and role-based access control",
+        "Develop API routes for user, seminar, draft upload, feedback, engagement plan, checklist management",
+        "Implement file upload handling with validation and storage",
+        "Integrate AI coaching & analysis service with API backend",
+        "Create background jobs for feedback aggregation and version tracking",
+        "Build frontend pages with forms, data fetching, and state management",
+        "Implement PDF export functionality in frontend",
+        "Add input validation and error handling in frontend and backend",
+        "Implement security measures including encryption, access control, and sanitization",
+        "Write and run acceptance tests",
+        "Deploy and monitor background jobs and AI integration"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/dashboard",
+          "/feedback",
+          "/engagement-plan",
+          "/checklist",
+          "/seminars"
+        ],
+        "apiFilesToCreate": [
+          "/api/uploadDraft.ts",
+          "/api/generateReadinessReport.ts",
+          "/api/submitFeedback.ts",
+          "/api/getFeedbackSummary.ts",
+          "/api/saveEngagementPlan.ts",
+          "/api/getEngagementPlan.ts",
+          "/api/manageChecklist.ts",
+          "/api/getChecklist.ts",
+          "/api/seminarSchedule.ts",
+          "/api/getSeminars.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "SpeakerProfile",
+          "Seminar",
+          "PresentationDraft",
+          "FeedbackEntry",
+          "ReadinessReport",
+          "EngagementPlan",
+          "ChecklistItem"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-req",
+        "title": "Planner: refine requirements",
+        "purpose": "Gather missing constraints, clarify inputs/outputs and edge cases for the seminar preparation tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs, ask the user to provide missing constraints or clarify ambiguous requirements for the Academic Seminar Speaker Preparation & Engagement Planner. Use this context: {{BLUEPRINT}}. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define final set of pages, data models, and API routes for the seminar preparation system.",
+        "promptTemplate": "Using the idea, blueprint, and expanded specs, finalize the list of pages, data models, and API routes needed. Reflect on the current single-page tool and plan for the multi-page app. Reference: {{IDEA}}, {{BLUEPRINT}}, {{EXPANDED}}. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffolding code and UI stubs for the planned pages in the seminar preparation app.",
+        "promptTemplate": "Generate page stub code for the following routes: {{BLUEPRINT.pages[].route}}. Include forms, inputs, and placeholders for API calls based on the blueprint and expanded specs. Context: {{BLUEPRINT}}, {{EXPANDED}}. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wireup",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages to backend API routes and database models to enable full functionality.",
+        "promptTemplate": "Describe how to wire the frontend pages to the backend API routes and database models, ensuring authentication, validation, and error handling. Use the blueprint and expanded specs to guide integration. Context: {{BLUEPRINT}}, {{EXPANDED}}. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

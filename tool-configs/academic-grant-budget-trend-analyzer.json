@@ -1,0 +1,882 @@
+{
+  "slug": "academic-grant-budget-trend-analyzer",
+  "title": "Academic Research Grant Collaborative Budget Trend Analyzer",
+  "description": "Upload your historical multi-institutional grant budgets and expenditure reports to generate concise text summaries of budget category trends, recurring compliance risk patterns, and forecast scenarios. Designed for academic research grant financial managers to assist in longitudinal financial planning.",
+  "inputLabel": "Paste grant budget data summary or upload CSV/Excel file",
+  "outputLabel": "Budget trend summary, compliance risk highlights, and forecast insights",
+  "systemPrompt": "You are a secure and privacy-conscious assistant specialized in analyzing academic research grant budgets and expenditures. Accept only CSV or Excel file uploads or textual summaries describing multi-institutional grant budget data across multiple funding cycles. Refuse any requests that ask for legal advice or personal data unrelated to academic grant budgets. Analyze the data to identify spending trends by category and institution, detect recurring compliance risk patterns in advisory form, and provide probabilistic budget forecast scenarios based on historical trends. Always include disclaimers that outputs are advisory and require expert review. Output plain text summaries, optionally structured as JSON if requested, with clear labels and no personal data exposure.",
+  "temperature": 0.2,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Trend Summary",
+      "prompt": "Analyze the uploaded grant budget and expenditure data to generate a clear summary of multi-year budget spending trends by category and institution. Highlight categories with significant overspending or underspending patterns.",
+      "hint": "Focus on financial trends, not legal compliance."
+    },
+    {
+      "label": "Compliance Risk Highlights",
+      "prompt": "From the provided grant financial data, identify and describe any recurring compliance risk patterns detected across institutions or funding cycles. Provide advisory notes with disclaimers that this is not legal advice.",
+      "hint": "Emphasize advisory nature and recurring patterns."
+    },
+    {
+      "label": "Forecast Scenario",
+      "prompt": "Based on the historical budget trends and expenditure data uploaded, generate a probabilistic forecast scenario for future budget allocations across institutions and categories. Include assumptions and disclaimers.",
+      "hint": "Forecasts are advisory and probabilistic."
+    },
+    {
+      "label": "Full Analysis",
+      "prompt": "Perform a comprehensive analysis of the uploaded multi-institutional grant budgets and expenditure reports. Provide combined textual summaries of budget trends, compliance risk patterns, and forecast scenarios with clear disclaimers.",
+      "hint": "Use for end-to-end insight generation."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured output is enabled, return JSON with keys: 'trendSummary', 'complianceRisks', 'forecastScenario', each containing strings or objects with labeled insights. Include a 'disclaimer' field emphasizing advisory nature.",
+  "clarifyPrompt": "Please provide the grant budget data as CSV or Excel file upload or paste a textual summary. Specify the institutions and funding cycles involved if not clear. Confirm you understand this tool provides advisory insights only and is not legal advice.",
+  "finalizePrompt": "Review the generated budget trend summary, compliance risk highlights, and forecast scenario. Confirm if you want to save the analysis or request a refined report with additional focus areas or data.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Budget Trend Analyzer",
+      "niche": {
+        "role": "Academic research grant financial managers",
+        "scenario": "Analyzing historical multi-institutional grant budgets and expenditure trends across multiple funding cycles"
+      },
+      "problem": "Grant financial managers struggle to identify long-term spending patterns, budget category trends, and recurrent compliance risks across multiple past grant cycles and collaborating institutions, limiting their ability to forecast realistic budgets and optimize future grant financial planning.",
+      "inputs": [
+        "Historical multi-institutional grant budget spreadsheets (CSV, Excel)",
+        "Past expenditure reports",
+        "Funder compliance rules documents",
+        "Institutional financial policies"
+      ],
+      "outputs": [
+        "Interactive multi-year budget trend visualizations by category and institution",
+        "Automated detection of recurring compliance risk patterns",
+        "Summary reports highlighting common overspending or underspending categories",
+        "Forecast scenarios for future budget allocations based on historical trends"
+      ],
+      "whyItWins": [
+        "Fills a gap by focusing on longitudinal multi-institutional budget trend analysis rather than single grant compliance or scenario simulation",
+        "Supports strategic budget planning with data-driven insights to improve financial accuracy and reduce audit risks",
+        "Enables collaborative review and annotations, fostering cross-institutional financial alignment",
+        "Provides a scalable foundation to evolve from lightweight upload and visualization to comprehensive financial planning dashboards"
+      ],
+      "upgradePath": {
+        "today": "A lightweight tool to upload past grant budgets and expenditure reports to generate visual trend summaries and highlight recurring compliance risk areas",
+        "in90Days": "Add multi-user collaboration with comment threads, customizable filters by institution and funding cycle, and exportable trend analysis reports",
+        "in12Months": "Develop a multi-page web app with integrated forecasting models, budget revision scenario simulation, compliance alerting, role-based dashboards, and API integrations with institutional financial systems"
+      },
+      "riskNotes": [
+        "Ensure all uploaded financial data is handled with strict security and access controls due to sensitivity of budgetary information",
+        "Avoid providing legal or compliance advice; output should be advisory and require human financial review",
+        "Require user consent and clarify that forecasts are probabilistic and intended to support, not replace, expert judgment"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative web application enabling academic research grant financial managers to upload, analyze, and visualize multi-institutional historical grant budgets and expenditures, detect recurring compliance risks, and forecast future budget trends to support strategic financial planning.",
+      "primaryUser": "Academic research grant financial managers",
+      "successMetrics": [
+        "Number of uploaded grant budget and expenditure datasets processed",
+        "User engagement with interactive trend visualizations and reports",
+        "Frequency of collaborative annotations and comments across institutions",
+        "Accuracy and usefulness of recurring compliance risk detections",
+        "Adoption rate of forecasting tools for budget planning",
+        "User satisfaction and trust in data security and advisory outputs"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend User Interface",
+          "type": "ui",
+          "responsibility": "Provide multi-page web interface for uploading data, visualizing trends, reviewing compliance risk alerts, collaborating via comments, and managing user settings.",
+          "dependsOn": [
+            "api-backend"
+          ],
+          "notes": [
+            "Pages include upload, dashboard, trend visualization, compliance risk summary, collaboration, and forecasting.",
+            "Supports authentication and role-based access control.",
+            "Handles client-side input validation and interactive filtering."
+          ]
+        },
+        {
+          "id": "api-backend",
+          "name": "API Backend",
+          "type": "api",
+          "responsibility": "Expose RESTful endpoints for data upload, processing requests, user authentication, trend data retrieval, compliance risk detection, collaboration management, and forecasting operations.",
+          "dependsOn": [
+            "data-db",
+            "job-data-processing",
+            "integration-financial-systems"
+          ],
+          "notes": [
+            "Implements strict authentication and authorization.",
+            "Validates and sanitizes uploaded files.",
+            "Supports pagination and filtering for large datasets."
+          ]
+        },
+        {
+          "id": "data-db",
+          "name": "Database",
+          "type": "data",
+          "responsibility": "Persist user accounts, uploaded budget and expenditure datasets, parsed financial data, compliance rules metadata, collaboration comments, and forecasting models data.",
+          "dependsOn": [],
+          "notes": [
+            "Stores time-series budget and expenditure data normalized by institution and funding cycle.",
+            "Indexes on institution, grant cycle, and budget categories for efficient querying.",
+            "Encrypt sensitive financial data at rest."
+          ]
+        },
+        {
+          "id": "job-data-processing",
+          "name": "Data Processing & Analysis Jobs",
+          "type": "job",
+          "responsibility": "Process uploaded files to parse and normalize financial data, detect recurring compliance risk patterns, generate trend summaries, and update forecasting models asynchronously.",
+          "dependsOn": [
+            "data-db"
+          ],
+          "notes": [
+            "Handles failures due to malformed files or inconsistent data with detailed error reporting.",
+            "Schedules periodic re-analysis when compliance rules or policies update."
+          ]
+        },
+        {
+          "id": "integration-financial-systems",
+          "name": "Institutional Financial Systems Integration",
+          "type": "integration",
+          "responsibility": "Connect with institutional financial APIs or data sources to import updated budget and expenditure data and export forecast reports where applicable.",
+          "dependsOn": [
+            "api-backend"
+          ],
+          "notes": [
+            "Supports configurable connectors per institution.",
+            "Handles authentication and data format differences.",
+            "Operates asynchronously with retry and failure alerts."
+          ]
+        },
+        {
+          "id": "job-compliance-alerting",
+          "name": "Compliance Alerting Job",
+          "type": "job",
+          "responsibility": "Periodically scan stored data and analysis results to generate alerts on emerging or recurring compliance risks and notify relevant users.",
+          "dependsOn": [
+            "data-db",
+            "job-data-processing"
+          ],
+          "notes": [
+            "Configurable alert thresholds and notification channels.",
+            "Ensures alerts are advisory and include disclaimers."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user account and role information for authentication and authorization.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "roles",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "GrantDataset",
+          "purpose": "Store metadata and raw uploaded files for multi-institutional grant budgets and expenditure reports.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploaderUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "fundingCycle",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "processingStatus",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "processingErrors",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "uploaderUserId",
+            "fundingCycle"
+          ]
+        },
+        {
+          "name": "FinancialRecord",
+          "purpose": "Normalized time-series budget and expenditure data extracted from uploaded datasets.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "grantDatasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fundingCycle",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetCategory",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "date",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "budgetedAmount",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "expendedAmount",
+              "type": "number",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "institutionId",
+            "fundingCycle",
+            "budgetCategory",
+            "date"
+          ]
+        },
+        {
+          "name": "ComplianceRule",
+          "purpose": "Store parsed funder compliance rules and institutional financial policies for risk detection.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "ruleJson",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "source",
+            "effectiveDate"
+          ]
+        },
+        {
+          "name": "ComplianceRiskAlert",
+          "purpose": "Store detected recurring compliance risk patterns and alert metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "financialRecordIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "severity",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "detectedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "acknowledgedByUserId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "severity",
+            "detectedAt"
+          ]
+        },
+        {
+          "name": "CollaborationComment",
+          "purpose": "Store user comments and annotations linked to datasets, trends, or alerts for collaborative review.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "targetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "targetType",
+            "targetId",
+            "authorUserId"
+          ]
+        },
+        {
+          "name": "ForecastScenario",
+          "purpose": "Store forecasted budget allocation scenarios generated from historical trends and user inputs.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdByUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parameters",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "results",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "createdByUserId",
+            "createdAt"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system securely.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "login success/failure message"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/upload",
+          "title": "Upload Grant Data",
+          "purpose": "Allow users to upload historical grant budget and expenditure files for analysis.",
+          "inputs": [
+            "file upload (CSV, Excel)",
+            "metadata (institution, funding cycle)"
+          ],
+          "outputs": [
+            "upload status",
+            "processing progress",
+            "error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Overview Dashboard",
+          "purpose": "Provide summary visualizations of budget trends, compliance risks, and recent activity.",
+          "inputs": [
+            "filter by institution, funding cycle, budget category"
+          ],
+          "outputs": [
+            "trend charts",
+            "risk alerts",
+            "collaboration highlights"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/trend-analysis",
+          "title": "Trend Analysis",
+          "purpose": "Interactive multi-year budget and expenditure trend visualizations with filtering and drill-down.",
+          "inputs": [
+            "institution",
+            "funding cycle",
+            "budget category filters"
+          ],
+          "outputs": [
+            "interactive charts",
+            "summary statistics"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/compliance-risks",
+          "title": "Compliance Risk Summary",
+          "purpose": "Display detected recurring compliance risk patterns and allow user acknowledgment or comments.",
+          "inputs": [
+            "filter by severity, institution, funding cycle"
+          ],
+          "outputs": [
+            "risk alerts list",
+            "detailed risk descriptions",
+            "comment threads"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/collaboration",
+          "title": "Collaboration & Comments",
+          "purpose": "Facilitate cross-institutional discussion and annotations on datasets, trends, and risks.",
+          "inputs": [
+            "select target (dataset, trend, risk)"
+          ],
+          "outputs": [
+            "comment threads",
+            "new comment input"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/forecasting",
+          "title": "Budget Forecasting",
+          "purpose": "Create and review forecast scenarios for future budget allocations based on historical data.",
+          "inputs": [
+            "forecast parameters",
+            "scenario selection"
+          ],
+          "outputs": [
+            "forecast results",
+            "scenario comparison charts"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings",
+          "title": "User Settings",
+          "purpose": "Manage user profile, preferences, and security settings.",
+          "inputs": [
+            "profile info",
+            "password change",
+            "notification preferences"
+          ],
+          "outputs": [
+            "update confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and issue access token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Upload grant budget or expenditure files with metadata.",
+          "requestShape": "{ file: binary, institutionIds: string[], fundingCycle: string }",
+          "responseShape": "{ uploadId: string, status: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/trends",
+          "method": "GET",
+          "purpose": "Retrieve aggregated budget and expenditure trend data filtered by parameters.",
+          "requestShape": "{ institutionIds?: string[], fundingCycles?: string[], budgetCategories?: string[] }",
+          "responseShape": "{ trends: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance-risks",
+          "method": "GET",
+          "purpose": "Fetch detected recurring compliance risk alerts with filtering options.",
+          "requestShape": "{ severity?: string, institutionIds?: string[], fundingCycles?: string[] }",
+          "responseShape": "{ risks: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "POST",
+          "purpose": "Add a new collaboration comment to a target entity.",
+          "requestShape": "{ targetType: string, targetId: string, content: string }",
+          "responseShape": "{ commentId: string, createdAt: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/forecast",
+          "method": "POST",
+          "purpose": "Generate a budget forecast scenario based on input parameters.",
+          "requestShape": "{ parameters: json }",
+          "responseShape": "{ scenarioId: string, results: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/user/settings",
+          "method": "POST",
+          "purpose": "Update user profile and preferences.",
+          "requestShape": "{ profileInfo?: json, passwordChange?: { oldPassword: string, newPassword: string }, notifications?: json }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ProcessUploadedFiles",
+          "trigger": "On file upload event",
+          "purpose": "Parse and normalize uploaded grant budget and expenditure files, store structured financial records."
+        },
+        {
+          "name": "DetectComplianceRisks",
+          "trigger": "After data processing or scheduled intervals",
+          "purpose": "Analyze financial records against compliance rules to identify recurring risk patterns."
+        },
+        {
+          "name": "GenerateTrendSummaries",
+          "trigger": "After data processing or on-demand",
+          "purpose": "Aggregate and summarize budget and expenditure trends for visualization."
+        },
+        {
+          "name": "ForecastModelUpdate",
+          "trigger": "Scheduled (e.g., nightly) or on-demand",
+          "purpose": "Update forecasting models with latest data and user feedback."
+        },
+        {
+          "name": "SendComplianceAlerts",
+          "trigger": "Scheduled intervals",
+          "purpose": "Notify users of new or updated compliance risk alerts."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded files with inconsistent or missing data fields causing parsing failures.",
+        "Conflicting budget categories or institution naming conventions across datasets.",
+        "Large datasets causing performance bottlenecks in processing or visualization.",
+        "Unauthorized access attempts or data leaks due to insufficient security controls.",
+        "Users misunderstanding advisory compliance alerts as legal advice.",
+        "Forecast models producing outlier or misleading scenarios due to insufficient historical data.",
+        "Simultaneous edits or comments causing collaboration conflicts.",
+        "Integration failures with institutional financial systems causing data sync delays."
+      ],
+      "nonGoals": [
+        "Providing legal or compliance advice beyond advisory alerts.",
+        "Replacing expert human financial judgment or audit processes.",
+        "Supporting real-time financial transaction processing.",
+        "Handling grant application submissions or approvals.",
+        "Managing institutional user provisioning or single sign-on beyond basic authentication.",
+        "Supporting non-academic or non-grant financial management use cases."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses frontend pages (e.g., /login, /upload, /dashboard) and interacts with UI components.",
+        "Frontend performs client-side validation and sends authenticated API requests to backend endpoints.",
+        "API backend authenticates requests, authorizes user roles, validates inputs, and interacts with the database via Prisma models.",
+        "On file upload, API stores raw files and metadata in GrantDataset, triggers ProcessUploadedFiles background job.",
+        "ProcessUploadedFiles job parses files, normalizes data into FinancialRecord entries, updates processingStatus and processingErrors in GrantDataset.",
+        "DetectComplianceRisks job analyzes FinancialRecords against ComplianceRule entries, creates ComplianceRiskAlert records.",
+        "GenerateTrendSummaries job aggregates FinancialRecords to generate trend data stored or cached for API retrieval.",
+        "SendComplianceAlerts job notifies users of new or updated ComplianceRiskAlerts via configured channels.",
+        "Users view trend data, risk alerts, and add CollaborationComments via frontend pages and API calls.",
+        "Forecasting API accepts parameters, generates ForecastScenario entries with results, accessible via frontend.",
+        "Integration with institutional financial systems imports updated data asynchronously, triggering processing jobs.",
+        "User settings updates are handled via API, updating User records securely."
+      ],
+      "validationRules": [
+        "Login: email must be valid format, password non-empty.",
+        "Upload: file must be CSV or Excel, size limits enforced; institutionIds must be non-empty array of valid institution IDs; fundingCycle must match expected format (e.g., YYYY-YYYY).",
+        "Trend and compliance risk filters: institutionIds, fundingCycles, budgetCategories must be arrays of valid existing values.",
+        "Comments: targetType must be one of ['dataset', 'trend', 'risk']; targetId must exist; content must be non-empty and sanitized.",
+        "Forecast parameters: must conform to expected JSON schema defining forecast inputs.",
+        "User settings: profileInfo fields validated for format; passwordChange requires oldPassword match and newPassword strength checks; notifications must match allowed preferences schema.",
+        "API requests require authentication tokens except /api/auth/login.",
+        "File uploads and JSON inputs sanitized to prevent injection attacks."
+      ],
+      "errorHandling": [
+        "API returns structured error responses with HTTP status codes (400 for validation errors, 401 for unauthorized, 403 for forbidden, 500 for server errors).",
+        "Upload errors include detailed processingErrors array with line numbers and error descriptions.",
+        "Background jobs log errors and update related database records with error details for user visibility.",
+        "Frontend displays user-friendly error messages and retry options.",
+        "Integration failures trigger alerts and retries with exponential backoff.",
+        "Concurrency conflicts in collaboration comments handled via optimistic locking or last-write-wins with user notification.",
+        "Compliance alerts include disclaimers to clarify advisory nature, avoiding misinterpretation as legal advice."
+      ],
+      "securityNotes": [
+        "All API routes except login require JWT or session-based authentication.",
+        "Role-based access control enforced on sensitive operations (e.g., upload, comment moderation, user settings).",
+        "Passwords stored hashed with strong algorithm (e.g., bcrypt).",
+        "Sensitive financial data encrypted at rest in database.",
+        "Input validation and sanitization prevent injection and XSS attacks.",
+        "Rate limiting on authentication and upload endpoints to prevent abuse.",
+        "Audit logging for critical actions (uploads, comments, settings changes).",
+        "Compliance alerts explicitly marked as advisory with disclaimers to reduce liability.",
+        "Secure handling of file uploads to prevent malware execution."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password to /api/auth/login",
+          "then": "They receive a valid authentication token and userId"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /upload page",
+          "when": "They upload a valid CSV file with correct metadata",
+          "then": "The API returns uploadId and status 'processing', and background job processes file successfully"
+        },
+        {
+          "id": "AT-003",
+          "given": "A processed GrantDataset with normalized FinancialRecords",
+          "when": "User queries /api/trends with valid filters",
+          "then": "API returns aggregated trend data matching filters"
+        },
+        {
+          "id": "AT-004",
+          "given": "ComplianceRiskAlerts exist for user's institutions",
+          "when": "User accesses /compliance-risks and filters by severity",
+          "then": "User sees filtered list of risk alerts with descriptions and comment threads"
+        },
+        {
+          "id": "AT-005",
+          "given": "User wants to add a comment on a risk alert",
+          "when": "They submit valid comment content to /api/comments",
+          "then": "API returns commentId and createdAt, and comment appears in collaboration thread"
+        },
+        {
+          "id": "AT-006",
+          "given": "User submits forecast parameters to /api/forecast",
+          "when": "Parameters are valid",
+          "then": "API returns scenarioId and forecast results JSON"
+        },
+        {
+          "id": "AT-007",
+          "given": "User attempts to upload unsupported file type",
+          "when": "They submit the file to /api/upload",
+          "then": "API returns 400 error with descriptive message"
+        },
+        {
+          "id": "AT-008",
+          "given": "Unauthenticated user requests protected API endpoint",
+          "when": "They send request without token",
+          "then": "API returns 401 Unauthorized error"
+        },
+        {
+          "id": "AT-009",
+          "given": "Background job detects compliance risk",
+          "when": "SendComplianceAlerts job runs",
+          "then": "Relevant users receive notifications with advisory disclaimers"
+        },
+        {
+          "id": "AT-010",
+          "given": "User updates profile info with invalid email format",
+          "when": "They submit changes to /api/user/settings",
+          "then": "API returns 400 validation error"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database",
+        "Implement authentication API (/api/auth/login) and user model with password hashing",
+        "Build frontend login page with validation and token handling",
+        "Implement user settings API and frontend page",
+        "Implement file upload API with validation and storage, build upload page",
+        "Develop background job ProcessUploadedFiles to parse and normalize data",
+        "Implement FinancialRecord model and indexing",
+        "Build trend data API and frontend trend-analysis page",
+        "Implement ComplianceRule and ComplianceRiskAlert models",
+        "Develop DetectComplianceRisks and SendComplianceAlerts jobs",
+        "Build compliance-risks API and frontend page with comment threads",
+        "Implement CollaborationComment model and comments API",
+        "Build collaboration page for comments and annotations",
+        "Implement forecasting API and ForecastScenario model",
+        "Build forecasting page with scenario input and results visualization",
+        "Integrate institutional financial systems connectors asynchronously",
+        "Implement dashboard page aggregating trends, risks, and collaboration highlights",
+        "Add role-based access control and security hardening",
+        "Implement error handling and user-friendly messages across frontend and backend",
+        "Conduct acceptance testing and performance tuning"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/upload",
+          "/dashboard",
+          "/trend-analysis",
+          "/compliance-risks",
+          "/collaboration",
+          "/forecasting",
+          "/settings"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/upload.ts",
+          "/api/trends.ts",
+          "/api/compliance-risks.ts",
+          "/api/comments.ts",
+          "/api/forecast.ts",
+          "/api/user/settings.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "GrantDataset",
+          "FinancialRecord",
+          "ComplianceRule",
+          "ComplianceRiskAlert",
+          "CollaborationComment",
+          "ForecastScenario"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints, edge cases, and user needs for the grant budget trend analyzer tool.",
+        "promptTemplate": "Given the current blueprint and idea below, ask detailed questions to clarify any missing constraints, assumptions, or user scenarios to ensure a complete requirements specification.\n\nIdea:\n{{IDEA}}\n\nBlueprint:\n{{BLUEPRINT}}\n\nUser Input:\n{{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed page layouts, data models, and API contracts for the multi-page app based on refined requirements.",
+        "promptTemplate": "Using the refined requirements and current blueprint, produce finalized page definitions, detailed Prisma data models, and API endpoint designs to support the academic grant budget trend analyzer.\n\nBlueprint:\n{{BLUEPRINT}}\n\nExpanded:\n{{EXPANDED}}\n\nUser Input:\n{{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial frontend page stubs and skeletons implementing UI routes, input fields, and placeholders for data display.",
+        "promptTemplate": "Based on the finalized page designs and API specs, generate React or similar frontend page stubs with input forms, file upload controls, and output display placeholders.\n\nBlueprint:\n{{BLUEPRINT}}\n\nUser Input:\n{{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-up",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement API endpoints, backend data processing, and connect frontend pages to backend services and database models.",
+        "promptTemplate": "Implement backend API routes and data processing jobs as defined in the blueprint. Wire frontend pages to API endpoints and ensure secure, validated data flows from UI to DB.\n\nBlueprint:\n{{BLUEPRINT}}\n\nExpanded:\n{{EXPANDED}}\n\nUser Input:\n{{USER_INPUT}}"
+      }
+    ]
+  }
+}

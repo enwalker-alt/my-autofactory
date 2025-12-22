@@ -1,0 +1,812 @@
+{
+  "slug": "academic-research-grant-terminology-harmonizer",
+  "title": "Academic Research Grant Terminology Harmonizer",
+  "description": "Upload multiple grant proposal sections and optional glossaries to extract and analyze terminology usage across collaborators. Detect inconsistent terms and receive suggested unified terminology to improve proposal coherence and clarity.",
+  "inputLabel": "Upload proposal sections (DOCX, PDF, or text) and optionally key term or funder glossary files",
+  "outputLabel": "Terminology inconsistency report with suggested harmonizations",
+  "systemPrompt": "You are an assistant that analyzes uploaded academic research grant proposal sections and optional glossaries to identify and report inconsistent terminology, acronyms, and definitions across multiple collaborators. Accept only DOCX, PDF, or plain text file uploads, rejecting unsupported or corrupted files with clear error messages. Extract terms, detect conflicts, and suggest unified alternatives without automatic rewriting. Output a clear, structured plain text report summarizing term usage frequencies, detected inconsistencies, and suggested harmonizations. Emphasize that all suggestions require human review and approval. Refuse requests that attempt unauthorized data access or unsupported operations. Ensure privacy and security of all uploaded content.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "clarify-first",
+    "saved-history"
+  ],
+  "clarifyPrompt": "Please upload your proposal sections files (DOCX, PDF, or text). Optionally, upload key term lists or funder glossaries to improve terminology analysis. Ensure files are not corrupted and do not exceed size limits. What files would you like to upload?",
+  "finalizePrompt": "Your terminology inconsistency report is ready. You can review the suggested unified terms and conflicts. Remember, suggestions do not automatically change your proposal text. Would you like to save this report or upload additional files for further analysis?",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Shared Terminology Harmonizer",
+      "niche": {
+        "role": "Academic research grant writers and multi-institutional grant collaborators",
+        "scenario": "Collaboratively writing and revising a multi-institutional academic research grant proposal where different collaborators use varying terminology, acronyms, and definitions across budget narratives, scientific aims, and compliance sections"
+      },
+      "problem": "In multi-institutional academic grant proposals, inconsistent terminology, acronyms, and definitions across collaborators' sections cause confusion, reduce narrative coherence, increase reviewer misunderstanding risk, and slow down internal revision cycles. Existing tools do not focus on harmonizing and aligning terminology usage systematically across large, multi-author grant texts.",
+      "inputs": [
+        "Uploaded draft proposal sections from multiple collaborators (DOCX, PDF, or text)",
+        "List of project-specific key terms, acronyms, and definitions (optional upload or manual input)",
+        "Funder terminology guidelines or glossary files (optional upload)"
+      ],
+      "outputs": [
+        "Structured term usage map across all sections with frequency and contextual variations",
+        "Detected inconsistent or conflicting term usages with suggested unified alternatives",
+        "Interactive cross-collaborator terminology alignment dashboard highlighting divergence and consensus",
+        "Exportable harmonized glossary and terminology style guide tailored to the proposal",
+        "Versioned proposal drafts with inline terminology correction suggestions"
+      ],
+      "whyItWins": [
+        "Addresses a critical, often overlooked pain point in multi-institutional grant writing workflows",
+        "Improves proposal clarity, coherence, and professionalism, increasing funding chances",
+        "Facilitates smoother collaboration and reduces time spent in manual terminology reconciliation",
+        "Offers scalable, interactive features that grow with project complexity and team size",
+        "Fills a gap not covered by existing compliance, budget, or narrative consistency tools"
+      ],
+      "upgradePath": {
+        "today": "A lightweight single-page app that accepts multiple proposal section uploads, extracts terms, and generates a basic inconsistency report with suggested unified terms.",
+        "in90Days": "Add interactive dashboard for collaborators to review, discuss, and approve terminology alignment; support glossary import/export and basic inline draft editing with terminology correction suggestions.",
+        "in12Months": "Develop full-featured multi-page system with role-based access, version control, real-time collaborative editing, integration with popular grant writing platforms, automated funder guideline alignment checks, and AI-driven terminology standardization and conflict resolution recommendations."
+      },
+      "riskNotes": [
+        "Must ensure data privacy and secure handling of potentially sensitive unpublished grant proposal content.",
+        "Terminology suggestions should avoid introducing inaccurate or funder-noncompliant language; human review is essential.",
+        "Must clearly disclaim that the tool aids terminology harmonization but does not guarantee funding success or compliance.",
+        "Avoid automatic aggressive rewriting without user approval to prevent unintended content changes."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform to harmonize terminology across multi-institutional academic research grant proposals by extracting, analyzing, and aligning terms from uploaded proposal sections and glossaries, providing interactive dashboards, versioned drafts with inline suggestions, and exportable harmonized glossaries.",
+      "primaryUser": "Academic research grant writers and multi-institutional grant collaborators",
+      "successMetrics": [
+        "Reduction in terminology inconsistencies detected across proposal drafts",
+        "User adoption rate among multi-institutional grant teams",
+        "Average time saved in terminology reconciliation per proposal",
+        "User satisfaction with terminology alignment dashboard and suggestions",
+        "Number of harmonized glossaries exported and reused"
+      ],
+      "components": [
+        {
+          "id": "ui-landing",
+          "name": "Landing and Upload UI",
+          "type": "ui",
+          "responsibility": "Provide initial interface for users to upload proposal sections, glossaries, and funder guidelines; display upload status and basic extraction results.",
+          "dependsOn": [],
+          "notes": [
+            "Supports DOCX, PDF, and text uploads with file validation",
+            "Handles optional uploads of key terms and funder glossaries",
+            "Shows progress and error feedback for uploads"
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Terminology Alignment Dashboard UI",
+          "type": "ui",
+          "responsibility": "Interactive dashboard for viewing term usage maps, inconsistencies, suggested harmonizations, and collaborator comments; supports glossary export and inline draft editing with terminology suggestions.",
+          "dependsOn": [
+            "api-terms",
+            "api-comments",
+            "api-drafts"
+          ],
+          "notes": [
+            "Allows role-based access controls for collaborators",
+            "Supports filtering by section, term frequency, and conflict severity",
+            "Enables discussion threads on term suggestions"
+          ]
+        },
+        {
+          "id": "api-upload",
+          "name": "Upload and Extraction API",
+          "type": "api",
+          "responsibility": "Accept uploaded proposal sections and glossary files, extract terms and definitions, store raw and processed data, and initiate term usage analysis jobs.",
+          "dependsOn": [
+            "data-proposals",
+            "job-termExtraction"
+          ],
+          "notes": [
+            "Validates file formats and sizes",
+            "Stores original files securely for privacy",
+            "Triggers asynchronous extraction and analysis"
+          ]
+        },
+        {
+          "id": "api-terms",
+          "name": "Terminology Analysis API",
+          "type": "api",
+          "responsibility": "Provide term usage maps, inconsistency reports, suggested harmonizations, and glossary export endpoints; support inline suggestion retrieval and update.",
+          "dependsOn": [
+            "data-terms",
+            "data-glossaries"
+          ],
+          "notes": [
+            "Supports pagination and filtering",
+            "Ensures suggestions are flagged as non-binding",
+            "Handles versioned terminology data"
+          ]
+        },
+        {
+          "id": "api-comments",
+          "name": "Collaboration and Commenting API",
+          "type": "api",
+          "responsibility": "Manage collaborator comments, discussion threads on term suggestions, and approval statuses for terminology harmonization.",
+          "dependsOn": [
+            "data-comments",
+            "data-users"
+          ],
+          "notes": [
+            "Supports real-time updates or polling",
+            "Implements role-based permissions",
+            "Stores comment history for audit"
+          ]
+        },
+        {
+          "id": "api-drafts",
+          "name": "Versioned Drafts and Inline Suggestions API",
+          "type": "api",
+          "responsibility": "Manage versioned proposal drafts with inline terminology correction suggestions, user edits, and approval tracking.",
+          "dependsOn": [
+            "data-drafts",
+            "data-terms"
+          ],
+          "notes": [
+            "Supports draft version history and rollback",
+            "Ensures no automatic rewriting without user approval",
+            "Tracks suggestion acceptance/rejection"
+          ]
+        },
+        {
+          "id": "data-proposals",
+          "name": "Proposal Sections Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded proposal section files and extracted raw text for analysis and versioning.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted storage to ensure data privacy",
+            "Indexed by proposal and collaborator",
+            "Retains original upload metadata"
+          ]
+        },
+        {
+          "id": "data-terms",
+          "name": "Terminology Data Store",
+          "type": "data",
+          "responsibility": "Store extracted terms, acronyms, definitions, usage contexts, inconsistency flags, and harmonization suggestions.",
+          "dependsOn": [
+            "data-proposals"
+          ],
+          "notes": [
+            "Supports versioning and history of term changes",
+            "Indexes on term text and proposal section",
+            "Stores linkage to funder guidelines if provided"
+          ]
+        },
+        {
+          "id": "data-glossaries",
+          "name": "Glossary Data Store",
+          "type": "data",
+          "responsibility": "Persist imported funder terminology guidelines and user-uploaded key term lists for reference and alignment.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multiple glossary formats",
+            "Allows updates and merges with project terms"
+          ]
+        },
+        {
+          "id": "data-comments",
+          "name": "Comments and Collaboration Data Store",
+          "type": "data",
+          "responsibility": "Store collaborator comments, discussion threads, and approval statuses related to terminology suggestions.",
+          "dependsOn": [
+            "data-users"
+          ],
+          "notes": [
+            "Supports threading and timestamps",
+            "Records user identity and role"
+          ]
+        },
+        {
+          "id": "data-drafts",
+          "name": "Versioned Drafts Data Store",
+          "type": "data",
+          "responsibility": "Persist versioned proposal drafts with inline terminology correction suggestions and user edits.",
+          "dependsOn": [
+            "data-proposals",
+            "data-terms"
+          ],
+          "notes": [
+            "Stores draft metadata including version number and author",
+            "Supports rollback and diff comparisons"
+          ]
+        },
+        {
+          "id": "data-users",
+          "name": "User and Access Control Data Store",
+          "type": "data",
+          "responsibility": "Manage user identities, roles, permissions, and authentication data.",
+          "dependsOn": [],
+          "notes": [
+            "Supports role-based access control (e.g., writer, reviewer, admin)",
+            "Stores authentication credentials securely"
+          ]
+        },
+        {
+          "id": "job-termExtraction",
+          "name": "Term Extraction and Analysis Job",
+          "type": "job",
+          "responsibility": "Asynchronously process uploaded files to extract terminology, analyze usage patterns, detect inconsistencies, and generate suggestions.",
+          "dependsOn": [
+            "data-proposals",
+            "data-terms",
+            "data-glossaries"
+          ],
+          "notes": [
+            "Handles failures with retries and error reporting",
+            "Logs processing details for audit",
+            "Supports incremental re-processing on updates"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "ProposalSection",
+          "purpose": "Store uploaded proposal section files and extracted text for analysis and versioning.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploaderUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "rawText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "uploaderUserId"
+          ]
+        },
+        {
+          "name": "Term",
+          "purpose": "Represent extracted terms, acronyms, definitions, usage contexts, inconsistency flags, and harmonization suggestions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "termText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "acronym",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "usageContexts",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "frequency",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "conflictFlag",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "suggestedUnifiedTerm",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "termText",
+            "conflictFlag"
+          ]
+        },
+        {
+          "name": "Glossary",
+          "purpose": "Store imported funder glossaries and user-uploaded key term lists.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "terms",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "importDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "source"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Store collaborator comments and discussion threads on terminology suggestions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "termId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "parentCommentId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "termId",
+            "authorUserId"
+          ]
+        },
+        {
+          "name": "Draft",
+          "purpose": "Store versioned proposal drafts with inline terminology correction suggestions and user edits.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalSectionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "inlineSuggestions",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "authorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalSectionId",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Manage user identities, roles, and authentication data.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Landing and Upload",
+          "purpose": "Allow users to upload proposal sections, key term lists, and funder glossaries to start terminology analysis.",
+          "inputs": [
+            "Proposal section files (DOCX, PDF, text)",
+            "Optional key term list upload",
+            "Optional funder glossary upload"
+          ],
+          "outputs": [
+            "Upload status",
+            "Basic extraction summary"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Terminology Alignment Dashboard",
+          "purpose": "Interactive interface to view term usage maps, inconsistencies, suggested harmonizations, and collaborator comments.",
+          "inputs": [
+            "Filters for proposal sections, terms, conflict status"
+          ],
+          "outputs": [
+            "Term usage visualizations",
+            "Inconsistency reports",
+            "Discussion threads",
+            "Glossary export options"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/drafts",
+          "title": "Versioned Drafts Editor",
+          "purpose": "View and edit versioned proposal drafts with inline terminology correction suggestions and accept/reject controls.",
+          "inputs": [
+            "Draft version selector",
+            "Inline suggestion controls"
+          ],
+          "outputs": [
+            "Editable draft content with suggestions",
+            "Version history"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Authentication",
+          "purpose": "Allow users to log in to access the system securely.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token or session"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload",
+          "method": "POST",
+          "purpose": "Accept proposal section and glossary uploads, validate, store, and trigger extraction jobs.",
+          "requestShape": "{ files: [file], optionalGlossary: file?, optionalKeyTerms: file? }",
+          "responseShape": "{ uploadId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/terms",
+          "method": "GET",
+          "purpose": "Retrieve term usage maps, inconsistency reports, and suggested harmonizations with filtering and pagination.",
+          "requestShape": "{ proposalId: string, filters?: json, page?: number, pageSize?: number }",
+          "responseShape": "{ terms: [Term], totalCount: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "POST",
+          "purpose": "Post a new comment or reply on a terminology suggestion.",
+          "requestShape": "{ termId: string, content: string, parentCommentId?: string }",
+          "responseShape": "{ commentId: string, timestamp: date }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/drafts",
+          "method": "GET",
+          "purpose": "Fetch versioned drafts with inline terminology suggestions for a proposal section.",
+          "requestShape": "{ proposalSectionId: string, versionNumber?: number }",
+          "responseShape": "{ draft: Draft }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/drafts",
+          "method": "POST",
+          "purpose": "Save edits to a draft including acceptance or rejection of inline terminology suggestions.",
+          "requestShape": "{ draftId: string, content: string, acceptedSuggestions: [string], rejectedSuggestions: [string] }",
+          "responseShape": "{ success: boolean, newVersionNumber: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/glossary/export",
+          "method": "GET",
+          "purpose": "Export the harmonized glossary and terminology style guide for a proposal.",
+          "requestShape": "{ proposalId: string, format: string }",
+          "responseShape": "{ fileUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Term Extraction and Analysis",
+          "trigger": "Triggered asynchronously after successful proposal section or glossary upload",
+          "purpose": "Extract terms and definitions, analyze usage patterns, detect inconsistencies, and generate harmonization suggestions."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded files with unsupported formats or corrupted content",
+        "Conflicting terminology suggestions from multiple collaborators",
+        "Large proposals causing performance bottlenecks in extraction or dashboard rendering",
+        "User attempts to accept automated suggestions that conflict with funder guidelines",
+        "Simultaneous edits on the same draft version causing merge conflicts",
+        "Loss of internet connectivity during uploads or collaborative sessions",
+        "Unauthorized access attempts or role escalation",
+        "Data privacy breach or accidental exposure of sensitive proposal content"
+      ],
+      "nonGoals": [
+        "Automatic rewriting or aggressive content changes without explicit user approval",
+        "Guaranteeing funding success or compliance with funder requirements",
+        "Full document editing and formatting capabilities beyond inline terminology suggestions",
+        "Integration with all possible grant writing platforms at initial launch",
+        "Replacing human review and editorial judgment in terminology harmonization"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving session token.",
+        "Authenticated user uploads proposal sections, optional key term lists, and funder glossaries via Landing and Upload UI (/) which calls POST /api/upload.",
+        "Upload API validates files, stores raw files and metadata in ProposalSection and Glossary data stores with encrypted storage.",
+        "Upload API triggers asynchronous Term Extraction and Analysis job to process uploaded files.",
+        "Term Extraction job extracts terms, definitions, usage contexts, detects inconsistencies, and stores results in Term data store, linking to proposals and glossaries.",
+        "User accesses Terminology Alignment Dashboard (/dashboard) which calls GET /api/terms with filters and pagination to retrieve term usage maps, inconsistency reports, and suggested harmonizations.",
+        "Dashboard also calls GET /api/comments to fetch discussion threads and POST /api/comments to add new comments or replies, stored in Comment data store.",
+        "User accesses Versioned Drafts Editor (/drafts) which calls GET /api/drafts to fetch draft versions with inline suggestions and POST /api/drafts to save edits and suggestion acceptances/rejections.",
+        "Glossary export is triggered from dashboard via GET /api/glossary/export returning downloadable harmonized glossary files.",
+        "Role-based access control enforced at API and UI layers to restrict data and actions based on user roles.",
+        "Background job logs processing details and handles retries on failures, updating status accessible via upload status endpoints."
+      ],
+      "validationRules": [
+        "File uploads must be of supported types: DOCX, PDF, or plain text; reject unsupported or corrupted files with clear error messages.",
+        "Maximum file size limits enforced per upload to prevent performance bottlenecks.",
+        "Uploaded files must contain extractable text; empty or unreadable files rejected.",
+        "API request payloads validated for required fields and correct data types (e.g., proposalId as non-empty string, versionNumber as positive integer).",
+        "Draft edits must include valid draftId and content; acceptedSuggestions and rejectedSuggestions must be arrays of valid suggestion IDs.",
+        "Comments must include valid termId, non-empty content, and optional valid parentCommentId if replying.",
+        "Glossary export requests must specify existing proposalId and supported export format (e.g., JSON, CSV).",
+        "User authentication credentials validated for format and existence; passwords hashed securely.",
+        "Role-based permissions validated on all sensitive API endpoints to prevent unauthorized actions."
+      ],
+      "errorHandling": [
+        "Upload API returns 400 Bad Request with descriptive error messages for invalid files or missing parameters.",
+        "APIs return 401 Unauthorized if user is not authenticated or lacks required role permissions.",
+        "APIs return 404 Not Found if requested proposal, term, draft, or comment does not exist.",
+        "Background job logs errors with context and retries failed extraction tasks up to a configurable limit; failures reported back to user via upload status.",
+        "Concurrent draft edits handled by optimistic concurrency control; conflicts return 409 Conflict with instructions to reload latest version.",
+        "Dashboard and UI components display user-friendly error messages for network failures or server errors, with retry options.",
+        "API rate limiting and input sanitization to prevent abuse and injection attacks.",
+        "All error responses include standardized error codes and messages for consistent client handling."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /login; session tokens or JWTs used for user identity.",
+        "Role-based access control enforced on all data operations to restrict access to proposal data, comments, drafts, and exports.",
+        "Uploaded files stored encrypted at rest to protect sensitive proposal content.",
+        "Passwords stored hashed with strong algorithms (e.g., bcrypt).",
+        "Input validation and sanitization applied to prevent injection attacks and XSS.",
+        "Sensitive data such as raw proposal text and user credentials never exposed in API responses.",
+        "Audit logs maintained for user actions on comments, drafts, and terminology changes.",
+        "HTTPS enforced for all client-server communications.",
+        "Background job logs sanitized to avoid leaking sensitive information."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the Landing and Upload page",
+          "when": "They upload a valid DOCX proposal section file and optional glossary",
+          "then": "The system accepts the files, returns uploadId and status 'processing', and triggers term extraction job"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the Dashboard page",
+          "when": "They request terms with filters for conflictFlag=true and page=1",
+          "then": "The system returns a paginated list of terms flagged as conflicting with usage maps and suggested harmonizations"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user viewing a term in the Dashboard",
+          "when": "They post a comment reply referencing a parent comment",
+          "then": "The comment is saved with correct threading and timestamp, and visible in subsequent fetches"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user editing a draft in the Drafts Editor",
+          "when": "They submit edits accepting some inline suggestions and rejecting others",
+          "then": "The system saves a new draft version with updated content and suggestion statuses, returning success and newVersionNumber"
+        },
+        {
+          "id": "AT-005",
+          "given": "An unauthenticated user attempts to access /dashboard",
+          "when": "They navigate to the dashboard route",
+          "then": "They are redirected to the /login page with an appropriate message"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user uploads a file with unsupported format",
+          "when": "They submit the upload form",
+          "then": "The system rejects the upload with a 400 error and descriptive message about supported formats"
+        },
+        {
+          "id": "AT-007",
+          "given": "Two users simultaneously edit the same draft version",
+          "when": "Both submit edits concurrently",
+          "then": "One edit succeeds; the other receives a 409 Conflict error prompting to reload latest draft"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user requests glossary export in CSV format",
+          "when": "They submit the export request with valid proposalId and format",
+          "then": "The system returns a fileUrl for downloading the harmonized glossary in CSV"
+        }
+      ],
+      "buildOrder": [
+        "data-users model and authentication system",
+        "api-upload route and ProposalSection, Glossary data stores",
+        "job-termExtraction background job and Term data store",
+        "api-terms route with Term data retrieval and filtering",
+        "api-comments route and Comment data store with role-based permissions",
+        "api-drafts route and Draft data store with versioning and inline suggestions",
+        "Landing and Upload UI page with file upload and status display",
+        "Terminology Alignment Dashboard UI with term visualizations, comments, and glossary export",
+        "Versioned Drafts Editor UI with draft version selector and inline suggestion controls",
+        "Login page UI and authentication integration",
+        "Security hardening, validation, and error handling across APIs and UI",
+        "Acceptance testing and performance tuning"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/dashboard",
+          "/drafts",
+          "/login"
+        ],
+        "apiFilesToCreate": [
+          "api/upload.js",
+          "api/terms.js",
+          "api/comments.js",
+          "api/drafts.js",
+          "api/glossary/export.js",
+          "api/auth/login.js"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "ProposalSection",
+          "Glossary",
+          "Term",
+          "Comment",
+          "Draft"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user to clarify missing constraints, edge cases, or usage scenarios to improve the project scope and detail.",
+        "promptTemplate": "You are a planner refining the project requirements for the Academic Research Grant Terminology Harmonizer. Based on the current blueprint and expanded specs: {{BLUEPRINT}} and {{EXPANDED}}, please ask the user the most critical missing constraints, edge cases, or desired features to clarify. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the final page routes, UI components, and data models based on refined requirements.",
+        "promptTemplate": "You are an architect finalizing the pages and data models for the Academic Research Grant Terminology Harmonizer. Using the refined requirements and blueprint: {{BLUEPRINT}}, propose a detailed list of pages, their routes, inputs, outputs, and a complete data model schema. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code for the UI pages including input forms, file upload controls, and output display placeholders.",
+        "promptTemplate": "You are a builder generating page stubs for the Academic Research Grant Terminology Harmonizer. Based on the architect's finalized pages: {{PAGES}}, create code stubs or templates for each page with placeholders for inputs and outputs. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages with backend API routes and database models to enable full functionality.",
+        "promptTemplate": "You are an integrator wiring the UI pages with API endpoints and database models for the Academic Research Grant Terminology Harmonizer. Using the API routes: {{API_ROUTES}} and data models: {{DATA_MODELS}}, describe how to connect each page's inputs and outputs with backend calls and data persistence. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,697 @@
+{
+  "slug": "grant-review-summary-dashboard",
+  "title": "Academic Research Grant Reviewer Summary Dashboard",
+  "description": "A single-page web app for academic grant reviewers to upload proposals, reviewer scores, and COI disclosures, then generate consolidated summaries with key proposal sections, scoring rationales, and COI flags to support efficient panel decision-making.",
+  "inputLabel": "Upload grant proposal documents, reviewer scores, and COI disclosures (PDF, DOCX, CSV, Excel, or text). Optionally, enter panel ID and filtering criteria.",
+  "outputLabel": "Consolidated summary of proposal key sections, reviewer scores with highlighted rationales, and conflict of interest flags. Output is plain text summary or JSON if structured output enabled.",
+  "systemPrompt": "You are a secure academic grant review assistant. Accept uploads of proposal documents (PDF, DOCX), reviewer scoring sheets (CSV, Excel, text), and COI disclosures. Validate inputs strictly: enforce file types, size limits, required fields, and access rights. Extract key proposal sections (abstract, aims, budget summary) and consolidate reviewer scores with rationales and COI flags. Provide clear, concise, and accurate summaries only for authorized users within their assigned panels. Refuse any requests with unauthorized access or disallowed content. Output plain text summaries or structured JSON if requested. Do not provide legal or final judgment on conflicts of interest; only flag potential COI advisory notices. Always handle sensitive data confidentially and securely.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary View",
+      "prompt": "Summarize the uploaded grant proposals, reviewer scores, and conflict of interest disclosures into a consolidated dashboard view highlighting key proposal sections, scoring rationales, and COI flags.",
+      "hint": "Use for quick panel overview with key info extracted."
+    },
+    {
+      "label": "Comparison View",
+      "prompt": "Provide a side-by-side comparison of multiple uploaded proposals with sortable criteria including abstract, aims, budget summary, reviewer scores, and conflict of interest flags.",
+      "hint": "Use to compare proposals for panel discussion."
+    },
+    {
+      "label": "Validation Check",
+      "prompt": "Analyze the uploaded files for data completeness, format correctness, and potential conflicts in reviewer scores or COI disclosures. Report any errors or warnings.",
+      "hint": "Use to verify data before panel review."
+    },
+    {
+      "label": "Panel Report",
+      "prompt": "Generate an aggregated panel-level summary report from the uploaded proposals, scores, and COI disclosures. Include scoring distributions, COI risk flags, and decision-ready commentary.",
+      "hint": "Use to prepare final panel meeting reports."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON includes proposal summaries, reviewer scores with rationales, COI flags, and consensus indicators structured by proposalId and panelId.",
+  "clarifyPrompt": "Please upload your grant proposals, reviewer scores, and COI disclosures. Specify the panel ID and any filters or comparison preferences. Ensure files meet format and size requirements.",
+  "finalizePrompt": "Based on the provided data, generate a consolidated summary dashboard or comparison view highlighting key proposal sections, reviewer scores with rationales, and COI flags. Output plain text or structured JSON as requested.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Reviewer Summary Dashboard",
+      "niche": {
+        "role": "Academic Research Grant Reviewer",
+        "scenario": "During grant panel review meetings, reviewers need to quickly access and compare key sections, scoring rationales, and conflict of interest disclosures of multiple assigned grant proposals to facilitate informed funding decisions."
+      },
+      "problem": "Grant reviewers often receive multiple lengthy proposals with unstructured reviewer notes and conflict of interest (COI) disclosures scattered across documents. Manually extracting and synthesizing this information for panel discussions is time-consuming, error-prone, and hampers efficient decision-making.",
+      "inputs": [
+        "Grant proposal documents (PDF, DOCX)",
+        "Individual reviewer scoring sheets and comments (CSV, Excel, or text)",
+        "Conflict of interest disclosures and profiles (uploaded forms or text)"
+      ],
+      "outputs": [
+        "Interactive summary dashboard consolidating for each assigned proposal: key proposal sections (abstract, aims, budget summary), reviewer scores with rationale highlights, and COI flags",
+        "Side-by-side comparison views of proposals with sortable criteria and consensus indicators",
+        "Aggregated panel-level summary reports highlighting scoring distributions, COI risks, and decision-ready commentary"
+      ],
+      "whyItWins": [
+        "Significantly reduces manual synthesis workload for grant reviewers by automating extraction and consolidation of key information",
+        "Supports multi-proposal simultaneous review and comparison, improving panel discussion efficiency and decision quality",
+        "Enhances transparency and compliance by integrating COI disclosures with scoring data in a unified interface",
+        "Provides a scalable foundation for expanding to multi-panel management, conflict resolution workflows, and reviewer collaboration"
+      ],
+      "upgradePath": {
+        "today": "Build a lightweight web app that accepts uploaded proposals, reviewer scores, and COI disclosures to generate interactive summary dashboards for single review panels.",
+        "in90Days": "Add multi-proposal batch upload, advanced filtering, real-time scoring aggregation, and exportable panel summary reports to support complex review meetings.",
+        "in12Months": "Develop a full multi-panel review management system with user logins, automated COI conflict detection, role-based access, collaborative annotation, and integration with funding agency databases and submission portals."
+      },
+      "riskNotes": [
+        "Must ensure secure handling and strict confidentiality of sensitive grant proposal and reviewer data to comply with privacy and institutional policies.",
+        "Avoid providing legal advice on COIs; system should flag potential conflicts only but defer final judgment to human reviewers.",
+        "Careful user access control is needed to prevent unauthorized data exposure across reviewers or panels."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A secure web application that streamlines academic research grant review by consolidating proposal key sections, reviewer scores with rationales, and conflict of interest disclosures into interactive dashboards and comparison views to enhance panel decision-making efficiency and transparency.",
+      "primaryUser": "Academic Research Grant Reviewer",
+      "successMetrics": [
+        "Reduction in time spent synthesizing proposal and reviewer information during panel meetings",
+        "Increased accuracy and completeness of consolidated review data presented",
+        "User satisfaction scores regarding ease of accessing and comparing proposal summaries",
+        "Number of proposals efficiently reviewed per panel session",
+        "Compliance with data confidentiality and access control policies"
+      ],
+      "components": [
+        {
+          "id": "ui_dashboard",
+          "name": "Interactive Summary Dashboard UI",
+          "type": "ui",
+          "responsibility": "Provide reviewers with consolidated views of proposal key sections, reviewer scores with rationale highlights, COI flags, and side-by-side comparison interfaces.",
+          "dependsOn": [
+            "api_proposalData",
+            "api_reviewerData",
+            "api_coiData"
+          ],
+          "notes": [
+            "Must support sorting, filtering, and consensus indicators.",
+            "Should be responsive and performant with large data sets.",
+            "Requires authentication and role-based access."
+          ]
+        },
+        {
+          "id": "api_proposalData",
+          "name": "Proposal Data API",
+          "type": "api",
+          "responsibility": "Handle upload, parsing, extraction, and retrieval of key proposal sections (abstract, aims, budget summary) from uploaded documents.",
+          "dependsOn": [
+            "data_proposals",
+            "job_documentParsing"
+          ],
+          "notes": [
+            "Support multiple document formats (PDF, DOCX).",
+            "Extracted data must be persisted for quick retrieval.",
+            "Handle parsing failures gracefully with error reporting."
+          ]
+        },
+        {
+          "id": "api_reviewerData",
+          "name": "Reviewer Scores and Comments API",
+          "type": "api",
+          "responsibility": "Ingest and serve reviewer scoring sheets and comments, supporting CSV, Excel, and text formats; associate scores and rationales with proposals and reviewers.",
+          "dependsOn": [
+            "data_reviewerScores"
+          ],
+          "notes": [
+            "Validate data format and completeness on upload.",
+            "Allow updates and corrections before panel finalization."
+          ]
+        },
+        {
+          "id": "api_coiData",
+          "name": "Conflict of Interest Data API",
+          "type": "api",
+          "responsibility": "Manage upload, storage, and retrieval of COI disclosures and profiles; flag potential conflicts linked to proposals and reviewers.",
+          "dependsOn": [
+            "data_coi"
+          ],
+          "notes": [
+            "Ensure COI data confidentiality and restricted access.",
+            "Flagging logic is advisory only, no legal judgment provided."
+          ]
+        },
+        {
+          "id": "data_proposals",
+          "name": "Proposal Data Store",
+          "type": "data",
+          "responsibility": "Persist extracted key sections and metadata of grant proposals for retrieval and comparison.",
+          "dependsOn": [],
+          "notes": [
+            "Indexed by proposal ID and panel assignment.",
+            "Store original documents securely for audit."
+          ]
+        },
+        {
+          "id": "data_reviewerScores",
+          "name": "Reviewer Scores Data Store",
+          "type": "data",
+          "responsibility": "Persist reviewer scoring data, comments, and rationales linked to proposals and reviewers.",
+          "dependsOn": [],
+          "notes": [
+            "Support versioning or audit trail for updates."
+          ]
+        },
+        {
+          "id": "data_coi",
+          "name": "Conflict of Interest Data Store",
+          "type": "data",
+          "responsibility": "Persist COI disclosures and profile data securely with restricted access controls.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypt sensitive fields at rest.",
+            "Link COI data to reviewers and proposals."
+          ]
+        },
+        {
+          "id": "job_documentParsing",
+          "name": "Document Parsing Background Job",
+          "type": "job",
+          "responsibility": "Asynchronously process uploaded proposal documents to extract key sections and store results in the Proposal Data Store.",
+          "dependsOn": [
+            "data_proposals"
+          ],
+          "notes": [
+            "Retry on transient failures, notify users on persistent errors.",
+            "Queue jobs to handle batch uploads efficiently."
+          ]
+        },
+        {
+          "id": "integration_auth",
+          "name": "Authentication and Authorization Integration",
+          "type": "integration",
+          "responsibility": "Provide secure user authentication, role-based access control, and session management to enforce data confidentiality.",
+          "dependsOn": [],
+          "notes": [
+            "Support institutional single sign-on if possible.",
+            "Prevent unauthorized access across panels or reviewers."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Proposal",
+          "purpose": "Store metadata and extracted key sections of each grant proposal.",
+          "fields": [
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "abstract",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "specificAims",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "budgetSummary",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "panelId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documentOriginal",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "panelId"
+          ]
+        },
+        {
+          "name": "ReviewerScore",
+          "purpose": "Store individual reviewer scores, comments, and rationales for proposals.",
+          "fields": [
+            {
+              "name": "scoreId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reviewerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scoreValue",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "rationale",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "comments",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "proposalId",
+            "reviewerId"
+          ]
+        },
+        {
+          "name": "ConflictOfInterest",
+          "purpose": "Store COI disclosures and profile data linked to reviewers and proposals.",
+          "fields": [
+            {
+              "name": "coiId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reviewerId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "disclosureText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "flagged",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "uploadTimestamp",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "reviewerId",
+            "proposalId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store authenticated user information and roles for access control.",
+          "fields": [
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "panelIds",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId",
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/login",
+          "title": "Login",
+          "purpose": "Authenticate users to access the grant review dashboard.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "error messages"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "Panel Summary Dashboard",
+          "purpose": "Display consolidated summaries of assigned proposals with key sections, reviewer scores, COI flags, and consensus indicators.",
+          "inputs": [
+            "panelId",
+            "filter criteria"
+          ],
+          "outputs": [
+            "proposal summaries",
+            "score aggregates",
+            "COI flags"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposal-comparison",
+          "title": "Proposal Comparison View",
+          "purpose": "Allow side-by-side comparison of multiple proposals with sortable criteria and scoring rationales.",
+          "inputs": [
+            "proposalIds",
+            "sort options"
+          ],
+          "outputs": [
+            "comparison table",
+            "consensus indicators"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/upload",
+          "title": "Data Upload",
+          "purpose": "Allow authorized users to upload proposal documents, reviewer scores, and COI disclosures.",
+          "inputs": [
+            "file uploads",
+            "metadata"
+          ],
+          "outputs": [
+            "upload status",
+            "error messages"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/panel-report",
+          "title": "Panel Summary Report",
+          "purpose": "Generate and export aggregated panel-level reports highlighting scoring distributions, COI risks, and commentary.",
+          "inputs": [
+            "panelId",
+            "date range",
+            "export format"
+          ],
+          "outputs": [
+            "report file",
+            "summary statistics"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/proposals",
+          "method": "POST",
+          "purpose": "Upload and initiate parsing of grant proposal documents.",
+          "requestShape": "{ panelId: string, files: [file] }",
+          "responseShape": "{ success: boolean, errors: [string] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:proposalId",
+          "method": "GET",
+          "purpose": "Retrieve extracted key sections and metadata for a specific proposal.",
+          "requestShape": "{ proposalId: string }",
+          "responseShape": "{ proposal: Proposal }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reviewer-scores",
+          "method": "POST",
+          "purpose": "Upload reviewer scoring sheets and comments.",
+          "requestShape": "{ panelId: string, file: file }",
+          "responseShape": "{ success: boolean, errors: [string] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reviewer-scores/:proposalId",
+          "method": "GET",
+          "purpose": "Retrieve all reviewer scores and comments for a proposal.",
+          "requestShape": "{ proposalId: string }",
+          "responseShape": "{ scores: [ReviewerScore] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/coi",
+          "method": "POST",
+          "purpose": "Upload conflict of interest disclosures.",
+          "requestShape": "{ panelId: string, file: file }",
+          "responseShape": "{ success: boolean, errors: [string] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/coi/:reviewerId",
+          "method": "GET",
+          "purpose": "Retrieve COI disclosures and flags for a reviewer.",
+          "requestShape": "{ reviewerId: string }",
+          "responseShape": "{ disclosures: [ConflictOfInterest] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/panel-report",
+          "method": "POST",
+          "purpose": "Generate aggregated panel-level summary reports.",
+          "requestShape": "{ panelId: string, dateRange: { start: date, end: date }, format: string }",
+          "responseShape": "{ reportUrl: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Document Parsing Job",
+          "trigger": "Triggered asynchronously upon proposal document upload",
+          "purpose": "Extract key sections from uploaded proposal documents and store parsed data."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded documents are corrupted or in unsupported formats causing parsing failures.",
+        "Reviewer scoring sheets contain inconsistent or incomplete data requiring validation and user correction.",
+        "COI disclosures are ambiguous or incomplete; system flags but cannot resolve conflicts.",
+        "User attempts to access proposals or data outside their assigned panel or role.",
+        "Simultaneous uploads causing race conditions or data overwrite.",
+        "Network interruptions during file uploads or data retrieval.",
+        "Large batch uploads causing performance degradation or timeouts."
+      ],
+      "nonGoals": [
+        "Providing legal or final judgment on conflict of interest determinations.",
+        "Full text search or advanced natural language processing of entire proposal documents beyond key section extraction.",
+        "Direct integration with external funding agency submission portals at initial release.",
+        "Real-time collaborative editing or annotation of proposals and reviews in the initial version."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via /login page, receiving an authentication token with role and panel assignments.",
+        "Authenticated user accesses /dashboard or /proposal-comparison pages, sending requests with panelId or proposalIds and filters.",
+        "Dashboard UI calls /api/proposals/:proposalId, /api/reviewer-scores/:proposalId, and /api/coi/:reviewerId APIs to fetch consolidated data for display.",
+        "User uploads proposal documents, reviewer scores, or COI disclosures via /upload page, which sends files and metadata to respective POST API endpoints (/api/proposals, /api/reviewer-scores, /api/coi).",
+        "Upon proposal document upload, the system enqueues a Document Parsing Job to extract key sections asynchronously and store results in the Proposal Data Store.",
+        "Reviewer scores and COI disclosures are validated and persisted in their respective data stores with versioning and encryption as needed.",
+        "Panel report generation is triggered via /panel-report page, calling /api/panel-report POST API to aggregate data and generate downloadable reports.",
+        "All data retrieval APIs enforce role-based access control to restrict data visibility to authorized users within assigned panels.",
+        "Background jobs handle retries and error notifications for document parsing failures, ensuring robustness and user feedback."
+      ],
+      "validationRules": [
+        "Login inputs: email must be valid format, password non-empty.",
+        "Proposal upload: panelId required; files must be PDF or DOCX; file size limits enforced; reject unsupported or corrupted files with descriptive errors.",
+        "Reviewer scores upload: panelId required; file must be CSV, Excel, or text; validate required columns (proposalId, reviewerId, scoreValue); scoreValue must be numeric and within expected range; check for completeness and consistency; reject or flag incomplete rows.",
+        "COI upload: panelId required; file format validated; disclosureText must be present; flagged field defaulted to false on upload.",
+        "API GET requests: proposalId, reviewerId, panelId parameters must be valid UUID or string matching stored IDs; user must have access rights to requested data.",
+        "Panel report generation: panelId required; dateRange start and end must be valid dates with start <= end; export format must be one of supported types (e.g., PDF, CSV).",
+        "All file uploads: enforce maximum file size and scan for malware or corrupted content.",
+        "User input filters on dashboard and comparison views must be sanitized to prevent injection attacks."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with clear error messages.",
+        "Validation errors on input return 400 Bad Request with detailed error arrays specifying field and issue.",
+        "File upload errors (unsupported format, corrupted file) return 422 Unprocessable Entity with user-friendly messages.",
+        "Parsing failures trigger retries up to configured limits; persistent failures log errors and notify uploader via UI alerts or email.",
+        "Data access violations return 403 Forbidden to prevent unauthorized data exposure.",
+        "API internal errors return 500 Internal Server Error with generic message; detailed logs captured server-side for diagnostics.",
+        "Concurrent upload conflicts handled via optimistic concurrency control or queuing to prevent data overwrite.",
+        "Network interruptions during uploads or downloads prompt client retries with exponential backoff; partial uploads rejected.",
+        "Large batch uploads processed asynchronously with progress indicators; timeouts handled with retry or chunking strategies."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except /login; tokens validated on each request.",
+        "Role-based access control enforced at API and data layer to restrict panel data visibility.",
+        "Sensitive COI data encrypted at rest and access restricted to authorized roles only.",
+        "Original proposal documents stored securely with audit logging on access.",
+        "File uploads scanned for malware and validated to prevent injection or denial-of-service attacks.",
+        "Session management includes secure cookies, CSRF protection, and token expiration.",
+        "Audit trails maintained for reviewer score updates and COI disclosures to support compliance.",
+        "Prevent horizontal privilege escalation by verifying user panel assignments on every data request.",
+        "Use HTTPS for all client-server communications to protect data in transit."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials and assigned to panel A",
+          "when": "They log in via /login with correct email and password",
+          "then": "They receive an authentication token and are redirected to /dashboard with data filtered to panel A proposals"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user uploads a PDF proposal document with valid panelId",
+          "when": "They submit the file to /api/proposals POST endpoint",
+          "then": "The system accepts the file, queues a parsing job, and responds with success; parsed data is stored and retrievable via GET /api/proposals/:proposalId"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user uploads a reviewer scores CSV with missing scoreValue fields",
+          "when": "They submit the file to /api/reviewer-scores POST endpoint",
+          "then": "The system rejects the upload with detailed error messages indicating missing fields"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user attempts to access proposal data for a panel they are not assigned to",
+          "when": "They call GET /api/proposals/:proposalId for that proposal",
+          "then": "The system returns 403 Forbidden and does not expose any data"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user uploads COI disclosures with ambiguous flagged status",
+          "when": "They submit the file to /api/coi POST endpoint",
+          "then": "The system stores the disclosures, flags potential conflicts advisory only, and restricts access to authorized users"
+        },
+        {
+          "id": "AT-006",
+          "given": "Multiple users upload large batches of proposals simultaneously",
+          "when": "Uploads are processed concurrently",
+          "then": "The system queues parsing jobs, processes them without data loss or overwrite, and maintains performance"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user requests a panel report for a valid panel and date range",
+          "when": "They submit the request to /api/panel-report POST endpoint",
+          "then": "The system generates and returns a downloadable report URL with summary statistics"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user accesses /dashboard with filter criteria",
+          "when": "They apply sorting and filtering on proposals and scores",
+          "then": "The dashboard updates dynamically showing sorted, filtered data with consensus indicators"
+        }
+      ],
+      "buildOrder": [
+        "integration_auth: Implement authentication and role-based access control.",
+        "prismaModelsToAdd: Define Prisma models for User, Proposal, ReviewerScore, ConflictOfInterest.",
+        "data_proposals: Setup Proposal Data Store with secure document storage.",
+        "data_reviewerScores: Setup Reviewer Scores Data Store with versioning.",
+        "data_coi: Setup COI Data Store with encryption and access controls.",
+        "api_proposalData: Implement proposal upload and retrieval APIs with parsing job enqueue.",
+        "job_documentParsing: Implement asynchronous document parsing job with retry and error notification.",
+        "api_reviewerData: Implement reviewer scores upload and retrieval APIs with validation.",
+        "api_coiData: Implement COI disclosures upload and retrieval APIs with confidentiality enforcement.",
+        "pages/login: Implement login page with authentication flow.",
+        "pages/dashboard: Implement interactive summary dashboard UI with sorting, filtering, and consensus indicators.",
+        "pages/proposal-comparison: Implement side-by-side proposal comparison UI.",
+        "pages/upload: Implement data upload page handling proposals, reviewer scores, and COI disclosures.",
+        "api_panelReport: Implement panel report generation API and export functionality.",
+        "pages/panel-report: Implement panel summary report UI with export options.",
+        "Add error handling and validation middleware across APIs.",
+        "Implement security hardening: encryption, access control checks, audit logging.",
+        "Perform integration testing and acceptance tests."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/proposal-comparison",
+          "/upload",
+          "/panel-report"
+        ],
+        "apiFilesToCreate": [
+          "/api/proposals/index.ts",
+          "/api/proposals/[proposalId].ts",
+          "/api/reviewer-scores/index.ts",
+          "/api/reviewer-scores/[proposalId].ts",
+          "/api/coi/index.ts",
+          "/api/coi/[reviewerId].ts",
+          "/api/panel-report/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { userId String @id @unique; name String; email String @unique; role String; panelIds Json? }",
+          "model Proposal { proposalId String @id @unique; title String; abstract String?; specificAims String?; budgetSummary String?; panelId String; documentOriginal Json; uploadTimestamp DateTime }",
+          "model ReviewerScore { scoreId String @id @unique; proposalId String; reviewerId String; scoreValue Float; rationale String?; comments String?; uploadTimestamp DateTime }",
+          "model ConflictOfInterest { coiId String @id @unique; reviewerId String; proposalId String?; disclosureText String; flagged Boolean; uploadTimestamp DateTime }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to gather missing constraints and refine the grant review dashboard requirements.",
+        "promptTemplate": "You are a Planner refining the project requirements for the Academic Research Grant Reviewer Summary Dashboard. Based on the current blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, ask the user: {{USER_INPUT}}. Identify any missing constraints, edge cases, or user needs."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design and finalize detailed pages and data models for the grant review dashboard application.",
+        "promptTemplate": "You are an Architect finalizing the application design. Using the idea: {{IDEA}}, blueprint: {{BLUEPRINT}}, and previous expansions: {{EXPANDED}}, create detailed page routes, UI components, and data model definitions. Consider security, scalability, and user roles. User input: {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial page stubs for the grant review dashboard web app based on finalized design.",
+        "promptTemplate": "You are a Builder generating page stubs for the Academic Research Grant Reviewer Summary Dashboard. Using the finalized pages and data models: {{BLUEPRINT.pages}}, {{BLUEPRINT.dataModels}}, create minimal but functional page skeletons with route definitions and placeholder UI elements. User input: {{USER_INPUT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate frontend pages with backend APIs and database models to enable full data flow and functionality.",
+        "promptTemplate": "You are an Integrator connecting the frontend pages to backend APIs and database models. Using the API routes: {{BLUEPRINT.apiRoutes}}, data models: {{BLUEPRINT.dataModels}}, and pages: {{BLUEPRINT.pages}}, implement data fetching, file upload handling, authentication, and data persistence. User input: {{USER_INPUT}}."
+      }
+    ]
+  }
+}

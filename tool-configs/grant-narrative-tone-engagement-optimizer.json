@@ -1,0 +1,675 @@
+{
+  "slug": "grant-narrative-tone-engagement-optimizer",
+  "title": "Academic Research Grant Narrative Tone & Engagement Optimizer",
+  "description": "Optimize your academic research grant proposal narratives for tone, clarity, reviewer engagement, and alignment with funder priorities. Paste or upload narrative sections and funder guidelines to receive detailed tone analysis, jargon level, emotional engagement scores, section-level improvement suggestions, and sample revised snippets to enhance persuasiveness before submission.",
+  "inputLabel": "Paste your grant proposal narrative text here or upload a text file. Optionally include funder guidelines and sample successful excerpts (paste or upload).",
+  "outputLabel": "Tone analysis report summary, section-level suggestions, and revised narrative snippet recommendations.",
+  "systemPrompt": "You are an expert assistant specialized in analyzing academic research grant proposal narratives. Given the proposal text, optional funder guidelines, and sample excerpts, provide a detailed tone analysis including readability, jargon level, and emotional engagement. Then give clear, actionable, section-by-section suggestions to improve clarity, persuasiveness, and alignment with funder priorities. Provide sample revised text snippets illustrating enhanced storytelling and engagement. Do not generate new research content or make unsubstantiated claims. Maintain neutrality and do not guarantee funding success. Reject any input that appears to contain disallowed content or requests legal, ethical, or funding advice beyond narrative style guidance. Enforce input size limits and refuse unsupported file types. Output results as plain text unless structured output is enabled. Use professional, clear, and concise language.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Readability Focus",
+      "prompt": "Analyze the narrative text focusing primarily on readability and jargon reduction. Provide suggestions to simplify complex sentences and improve clarity for diverse reviewer audiences.",
+      "hint": "Use this preset to make your proposal easier to read and understand."
+    },
+    {
+      "label": "Engagement Emphasis",
+      "prompt": "Evaluate the narrative text for emotional engagement and storytelling flow. Suggest ways to strengthen persuasive elements and reviewer connection without compromising academic rigor.",
+      "hint": "Use this preset to increase the persuasive impact of your proposal."
+    },
+    {
+      "label": "Funder Alignment",
+      "prompt": "Analyze the narrative text with special attention to alignment with the provided funder guidelines and reviewer criteria. Recommend adjustments to better meet funder priorities and expectations.",
+      "hint": "Use this preset to tailor your proposal tone to specific funders."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output a JSON object with 'toneAnalysisReport', 'sectionSuggestions', and 'revisedSnippets' fields, each containing detailed arrays keyed by section titles.",
+  "clarifyPrompt": "Please provide your grant proposal narrative text and optionally the funder guidelines and sample successful excerpts. You may paste text directly or upload files. Ensure inputs do not exceed size limits and contain no disallowed content.",
+  "finalizePrompt": "Review the analysis and suggestions carefully. Use the revised snippets as examples to iteratively improve your narrative sections before final submission. Remember to protect sensitive data and avoid unsubstantiated claims.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Narrative Tone & Engagement Optimizer",
+      "niche": {
+        "role": "Academic Research Grant Writers and Coordinators",
+        "scenario": "Refining grant proposal narratives to improve reviewer engagement and persuasive impact before submission"
+      },
+      "problem": "Grant proposals often use overly technical, dense, or inconsistent narrative tones that reduce reviewer engagement and clarity, risking lower funding success. Existing tools focus on compliance, consistency, or budget analysis but do not help writers optimize narrative tone, storytelling flow, and emotional engagement tailored to different funder audiences.",
+      "inputs": [
+        "Grant proposal narrative text sections (uploaded or pasted)",
+        "Funder-specific guidelines and reviewer criteria documents",
+        "Optional sample successful proposal excerpts for style reference"
+      ],
+      "outputs": [
+        "Detailed tone analysis report (e.g., readability, jargon level, emotional engagement)",
+        "Section-by-section suggestions to improve clarity, persuasiveness, and alignment with funder priorities",
+        "Revised narrative text snippets with enhanced storytelling and engagement elements",
+        "Summary recommendations for narrative coherence and impact enhancement"
+      ],
+      "whyItWins": [
+        "Addresses a real, under-served pain point in grant writing beyond compliance and formatting",
+        "Focuses on maximizing persuasive impact and reviewer engagement, which are critical to success",
+        "Supports iterative narrative refinement with actionable, section-level feedback",
+        "Enables improved alignment with diverse funder expectations through tailored tone guidance",
+        "Can start lightweight as a text analysis and suggestion tool, with potential for full collaborative editing and multi-proposal management"
+      ],
+      "upgradePath": {
+        "today": "Single-page app accepting pasted or uploaded narrative texts and funder guidelines, producing tone and engagement feedback reports with sample rewrite suggestions",
+        "in90Days": "Add user accounts and multi-section narrative management, enable side-by-side comparison of original and optimized text, incorporate reviewer feedback integration",
+        "in12Months": "Develop a multi-page collaborative platform for grant teams to co-edit narratives with real-time tone analytics, version control, funder-specific narrative templates, and success metric tracking"
+      },
+      "riskNotes": [
+        "Avoid generating content that could misrepresent research or make unsubstantiated claims",
+        "Ensure no legal or ethical advice is provided about grants or funding beyond narrative style guidance",
+        "Protect sensitive proposal text with strong privacy and security controls",
+        "Maintain neutrality and do not guarantee funding success to manage user expectations"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "An app to help academic research grant writers optimize their proposal narratives for tone, engagement, and alignment with funder priorities through detailed analysis, actionable feedback, and iterative refinement.",
+      "primaryUser": "Academic research grant writers and coordinators",
+      "successMetrics": [
+        "User adoption rate among grant writers",
+        "Frequency of narrative refinements per proposal",
+        "User-reported improvement in reviewer engagement",
+        "Reduction in overly technical or unclear narrative sections",
+        "Retention rate for multi-proposal and collaborative features"
+      ],
+      "components": [
+        {
+          "id": "ui-frontend",
+          "name": "Frontend UI",
+          "type": "ui",
+          "responsibility": "Provide user interfaces for text input/upload, funder guideline submission, viewing tone analysis reports, suggestions, side-by-side comparisons, and collaborative editing.",
+          "dependsOn": [
+            "api-backend"
+          ],
+          "notes": [
+            "Start as single-page app with text input and report display",
+            "Evolve into multi-page app with user dashboard, proposal management, and collaboration",
+            "Handle file uploads securely",
+            "Support real-time updates for collaborative editing in future"
+          ]
+        },
+        {
+          "id": "api-backend",
+          "name": "API Backend",
+          "type": "api",
+          "responsibility": "Process narrative texts and funder guidelines, run tone and engagement analysis, generate suggestions, manage user accounts and proposals, and serve data to frontend.",
+          "dependsOn": [
+            "data-storage",
+            "nlp-engine"
+          ],
+          "notes": [
+            "Expose RESTful endpoints for analysis, suggestions, user and proposal management",
+            "Implement authentication and authorization",
+            "Validate inputs and sanitize outputs to protect sensitive data"
+          ]
+        },
+        {
+          "id": "data-storage",
+          "name": "Data Storage",
+          "type": "data",
+          "responsibility": "Persist user accounts, proposals, narrative sections, funder guidelines, analysis results, suggestions, and collaboration metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Ensure encryption at rest for sensitive proposal texts",
+            "Support versioning for narrative sections",
+            "Index on user and proposal IDs for efficient queries"
+          ]
+        },
+        {
+          "id": "nlp-engine",
+          "name": "NLP Analysis Engine",
+          "type": "integration",
+          "responsibility": "Perform tone analysis, readability scoring, jargon detection, emotional engagement assessment, and generate section-level improvement suggestions.",
+          "dependsOn": [],
+          "notes": [
+            "Use proven NLP libraries or services with customization for academic grant context",
+            "Avoid generating new content beyond suggestions to prevent misrepresentation",
+            "Process text asynchronously if large or complex"
+          ]
+        },
+        {
+          "id": "background-jobs",
+          "name": "Background Jobs",
+          "type": "job",
+          "responsibility": "Handle asynchronous processing of large narrative texts, periodic data cleanup, notification dispatch for collaboration updates, and analytics aggregation.",
+          "dependsOn": [
+            "api-backend",
+            "data-storage"
+          ],
+          "notes": [
+            "Queue analysis tasks to avoid blocking user requests",
+            "Schedule regular privacy audits and data retention enforcement"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user account details and preferences",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Proposal",
+          "purpose": "Represent a grant proposal with metadata and ownership",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "funderGuidelines",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "userId"
+          ]
+        },
+        {
+          "name": "NarrativeSection",
+          "purpose": "Store individual sections of a proposal narrative",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "proposalId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sectionTitle",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "originalText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "latestRevisionText",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "proposalId"
+          ]
+        },
+        {
+          "name": "ToneAnalysisReport",
+          "purpose": "Store analysis results for a narrative section",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sectionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "readabilityScore",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "jargonLevel",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "emotionalEngagementScore",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "analysisDetails",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "sectionId"
+          ]
+        },
+        {
+          "name": "Suggestion",
+          "purpose": "Store actionable suggestions for narrative improvement",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "sectionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "suggestionText",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "suggestionType",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "sectionId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Home / Upload Narrative",
+          "purpose": "Allow users to paste or upload narrative text and funder guidelines for analysis",
+          "inputs": [
+            "Narrative text (paste or file upload)",
+            "Funder guidelines document (paste or upload)",
+            "Optional sample excerpts"
+          ],
+          "outputs": [
+            "Tone analysis report summary",
+            "Section-level suggestions"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/dashboard",
+          "title": "User Dashboard",
+          "purpose": "Provide overview of user proposals, access to multi-section management and analysis history",
+          "inputs": [],
+          "outputs": [
+            "List of proposals",
+            "Status of analyses",
+            "Access to proposal details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/proposal/:id",
+          "title": "Proposal Detail & Narrative Editor",
+          "purpose": "View and edit proposal narrative sections, see side-by-side original and optimized text, and review suggestions",
+          "inputs": [
+            "Section text edits",
+            "Funder guideline updates"
+          ],
+          "outputs": [
+            "Updated tone analysis",
+            "Suggestions",
+            "Comparison views"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/collaboration/:proposalId",
+          "title": "Collaborative Editing Workspace",
+          "purpose": "Enable multiple users to co-edit narratives with real-time tone analytics and version control",
+          "inputs": [
+            "Live text edits",
+            "Comments",
+            "Reviewer feedback"
+          ],
+          "outputs": [
+            "Real-time analysis updates",
+            "Version history",
+            "User presence indicators"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/analyze",
+          "method": "POST",
+          "purpose": "Submit narrative text and funder guidelines for tone and engagement analysis",
+          "requestShape": "{ narrativeText: string, funderGuidelines?: string, sampleExcerpts?: string[] }",
+          "responseShape": "{ analysisReport: object, suggestions: object[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals",
+          "method": "GET",
+          "purpose": "Retrieve list of user proposals",
+          "requestShape": "none",
+          "responseShape": "{ proposals: object[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals",
+          "method": "POST",
+          "purpose": "Create a new proposal with metadata and optional guidelines",
+          "requestShape": "{ title: string, funderGuidelines?: string }",
+          "responseShape": "{ proposalId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id",
+          "method": "GET",
+          "purpose": "Retrieve detailed proposal data including narrative sections and analysis",
+          "requestShape": "none",
+          "responseShape": "{ proposal: object, sections: object[], analysisReports: object[], suggestions: object[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/proposals/:id/sections/:sectionId",
+          "method": "POST",
+          "purpose": "Update narrative section text and trigger re-analysis",
+          "requestShape": "{ revisedText: string }",
+          "responseShape": "{ updatedAnalysisReport: object, updatedSuggestions: object[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/register",
+          "method": "POST",
+          "purpose": "Register new user account",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ userId: string }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "NarrativeAnalysisJob",
+          "trigger": "Queued when user submits or updates narrative sections",
+          "purpose": "Perform tone and engagement analysis asynchronously to avoid blocking API responses"
+        },
+        {
+          "name": "NotificationDispatchJob",
+          "trigger": "Triggered on collaboration updates or analysis completion",
+          "purpose": "Send notifications to users about analysis results or collaborator changes"
+        },
+        {
+          "name": "DataCleanupJob",
+          "trigger": "Scheduled periodically",
+          "purpose": "Remove stale temporary data and enforce data retention policies"
+        }
+      ],
+      "edgeCases": [
+        "Handling very large narrative texts exceeding typical size limits",
+        "User uploads unsupported file formats or corrupted documents",
+        "Network failures during analysis or collaboration sessions",
+        "Concurrent edits causing merge conflicts in collaborative workspace",
+        "Users submitting sensitive or proprietary data requiring strict privacy controls",
+        "Analysis engine producing ambiguous or conflicting suggestions",
+        "Users attempting to bypass authentication or access unauthorized proposals"
+      ],
+      "nonGoals": [
+        "Generating original grant proposal content or rewriting full narratives autonomously",
+        "Providing legal, ethical, or funding advice beyond narrative style guidance",
+        "Guaranteeing funding success or reviewer acceptance",
+        "Handling budget, compliance, or formatting checks outside narrative tone and engagement",
+        "Supporting non-academic or non-grant writing domains initially"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses frontend pages (/, /dashboard, /proposal/:id, /collaboration/:proposalId) via Next.js routes.",
+        "On narrative upload or text input (/) page, frontend sends POST /api/analyze with narrativeText, optional funderGuidelines, and sampleExcerpts.",
+        "API backend validates input, stores narrative and guidelines temporarily, enqueues NarrativeAnalysisJob for asynchronous processing.",
+        "Background job calls NLP engine to analyze text, generates tone analysis report and suggestions, stores results in database linked to NarrativeSection.",
+        "Frontend polls or receives notification of analysis completion, displays tone analysis summary and section-level suggestions.",
+        "Authenticated users can create proposals via POST /api/proposals, which stores metadata and optional funder guidelines.",
+        "User dashboard (/dashboard) fetches proposals via GET /api/proposals, displaying list and analysis status.",
+        "Proposal detail page (/proposal/:id) fetches proposal, narrative sections, analysis reports, and suggestions via GET /api/proposals/:id.",
+        "User edits narrative sections via POST /api/proposals/:id/sections/:sectionId with revisedText, triggering re-analysis via background job.",
+        "Collaborative editing workspace (/collaboration/:proposalId) enables real-time text edits and comments, syncing changes through API and background jobs, with version control and user presence indicators.",
+        "Authentication via /api/auth/login and /api/auth/register manages user sessions and access control.",
+        "Background jobs handle queued analysis, notification dispatch, and periodic data cleanup enforcing privacy and retention."
+      ],
+      "validationRules": [
+        "Narrative text must be non-empty string, max size limit (e.g., 100k characters) to prevent overload.",
+        "Funder guidelines optional, if present must be valid JSON or text, max size limit.",
+        "Sample excerpts, if provided, must be array of strings, each within size limits.",
+        "Proposal title required, non-empty string, max length (e.g., 255 chars).",
+        "Section text edits must be non-empty strings, sanitized to prevent injection.",
+        "User registration requires valid email format and password meeting complexity rules (min length, character variety).",
+        "Authentication tokens must be validated for all protected API routes.",
+        "File uploads must be validated for allowed MIME types (e.g., text/plain, application/pdf), size limits, and scanned for corruption.",
+        "API route parameters (e.g., proposalId, sectionId) must be validated as valid UUID or string identifiers and ownership verified.",
+        "Concurrent edits must be versioned to detect and resolve conflicts."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request for invalid input with descriptive error messages.",
+        "Return 401 Unauthorized for unauthenticated access to protected routes.",
+        "Return 403 Forbidden if user attempts to access or modify proposals or sections they do not own.",
+        "Return 404 Not Found if requested proposal, section, or analysis data does not exist.",
+        "Return 413 Payload Too Large for narrative texts or uploads exceeding size limits.",
+        "Gracefully handle NLP engine failures by returning partial results or retrying analysis asynchronously.",
+        "Use try-catch blocks in API routes to log errors and return 500 Internal Server Error with generic message.",
+        "For network failures during collaboration, implement client-side retry and conflict resolution UI.",
+        "Validate and sanitize all inputs to prevent injection and XSS attacks.",
+        "Notify users of analysis queue delays or failures via UI messages or notifications."
+      ],
+      "securityNotes": [
+        "Implement JWT or session-based authentication with secure cookie flags and expiration.",
+        "Encrypt sensitive data at rest, especially proposal texts and user credentials.",
+        "Hash passwords securely using bcrypt or similar algorithms.",
+        "Sanitize all user inputs and outputs to prevent XSS and injection attacks.",
+        "Authorize all API requests to ensure users only access their own proposals and data.",
+        "Validate and restrict file uploads to safe types and sizes, scan for malware.",
+        "Use HTTPS for all client-server communication.",
+        "Implement rate limiting on API endpoints to prevent abuse.",
+        "Log authentication attempts and suspicious activities for audit.",
+        "Ensure background jobs respect user privacy and data retention policies."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user on the home page with narrative text and funder guidelines ready",
+          "when": "They submit the narrative and guidelines for analysis",
+          "then": "The system accepts input, queues analysis job, and eventually displays tone analysis summary and suggestions"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the dashboard",
+          "when": "They view their list of proposals",
+          "then": "They see all proposals they own with current analysis status"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user viewing a proposal detail page",
+          "when": "They edit a narrative section and save changes",
+          "then": "The system updates the section, triggers re-analysis, and updates suggestions and comparison views"
+        },
+        {
+          "id": "AT-004",
+          "given": "Multiple authenticated users collaborating on the same proposal",
+          "when": "They make concurrent edits and add comments",
+          "then": "The system synchronizes changes in real-time, shows user presence, and maintains version history"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user attempts to access a proposal they do not own",
+          "when": "They request proposal details via API or UI",
+          "then": "The system denies access with 403 Forbidden error"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user uploads a narrative file exceeding size limits or unsupported format",
+          "when": "They submit the file",
+          "then": "The system rejects the upload with appropriate error message"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user registers with invalid email or weak password",
+          "when": "They submit registration form",
+          "then": "The system rejects registration with validation error messages"
+        },
+        {
+          "id": "AT-008",
+          "given": "The NLP engine fails or returns ambiguous suggestions",
+          "when": "Analysis is requested",
+          "then": "The system handles failure gracefully, informs user, and retries analysis asynchronously"
+        }
+      ],
+      "buildOrder": [
+        "Set up Prisma models for User, Proposal, NarrativeSection, ToneAnalysisReport, Suggestion",
+        "Implement authentication API routes (/api/auth/login, /api/auth/register) with secure password hashing",
+        "Create frontend pages for / (upload narrative) and /dashboard with basic UI and API integration",
+        "Implement API routes for proposals (GET /api/proposals, POST /api/proposals) and proposal detail (GET /api/proposals/:id)",
+        "Implement narrative section update API (POST /api/proposals/:id/sections/:sectionId) with validation and authorization",
+        "Integrate NLP engine calls in background jobs for asynchronous analysis processing",
+        "Implement background job queue and processing system (NarrativeAnalysisJob, NotificationDispatchJob, DataCleanupJob)",
+        "Enhance frontend to display tone analysis reports, suggestions, and side-by-side comparisons",
+        "Implement collaborative editing workspace with real-time sync and version control (/collaboration/:proposalId)",
+        "Add file upload handling with validation and secure storage",
+        "Implement error handling and user notifications across frontend and backend",
+        "Add security hardening: input sanitization, rate limiting, encryption at rest",
+        "Write comprehensive acceptance tests and edge case handling",
+        "Perform privacy audits and data retention enforcement via background jobs"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/dashboard",
+          "/proposal/[id]",
+          "/collaboration/[proposalId]"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/auth/register.ts",
+          "api/analyze.ts",
+          "api/proposals/index.ts",
+          "api/proposals/[id].ts",
+          "api/proposals/[id]/sections/[sectionId].ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Proposal",
+          "NarrativeSection",
+          "ToneAnalysisReport",
+          "Suggestion"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask detailed questions to clarify missing constraints, edge cases, or user needs in the grant narrative optimizer tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}}\n\nUser input so far: {{USER_INPUT}}\n\nPlease list any missing requirements, constraints, or edge cases that should be addressed to ensure the tool fully meets academic grant writers' needs."
+      },
+      {
+        "id": "architect-finalize-pages-data",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the full set of frontend pages, API routes, and database models needed to implement the grant narrative optimizer, ensuring scalability and security.",
+        "promptTemplate": "Using the idea spec and blueprint: {{IDEA_SPEC}}, {{BLUEPRINT}}\n\nExpanded details: {{EXPANDED}}\n\nDraft a complete list of frontend pages, API endpoints, and data models with their fields and relationships for this app."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create starter code stubs for the main frontend pages and API routes based on finalized design, to accelerate implementation.",
+        "promptTemplate": "Based on the finalized pages and API routes: {{ARCHITECT_OUTPUT}}\n\nGenerate React/Next.js page stubs and API route handlers with placeholder UI and endpoint scaffolding for the grant narrative optimizer."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect frontend pages to backend API routes and database, ensuring data flow and user authentication work correctly.",
+        "promptTemplate": "Using the builder's page and API stubs: {{BUILDER_OUTPUT}}\n\nExplain how to wire frontend inputs and outputs to backend API calls and database queries, including authentication and error handling, for the grant narrative tone and engagement optimizer."
+      }
+    ]
+  }
+}

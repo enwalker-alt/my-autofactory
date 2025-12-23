@@ -1,0 +1,866 @@
+{
+  "slug": "academic-research-collab-data-analysis-coordinator",
+  "title": "Academic Research Collaborative Data Analysis Coordinator",
+  "description": "Upload datasets, analysis scripts, and task lists to generate a consolidated task dashboard and version log summaries for academic research teams. Coordinate multi-analyst workflows with reproducibility and version tracking.",
+  "inputLabel": "Upload your dataset files (CSV, Excel, JSON), analysis scripts (R, Python), and task description JSON",
+  "outputLabel": "Consolidated Task Dashboard Summary and Version Log Report",
+  "systemPrompt": "You are an academic research data analysis workflow coordinator assistant. Accept input text describing tasks and optionally uploaded files including datasets and scripts. Validate input safety: reject any requests with disallowed file types or unsafe content. Process the input to generate a consolidated summary of analysis tasks, assignments, statuses, and version summaries for datasets and scripts. Output only plain text summary or structured JSON if requested, strictly adhering to academic data privacy and reproducibility standards. Refuse requests that violate data privacy, contain corrupted data, or lack required fields. Enforce clear role-based access assumptions and do not expose sensitive data. Use only the provided input data and do not hallucinate missing information. Provide concise, audit-ready, and clear output suitable for coordinating multi-analyst academic workflows.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Summary View",
+      "prompt": "Generate a consolidated summary report of all uploaded tasks and version histories, highlighting assignments, statuses, and recent changes.",
+      "hint": "Use this to get a high-level overview of current workflows and versions."
+    },
+    {
+      "label": "Conflict Alert Report",
+      "prompt": "Analyze the uploaded data and scripts to detect potential conflicting edits, duplicated analyses, or version inconsistencies, and generate an alert report.",
+      "hint": "Use this to identify issues requiring team attention."
+    },
+    {
+      "label": "Reproducibility Audit",
+      "prompt": "Produce a detailed audit report verifying task reproducibility and completeness of version tracking for datasets and scripts.",
+      "hint": "Use this to ensure audit-ready compliance and reproducibility."
+    },
+    {
+      "label": "Task Assignment Overview",
+      "prompt": "Provide a detailed dashboard-style report listing tasks, assigned analysts, statuses, and linked datasets/scripts.",
+      "hint": "Use this for managing analyst workloads and task ownership."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output a JSON object with keys: tasks (array), versions (array), alerts (array), comments (array), each with relevant fields as per academic workflow coordination.",
+  "clarifyPrompt": "Please specify the project context, user role, and type of report or analysis you need. Also indicate if you want a plain text summary or structured JSON output.",
+  "finalizePrompt": "Confirm all required data files and task descriptions are uploaded and valid. Proceed to generate the consolidated workflow dashboard and version summary report.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Collaborative Data Analysis Workflow Coordinator",
+      "niche": {
+        "role": "Academic Research Data Analyst",
+        "scenario": "Managing and coordinating multi-analyst workflows on shared complex datasets with reproducibility and version control"
+      },
+      "problem": "Academic research teams often struggle with coordinating multiple data analysts working on shared datasets, leading to duplicated efforts, inconsistent analysis versions, unclear task ownership, and difficulties ensuring reproducibility and audit trails across collaborators.",
+      "inputs": [
+        "Dataset files (CSV, Excel, JSON)",
+        "Analysis scripts and notebooks (R, Python, etc.)",
+        "Task descriptions and assignments",
+        "Version metadata and change logs",
+        "Collaborator comments and annotations"
+      ],
+      "outputs": [
+        "Centralized task and workflow dashboard with analyst assignments and status",
+        "Version-controlled repository of datasets and analysis scripts with change tracking",
+        "Alerts for conflicting edits or duplicated analyses",
+        "Standardized audit-ready analysis and reproducibility reports",
+        "Collaborative comment threads linked to specific analysis tasks or data subsets"
+      ],
+      "whyItWins": [
+        "Fills a gap not addressed by existing single-point tools focused on either data or compliance alone",
+        "Provides a multi-dimensional collaboration platform integrating version control, task management, and reproducibility",
+        "Reduces wasted effort and errors due to overlapping or conflicting analyses",
+        "Supports repeated use across multiple datasets and projects with evolving team composition",
+        "Lays foundation for scalable, secure, and compliant academic research data analysis workflows"
+      ],
+      "upgradePath": {
+        "today": "Launch a lightweight single-page app for manual upload of datasets, scripts, and task lists to generate a consolidated task dashboard and version log summaries",
+        "in90Days": "Add automated change detection in uploaded analyses, collaborative commenting, and conflict alerting with basic user roles and permissions",
+        "in12Months": "Develop a full multi-page web system integrating with common code repositories (Git), scheduling, detailed audit trails, compliance checks, and interactive reproducibility reporting with export and integration capabilities"
+      },
+      "riskNotes": [
+        "Must ensure data privacy and secure handling of potentially sensitive datasets",
+        "Needs to clearly separate version control for data and scripts to avoid corruption",
+        "User onboarding complexity must be managed to avoid overwhelming non-technical collaborators",
+        "Compliance with institutional and ethical data sharing policies is critical and must be built-in"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research teams to coordinate multi-analyst workflows on shared datasets, integrating version control, task management, and reproducibility to ensure auditability, reduce duplicated effort, and maintain data/script integrity.",
+      "primaryUser": "Academic Research Data Analyst",
+      "successMetrics": [
+        "Reduction in duplicated or conflicting analyses across teams",
+        "User adoption and active collaboration on shared projects",
+        "Percentage of analyses with full reproducibility and audit trails",
+        "Number of detected and resolved conflicts or overlapping tasks",
+        "Compliance adherence and secure handling of sensitive data"
+      ],
+      "components": [
+        {
+          "id": "ui-dashboard",
+          "name": "Task & Workflow Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display consolidated tasks, assignments, statuses, comments, and alerts to users; provide interfaces for task creation, editing, and commenting.",
+          "dependsOn": [
+            "api-tasks",
+            "api-comments",
+            "api-alerts",
+            "api-auth"
+          ],
+          "notes": [
+            "Must support filtering by project, analyst, status.",
+            "Should handle large datasets gracefully with pagination or lazy loading.",
+            "Needs clear UI for conflict alerts and version statuses."
+          ]
+        },
+        {
+          "id": "ui-version-control",
+          "name": "Version Control & Repository UI",
+          "type": "ui",
+          "responsibility": "Visualize version histories of datasets and scripts, show change logs, enable manual uploads and downloads, and integrate with external Git repositories.",
+          "dependsOn": [
+            "api-version",
+            "api-auth",
+            "integration-git"
+          ],
+          "notes": [
+            "Should clearly separate data and script versioning views.",
+            "Support diff views for scripts and metadata changes.",
+            "Allow rollback or restoration of previous versions."
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication & Authorization API",
+          "type": "api",
+          "responsibility": "Manage user authentication, roles, permissions, and secure access control to projects, datasets, and tasks.",
+          "dependsOn": [],
+          "notes": [
+            "Must support role-based access control (e.g., analyst, project lead).",
+            "Ensure compliance with institutional policies for data privacy.",
+            "Integrate with institutional single sign-on (future upgrade)."
+          ]
+        },
+        {
+          "id": "api-tasks",
+          "name": "Task Management API",
+          "type": "api",
+          "responsibility": "Handle creation, assignment, status updates, and retrieval of analysis tasks and workflows.",
+          "dependsOn": [
+            "data-tasks",
+            "api-auth"
+          ],
+          "notes": [
+            "Support task dependencies and status transitions.",
+            "Track ownership and history of task changes.",
+            "Allow linking tasks to specific datasets or scripts."
+          ]
+        },
+        {
+          "id": "api-version",
+          "name": "Version Control API",
+          "type": "api",
+          "responsibility": "Manage versioning of datasets and scripts including uploads, change detection, metadata, and conflict alerts.",
+          "dependsOn": [
+            "data-versions",
+            "api-auth",
+            "integration-git"
+          ],
+          "notes": [
+            "Separate version control for data and scripts to avoid corruption.",
+            "Automate detection of conflicting edits.",
+            "Store detailed change logs and metadata."
+          ]
+        },
+        {
+          "id": "api-comments",
+          "name": "Collaborative Comments API",
+          "type": "api",
+          "responsibility": "Manage comment threads linked to tasks or data subsets, supporting creation, editing, and retrieval.",
+          "dependsOn": [
+            "data-comments",
+            "api-auth"
+          ],
+          "notes": [
+            "Support threaded discussions and notifications.",
+            "Allow linking comments to specific versions or data subsets."
+          ]
+        },
+        {
+          "id": "integration-git",
+          "name": "Git Repository Integration",
+          "type": "integration",
+          "responsibility": "Synchronize scripts and version metadata with external Git repositories to enable advanced version control workflows.",
+          "dependsOn": [
+            "api-version"
+          ],
+          "notes": [
+            "Handle authentication and permission mapping with Git providers.",
+            "Support push/pull sync and conflict resolution.",
+            "Future upgrade to support scheduling and audit trails."
+          ]
+        },
+        {
+          "id": "job-change-detection",
+          "name": "Automated Change Detection Job",
+          "type": "job",
+          "responsibility": "Periodically analyze uploaded datasets and scripts to detect changes, generate alerts for conflicts or duplicated analyses.",
+          "dependsOn": [
+            "data-versions",
+            "api-alerts"
+          ],
+          "notes": [
+            "Should run asynchronously and scale with project size.",
+            "Must handle partial uploads and incomplete data gracefully."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Stores user identity, roles, and authentication info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Represents a research project grouping datasets, scripts, tasks, and collaborators.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "members",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "title"
+          ]
+        },
+        {
+          "name": "DatasetVersion",
+          "purpose": "Tracks versions of uploaded datasets with metadata and change logs.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "changeLog",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "filename",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "ScriptVersion",
+          "purpose": "Tracks versions of analysis scripts or notebooks with metadata and change logs.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "uploadedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "changeLog",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "filename",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "Task",
+          "purpose": "Represents an analysis task assigned to a collaborator with status and linkage to data/scripts.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedTo",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "linkedDatasets",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "linkedScripts",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "assignedTo",
+            "status"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Stores collaborative comments linked to tasks or data subsets.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "taskId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "parentCommentId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "taskId",
+            "projectId",
+            "authorId"
+          ]
+        },
+        {
+          "name": "Alert",
+          "purpose": "Represents alerts for conflicting edits, duplicated analyses, or other workflow issues.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedTaskId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "type",
+            "resolved"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/dashboard",
+          "title": "Workflow Dashboard",
+          "purpose": "Provide an overview of tasks, assignments, statuses, comments, and alerts for ongoing projects.",
+          "inputs": [
+            "filter parameters (project, user, status)"
+          ],
+          "outputs": [
+            "task list",
+            "alerts",
+            "comment previews",
+            "version statuses"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/versions",
+          "title": "Version Control",
+          "purpose": "Display version histories and change logs for datasets and scripts with upload/download capabilities.",
+          "inputs": [
+            "project selection",
+            "file selection"
+          ],
+          "outputs": [
+            "version list",
+            "diff views",
+            "metadata"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/tasks/:taskId",
+          "title": "Task Detail & Comments",
+          "purpose": "Show detailed task information, linked data/scripts, and collaborative comment threads.",
+          "inputs": [
+            "taskId"
+          ],
+          "outputs": [
+            "task details",
+            "comments",
+            "linked versions"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users and manage session initiation.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "authentication token",
+            "user profile"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user credentials and return session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, user: User }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "GET",
+          "purpose": "Retrieve list of tasks filtered by project, user, or status.",
+          "requestShape": "{ projectId?: string, assignedTo?: string, status?: string }",
+          "responseShape": "Task[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Create a new analysis task.",
+          "requestShape": "{ projectId: string, title: string, description?: string, assignedTo: string, linkedDatasets?: string[], linkedScripts?: string[] }",
+          "responseShape": "Task",
+          "auth": "user"
+        },
+        {
+          "route": "/api/versions/datasets",
+          "method": "GET",
+          "purpose": "Retrieve dataset versions for a project and file.",
+          "requestShape": "{ projectId: string, filename: string }",
+          "responseShape": "DatasetVersion[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/versions/scripts",
+          "method": "GET",
+          "purpose": "Retrieve script versions for a project and file.",
+          "requestShape": "{ projectId: string, filename: string }",
+          "responseShape": "ScriptVersion[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "GET",
+          "purpose": "Get comments linked to a task or project.",
+          "requestShape": "{ taskId?: string, projectId: string }",
+          "responseShape": "Comment[]",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "POST",
+          "purpose": "Post a new comment linked to a task or project.",
+          "requestShape": "{ taskId?: string, projectId: string, content: string, parentCommentId?: string }",
+          "responseShape": "Comment",
+          "auth": "user"
+        },
+        {
+          "route": "/api/alerts",
+          "method": "GET",
+          "purpose": "Retrieve active alerts for a project.",
+          "requestShape": "{ projectId: string }",
+          "responseShape": "Alert[]",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Automated Change Detection",
+          "trigger": "Scheduled periodic run or triggered on new uploads",
+          "purpose": "Detect changes in datasets and scripts, generate alerts for conflicts or duplicated analyses."
+        }
+      ],
+      "edgeCases": [
+        "Partial or corrupted dataset/script uploads causing version inconsistency",
+        "Simultaneous conflicting edits by multiple analysts leading to version conflicts",
+        "Users with insufficient permissions attempting to access or modify sensitive data",
+        "Handling large datasets or scripts causing performance degradation in UI or backend",
+        "User onboarding complexity causing misassignment or misuse of tasks",
+        "Data privacy breaches due to improper access controls or logging"
+      ],
+      "nonGoals": [
+        "Providing full data storage or heavy data processing (focus is on coordination and versioning)",
+        "Replacing specialized statistical or analysis software (integration instead)",
+        "Handling non-academic or commercial data compliance beyond institutional policies",
+        "Real-time collaborative editing of scripts (only versioned uploads and comments)",
+        "Automated data cleaning or analysis execution (outside scope)"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits credentials to /api/auth/login; receives auth token and user profile.",
+        "Authenticated user accesses /dashboard page; frontend calls /api/tasks, /api-alerts, /api-comments to fetch filtered tasks, active alerts, and comment previews.",
+        "User filters tasks by project, assigned user, or status; dashboard UI sends query params to /api/tasks GET endpoint.",
+        "User navigates to /versions page; selects project and file; frontend calls /api/versions/datasets or /api/versions/scripts to retrieve version histories and metadata.",
+        "User views diffs or requests rollback; frontend calls appropriate API endpoints in /api-version to fetch diffs or trigger restoration.",
+        "User opens /tasks/:taskId page; frontend fetches task details from /api/tasks (GET with taskId), comments from /api/comments, and linked dataset/script versions from /api/versions endpoints.",
+        "User creates or updates tasks via POST /api/tasks; server validates and stores task with linkage to datasets/scripts.",
+        "User posts comments via POST /api/comments; supports threading via parentCommentId; comments linked to tasks or projects.",
+        "Background job 'Automated Change Detection' runs periodically or triggered on uploads; analyzes dataset and script versions for conflicts or duplicates; creates alerts via /api-alerts.",
+        "Git integration synchronizes script versions and metadata with external Git repositories, handling push/pull and conflict resolution."
+      ],
+      "validationRules": [
+        "Authentication: Validate email format and password presence on login; reject invalid credentials with generic error.",
+        "Task creation: Require projectId, title, assignedTo; optional description, linkedDatasets, linkedScripts; verify assignedTo user exists and has permission for project.",
+        "Task updates: Validate status transitions follow allowed workflow states; prevent invalid transitions.",
+        "Version retrieval: Require projectId and filename; verify user has access to project.",
+        "Comment creation: Require projectId, content; optional taskId and parentCommentId; validate parentCommentId exists and belongs to same project.",
+        "Alert retrieval: Require projectId; verify user access.",
+        "Pagination and filtering parameters: Validate types and allowed values; sanitize inputs to prevent injection.",
+        "File uploads for versions: Validate file type, size limits, and completeness; reject partial or corrupted uploads.",
+        "Role-based access control: Enforce user roles and permissions on all API endpoints; reject unauthorized access with 403 Forbidden."
+      ],
+      "errorHandling": [
+        "Authentication errors: Return 401 Unauthorized with generic message on invalid credentials or expired token.",
+        "Authorization failures: Return 403 Forbidden with clear message when user lacks permission.",
+        "Validation errors: Return 400 Bad Request with detailed field error messages.",
+        "Not found errors: Return 404 Not Found when requested resources (tasks, comments, versions) do not exist or are inaccessible.",
+        "Conflict errors: Return 409 Conflict when version conflicts or simultaneous edits detected.",
+        "Server errors: Return 500 Internal Server Error with generic message; log detailed errors internally.",
+        "Background job failures: Log errors with context; retry or alert admins if persistent.",
+        "API rate limiting or throttling: Return 429 Too Many Requests as needed.",
+        "Graceful degradation in UI: Show user-friendly messages on API failures; allow retry where appropriate."
+      ],
+      "securityNotes": [
+        "Use HTTPS for all API and UI routes to protect data in transit.",
+        "Store passwords securely using strong hashing algorithms (e.g., bcrypt).",
+        "Implement JWT or session-based authentication with secure cookie flags.",
+        "Enforce strict role-based access control on all data and actions.",
+        "Sanitize all user inputs to prevent injection attacks.",
+        "Limit file upload sizes and validate file types to prevent malicious uploads.",
+        "Log access and changes for auditability; protect logs from tampering.",
+        "Prepare for future integration with institutional SSO for stronger identity management.",
+        "Ensure sensitive data fields are encrypted or masked as per institutional policies.",
+        "Regularly review dependencies and update to patch security vulnerabilities."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A registered user with valid credentials",
+          "when": "They submit correct email and password to /api/auth/login",
+          "then": "They receive a valid authentication token and user profile"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on /dashboard",
+          "when": "They filter tasks by project and status",
+          "then": "The dashboard displays only tasks matching the filters with associated alerts and comment previews"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on /versions page",
+          "when": "They select a project and filename",
+          "then": "The UI shows the version history, change logs, and metadata for the selected dataset or script"
+        },
+        {
+          "id": "AT-004",
+          "given": "An authenticated user viewing a task detail page",
+          "when": "They load the page with a valid taskId",
+          "then": "The UI displays task details, linked dataset/script versions, and threaded comments"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user attempts to create a task",
+          "when": "They submit a POST request with required fields and valid assignedTo user",
+          "then": "The task is created, stored, and returned with correct linkage"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user attempts to access a project they are not a member of",
+          "when": "They request tasks or versions for that project",
+          "then": "The API returns 403 Forbidden and no data is exposed"
+        },
+        {
+          "id": "AT-007",
+          "given": "The automated change detection job runs",
+          "when": "It detects conflicting edits or duplicated analyses",
+          "then": "It creates appropriate alerts linked to the affected projects and tasks"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user submits an invalid comment with missing content",
+          "when": "They POST to /api/comments",
+          "then": "The API returns 400 Bad Request with validation error details"
+        },
+        {
+          "id": "AT-009",
+          "given": "Multiple users attempt simultaneous edits on the same script version",
+          "when": "Conflicting uploads occur",
+          "then": "The system detects conflict and returns 409 Conflict with instructions to resolve"
+        },
+        {
+          "id": "AT-010",
+          "given": "A user uploads a corrupted dataset file",
+          "when": "The upload is processed",
+          "then": "The system rejects the upload and returns a descriptive error without corrupting version history"
+        }
+      ],
+      "buildOrder": [
+        "prismaModelsToAdd: Define all data models (User, Project, DatasetVersion, ScriptVersion, Task, Comment, Alert)",
+        "api-auth: Implement authentication and authorization API with role-based access control",
+        "api-tasks: Build task management API with validation and linkage to projects and users",
+        "api-comments: Develop comments API supporting threading and linking to tasks/projects",
+        "api-alerts: Create alerts API for conflict and workflow issue notifications",
+        "api-version: Implement version control API for datasets and scripts with metadata and conflict detection",
+        "integration-git: Develop Git integration for syncing script versions and metadata",
+        "ui-dashboard: Build dashboard UI consuming tasks, alerts, comments APIs with filtering and pagination",
+        "ui-version-control: Build version control UI with version histories, diffs, and upload/download features",
+        "ui-task-detail: Build task detail page with comments and linked versions",
+        "backgroundJobs: Implement automated change detection job to analyze versions and generate alerts",
+        "pages: Implement /login, /dashboard, /versions, /tasks/:taskId pages with auth guards",
+        "Testing: Write acceptance tests and perform security and performance testing"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/dashboard",
+          "/versions",
+          "/tasks/[taskId]"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.ts",
+          "/api/tasks/index.ts",
+          "/api/versions/datasets.ts",
+          "/api/versions/scripts.ts",
+          "/api/comments/index.ts",
+          "/api/alerts/index.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Project",
+          "DatasetVersion",
+          "ScriptVersion",
+          "Task",
+          "Comment",
+          "Alert"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for any missing constraints or detailed requirements to better specify the workflow coordinator tool.",
+        "promptTemplate": "You are a planner refining the Academic Research Collaborative Data Analysis Workflow Coordinator. Given the current blueprint: {{BLUEPRINT}} and expanded specs: {{EXPANDED}}, ask {{USER_INPUT}} for any missing constraints, clarifications, or additional requirements needed to finalize the tool specification."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design the detailed pages, data models, and API routes for the full multi-page app based on refined requirements.",
+        "promptTemplate": "You are an architect designing the Academic Research Collaborative Data Analysis Workflow Coordinator app. Using the refined idea: {{IDEA}}, blueprint: {{BLUEPRINT}}, and expansions: {{EXPANDED}}, produce a detailed specification of pages, data models, and API routes. Address any open questions from planning and ensure completeness for next development steps. User input: {{USER_INPUT}}."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate starter code and page stubs for the main UI pages based on the finalized architecture.",
+        "promptTemplate": "You are a builder generating starter code for the Academic Research Collaborative Data Analysis Workflow Coordinator. Given the finalized architecture: {{BLUEPRINT}} and data models: {{EXPANDED.prismaModelsToAdd}}, generate page stubs and component scaffolds for routes: {{EXPANDED.scaffolds.nextRoutesToCreate}}. User input: {{USER_INPUT}}."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring between UI pages, API endpoints, and the database models.",
+        "promptTemplate": "You are an integrator connecting the UI pages, API routes, and database for the Academic Research Collaborative Data Analysis Workflow Coordinator. Using the detailed specs: {{BLUEPRINT}}, API routes: {{BLUEPRINT.apiRoutes}}, and data models: {{EXPANDED.prismaModelsToAdd}}, produce integration code and instructions to wire frontend pages to backend APIs and the database. User input: {{USER_INPUT}}."
+      }
+    ]
+  }
+}

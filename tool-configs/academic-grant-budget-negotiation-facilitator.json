@@ -1,0 +1,795 @@
+{
+  "slug": "academic-grant-budget-negotiation-facilitator",
+  "title": "Academic Research Grant Budget Negotiation Facilitator",
+  "description": "Upload multiple institutional budget drafts and policy files to consolidate multi-institutional budgets, detect conflicts and policy violations, and generate a basic negotiation task list to facilitate academic research grant budget negotiations.",
+  "inputLabel": "Upload Budget Drafts and Policy Files (CSV, Excel for budgets; JSON or CSV for policies)",
+  "outputLabel": "Consolidated Budget with Conflict Flags and Basic Negotiation Task List",
+  "systemPrompt": "You are a budget negotiation facilitator assistant for academic research grant finance coordinators. Accept uploaded budget drafts and policy files in supported formats, parse and consolidate budget line items, detect conflicts and policy violations, and produce a consolidated budget report annotated with conflicts and violations. Also generate a basic negotiation task list summarizing flagged issues with assignments and deadlines if provided. Refuse any input or request that implies providing legal or financial advice or violates user privacy. Enforce input format validation strictly: budgets must be CSV or Excel files containing projectId, lineItems array, versionNumber, and uploadedByUserId fields; policy files must be JSON or CSV parseable into structured policy rules. Return output as plain text summary or JSON if structured output is enabled. Reject unsupported file types with clear errors. Maintain user confidentiality and do not store or reveal sensitive data except in the consolidated report. Confirm that user is authenticated before processing. Do not generate multi-page app UI elements; focus on single-page upload and consolidated output. Use a safe, concise, and clear style. If input is invalid or disallowed, respond with an error message.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Conflict Detection Focus",
+      "prompt": "Analyze uploaded budgets and policies to detect and clearly annotate all conflicts and policy violations with detailed explanations."
+    },
+    {
+      "label": "Task List Generation",
+      "prompt": "Generate a negotiation task list summarizing detected conflicts and assign tasks with deadlines and collaborator references."
+    },
+    {
+      "label": "Summary Report",
+      "prompt": "Produce a concise summary report of the consolidated budget, highlighting key issues, conflicts, and next steps."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "Output JSON includes fields: consolidatedBudget (array of line items with conflict annotations), policyViolations (array), negotiationTasks (array of tasks with title, description, assignedTo, deadline).",
+  "clarifyPrompt": "Please provide all relevant budget files and policy documents in supported formats, specify the project ID, and indicate any collaborator assignments or deadlines for negotiation tasks.",
+  "finalizePrompt": "Review the consolidated budget and task list for completeness and accuracy. Confirm upload success and readiness to begin negotiation.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Budget Negotiation Facilitator",
+      "niche": {
+        "role": "Academic Research Grant Finance Coordinator",
+        "scenario": "Negotiating budget allocations and justifications across multiple collaborating institutions to finalize a joint grant proposal budget"
+      },
+      "problem": "Current budget negotiation workflows among multi-institutional academic grant teams are manual, fragmented, and inefficient. Coordinators struggle to reconcile conflicting budget line items, institutional cost policies, and funder restrictions while ensuring transparent communication and consensus among collaborators.",
+      "inputs": [
+        "Multiple institutional draft budget spreadsheets (CSV, Excel)",
+        "Institutional indirect cost rate policies and constraints",
+        "Funder budget guidelines and restrictions",
+        "Collaborator comments and negotiation proposals",
+        "Historical budget negotiation communications (optional)"
+      ],
+      "outputs": [
+        "Consolidated, conflict-annotated multi-institutional budget draft",
+        "Automated detection and explanation of budget conflicts and policy violations",
+        "Negotiation task list with collaborator assignments and deadlines",
+        "Version-controlled budget revision history with change summaries",
+        "Negotiation meeting briefs summarizing key issues, progress, and next steps"
+      ],
+      "whyItWins": [
+        "Integrates budget drafts, policy rules, and collaborator inputs into a single negotiation workspace, reducing email and document chaos",
+        "Automated conflict detection and clear explanations reduce manual error-prone review and speed consensus building",
+        "Supports ongoing negotiation with version control and task tracking, increasing transparency and accountability",
+        "Scales easily from initial lightweight conflict detection to a full-featured multi-page app with collaboration, negotiation workflows, and compliance tracking",
+        "Fills a gap between static budget consolidators and complex project management tools by focusing on the unique needs of academic multi-institution grant budget negotiation"
+      ],
+      "upgradePath": {
+        "today": "Provide a lightweight single-page app to upload multiple budget drafts and funder/institutional policies that outputs a consolidated budget with flagged conflicts and a basic negotiation task list.",
+        "in90Days": "Add version control, collaborator comment threads, and exportable negotiation briefs. Integrate indirect cost policy parsing and funder compliance checklists with alerts.",
+        "in12Months": "Develop a full multi-page negotiation platform with real-time collaboration, integrated communication tools, detailed compliance dashboards, automated audit trail generation, and AI-assisted budget revision suggestions based on negotiation history and funder rules."
+      },
+      "riskNotes": [
+        "Must carefully avoid providing legal or financial advice; focus is on facilitation and flagging, not decision-making.",
+        "Sensitive budget and collaborator data require robust security and privacy safeguards.",
+        "Complex funder and institutional policies require continuous updates and validation to maintain accuracy.",
+        "User adoption depends on seamless integration with existing tools and workflows to avoid duplication."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative negotiation platform designed for academic research grant finance coordinators to consolidate multi-institutional budget drafts, detect conflicts and policy violations, track negotiation tasks, and maintain version-controlled budget revisions with clear communication and compliance support.",
+      "primaryUser": "Academic Research Grant Finance Coordinator",
+      "successMetrics": [
+        "Reduction in time spent reconciling multi-institutional budgets",
+        "Increase in user adoption and active collaboration among grant teams",
+        "Decrease in budget conflicts and policy violations at submission",
+        "Number of negotiation tasks completed on time",
+        "User satisfaction with negotiation transparency and communication"
+      ],
+      "components": [
+        {
+          "id": "ui-budget-negotiation",
+          "name": "Budget Negotiation UI",
+          "type": "ui",
+          "responsibility": "Provide multi-page user interface for uploading budgets and policies, viewing consolidated budgets with conflict annotations, managing negotiation tasks, commenting, version history, and exporting briefs.",
+          "dependsOn": [
+            "api-budget-management",
+            "api-task-management",
+            "api-comment-management",
+            "data-budget",
+            "data-task",
+            "data-comment"
+          ],
+          "notes": [
+            "Pages include upload, consolidated budget view, task list, comments, version history, and export briefs.",
+            "Supports authenticated user sessions and role-based access control."
+          ]
+        },
+        {
+          "id": "api-budget-management",
+          "name": "Budget Management API",
+          "type": "api",
+          "responsibility": "Handle upload, parsing, consolidation, conflict detection, policy validation, version control, and retrieval of multi-institutional budgets and related metadata.",
+          "dependsOn": [
+            "data-budget",
+            "integration-policy-parser",
+            "job-conflict-detection"
+          ],
+          "notes": [
+            "Implements business logic to merge budgets and apply institutional/funder rules.",
+            "Supports versioning and change summaries.",
+            "Exposes endpoints for budget retrieval and updates."
+          ]
+        },
+        {
+          "id": "api-task-management",
+          "name": "Negotiation Task API",
+          "type": "api",
+          "responsibility": "Manage negotiation task creation, assignment, deadlines, status updates, and notifications.",
+          "dependsOn": [
+            "data-task"
+          ],
+          "notes": [
+            "Supports task lifecycle tracking and collaborator assignments.",
+            "Integrates with UI task list and notification jobs."
+          ]
+        },
+        {
+          "id": "api-comment-management",
+          "name": "Comment and Communication API",
+          "type": "api",
+          "responsibility": "Support threaded comments and negotiation proposals linked to budget line items and tasks.",
+          "dependsOn": [
+            "data-comment"
+          ],
+          "notes": [
+            "Enables transparent communication and audit trails.",
+            "Supports notifications and comment history."
+          ]
+        },
+        {
+          "id": "data-budget",
+          "name": "Budget Data Store",
+          "type": "data",
+          "responsibility": "Persist uploaded budget drafts, consolidated budgets, version histories, conflict annotations, and policy metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Stores structured budget line items with institutional and funder metadata.",
+            "Includes audit trails for changes and conflict flags."
+          ]
+        },
+        {
+          "id": "data-task",
+          "name": "Task Data Store",
+          "type": "data",
+          "responsibility": "Persist negotiation tasks, assignments, statuses, and deadlines.",
+          "dependsOn": [],
+          "notes": [
+            "Supports querying by user and project.",
+            "Tracks task completion and overdue status."
+          ]
+        },
+        {
+          "id": "data-comment",
+          "name": "Comment Data Store",
+          "type": "data",
+          "responsibility": "Persist collaborator comments, threads, and negotiation proposals linked to budgets and tasks.",
+          "dependsOn": [],
+          "notes": [
+            "Supports versioning and user attribution.",
+            "Enables retrieval for audit and transparency."
+          ]
+        },
+        {
+          "id": "integration-policy-parser",
+          "name": "Policy Parsing and Validation Integration",
+          "type": "integration",
+          "responsibility": "Parse institutional indirect cost rate policies and funder budget guidelines; provide structured rules for validation and conflict detection.",
+          "dependsOn": [],
+          "notes": [
+            "Supports updates to policy rules without redeploying core app.",
+            "May integrate external policy repositories or manual admin inputs."
+          ]
+        },
+        {
+          "id": "job-conflict-detection",
+          "name": "Conflict Detection Background Job",
+          "type": "job",
+          "responsibility": "Periodically or on-demand analyze consolidated budgets against policies to detect conflicts, violations, and generate explanations.",
+          "dependsOn": [
+            "data-budget",
+            "integration-policy-parser"
+          ],
+          "notes": [
+            "Runs asynchronously to avoid UI blocking.",
+            "Triggers notifications or task creation for detected issues."
+          ]
+        },
+        {
+          "id": "job-notification-dispatcher",
+          "name": "Notification Dispatcher Job",
+          "type": "job",
+          "responsibility": "Send notifications to collaborators for task assignments, deadlines, new comments, and detected conflicts.",
+          "dependsOn": [
+            "data-task",
+            "data-comment",
+            "data-budget"
+          ],
+          "notes": [
+            "Supports email and in-app notifications.",
+            "Ensures timely updates to maintain negotiation momentum."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Budget",
+          "purpose": "Store uploaded budget drafts, consolidated budgets, version histories, and conflict annotations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lineItems",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "conflictAnnotations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "policyViolations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "changeSummary",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "uploadedByUserId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "institutionId",
+            "versionNumber"
+          ]
+        },
+        {
+          "name": "Task",
+          "purpose": "Track negotiation tasks with assignments, deadlines, and status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "assignedToUserId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "deadline",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "relatedBudgetVersion",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "assignedToUserId",
+            "status"
+          ]
+        },
+        {
+          "name": "Comment",
+          "purpose": "Store threaded comments and negotiation proposals linked to budgets and tasks.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "parentCommentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "linkedBudgetLineItemId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "linkedTaskId",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "authorUserId",
+            "parentCommentId"
+          ]
+        },
+        {
+          "name": "PolicyRule",
+          "purpose": "Represent parsed institutional and funder policy rules for validation.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "policyType",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "ruleDefinition",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "policyType",
+            "effectiveDate"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Budgets and Policies",
+          "purpose": "Allow users to upload multiple institutional budget drafts and policy documents for consolidation.",
+          "inputs": [
+            "Budget files (CSV, Excel)",
+            "Policy files (JSON, CSV, or manual input)"
+          ],
+          "outputs": [
+            "Upload status",
+            "Parsed budget preview",
+            "Policy parsing results"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/budget/consolidated",
+          "title": "Consolidated Budget View",
+          "purpose": "Display merged multi-institutional budget with conflict annotations and policy violation highlights.",
+          "inputs": [
+            "Selected project",
+            "Budget version"
+          ],
+          "outputs": [
+            "Consolidated budget table",
+            "Conflict flags",
+            "Policy violation explanations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/tasks",
+          "title": "Negotiation Task List",
+          "purpose": "Manage and track negotiation tasks with assignments and deadlines.",
+          "inputs": [
+            "Project selection",
+            "Task filters"
+          ],
+          "outputs": [
+            "Task list",
+            "Task details",
+            "Status updates"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/comments",
+          "title": "Comments and Negotiation Proposals",
+          "purpose": "View and participate in threaded discussions linked to budget items and tasks.",
+          "inputs": [
+            "Project",
+            "Budget line item or task context"
+          ],
+          "outputs": [
+            "Comment threads",
+            "New comment input"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/history",
+          "title": "Budget Version History",
+          "purpose": "Review previous budget versions, change summaries, and audit trails.",
+          "inputs": [
+            "Project",
+            "Budget version selector"
+          ],
+          "outputs": [
+            "Version list",
+            "Change summaries",
+            "Download options"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/export",
+          "title": "Export Negotiation Briefs",
+          "purpose": "Generate and download meeting briefs summarizing key issues, progress, and next steps.",
+          "inputs": [
+            "Project",
+            "Budget version",
+            "Task status filters"
+          ],
+          "outputs": [
+            "Exported PDF or document"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/budget/upload",
+          "method": "POST",
+          "purpose": "Upload budget drafts and policy files for parsing and consolidation.",
+          "requestShape": "Multipart form-data with files and metadata",
+          "responseShape": "{ success: boolean, parsedBudgetPreview: json, errors: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budget/consolidated",
+          "method": "GET",
+          "purpose": "Retrieve consolidated budget with conflict and policy violation annotations.",
+          "requestShape": "{ projectId: string, versionNumber?: number }",
+          "responseShape": "{ consolidatedBudget: json, conflicts: json, policyViolations: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "GET",
+          "purpose": "Fetch negotiation tasks for a project with optional filters.",
+          "requestShape": "{ projectId: string, assignedToUserId?: string, status?: string }",
+          "responseShape": "{ tasks: Task[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/tasks",
+          "method": "POST",
+          "purpose": "Create or update a negotiation task.",
+          "requestShape": "{ task: Task }",
+          "responseShape": "{ success: boolean, taskId?: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "GET",
+          "purpose": "Retrieve comments linked to a project, budget line item, or task.",
+          "requestShape": "{ projectId: string, linkedBudgetLineItemId?: string, linkedTaskId?: string }",
+          "responseShape": "{ comments: Comment[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/comments",
+          "method": "POST",
+          "purpose": "Post a new comment or reply in a thread.",
+          "requestShape": "{ comment: Comment }",
+          "responseShape": "{ success: boolean, commentId?: string, errors?: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budget/versions",
+          "method": "GET",
+          "purpose": "List budget versions and change summaries for a project.",
+          "requestShape": "{ projectId: string }",
+          "responseShape": "{ versions: { versionNumber: number, changeSummary: string, uploadDate: date }[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export/brief",
+          "method": "POST",
+          "purpose": "Generate negotiation meeting briefs for download.",
+          "requestShape": "{ projectId: string, versionNumber: number, filters?: json }",
+          "responseShape": "{ success: boolean, documentUrl?: string, errors?: string[] }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Conflict Detection Job",
+          "trigger": "On budget upload or version update",
+          "purpose": "Analyze consolidated budgets to detect conflicts and policy violations, update annotations, and notify relevant users."
+        },
+        {
+          "name": "Notification Dispatcher",
+          "trigger": "On task assignment, deadline approaching, new comments, or conflict detection",
+          "purpose": "Send timely notifications to collaborators to maintain negotiation progress."
+        }
+      ],
+      "edgeCases": [
+        "Conflicting budget line items with ambiguous resolution paths requiring manual override.",
+        "Policies that are incomplete, outdated, or contradictory leading to false positives/negatives in conflict detection.",
+        "Large budget files causing performance or parsing failures.",
+        "Collaborators uploading incompatible or corrupted budget files.",
+        "Users with partial or revoked access attempting unauthorized data views or edits.",
+        "Network interruptions during upload or collaboration sessions.",
+        "Simultaneous edits causing version conflicts or race conditions.",
+        "Handling optional historical negotiation communications with inconsistent formats."
+      ],
+      "nonGoals": [
+        "Providing legal or financial advice or making decisions on budget approvals.",
+        "Replacing comprehensive project management or communication platforms.",
+        "Automating budget revision suggestions beyond basic AI-assisted recommendations in future upgrades.",
+        "Supporting funder-specific submission portals or direct grant application submissions.",
+        "Handling non-academic or non-grant budget negotiation scenarios."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages requiring authorization.",
+        "On /upload page, user uploads budget and policy files; UI sends multipart form-data POST to /api/budget/upload.",
+        "Budget Management API parses files, stores drafts in Budget Data Store, invokes Policy Parsing Integration to parse policies, returns parsed preview and errors to UI.",
+        "Conflict Detection Job triggers asynchronously on new budget upload/version update, reads consolidated budgets and policies, detects conflicts and violations, updates Budget Data Store annotations, and triggers Notification Dispatcher.",
+        "User navigates to /budget/consolidated; UI requests consolidated budget data via GET /api/budget/consolidated with projectId and optional versionNumber; API returns consolidated budget JSON with conflict and policy violation annotations.",
+        "User manages negotiation tasks on /tasks page; UI fetches tasks with GET /api/tasks filtered by project or user; user creates/updates tasks via POST /api/tasks; Task API persists changes in Task Data Store.",
+        "User views and adds comments on /comments page; UI fetches comments via GET /api/comments filtered by project and optionally linkedBudgetLineItemId or linkedTaskId; posting new comments via POST /api/comments; Comment API persists in Comment Data Store.",
+        "User reviews budget version history on /history; UI fetches versions via GET /api/budget/versions with projectId; API returns version list with summaries.",
+        "User exports negotiation briefs on /export; UI sends POST /api/export/brief with projectId, versionNumber, and filters; API generates document, returns URL for download.",
+        "Notification Dispatcher Job listens for triggers (task assignment, deadlines, new comments, conflict detection) and sends email/in-app notifications to relevant users."
+      ],
+      "validationRules": [
+        "Authentication required for all UI pages and API routes; reject unauthorized requests with 401.",
+        "Budget upload files must be CSV or Excel for budgets; JSON, CSV, or manual input for policies; reject unsupported formats with clear error messages.",
+        "Uploaded budgets must include required fields: projectId, lineItems array, versionNumber, uploadedByUserId; validate data types and presence.",
+        "Policy files must parse into valid PolicyRule JSON structures; invalid or incomplete policies should return warnings but allow upload.",
+        "Budget consolidation requires consistent projectId and versionNumber sequencing; reject duplicate versionNumbers per project.",
+        "Task creation/update requires non-empty title, valid projectId, and status from predefined enum (e.g., 'open', 'in-progress', 'completed'); assignedToUserId must reference existing user or be null.",
+        "Comments require non-empty content, valid projectId, authorUserId; parentCommentId if present must reference existing comment in same project.",
+        "API input parameters must be validated for type and presence; e.g., projectId required for budget retrieval and task queries.",
+        "VersionNumber in budget retrieval defaults to latest if omitted; must be positive integer if provided.",
+        "Export brief filters must be valid JSON and conform to expected schema; reject malformed filters.",
+        "Conflict Detection Job input data must be consistent and complete; handle missing policies gracefully.",
+        "All IDs (budget, task, comment, policy) must be valid UUID strings."
+      ],
+      "errorHandling": [
+        "Return HTTP 401 Unauthorized for unauthenticated or unauthorized access attempts.",
+        "Return HTTP 400 Bad Request with detailed error messages for validation failures on inputs.",
+        "Return HTTP 415 Unsupported Media Type for invalid upload file formats.",
+        "Return HTTP 404 Not Found when requested resources (project, budget version, task, comment) do not exist or user lacks access.",
+        "On parsing errors during upload, return partial success with parsed preview and list of errors/warnings.",
+        "Handle large file uploads with streaming and size limits; return 413 Payload Too Large if exceeded.",
+        "Background jobs log errors and retry transient failures; notify admins on persistent failures.",
+        "Simultaneous edits causing version conflicts return 409 Conflict with instructions to refresh and retry.",
+        "Network interruptions during upload or API calls return appropriate HTTP error codes; UI should support retry mechanisms.",
+        "API responses include success boolean and errors array where applicable; clients must handle partial failures gracefully.",
+        "Gracefully handle missing or outdated policies in conflict detection by flagging possible incomplete validation.",
+        "All error responses include machine-readable error codes and human-readable messages for UI display."
+      ],
+      "securityNotes": [
+        "All API routes require authenticated user sessions; enforce role-based access control to restrict actions (e.g., upload, task assignment).",
+        "Validate and sanitize all user inputs to prevent injection attacks (SQL, XSS).",
+        "Use secure file upload handling to prevent malicious file execution; scan uploaded files if possible.",
+        "Ensure that users can only access data for projects they are authorized to view or edit.",
+        "Implement rate limiting on API endpoints to prevent abuse.",
+        "Store sensitive data encrypted at rest where applicable (e.g., user identifiers).",
+        "Use HTTPS for all client-server communications.",
+        "Audit trails for budget changes, task updates, and comments must record user identity and timestamps.",
+        "Background jobs must validate data integrity and user permissions before making changes or sending notifications.",
+        "Implement CSRF protection on state-changing API endpoints.",
+        "Log security-relevant events and monitor for suspicious activity."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with valid budget and policy files",
+          "when": "The user uploads files and submits the form",
+          "then": "The system parses files, stores budget drafts and policies, returns a parsed preview with no errors, and triggers conflict detection job"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user requests consolidated budget for a project and version",
+          "when": "The user accesses /budget/consolidated page",
+          "then": "The UI displays merged budget line items with conflict flags and policy violation explanations matching the latest consolidated data"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user creates a new negotiation task with valid data",
+          "when": "The user submits the task creation form",
+          "then": "The task is saved in the Task Data Store, the API returns success with taskId, and the task appears in the task list"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user posts a comment linked to a budget line item",
+          "when": "The comment is submitted via the comments UI",
+          "then": "The comment is persisted with correct linkage, visible in the comment thread, and notifications are dispatched to relevant collaborators"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user requests budget version history for a project",
+          "when": "The user accesses /history page",
+          "then": "The UI displays a list of budget versions with change summaries and upload dates"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user requests to export negotiation briefs with valid filters",
+          "when": "The user submits export request",
+          "then": "The system generates a downloadable document URL and returns success; the UI allows downloading the brief"
+        },
+        {
+          "id": "AT-007",
+          "given": "An unauthenticated user attempts to access any protected page or API",
+          "when": "The request is made",
+          "then": "The system returns HTTP 401 Unauthorized and redirects UI to login"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads an unsupported file format",
+          "when": "The upload is submitted",
+          "then": "The API returns HTTP 415 with an error message indicating unsupported format"
+        },
+        {
+          "id": "AT-009",
+          "given": "Two users attempt simultaneous edits on the same task",
+          "when": "Both submit updates concurrently",
+          "then": "One update succeeds; the other receives a 409 Conflict error prompting refresh"
+        },
+        {
+          "id": "AT-010",
+          "given": "Conflict Detection Job runs on a newly uploaded budget version",
+          "when": "Conflicts or policy violations are detected",
+          "then": "Annotations are updated in the Budget Data Store and notifications are sent to assigned users"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Budget, Task, Comment, PolicyRule",
+        "Implement Policy Parsing Integration to parse and store policy rules",
+        "Develop Budget Management API endpoints for upload, consolidation, version retrieval",
+        "Implement Conflict Detection Background Job triggered on budget upload/version update",
+        "Develop Task Management API endpoints for task CRUD operations",
+        "Develop Comment Management API endpoints for threaded comments",
+        "Implement Notification Dispatcher Job for sending notifications",
+        "Build Next.js UI pages: /upload, /budget/consolidated, /tasks, /comments, /history, /export",
+        "Integrate UI with APIs including authentication and role-based access control",
+        "Implement validation and error handling in APIs and UI",
+        "Add acceptance tests and perform end-to-end testing",
+        "Deploy background jobs and monitor for performance and errors"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/budget/consolidated",
+          "/tasks",
+          "/comments",
+          "/history",
+          "/export"
+        ],
+        "apiFilesToCreate": [
+          "api/budget/upload.ts",
+          "api/budget/consolidated.ts",
+          "api/budget/versions.ts",
+          "api/tasks/index.ts",
+          "api/comments/index.ts",
+          "api/export/brief.ts"
+        ],
+        "prismaModelsToAdd": [
+          "Budget",
+          "Task",
+          "Comment",
+          "PolicyRule"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints and refine functional and non-functional requirements for the budget negotiation facilitator.",
+        "promptTemplate": "You are the planner. Review the current idea and blueprint:\n\n{{IDEA}}\n\n{{BLUEPRINT}}\n\nAsk the user detailed questions to clarify any missing constraints, edge cases, or priority features before development."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design and finalize UI pages, API routes, and data models for the multi-page negotiation platform.",
+        "promptTemplate": "You are the architect. Given the refined requirements:\n\n{{REFINED_IDEA}}\n\n{{BLUEPRINT}}\n\nPropose detailed UI page definitions, data models, and API endpoints needed to implement the platform. Include validation and security considerations."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial source code stubs for UI pages and API routes to scaffold development.",
+        "promptTemplate": "You are the builder. Using the finalized architecture:\n\n{{ARCHITECTURE}}\n\nGenerate boilerplate code stubs for Next.js pages and API routes, including input validation and authentication scaffolding."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate UI pages with backend APIs and database models ensuring secure, validated end-to-end workflows.",
+        "promptTemplate": "You are the integrator. Given the page stubs and data models:\n\n{{BUILDER_OUTPUT}}\n\nImplement integrations connecting UI components to API endpoints and persist data in the database. Ensure error handling, validation, and authorization are enforced."
+      }
+    ]
+  }
+}

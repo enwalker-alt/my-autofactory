@@ -1,0 +1,771 @@
+{
+  "slug": "academic-lab-reagent-expiry-usage-forecast",
+  "title": "Academic Research Lab Reagent Expiry & Usage Forecast",
+  "description": "Single-page tool for academic research lab managers to upload reagent inventory and usage logs to receive expiry risk alerts, depletion forecasts, and reorder suggestions to minimize waste and avoid stockouts.",
+  "inputLabel": "Paste reagent inventory CSV data and usage logs (CSV or text). Optionally upload CSV files below.",
+  "outputLabel": "Expiry risk alerts, usage depletion forecasts, and reorder recommendations",
+  "systemPrompt": "You are an assistant specialized in academic research lab reagent inventory management. Accept reagent batch inventory and reagent usage logs in CSV or plain text format. Validate inputs for required fields: batch IDs, reagent IDs, quantities, expiry dates (future), usage quantities, and usage dates (not future). Reject any inputs with invalid or missing required data. Use storage conditions if provided to adjust expiry risk assessment. Forecast reagent depletion based on usage logs and inventory batches. Provide prioritized expiry risk alerts per batch and reorder recommendations balancing risk and stockout avoidance. Output clear, concise plain text summaries. Refuse any requests unrelated to reagent inventory or usage forecasting. Enforce safe handling of sensitive lab data. Do not make reorder recommendations that conflict with lab safety or procurement policies. Only accept inputs in CSV or JSON format as specified. If input is malformed or disallowed, respond with a clear error message. Output only plain text by default; if structured-output feature enabled, provide JSON with expiryRiskAlerts, usageForecasts, and reorderRecommendations arrays.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic expiry risk alert",
+      "prompt": "Analyze the uploaded reagent inventory CSV and usage logs CSV to identify reagent batches at risk of expiry soon. Provide prioritized alerts and basic reorder suggestions."
+    },
+    {
+      "label": "Usage depletion forecast",
+      "prompt": "Using the provided reagent inventory and historical usage logs, forecast reagent depletion timelines per batch and suggest reorder timing to avoid stockouts."
+    },
+    {
+      "label": "Comprehensive expiry and reorder analysis",
+      "prompt": "Combine reagent inventory, usage logs, and storage conditions data to produce detailed expiry risk alerts, usage depletion forecasts, and optimized reorder recommendations."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output enabled, output JSON with keys: expiryRiskAlerts (array of {batchId, reagentId, riskScore, expiryDate, alertMessage}), usageForecasts (array of {reagentId, batchId, forecastedDepletionDate, confidenceInterval}), reorderRecommendations (array of {reagentId, batchId, recommendedQuantity, recommendedOrderDate, rationale}).",
+  "clarifyPrompt": "Please provide reagent inventory data (CSV or JSON) including batch IDs, reagent IDs, quantities, expiry dates, and optionally storage conditions. Also provide historical usage logs per reagent with usage dates and quantities. Upload CSV files if needed. Ensure data is valid and complete for accurate forecasting.",
+  "finalizePrompt": "Generate expiry risk alerts and usage depletion forecasts based on the uploaded reagent inventory and usage logs. Provide clear reorder recommendations balancing expiry risk and stockout avoidance. Output results in concise plain text or structured JSON if requested.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Lab Reagent Expiry & Usage Forecast System",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Managing reagent inventory with multiple expiration dates, usage rates, and batch variability to minimize waste and ensure timely reorder"
+      },
+      "problem": "Lab managers need to track reagent expiry dates across multiple batches with varying usage rates and storage conditions, forecast future inventory depletion, and optimize reorder timing to reduce waste and avoid research disruption. Existing tools mostly focus on static inventory lists without predictive expiry risk or usage forecasting, leaving managers to manually combine data from usage logs and purchase records.",
+      "inputs": [
+        "Reagent inventory list with batch IDs, quantities, and expiry dates",
+        "Historical reagent usage logs per project or experiment",
+        "Storage condition metadata (e.g., temperature, humidity)",
+        "Upcoming experiment schedules requiring reagent usage"
+      ],
+      "outputs": [
+        "Dynamic reagent expiry risk dashboard with prioritized alerts",
+        "Predictive usage depletion forecasts per reagent and batch",
+        "Optimized reorder schedule recommendations balancing expiry risk and stockout avoidance",
+        "Waste reduction impact summaries and reorder cost tradeoff analyses"
+      ],
+      "whyItWins": [
+        "Combines inventory, usage, and storage condition data for actionable expiry risk insights",
+        "Enables proactive reorder planning to reduce costly reagent waste",
+        "Supports multi-project usage forecasting uniquely tailored to academic labs",
+        "Lightweight start with spreadsheet uploads and manual inputs, with clear path to integrated app"
+      ],
+      "upgradePath": {
+        "today": "Single-page web app accepting inventory CSV uploads and usage logs with basic expiry risk alerts and reorder suggestions",
+        "in90Days": "Multi-page system with experiment schedule integration, interactive dashboards, and batch-level usage forecasting incorporating storage condition adjustments",
+        "in12Months": "Full lab inventory management platform with automated data sync from lab management software, predictive analytics for reagent lifecycle, collaborative reorder workflows, and cost optimization modeling"
+      },
+      "riskNotes": [
+        "Sensitive lab inventory data requires secure handling and strict access controls",
+        "Accurate usage forecasting depends on quality and completeness of input logs",
+        "Must avoid recommending reorder actions that contravene lab safety or procurement policies"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A reagent inventory management system for academic research labs that tracks batch-level expiry, usage rates, and storage conditions to forecast depletion and optimize reorder timing, reducing waste and avoiding stockouts.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Reduction in reagent waste due to expired stock",
+        "Accuracy of usage depletion forecasts vs actual consumption",
+        "Timeliness and appropriateness of reorder recommendations",
+        "User adoption and engagement with expiry risk dashboards",
+        "Reduction in research disruption due to reagent stockouts"
+      ],
+      "components": [
+        {
+          "id": "ui-inventory-management",
+          "name": "Inventory Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload, view, and edit reagent inventory batches including quantities, expiry dates, and storage conditions.",
+          "dependsOn": [
+            "api-inventory",
+            "data-inventory"
+          ],
+          "notes": [
+            "Supports CSV upload and manual entry.",
+            "Includes validation for batch expiry date formats and quantity consistency."
+          ]
+        },
+        {
+          "id": "ui-usage-logs",
+          "name": "Usage Logs UI",
+          "type": "ui",
+          "responsibility": "Enable input and visualization of historical reagent usage per project or experiment, supporting manual entry and CSV upload.",
+          "dependsOn": [
+            "api-usage",
+            "data-usage"
+          ],
+          "notes": [
+            "Supports filtering by project and date range.",
+            "Validates usage quantities against inventory."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Expiry Risk & Forecast Dashboard",
+          "type": "ui",
+          "responsibility": "Display dynamic expiry risk alerts, usage depletion forecasts, reorder recommendations, and waste impact summaries.",
+          "dependsOn": [
+            "api-forecast",
+            "api-reorder",
+            "data-inventory",
+            "data-usage"
+          ],
+          "notes": [
+            "Interactive charts for batch-level expiry risk and usage trends.",
+            "Prioritized alerts based on risk scoring algorithms."
+          ]
+        },
+        {
+          "id": "api-inventory",
+          "name": "Inventory API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations on reagent inventory batches and storage condition metadata.",
+          "dependsOn": [
+            "data-inventory"
+          ],
+          "notes": [
+            "Enforces data validation and access control.",
+            "Supports batch updates for CSV imports."
+          ]
+        },
+        {
+          "id": "api-usage",
+          "name": "Usage Logs API",
+          "type": "api",
+          "responsibility": "Manage reagent usage log data including creation, retrieval, and aggregation for forecasting.",
+          "dependsOn": [
+            "data-usage"
+          ],
+          "notes": [
+            "Validates usage entries against inventory availability.",
+            "Supports querying usage by project and date."
+          ]
+        },
+        {
+          "id": "api-forecast",
+          "name": "Forecasting API",
+          "type": "api",
+          "responsibility": "Compute reagent depletion forecasts per batch and reagent, adjusting for storage conditions and upcoming experiment schedules.",
+          "dependsOn": [
+            "data-inventory",
+            "data-usage",
+            "data-experiment-schedule"
+          ],
+          "notes": [
+            "Implements predictive models that can evolve from simple averages to advanced analytics.",
+            "Handles incomplete or inconsistent usage data gracefully."
+          ]
+        },
+        {
+          "id": "api-reorder",
+          "name": "Reorder Recommendation API",
+          "type": "api",
+          "responsibility": "Generate optimized reorder schedules balancing expiry risk, stockout avoidance, and cost tradeoffs.",
+          "dependsOn": [
+            "api-forecast",
+            "data-inventory",
+            "data-policies"
+          ],
+          "notes": [
+            "Incorporates lab safety and procurement policy constraints.",
+            "Provides actionable reorder alerts and justifications."
+          ]
+        },
+        {
+          "id": "data-inventory",
+          "name": "Inventory Data Store",
+          "type": "data",
+          "responsibility": "Persist reagent batches, quantities, expiry dates, and storage condition metadata.",
+          "dependsOn": [],
+          "notes": [
+            "Supports indexing by reagent and batch IDs for fast lookup.",
+            "Stores historical inventory snapshots for audit and trend analysis."
+          ]
+        },
+        {
+          "id": "data-usage",
+          "name": "Usage Logs Data Store",
+          "type": "data",
+          "responsibility": "Persist historical reagent usage records linked to projects and experiments.",
+          "dependsOn": [],
+          "notes": [
+            "Supports time-series queries and aggregation.",
+            "Includes metadata on data source and entry method."
+          ]
+        },
+        {
+          "id": "data-experiment-schedule",
+          "name": "Experiment Schedule Data Store",
+          "type": "data",
+          "responsibility": "Store upcoming experiment schedules with reagent usage estimates for forecasting adjustments.",
+          "dependsOn": [],
+          "notes": [
+            "Optional in early versions, critical for mid-term upgrade path.",
+            "Supports integration with external lab management systems."
+          ]
+        },
+        {
+          "id": "data-policies",
+          "name": "Lab Policies Data Store",
+          "type": "data",
+          "responsibility": "Persist lab safety and procurement policies to enforce reorder constraints.",
+          "dependsOn": [],
+          "notes": [
+            "Allows configurable rules for reorder thresholds and approvals.",
+            "Supports audit trail for policy changes."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "ReagentBatch",
+          "purpose": "Represents a batch of reagent with quantity, expiry, and storage metadata.",
+          "fields": [
+            {
+              "name": "batchId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reagentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "quantity",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "expiryDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "storageConditions",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "receivedDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "batchId",
+            "reagentId",
+            "expiryDate"
+          ]
+        },
+        {
+          "name": "UsageLog",
+          "purpose": "Records reagent usage events linked to projects or experiments.",
+          "fields": [
+            {
+              "name": "usageId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reagentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "batchId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "quantityUsed",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "experimentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "usageDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "enteredBy",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "usageId",
+            "reagentId",
+            "projectId",
+            "usageDate"
+          ]
+        },
+        {
+          "name": "ExperimentSchedule",
+          "purpose": "Stores planned experiments with estimated reagent usage for forecasting.",
+          "fields": [
+            {
+              "name": "experimentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "scheduledDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "reagentUsageEstimates",
+              "type": "json",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "experimentId",
+            "projectId",
+            "scheduledDate"
+          ]
+        },
+        {
+          "name": "LabPolicy",
+          "purpose": "Defines lab safety and procurement policies affecting reorder recommendations.",
+          "fields": [
+            {
+              "name": "policyId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "policyName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "rules",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "policyId",
+            "policyName"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/inventory",
+          "title": "Inventory Management",
+          "purpose": "Upload, view, and manage reagent inventory batches and storage conditions.",
+          "inputs": [
+            "CSV upload",
+            "manual batch entry",
+            "storage condition forms"
+          ],
+          "outputs": [
+            "Inventory list",
+            "validation errors",
+            "batch details"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/usage-logs",
+          "title": "Usage Logs",
+          "purpose": "Input and review historical reagent usage by project and experiment.",
+          "inputs": [
+            "CSV upload",
+            "manual usage entry",
+            "filters by project/date"
+          ],
+          "outputs": [
+            "Usage records",
+            "usage summaries",
+            "validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Expiry Risk & Forecast Dashboard",
+          "purpose": "Visualize expiry risks, usage depletion forecasts, reorder recommendations, and waste impact.",
+          "inputs": [
+            "Filter by reagent/project",
+            "date range selectors"
+          ],
+          "outputs": [
+            "Risk alerts",
+            "forecast charts",
+            "reorder schedules",
+            "impact summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/experiment-schedule",
+          "title": "Experiment Schedule",
+          "purpose": "Manage upcoming experiment schedules with reagent usage estimates for forecasting.",
+          "inputs": [
+            "Manual schedule entry",
+            "CSV upload",
+            "integration sync"
+          ],
+          "outputs": [
+            "Experiment list",
+            "usage estimates",
+            "schedule validation"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/settings/policies",
+          "title": "Lab Policies",
+          "purpose": "Configure lab safety and procurement policies affecting reorder recommendations.",
+          "inputs": [
+            "Policy rule editor",
+            "effective dates"
+          ],
+          "outputs": [
+            "Policy list",
+            "validation errors"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/inventory",
+          "method": "POST",
+          "purpose": "Create or update reagent inventory batches.",
+          "requestShape": "JSON array of ReagentBatch objects",
+          "responseShape": "Success status and validation error details",
+          "auth": "user"
+        },
+        {
+          "route": "/api/inventory",
+          "method": "GET",
+          "purpose": "Retrieve reagent inventory batches with optional filters.",
+          "requestShape": "Query params: reagentId, batchId, expiryDate range",
+          "responseShape": "JSON array of ReagentBatch objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/usage",
+          "method": "POST",
+          "purpose": "Add usage log entries.",
+          "requestShape": "JSON array of UsageLog objects",
+          "responseShape": "Success status and validation error details",
+          "auth": "user"
+        },
+        {
+          "route": "/api/usage",
+          "method": "GET",
+          "purpose": "Query usage logs by reagent, project, or date range.",
+          "requestShape": "Query params: reagentId, projectId, date range",
+          "responseShape": "JSON array of UsageLog objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/forecast",
+          "method": "GET",
+          "purpose": "Get depletion forecasts and expiry risk scores for reagents and batches.",
+          "requestShape": "Query params: reagentId, batchId, date range",
+          "responseShape": "JSON with forecasted depletion, risk scores, and confidence intervals",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reorder",
+          "method": "GET",
+          "purpose": "Retrieve optimized reorder recommendations considering policies and forecasts.",
+          "requestShape": "Query params: reagentId, batchId",
+          "responseShape": "JSON with reorder quantities, timing, and rationale",
+          "auth": "user"
+        },
+        {
+          "route": "/api/experiment-schedule",
+          "method": "POST",
+          "purpose": "Create or update experiment schedules with reagent usage estimates.",
+          "requestShape": "JSON array of ExperimentSchedule objects",
+          "responseShape": "Success status and validation error details",
+          "auth": "user"
+        },
+        {
+          "route": "/api/experiment-schedule",
+          "method": "GET",
+          "purpose": "Retrieve experiment schedules with filters.",
+          "requestShape": "Query params: projectId, date range",
+          "responseShape": "JSON array of ExperimentSchedule objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/policies",
+          "method": "POST",
+          "purpose": "Create or update lab policies.",
+          "requestShape": "JSON array of LabPolicy objects",
+          "responseShape": "Success status and validation error details",
+          "auth": "user"
+        },
+        {
+          "route": "/api/policies",
+          "method": "GET",
+          "purpose": "Retrieve lab policies.",
+          "requestShape": "None",
+          "responseShape": "JSON array of LabPolicy objects",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "ExpiryRiskRecalculation",
+          "trigger": "Scheduled daily",
+          "purpose": "Recalculate expiry risk scores and update alerts based on latest inventory and usage data."
+        },
+        {
+          "name": "ForecastUpdateJob",
+          "trigger": "Scheduled daily or on data update",
+          "purpose": "Update usage depletion forecasts incorporating new usage logs and experiment schedules."
+        },
+        {
+          "name": "ReorderOptimizationJob",
+          "trigger": "Scheduled daily or on forecast update",
+          "purpose": "Generate and refresh reorder recommendations considering updated forecasts and policies."
+        }
+      ],
+      "edgeCases": [
+        "Incomplete or missing usage logs causing forecast uncertainty.",
+        "Inventory batches with expired dates entered by mistake.",
+        "Conflicting storage condition metadata affecting expiry risk calculations.",
+        "Reorder recommendations that violate lab safety or procurement policies.",
+        "Simultaneous edits to inventory or usage data causing race conditions.",
+        "CSV uploads with malformed or inconsistent data formats.",
+        "Handling reagents with multiple storage requirements or variable shelf lives.",
+        "Users without proper authorization attempting to access sensitive inventory data."
+      ],
+      "nonGoals": [
+        "Full procurement system integration beyond reorder recommendations.",
+        "Automated physical inventory tracking or barcode scanning.",
+        "Detailed chemical hazard or safety data management.",
+        "Collaborative workflows beyond basic reorder alerts in initial phases.",
+        "Real-time inventory updates from lab instruments or IoT devices in early versions."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /inventory page and uploads CSV or manually enters reagent batch data.",
+        "Inventory Management UI validates input locally, then sends POST /api/inventory with batch data array.",
+        "Inventory API validates data, enforces access control, updates Inventory Data Store, returns success or validation errors.",
+        "User views inventory list via GET /api/inventory with optional filters; UI displays batches with expiry and storage details.",
+        "User accesses /usage-logs page, inputs usage logs manually or via CSV upload.",
+        "Usage Logs UI validates usage quantities against inventory, then sends POST /api/usage with usage log array.",
+        "Usage Logs API validates entries against inventory availability, stores in Usage Logs Data Store, returns success/errors.",
+        "User filters usage logs via GET /api/usage with reagentId, projectId, date range; UI displays usage records and summaries.",
+        "User visits /dashboard page, selects filters; UI calls GET /api/forecast and GET /api/reorder with reagent and batch filters.",
+        "Forecasting API aggregates inventory, usage logs, and experiment schedules to compute depletion forecasts and expiry risk scores.",
+        "Reorder Recommendation API uses forecasts, inventory, and lab policies to generate reorder quantities, timing, and rationale.",
+        "Dashboard UI renders interactive charts, alerts, reorder schedules, and impact summaries based on API responses.",
+        "User manages experiment schedules on /experiment-schedule page via manual entry or CSV upload.",
+        "Experiment Schedule UI sends POST /api/experiment-schedule with schedule array; API validates and stores schedules.",
+        "User retrieves schedules via GET /api/experiment-schedule with filters for review and forecasting.",
+        "User configures lab policies on /settings/policies page; UI sends POST /api/policies with policy array.",
+        "Lab Policies API validates and stores policies; GET /api/policies retrieves current policies for UI display.",
+        "Background jobs run daily: ExpiryRiskRecalculation updates risk scores; ForecastUpdateJob refreshes depletion forecasts; ReorderOptimizationJob updates reorder recommendations.",
+        "APIs and UIs handle errors and validation feedback, ensuring data consistency and user guidance."
+      ],
+      "validationRules": [
+        "ReagentBatch: batchId and reagentId required, quantity must be positive number, expiryDate must be valid future date, storageConditions JSON must conform to schema if present.",
+        "UsageLog: usageId and reagentId required, quantityUsed positive and not exceeding available inventory for batch if batchId specified, usageDate valid date not in future, projectId and experimentId optional but if present must exist.",
+        "ExperimentSchedule: experimentId and projectId required, scheduledDate valid future date, reagentUsageEstimates JSON must specify reagentId and estimated quantities as positive numbers.",
+        "LabPolicy: policyId and policyName required, rules JSON must conform to defined policy schema, effectiveDate optional but if present must not be in past.",
+        "CSV uploads: validate file format, required columns present, data types correct, no duplicate batchIds or usageIds within upload, consistent units and date formats.",
+        "API inputs: enforce JSON schema validation, reject requests with missing required fields or invalid types.",
+        "Cross-field validation: usage quantities must not exceed available inventory quantities at usageDate; expiry dates must not be earlier than receivedDate.",
+        "Access control: all API endpoints require authenticated user; validate user permissions for data modification."
+      ],
+      "errorHandling": [
+        "API endpoints return HTTP 400 with detailed validation error messages for input errors.",
+        "API endpoints return HTTP 401 Unauthorized if user not authenticated.",
+        "API endpoints return HTTP 403 Forbidden if user lacks permission for requested operation.",
+        "API endpoints return HTTP 404 if requested resource not found (e.g., batchId or usageId).",
+        "API endpoints return HTTP 409 Conflict for concurrent modification conflicts or duplicate IDs.",
+        "APIs return HTTP 500 for unexpected server errors with generic message; log detailed error internally.",
+        "UI displays validation errors inline near input fields and summary error messages on form submission.",
+        "UI shows loading indicators during API calls and user-friendly error notifications on failures.",
+        "Background jobs log errors and retry transient failures; alert admins on persistent failures.",
+        "CSV upload errors include row-level error reporting to guide user corrections."
+      ],
+      "securityNotes": [
+        "All API routes require authentication; implement session or token-based auth.",
+        "Enforce role-based access control if multiple user roles exist; restrict sensitive operations accordingly.",
+        "Sanitize and validate all user inputs to prevent injection attacks.",
+        "Use HTTPS for all client-server communication.",
+        "Limit CSV upload file size and validate content to prevent denial of service or malicious payloads.",
+        "Log access and modification events for audit trails, especially for inventory and policy changes.",
+        "Protect background job data access with same auth and validation rules as APIs.",
+        "Ensure error messages do not leak sensitive system or data details.",
+        "Implement rate limiting on APIs to prevent abuse."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-INV-001",
+          "given": "An authenticated user on /inventory page with valid CSV file containing reagent batches",
+          "when": "User uploads CSV and submits",
+          "then": "Inventory API accepts data, stores batches, and UI displays updated inventory list without errors"
+        },
+        {
+          "id": "AT-INV-002",
+          "given": "An authenticated user attempts to upload reagent batch with expiryDate in past",
+          "when": "User submits batch data",
+          "then": "API rejects with validation error; UI displays error indicating invalid expiry date"
+        },
+        {
+          "id": "AT-USG-001",
+          "given": "An authenticated user on /usage-logs page with usage quantity exceeding available inventory",
+          "when": "User submits usage log entry",
+          "then": "API rejects entry with validation error; UI shows feedback to user"
+        },
+        {
+          "id": "AT-DASH-001",
+          "given": "An authenticated user on /dashboard page filtering by reagentId",
+          "when": "User selects reagent filter",
+          "then": "Dashboard UI fetches forecast and reorder data, displays risk alerts and reorder recommendations correctly"
+        },
+        {
+          "id": "AT-EXP-001",
+          "given": "An authenticated user on /experiment-schedule page with valid schedule data",
+          "when": "User submits schedule via CSV upload",
+          "then": "API stores schedules; UI shows updated experiment list and usage estimates"
+        },
+        {
+          "id": "AT-POL-001",
+          "given": "An authenticated user on /settings/policies page editing lab policies",
+          "when": "User submits policy changes with invalid rules JSON",
+          "then": "API rejects with validation error; UI displays error message"
+        },
+        {
+          "id": "AT-AUTH-001",
+          "given": "An unauthenticated user attempts to access /inventory or any API route",
+          "when": "User requests page or API",
+          "then": "System redirects to login or returns 401 Unauthorized"
+        },
+        {
+          "id": "AT-BG-001",
+          "given": "Background jobs run daily",
+          "when": "Jobs execute with latest inventory and usage data",
+          "then": "Expiry risk scores, forecasts, and reorder recommendations are updated without errors"
+        },
+        {
+          "id": "AT-CONC-001",
+          "given": "Two users simultaneously edit the same reagent batch",
+          "when": "Both submit updates concurrently",
+          "then": "System detects conflict; one update succeeds, other receives conflict error with retry guidance"
+        },
+        {
+          "id": "AT-CSV-001",
+          "given": "User uploads malformed CSV with missing required columns",
+          "when": "User submits upload",
+          "then": "System rejects upload with detailed row-level error messages"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for ReagentBatch, UsageLog, ExperimentSchedule, LabPolicy",
+        "Implement Inventory API with POST and GET endpoints including validation and access control",
+        "Implement Usage Logs API with POST and GET endpoints including inventory quantity checks",
+        "Build Inventory Management UI page with CSV upload, manual entry, validation, and inventory list display",
+        "Build Usage Logs UI page with CSV upload, manual entry, filtering, and usage summaries",
+        "Implement Experiment Schedule API with POST and GET endpoints and validation",
+        "Build Experiment Schedule UI page with manual entry, CSV upload, and schedule display",
+        "Implement Lab Policies API with POST and GET endpoints and validation",
+        "Build Lab Policies UI page with policy editor and validation",
+        "Implement Forecasting API aggregating inventory, usage, and experiment schedule data",
+        "Implement Reorder Recommendation API using forecasts and lab policies",
+        "Build Dashboard UI page integrating forecast and reorder APIs with interactive charts and alerts",
+        "Implement background jobs for expiry risk recalculation, forecast updates, and reorder optimization",
+        "Add authentication and authorization middleware across all API routes and pages",
+        "Implement error handling and user feedback mechanisms in UI and APIs",
+        "Add CSV upload parsing and validation utilities with detailed error reporting",
+        "Add concurrency control mechanisms to prevent race conditions on inventory and usage updates",
+        "Perform security hardening and logging",
+        "Write and run acceptance tests"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/inventory",
+          "/usage-logs",
+          "/dashboard",
+          "/experiment-schedule",
+          "/settings/policies"
+        ],
+        "apiFilesToCreate": [
+          "/api/inventory.ts",
+          "/api/usage.ts",
+          "/api/forecast.ts",
+          "/api/reorder.ts",
+          "/api/experiment-schedule.ts",
+          "/api/policies.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model ReagentBatch { batchId String @id reagentId String quantity Float expiryDate DateTime storageConditions Json? receivedDate DateTime? @@index([batchId]) @@index([reagentId]) @@index([expiryDate]) }",
+          "model UsageLog { usageId String @id reagentId String batchId String? quantityUsed Float projectId String? experimentId String? usageDate DateTime enteredBy String? @@index([usageId]) @@index([reagentId]) @@index([projectId]) @@index([usageDate]) }",
+          "model ExperimentSchedule { experimentId String @id projectId String scheduledDate DateTime reagentUsageEstimates Json @@index([experimentId]) @@index([projectId]) @@index([scheduledDate]) }",
+          "model LabPolicy { policyId String @id policyName String rules Json effectiveDate DateTime? @@index([policyId]) @@index([policyName]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-reqs",
+        "title": "Planner: refine requirements",
+        "purpose": "Clarify missing constraints and detailed requirements for reagent expiry and usage forecasting system.",
+        "promptTemplate": "Given the current blueprint and idea for the Academic Research Lab Reagent Expiry & Usage Forecast System: {{BLUEPRINT}} and {{IDEA}}, please specify any missing constraints, edge cases, or detailed requirements you want to include. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize UI pages, data models, and API contracts for the reagent inventory management system.",
+        "promptTemplate": "Using the expanded specs and current blueprint: {{EXPANDED}} and {{BLUEPRINT}}, finalize the list of UI pages, data models, and API endpoints needed to build the system. Please include details on inputs, outputs, and data flows. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial UI page and API route stubs for rapid prototyping of the reagent expiry and usage forecast system.",
+        "promptTemplate": "Based on the finalized architecture and data models: {{ARCHITECTURE}}, generate code stubs or templates for UI pages and API routes for the reagent inventory and usage logs upload, forecasting, and reorder recommendations. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wireup",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration wiring between UI pages, backend APIs, and database models for complete reagent management workflow.",
+        "promptTemplate": "Given the existing page stubs and API definitions: {{BUILDER_OUTPUT}}, describe how to wire UI pages to API endpoints and database models to enable reagent inventory management, usage log processing, forecasting, and reorder recommendations. Include authentication and validation considerations. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

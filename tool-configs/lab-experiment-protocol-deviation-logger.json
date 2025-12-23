@@ -1,0 +1,726 @@
+{
+  "slug": "lab-experiment-protocol-deviation-logger",
+  "title": "Lab Experiment Protocol Deviation Logger",
+  "description": "A lightweight single-page app for academic research lab managers and researchers to manually enter and upload deviation reports linked to experiments, enabling centralized tracking and basic filtering of deviations.",
+  "inputLabel": "Enter deviation report details or upload supporting files",
+  "outputLabel": "Deviation report submission confirmation or validation errors",
+  "systemPrompt": "You are a secure and strict assistant for logging experimental protocol deviations. Accept only well-structured textual input describing a deviation report linked to an experiment. Validate presence of required fields: deviationId, experimentId, reportedBy, timestamp, category, severity, description, and status. Reject any input attempting interpretation, diagnosis, or punitive evaluation. Ensure uploaded files (if any) are safe and metadata is valid. Output a clear confirmation or detailed validation errors. Refuse requests missing required fields or containing disallowed content. Enforce data privacy and security in all responses.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Basic Deviation Report Entry",
+      "prompt": "Submit a deviation report with fields: deviationId, experimentId, reportedBy, timestamp, category, severity, description, status. Optionally include researcherNotes and attach supporting files metadata. Provide data in JSON format or plain text description."
+    },
+    {
+      "label": "Add Researcher Notes",
+      "prompt": "Add or update researcher notes related to a specific deviation report identified by deviationId. Include your name and timestamp."
+    },
+    {
+      "label": "Upload Supporting Files",
+      "prompt": "Upload one or more supporting files such as images or documents related to a deviation report. Provide file descriptions and metadata."
+    },
+    {
+      "label": "Request Deviation Report Validation",
+      "prompt": "Validate a full deviation report input for required fields, correct data types, and allowed values. Return errors if any."
+    }
+  ],
+  "outputFormatDefault": "json",
+  "jsonSchemaHint": "Output a JSON object with fields: success (boolean), message (string), errors (array of strings, optional), deviationId (string, optional).",
+  "clarifyPrompt": "Please provide all required deviation report fields clearly, including deviationId, experimentId, reportedBy, timestamp, category, severity, description, and status. Attach files if available.",
+  "finalizePrompt": "Confirm the deviation report submission is complete and valid. Summarize the key details and next steps if applicable.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Lab Experiment Protocol Deviations Tracker & Analysis System",
+      "niche": {
+        "role": "Academic Research Lab Manager",
+        "scenario": "Managing and analyzing deviations from planned experimental protocols across multiple ongoing lab experiments to ensure reproducibility, compliance, and continuous improvement."
+      },
+      "problem": "Lab managers and principal investigators face challenges tracking, categorizing, and analyzing deviations from experimental protocols recorded by multiple researchers over time. Existing tools focus on protocol creation or version comparison but lack focused workflow for systematic deviation logging, impact assessment, and trend analysis within experimental workflows.",
+      "inputs": [
+        "Experiment metadata (experiment ID, title, lead researcher, dates)",
+        "Planned protocol documents or summaries (upload or linked)",
+        "Deviation reports submitted by researchers (text descriptions, categories, timestamps)",
+        "Supporting files or images related to deviations (optional)",
+        "Researcher notes or comments on deviations"
+      ],
+      "outputs": [
+        "Centralized, searchable deviation log with structured metadata",
+        "Categorized deviation reports with severity and impact assessments",
+        "Trend analysis dashboards highlighting common deviation types and frequency over time",
+        "Automated alerts for critical deviations requiring immediate review",
+        "Summary reports linking deviations to potential reproducibility or compliance risks",
+        "Collaboration interface for lab members to discuss deviations and corrective actions"
+      ],
+      "whyItWins": [
+        "Fills a gap between protocol version control and overall lab management by focusing on deviation tracking and analysis",
+        "Supports repeated use in ongoing experimental workflows with real-time logging and trend monitoring",
+        "Enhances reproducibility and compliance through structured impact assessment and alerts",
+        "Encourages collaborative resolution and knowledge sharing among lab members",
+        "Scalable from a simple deviation entry tool into a comprehensive lab quality management system"
+      ],
+      "upgradePath": {
+        "today": "Deploy a lightweight single-page app enabling manual entry and upload of deviation reports linked to experiments with basic filtering and exportable deviation logs.",
+        "in90Days": "Add impact assessment algorithms, categorized deviation templates, and basic dashboard visualizations tracking deviation trends and severity across experiments.",
+        "in12Months": "Evolve into a full multi-page system with collaborative discussion threads, integration with protocol version control, automated compliance flagging, role-based access controls, customizable alerts, and longitudinal reproducibility analytics."
+      },
+      "riskNotes": [
+        "Must ensure data privacy and secure storage of potentially sensitive experimental details and deviation reports.",
+        "Avoid any interpretation or automated diagnosis of experimental results to maintain neutrality and reduce liability.",
+        "Requires careful user input validation to prevent inaccurate deviation categorization or misreporting.",
+        "Potential resistance from researchers if perceived as punitive; system should emphasize collaborative improvement."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page system for academic research lab managers to systematically log, categorize, and analyze deviations from experimental protocols, enhancing reproducibility, compliance, and collaborative resolution across multiple experiments.",
+      "primaryUser": "Academic Research Lab Manager",
+      "successMetrics": [
+        "Number of deviation reports logged per experiment",
+        "User engagement in collaborative discussion threads",
+        "Reduction in repeated critical deviations over time",
+        "Timely acknowledgement and resolution of critical deviation alerts",
+        "Accuracy and completeness of deviation metadata captured",
+        "Usage frequency of trend analysis dashboards and exported reports"
+      ],
+      "components": [
+        {
+          "id": "ui-experiment-management",
+          "name": "Experiment Management UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces to create, view, and manage experiment metadata and associated protocol documents.",
+          "dependsOn": [
+            "api-experiment",
+            "data-experiment"
+          ],
+          "notes": [
+            "Supports upload or linking of planned protocol documents.",
+            "Includes experiment detail pages showing metadata and linked deviations."
+          ]
+        },
+        {
+          "id": "ui-deviation-logging",
+          "name": "Deviation Logging & Review UI",
+          "type": "ui",
+          "responsibility": "Enable researchers to submit deviation reports with structured metadata, upload supporting files, and add notes; allow lab managers to review and categorize deviations.",
+          "dependsOn": [
+            "api-deviation",
+            "data-deviation"
+          ],
+          "notes": [
+            "Includes form validation to ensure accurate categorization.",
+            "Supports optional attachments such as images or documents."
+          ]
+        },
+        {
+          "id": "ui-dashboard",
+          "name": "Trend Analysis & Alerts Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display visualizations of deviation trends, severity distributions, and generate alerts for critical deviations requiring immediate attention.",
+          "dependsOn": [
+            "api-dashboard",
+            "data-deviation",
+            "job-alerts"
+          ],
+          "notes": [
+            "Dashboards support filtering by experiment, date range, and deviation category.",
+            "Alerts interface highlights unresolved critical deviations."
+          ]
+        },
+        {
+          "id": "ui-collaboration",
+          "name": "Collaboration & Discussion UI",
+          "type": "ui",
+          "responsibility": "Provide discussion threads and comment interfaces linked to deviations for lab members to collaborate on corrective actions and knowledge sharing.",
+          "dependsOn": [
+            "api-collaboration",
+            "data-discussion"
+          ],
+          "notes": [
+            "Supports role-based permissions for commenting and moderation.",
+            "Includes notifications for new comments or updates."
+          ]
+        },
+        {
+          "id": "api-experiment",
+          "name": "Experiment Management API",
+          "type": "api",
+          "responsibility": "Handle CRUD operations for experiments and protocol documents, ensuring secure access and data validation.",
+          "dependsOn": [
+            "data-experiment"
+          ],
+          "notes": [
+            "Includes endpoints to link protocol documents to experiments.",
+            "Validates metadata completeness and format."
+          ]
+        },
+        {
+          "id": "api-deviation",
+          "name": "Deviation Reporting API",
+          "type": "api",
+          "responsibility": "Accept and manage deviation reports, including metadata, categories, severity, attachments, and notes.",
+          "dependsOn": [
+            "data-deviation",
+            "integration-storage"
+          ],
+          "notes": [
+            "Performs input validation to prevent misclassification.",
+            "Supports secure upload and retrieval of supporting files."
+          ]
+        },
+        {
+          "id": "api-dashboard",
+          "name": "Dashboard & Analytics API",
+          "type": "api",
+          "responsibility": "Provide aggregated data and trend analytics for deviations, including severity distributions and frequency over time.",
+          "dependsOn": [
+            "data-deviation"
+          ],
+          "notes": [
+            "Supports filtering and sorting parameters.",
+            "Feeds data to UI dashboard components."
+          ]
+        },
+        {
+          "id": "api-collaboration",
+          "name": "Collaboration API",
+          "type": "api",
+          "responsibility": "Manage discussion threads, comments, and notifications related to deviations and corrective actions.",
+          "dependsOn": [
+            "data-discussion"
+          ],
+          "notes": [
+            "Implements role-based access control for moderation.",
+            "Ensures data consistency and real-time updates."
+          ]
+        },
+        {
+          "id": "data-experiment",
+          "name": "Experiment Data Store",
+          "type": "data",
+          "responsibility": "Persist experiment metadata and protocol documents with versioning support.",
+          "dependsOn": [],
+          "notes": [
+            "Stores experiment identifiers, titles, lead researchers, and date ranges.",
+            "Maintains links to protocol documents and deviation reports."
+          ]
+        },
+        {
+          "id": "data-deviation",
+          "name": "Deviation Reports Data Store",
+          "type": "data",
+          "responsibility": "Store structured deviation reports including categories, severity, timestamps, researcher notes, and references to supporting files.",
+          "dependsOn": [],
+          "notes": [
+            "Supports indexing for efficient search and filtering.",
+            "Includes fields for impact assessment results."
+          ]
+        },
+        {
+          "id": "data-discussion",
+          "name": "Collaboration Discussion Data Store",
+          "type": "data",
+          "responsibility": "Persist discussion threads and comments linked to deviation reports for collaborative resolution.",
+          "dependsOn": [],
+          "notes": [
+            "Supports threading and user metadata for comments.",
+            "Includes timestamps and edit history."
+          ]
+        },
+        {
+          "id": "integration-storage",
+          "name": "File Storage Integration",
+          "type": "integration",
+          "responsibility": "Handle secure upload, storage, and retrieval of supporting files and images related to deviations.",
+          "dependsOn": [],
+          "notes": [
+            "Ensures data privacy and access controls.",
+            "Supports scalable storage backend (e.g., cloud object storage)."
+          ]
+        },
+        {
+          "id": "job-alerts",
+          "name": "Critical Deviation Alert Job",
+          "type": "job",
+          "responsibility": "Periodically scan deviation reports for critical severity and trigger alerts to lab managers for immediate review.",
+          "dependsOn": [
+            "data-deviation",
+            "api-dashboard"
+          ],
+          "notes": [
+            "Handles retries and failure notifications.",
+            "Integrates with notification systems (email, in-app)."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Experiment",
+          "purpose": "Store metadata and protocol documents for each experiment.",
+          "fields": [
+            {
+              "name": "experimentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "leadResearcher",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "startDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "endDate",
+              "type": "date",
+              "optional": true
+            },
+            {
+              "name": "protocolDocuments",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "experimentId",
+            "leadResearcher"
+          ]
+        },
+        {
+          "name": "DeviationReport",
+          "purpose": "Capture detailed information about deviations from experimental protocols.",
+          "fields": [
+            {
+              "name": "deviationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "experimentId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportedBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "category",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "severity",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "impactAssessment",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "supportingFiles",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "researcherNotes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "deviationId",
+            "experimentId",
+            "category",
+            "severity",
+            "timestamp"
+          ]
+        },
+        {
+          "name": "DiscussionThread",
+          "purpose": "Store collaborative discussion threads linked to deviation reports.",
+          "fields": [
+            {
+              "name": "threadId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "comments",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "threadId",
+            "deviationId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/experiments",
+          "title": "Experiment Management",
+          "purpose": "List and manage experiments and their protocol documents.",
+          "inputs": [
+            "Search filters",
+            "Experiment creation form"
+          ],
+          "outputs": [
+            "Experiment list",
+            "Experiment detail view"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/experiments/:id/deviations",
+          "title": "Deviation Reports",
+          "purpose": "View and filter deviation reports linked to a specific experiment.",
+          "inputs": [
+            "Filter by category, severity, date range"
+          ],
+          "outputs": [
+            "Deviation report list",
+            "Deviation detail view"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/deviations/new",
+          "title": "Log New Deviation",
+          "purpose": "Form for researchers to submit new deviation reports with metadata and attachments.",
+          "inputs": [
+            "Experiment selection",
+            "Category",
+            "Severity",
+            "Description",
+            "Attachments",
+            "Notes"
+          ],
+          "outputs": [
+            "Submission confirmation",
+            "Validation errors"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Trend Analysis & Alerts Dashboard",
+          "purpose": "Visualize deviation trends, severity distributions, and view critical deviation alerts.",
+          "inputs": [
+            "Filter by experiment, date range, category"
+          ],
+          "outputs": [
+            "Charts",
+            "Alerts list"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/deviations/:id/discussion",
+          "title": "Deviation Discussion",
+          "purpose": "Collaborative discussion thread for a specific deviation report.",
+          "inputs": [
+            "Comments",
+            "Replies"
+          ],
+          "outputs": [
+            "Threaded comments",
+            "Notifications"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/experiments",
+          "method": "GET",
+          "purpose": "Retrieve list of experiments with optional filters.",
+          "requestShape": "query parameters for filtering",
+          "responseShape": "array of Experiment objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/experiments",
+          "method": "POST",
+          "purpose": "Create a new experiment with metadata and protocol documents.",
+          "requestShape": "Experiment object",
+          "responseShape": "created Experiment object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/deviations",
+          "method": "POST",
+          "purpose": "Submit a new deviation report linked to an experiment.",
+          "requestShape": "DeviationReport object with attachments metadata",
+          "responseShape": "created DeviationReport object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/deviations",
+          "method": "GET",
+          "purpose": "Retrieve deviation reports with filtering options.",
+          "requestShape": "query parameters for experimentId, category, severity, date range",
+          "responseShape": "array of DeviationReport objects",
+          "auth": "user"
+        },
+        {
+          "route": "/api/dashboard/trends",
+          "method": "GET",
+          "purpose": "Fetch aggregated deviation trend data for dashboard visualizations.",
+          "requestShape": "query parameters for filters",
+          "responseShape": "JSON with trend metrics and charts data",
+          "auth": "user"
+        },
+        {
+          "route": "/api/discussions/:deviationId",
+          "method": "GET",
+          "purpose": "Retrieve discussion thread for a specific deviation report.",
+          "requestShape": "deviationId path parameter",
+          "responseShape": "DiscussionThread object",
+          "auth": "user"
+        },
+        {
+          "route": "/api/discussions/:deviationId/comments",
+          "method": "POST",
+          "purpose": "Post a new comment in the discussion thread for a deviation.",
+          "requestShape": "comment content and metadata",
+          "responseShape": "updated DiscussionThread object",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Critical Deviation Alert Job",
+          "trigger": "Scheduled periodic (e.g., every hour)",
+          "purpose": "Scan deviation reports for critical severity and send alerts to lab managers for immediate review."
+        }
+      ],
+      "edgeCases": [
+        "Handling incomplete or inaccurate deviation report submissions with validation and user feedback.",
+        "Managing simultaneous edits or comments on the same deviation discussion thread (concurrency).",
+        "Securely storing and accessing sensitive protocol documents and deviation attachments with strict access controls.",
+        "Dealing with experiments that span long durations with evolving protocols and multiple deviation versions.",
+        "Ensuring alerts are not missed or duplicated due to job failures or network issues.",
+        "Supporting offline or intermittent connectivity scenarios for deviation logging with later synchronization."
+      ],
+      "nonGoals": [
+        "Automated interpretation or diagnosis of experimental results or deviations.",
+        "Replacing existing protocol version control systems; integration only.",
+        "Punitive tracking or researcher performance evaluation.",
+        "Full lab management features unrelated to deviation tracking and analysis.",
+        "Automated correction or enforcement of experimental protocols."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and accesses UI pages requiring authentication.",
+        "Experiment Management UI fetches experiment list and details via /api/experiments GET with optional filters.",
+        "Experiment creation or update submits experiment metadata and protocol documents to /api/experiments POST.",
+        "Deviation Logging UI fetches experiments for selection, then submits new deviation reports with metadata and attachments to /api/deviations POST.",
+        "Attachments uploaded securely via integration-storage, metadata included in deviation report.",
+        "Deviation Reports page fetches filtered deviations via /api/deviations GET with query parameters.",
+        "Dashboard UI requests aggregated trend data and alerts from /api/dashboard/trends GET with filters.",
+        "Collaboration UI fetches discussion threads via /api/discussions/:deviationId GET and posts comments via /api/discussions/:deviationId/comments POST.",
+        "Background job runs periodically, scans deviation reports for critical severity, triggers alerts via notification system and updates dashboard data.",
+        "Data stores persist experiments, deviations, discussions with indexing for efficient retrieval.",
+        "APIs validate input, enforce access control, and return structured responses to UIs."
+      ],
+      "validationRules": [
+        "Experiment creation: experimentId (unique, non-empty string), title (non-empty string), leadResearcher (non-empty string), startDate (valid date, not future), endDate (optional, if present must be >= startDate), protocolDocuments (optional JSON array with valid URLs or file metadata).",
+        "Deviation report submission: deviationId (unique, non-empty string), experimentId (must exist), reportedBy (non-empty string), timestamp (valid date, not future), category (from predefined list), severity (from predefined list e.g., Low, Medium, High, Critical), description (non-empty string), impactAssessment (optional JSON), supportingFiles (optional JSON with valid file metadata), researcherNotes (optional string), status (from predefined list e.g., Open, Under Review, Resolved).",
+        "Discussion comments: content (non-empty string, max length limit), createdBy (non-empty string), createdAt (valid date), threadId and deviationId must exist.",
+        "API query parameters: validate types and allowed values for filters (e.g., category, severity, date ranges).",
+        "File uploads: validate file types, sizes, and scan for security threats before accepting.",
+        "All inputs must be sanitized to prevent injection attacks."
+      ],
+      "errorHandling": [
+        "Return 400 Bad Request with detailed validation error messages for invalid inputs.",
+        "Return 401 Unauthorized for unauthenticated requests to protected endpoints.",
+        "Return 403 Forbidden for unauthorized access based on role or ownership.",
+        "Return 404 Not Found when requested resources (experiment, deviation, discussion) do not exist.",
+        "Return 409 Conflict for duplicate unique identifiers or concurrent modification conflicts.",
+        "Return 500 Internal Server Error for unexpected failures with logging for diagnostics.",
+        "API responses include error codes and human-readable messages for UI display.",
+        "UI displays validation errors inline on forms and general errors as notifications.",
+        "Background job retries on transient failures with exponential backoff; logs failures and sends admin notifications if persistent.",
+        "Concurrency conflicts in discussion threads handled with optimistic locking or version checks, informing users of conflicts."
+      ],
+      "securityNotes": [
+        "All API routes require authentication and enforce role-based access control.",
+        "Access to experiments, deviations, and discussions restricted to authorized users only.",
+        "Protocol documents and deviation attachments stored securely with access controls enforced at storage and API layers.",
+        "File uploads scanned and sanitized to prevent malware or injection attacks.",
+        "Sensitive data encrypted at rest and in transit (HTTPS).",
+        "Use CSRF protection for state-changing API requests.",
+        "Implement rate limiting on APIs to prevent abuse.",
+        "Audit logging for critical actions such as deviation submissions, edits, and comments.",
+        "Notifications and alerts sent securely, avoiding sensitive data exposure.",
+        "Offline data synchronization requires secure token-based validation to prevent unauthorized data injection."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-EXP-001",
+          "given": "An authenticated lab manager on the /experiments page",
+          "when": "They submit a new experiment with valid metadata and protocol documents",
+          "then": "The experiment is created, appears in the list, and can be viewed in detail"
+        },
+        {
+          "id": "AT-DEV-001",
+          "given": "An authenticated researcher on the /deviations/new page",
+          "when": "They submit a deviation report with all required fields and attachments",
+          "then": "The deviation is saved, attachments are stored securely, and confirmation is shown"
+        },
+        {
+          "id": "AT-DEV-002",
+          "given": "A user submits a deviation report with missing required fields",
+          "when": "They attempt to submit the form",
+          "then": "Validation errors are displayed and submission is blocked"
+        },
+        {
+          "id": "AT-DASH-001",
+          "given": "An authenticated user on the /dashboard page",
+          "when": "They apply filters and view the dashboard",
+          "then": "Charts update accordingly and critical deviation alerts are highlighted"
+        },
+        {
+          "id": "AT-COL-001",
+          "given": "An authenticated lab member on a deviation discussion page",
+          "when": "They post a new comment",
+          "then": "The comment appears in the thread immediately and notifications are sent to relevant users"
+        },
+        {
+          "id": "AT-API-SEC-001",
+          "given": "An unauthenticated user attempts to access /api/experiments",
+          "when": "They send a GET request",
+          "then": "The API returns 401 Unauthorized"
+        },
+        {
+          "id": "AT-JOB-001",
+          "given": "The background job runs periodically",
+          "when": "There are unresolved critical deviations",
+          "then": "Alerts are sent to lab managers and dashboard data is updated"
+        },
+        {
+          "id": "AT-CONC-001",
+          "given": "Multiple users post comments simultaneously on the same discussion thread",
+          "when": "Comments are submitted concurrently",
+          "then": "All comments are saved without data loss or corruption, and users are notified of any conflicts"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Experiment, DeviationReport, DiscussionThread",
+        "Implement data stores with indexing and relations",
+        "Create API routes for experiments (GET, POST) with validation and auth",
+        "Create API routes for deviations (GET, POST) with file upload integration and validation",
+        "Create API routes for discussions (GET, POST comments) with role-based access control",
+        "Implement file storage integration for secure upload and retrieval",
+        "Develop Experiment Management UI pages with forms and lists",
+        "Develop Deviation Logging UI with form validation and attachment support",
+        "Develop Deviation Reports listing and detail views",
+        "Develop Collaboration UI for discussion threads and comments with notifications",
+        "Develop Dashboard UI with charts and alerts, integrating trend analytics API",
+        "Implement background job for critical deviation alerts with retry and notification",
+        "Add comprehensive error handling and user feedback in UI and APIs",
+        "Implement security measures: authentication, authorization, input sanitization, CSRF protection",
+        "Write acceptance tests and perform manual testing for edge cases",
+        "Deploy and monitor system with logging and alerting"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/experiments",
+          "/experiments/[id]/deviations",
+          "/deviations/new",
+          "/dashboard",
+          "/deviations/[id]/discussion"
+        ],
+        "apiFilesToCreate": [
+          "api/experiments/index.ts",
+          "api/deviations/index.ts",
+          "api/dashboard/trends.ts",
+          "api/discussions/[deviationId]/index.ts",
+          "api/discussions/[deviationId]/comments.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model Experiment { experimentId String @id @unique title String leadResearcher String startDate DateTime endDate DateTime? protocolDocuments Json? deviations DeviationReport[] }",
+          "model DeviationReport { deviationId String @id @unique experimentId String reportedBy String timestamp DateTime category String severity String description String? impactAssessment Json? supportingFiles Json? researcherNotes String? status String experiment Experiment @relation(fields: [experimentId], references: [experimentId]) discussions DiscussionThread[] }",
+          "model DiscussionThread { threadId String @id @unique deviationId String createdBy String createdAt DateTime comments Json? deviation DeviationReport @relation(fields: [deviationId], references: [deviationId]) }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints, clarifications, or additional user needs about the deviation tracking system.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}}\nAnd your current input: {{USER_INPUT}}\nAsk targeted questions to clarify requirements, constraints, or scenarios not yet addressed."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Design detailed UI pages and finalize data models based on refined requirements.",
+        "promptTemplate": "Using the refined requirements: {{REFINED_REQUIREMENTS}}\nAnd the current blueprint: {{BLUEPRINT}}\nDefine the final set of UI pages, their inputs/outputs, and detailed data models with fields and relations."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate scaffold code for UI pages to accelerate frontend development.",
+        "promptTemplate": "Given the finalized pages: {{FINALIZED_PAGES}}\nGenerate code stubs with placeholders for UI components, forms, and API calls for each page."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect the UI pages to backend APIs and database models with secure, validated data flow.",
+        "promptTemplate": "Given the UI page stubs: {{PAGE_STUBS}}\nThe API routes: {{API_ROUTES}}\nAnd the data models: {{DATA_MODELS}}\nGenerate integration code and describe data validation, authentication, and error handling strategies."
+      }
+    ]
+  }
+}

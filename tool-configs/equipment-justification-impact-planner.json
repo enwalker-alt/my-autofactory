@@ -1,0 +1,838 @@
+{
+  "slug": "equipment-justification-impact-planner",
+  "title": "Academic Research Grant Equipment Justification & Impact Planner",
+  "description": "Generate structured, funder-compliant equipment justification narratives and impact analysis summaries from draft texts, budget lines, and collaborator inputs to support persuasive grant proposals.",
+  "inputLabel": "Paste draft equipment descriptions, project objectives, budget lines, funder guidelines, and collaborator notes (text or JSON). Optionally upload a file containing these details.",
+  "outputLabel": "Generated equipment justification narrative, impact summary, and compliance checklist.",
+  "systemPrompt": "You are a specialized assistant for academic research grant writers and financial managers preparing equipment justification sections for grant proposals. Given draft equipment descriptions, project objectives and methodology summaries, preliminary budget data including equipment cost lines, funder guidelines on eligible equipment and justification requirements, and collaborator input notes, generate a clear, structured, and funder-tailored equipment justification narrative. Also produce an impact analysis summary linking the equipment to research outcomes and scientific benefits, and a compliance checklist highlighting alignment with funder policies. Ensure all outputs are concise, persuasive, and suitable for inclusion in grant proposals. Strictly refuse to provide legal, financial, or funding advice beyond structured text generation and compliance flagging. Sanitize all inputs and outputs to avoid any unsafe content. If inputs are insufficient or ambiguous, ask clarifying questions before proceeding. Output plain text by default, but support JSON structured output when requested. Enforce a maximum input length of 10,000 characters. If disallowed content or unsafe requests are detected, politely refuse with explanation.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first"
+  ],
+  "presets": [
+    {
+      "label": "Generate Full Justification & Impact Summary",
+      "prompt": "Using the provided draft equipment descriptions, project objectives and methodology summaries, budget lines, funder guidelines, and collaborator notes, generate a structured equipment justification narrative, an impact analysis summary linking the equipment to research outcomes, and a compliance checklist. Ensure clarity, funder compliance, and persuasive tone suitable for grant proposals. Output as plain text.",
+      "hint": "Use this preset to create complete justification and impact text blocks from all inputs."
+    },
+    {
+      "label": "Compliance Check Summary Only",
+      "prompt": "Based on the draft equipment descriptions, budget data, and funder guidelines provided, generate a compliance checklist highlighting alignment with funder policies and flag any issues or missing requirements. Output as a clear bullet list.",
+      "hint": "Use when focusing on compliance validation."
+    },
+    {
+      "label": "Integrate Collaborator Inputs and Flag Conflicts",
+      "prompt": "Review the draft equipment justification and collaborator notes. Consolidate collaborator feedback into the justification narrative, highlighting any conflicting inputs or overlaps. Provide clear flags for manual resolution. Output as plain text.",
+      "hint": "Use to merge collaborator comments and detect conflicts."
+    },
+    {
+      "label": "Generate Impact Analysis Summary Only",
+      "prompt": "Given the project objectives, methodology summaries, and equipment budget lines, generate an impact analysis summary linking the equipment to research outcomes and broader scientific benefits. Output as plain text.",
+      "hint": "Use to focus on describing research impact."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "When structured-output is enabled, output JSON with keys: justificationNarrative (string), impactSummary (string), complianceChecklist (array of strings), collaboratorConflictFlags (optional array of conflict descriptions).",
+  "clarifyPrompt": "Please provide any missing details or clarify ambiguous inputs related to equipment descriptions, project objectives, budget lines, funder guidelines, or collaborator comments to proceed with generating a compliant and persuasive equipment justification.",
+  "finalizePrompt": "Review the generated equipment justification, impact summary, and compliance checklist. Confirm if you want to export the text blocks for inclusion in your grant proposal or make further refinements.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Equipment Justification & Impact Planner",
+      "niche": {
+        "role": "Academic Research Grant Writers and Financial Managers",
+        "scenario": "Preparing grant proposals requiring detailed justification and impact analysis for expensive or specialized research equipment purchases"
+      },
+      "problem": "Grant writers and financial managers struggle to produce clear, funder-compliant, and persuasive equipment justification sections that convincingly explain the necessity, cost-effectiveness, and research impact of requested equipment, especially when aligning multiple collaborators' inputs and balancing budget constraints.",
+      "inputs": [
+        "Draft equipment descriptions and specifications",
+        "Research project objectives and methodology summaries",
+        "Preliminary budget tables including equipment cost lines",
+        "Funder guidelines on eligible equipment and justification requirements",
+        "Collaborator input notes or comments on equipment needs and usage"
+      ],
+      "outputs": [
+        "Structured, clear, and funder-tailored equipment justification narratives",
+        "Impact analysis summaries linking equipment to research outcomes and broader scientific benefits",
+        "Compliance checklists highlighting alignment with funder equipment policies",
+        "Consolidated collaborator feedback integration with conflict or overlap flags",
+        "Formatted text blocks ready for inclusion in grant proposals"
+      ],
+      "whyItWins": [
+        "Fills a gap in grant proposal tools by focusing on equipment-specific justification rather than general budget or narrative harmonization",
+        "Reduces time and errors in producing compliant, persuasive equipment justifications that often require specialized knowledge",
+        "Supports multi-institutional collaboration by consolidating diverse inputs and resolving conflicting justifications",
+        "Helps highlight and quantify equipment impact, enhancing proposal competitiveness",
+        "Scalable from a simple narrative generator to a full multi-page system managing equipment requests, approvals, and integration with budgets and compliance tracking"
+      ],
+      "upgradePath": {
+        "today": "A single-page tool that inputs draft texts and budget lines to generate structured equipment justification paragraphs and compliance flags",
+        "in90Days": "Add collaborative input collection features, version control for justification drafts, and integration with budget tables for dynamic impact summaries",
+        "in12Months": "Develop into a multi-page app managing equipment request workflows, multi-stakeholder approvals, budget integration, compliance dashboards, and impact reporting with export options for multiple funder formats"
+      },
+      "riskNotes": [
+        "Must carefully avoid providing legal or financial advice beyond structured text generation",
+        "Needs to ensure strict compliance with funder guidelines without guaranteeing funding outcomes",
+        "Data privacy measures required for handling collaborator inputs and budget data",
+        "Clear disclaimers that the tool aids preparation but final responsibility for justification content lies with users"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research grant writers and financial managers to create, refine, and manage funder-compliant equipment justification narratives linked to budgets and research impact, supporting multi-stakeholder input, compliance checks, and export-ready outputs.",
+      "primaryUser": "Academic research grant writers and financial managers preparing equipment justification sections for grant proposals",
+      "successMetrics": [
+        "Reduction in time spent producing compliant equipment justifications",
+        "Increased user adoption among multi-institutional grant teams",
+        "Number of justifications generated that pass funder compliance checks",
+        "User satisfaction scores related to collaboration and conflict resolution features",
+        "Number of exported justification documents in funder-required formats"
+      ],
+      "components": [
+        {
+          "id": "ui-equipment-justification-editor",
+          "name": "Equipment Justification Editor UI",
+          "type": "ui",
+          "responsibility": "Provide interfaces for drafting, editing, and reviewing equipment justification narratives, integrating collaborator comments, and displaying compliance flags.",
+          "dependsOn": [
+            "api-justification-management",
+            "api-collaboration",
+            "api-compliance-checks"
+          ],
+          "notes": [
+            "Supports version control and change tracking for drafts",
+            "Highlights conflicting collaborator inputs and overlap warnings",
+            "Allows export of formatted text blocks"
+          ]
+        },
+        {
+          "id": "ui-budget-integration",
+          "name": "Budget Integration UI",
+          "type": "ui",
+          "responsibility": "Display and allow editing of preliminary budget tables focused on equipment cost lines, linked dynamically to justification narratives and impact summaries.",
+          "dependsOn": [
+            "api-budget-management",
+            "api-impact-analysis"
+          ],
+          "notes": [
+            "Enables real-time updates of impact summaries based on budget changes",
+            "Supports import/export of budget data"
+          ]
+        },
+        {
+          "id": "api-justification-management",
+          "name": "Justification Management API",
+          "type": "api",
+          "responsibility": "Handle creation, retrieval, update, and versioning of equipment justification drafts and related metadata.",
+          "dependsOn": [
+            "data-justifications",
+            "data-users",
+            "api-collaboration"
+          ],
+          "notes": [
+            "Implements version control and draft history",
+            "Enforces access control for multi-user collaboration"
+          ]
+        },
+        {
+          "id": "api-collaboration",
+          "name": "Collaboration & Conflict Resolution API",
+          "type": "api",
+          "responsibility": "Manage collaborator inputs, comments, conflict detection, and resolution workflows on equipment justifications.",
+          "dependsOn": [
+            "data-collaborator-inputs",
+            "api-justification-management"
+          ],
+          "notes": [
+            "Detects overlapping or conflicting inputs",
+            "Supports notifications and comment threading"
+          ]
+        },
+        {
+          "id": "api-budget-management",
+          "name": "Budget Management API",
+          "type": "api",
+          "responsibility": "Store and manage budget tables, focusing on equipment cost lines, and provide data for impact analysis.",
+          "dependsOn": [
+            "data-budgets"
+          ],
+          "notes": [
+            "Supports validation of budget entries against funder guidelines"
+          ]
+        },
+        {
+          "id": "api-compliance-checks",
+          "name": "Compliance Checking API",
+          "type": "api",
+          "responsibility": "Analyze equipment justifications and budgets against funder guidelines to generate compliance checklists and flags.",
+          "dependsOn": [
+            "data-funder-guidelines",
+            "api-justification-management",
+            "api-budget-management"
+          ],
+          "notes": [
+            "Updates dynamically as justifications or budgets change",
+            "Does not provide legal advice, only structured compliance feedback"
+          ]
+        },
+        {
+          "id": "api-impact-analysis",
+          "name": "Impact Analysis API",
+          "type": "api",
+          "responsibility": "Generate impact summaries linking equipment to research outcomes and broader scientific benefits based on project objectives and budget data.",
+          "dependsOn": [
+            "data-projects",
+            "api-budget-management",
+            "api-justification-management"
+          ],
+          "notes": [
+            "Supports dynamic updates as inputs evolve",
+            "Outputs structured summaries for inclusion in proposals"
+          ]
+        },
+        {
+          "id": "data-justifications",
+          "name": "Equipment Justifications Data Store",
+          "type": "data",
+          "responsibility": "Persist equipment justification drafts, version histories, metadata, and related collaborator input references.",
+          "dependsOn": [],
+          "notes": [
+            "Supports indexing by project, user, and version",
+            "Stores structured text and change logs"
+          ]
+        },
+        {
+          "id": "data-collaborator-inputs",
+          "name": "Collaborator Inputs Data Store",
+          "type": "data",
+          "responsibility": "Persist collaborator comments, notes, and input metadata linked to equipment justifications.",
+          "dependsOn": [],
+          "notes": [
+            "Supports conflict and overlap flagging",
+            "Includes timestamps and user identifiers for audit"
+          ]
+        },
+        {
+          "id": "data-budgets",
+          "name": "Budget Data Store",
+          "type": "data",
+          "responsibility": "Persist budget tables, especially equipment cost lines, linked to projects and justifications.",
+          "dependsOn": [],
+          "notes": [
+            "Supports versioning and validation status",
+            "Stores structured numeric and textual budget data"
+          ]
+        },
+        {
+          "id": "data-funder-guidelines",
+          "name": "Funder Guidelines Data Store",
+          "type": "data",
+          "responsibility": "Persist structured funder guidelines on eligible equipment and justification requirements for compliance checking.",
+          "dependsOn": [],
+          "notes": [
+            "Allows updates as funder policies change",
+            "Supports multiple funder profiles"
+          ]
+        },
+        {
+          "id": "data-projects",
+          "name": "Research Projects Data Store",
+          "type": "data",
+          "responsibility": "Persist project objectives, methodology summaries, and metadata linked to equipment justifications.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multi-institutional project data",
+            "Enables linkage to budget and justification data"
+          ]
+        },
+        {
+          "id": "backgroundjob-compliance-recheck",
+          "name": "Scheduled Compliance Recheck Job",
+          "type": "job",
+          "responsibility": "Periodically re-run compliance checks on all active justifications and budgets to catch guideline updates or data changes.",
+          "dependsOn": [
+            "api-compliance-checks"
+          ],
+          "notes": [
+            "Ensures compliance flags remain current",
+            "Triggers notifications if critical compliance issues arise"
+          ]
+        },
+        {
+          "id": "backgroundjob-impact-summary-update",
+          "name": "Impact Summary Update Job",
+          "type": "job",
+          "responsibility": "Generate or refresh impact analysis summaries when project objectives or budget data change significantly.",
+          "dependsOn": [
+            "api-impact-analysis"
+          ],
+          "notes": [
+            "Supports caching of impact summaries for UI performance"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "EquipmentJustification",
+          "purpose": "Store drafts and versions of equipment justification narratives with metadata and collaborator references.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorUserId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "collaboratorInputIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "complianceFlags",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "authorUserId",
+            "version"
+          ]
+        },
+        {
+          "name": "CollaboratorInput",
+          "purpose": "Store collaborator comments and notes linked to equipment justifications.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "justificationId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "comment",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "conflictFlag",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "justificationId",
+            "userId",
+            "conflictFlag"
+          ]
+        },
+        {
+          "name": "Budget",
+          "purpose": "Store budget tables and equipment cost lines linked to projects.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "budgetData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "validated",
+              "type": "boolean",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "projectId",
+            "validated"
+          ]
+        },
+        {
+          "name": "FunderGuideline",
+          "purpose": "Store structured funder guidelines for equipment eligibility and justification requirements.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "guidelineData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName",
+            "effectiveDate"
+          ]
+        },
+        {
+          "name": "Project",
+          "purpose": "Store research project objectives, methodology summaries, and metadata.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "objectives",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "methodologySummary",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institutionIds",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "updatedAt",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "title"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/justifications",
+          "title": "Equipment Justifications",
+          "purpose": "List and manage equipment justification drafts with version history and collaborator inputs.",
+          "inputs": [
+            "project selection",
+            "justification filters"
+          ],
+          "outputs": [
+            "justification list",
+            "version history",
+            "collaborator comments"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/justifications/edit/:id",
+          "title": "Edit Equipment Justification",
+          "purpose": "Draft and edit equipment justification narratives with integrated collaborator feedback and compliance flags.",
+          "inputs": [
+            "justification content",
+            "collaborator comments",
+            "budget lines"
+          ],
+          "outputs": [
+            "updated justification",
+            "compliance checklist",
+            "conflict flags"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/budget",
+          "title": "Budget Management",
+          "purpose": "View and edit budget tables focusing on equipment cost lines linked to justifications.",
+          "inputs": [
+            "budget data",
+            "project selection"
+          ],
+          "outputs": [
+            "updated budget",
+            "validation status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/impact",
+          "title": "Impact Analysis",
+          "purpose": "View impact summaries linking equipment requests to research outcomes and benefits.",
+          "inputs": [
+            "project objectives",
+            "budget data"
+          ],
+          "outputs": [
+            "impact summaries"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/compliance",
+          "title": "Compliance Dashboard",
+          "purpose": "Overview of compliance status for equipment justifications and budgets against funder guidelines.",
+          "inputs": [
+            "justification and budget data"
+          ],
+          "outputs": [
+            "compliance checklists",
+            "flagged issues"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/justifications",
+          "method": "GET",
+          "purpose": "Retrieve list of equipment justifications for a project or user.",
+          "requestShape": "{ projectId: string, userId?: string }",
+          "responseShape": "{ justifications: EquipmentJustification[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/justifications",
+          "method": "POST",
+          "purpose": "Create or update an equipment justification draft.",
+          "requestShape": "{ projectId: string, content: string, version?: number }",
+          "responseShape": "{ justificationId: string, version: number }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/collaborator-inputs",
+          "method": "POST",
+          "purpose": "Add collaborator comment or input linked to a justification.",
+          "requestShape": "{ justificationId: string, comment: string }",
+          "responseShape": "{ inputId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets",
+          "method": "GET",
+          "purpose": "Retrieve budget data for a project.",
+          "requestShape": "{ projectId: string }",
+          "responseShape": "{ budget: Budget }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/budgets",
+          "method": "POST",
+          "purpose": "Create or update budget data for a project.",
+          "requestShape": "{ projectId: string, budgetData: json }",
+          "responseShape": "{ budgetId: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/compliance/check",
+          "method": "POST",
+          "purpose": "Run compliance checks on justification and budget data.",
+          "requestShape": "{ justificationId: string, budgetId: string }",
+          "responseShape": "{ complianceFlags: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/impact/summary",
+          "method": "POST",
+          "purpose": "Generate impact analysis summary based on project objectives and budget.",
+          "requestShape": "{ projectId: string }",
+          "responseShape": "{ impactSummary: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Scheduled Compliance Recheck",
+          "trigger": "Daily scheduled job",
+          "purpose": "Re-run compliance checks on all active justifications and budgets to reflect guideline updates or data changes."
+        },
+        {
+          "name": "Impact Summary Update",
+          "trigger": "Triggered on project objectives or budget updates",
+          "purpose": "Refresh impact analysis summaries to keep outputs current."
+        }
+      ],
+      "edgeCases": [
+        "Conflicting collaborator inputs that cannot be automatically resolved require manual intervention and clear UI warnings.",
+        "Funder guideline updates invalidating previously compliant justifications necessitate notification and rework workflows.",
+        "Budget entries missing or inconsistent with justification narratives cause validation failures and block export.",
+        "Handling incomplete or partial collaborator inputs gracefully without blocking progress.",
+        "Ensuring data privacy and access control in multi-institutional collaboration scenarios.",
+        "Version conflicts when multiple users edit justification drafts simultaneously."
+      ],
+      "nonGoals": [
+        "Providing legal, financial, or funding advice beyond structured text generation and compliance flagging.",
+        "Guaranteeing grant funding success or approval.",
+        "Managing full grant proposal workflows beyond equipment justification and related budget integration.",
+        "Handling non-equipment budget lines or general narrative harmonization unrelated to equipment justification."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates and selects a project on /justifications page.",
+        "UI fetches list of equipment justifications via GET /api/justifications with projectId and optionally userId.",
+        "User selects or creates a justification draft; UI loads justification content, version history, and collaborator comments.",
+        "On /justifications/edit/:id, user edits justification content and views collaborator inputs fetched from /api/collaborator-inputs linked to justificationId.",
+        "User submits updates to justification via POST /api/justifications with content and version for optimistic concurrency control.",
+        "Collaborator comments are added via POST /api/collaborator-inputs with justificationId and comment.",
+        "Budget data for the project is fetched via GET /api/budgets with projectId and displayed on /budget page.",
+        "User edits budget lines; updates are sent via POST /api/budgets with projectId and budgetData JSON.",
+        "Compliance checks are triggered manually or automatically by POST /api/compliance/check with justificationId and budgetId; compliance flags returned and stored with justification.",
+        "Impact summaries are generated via POST /api/impact/summary with projectId, using project objectives and budget data, and displayed on /impact page.",
+        "Background jobs run daily or on data changes to re-check compliance and update impact summaries, triggering notifications if issues arise.",
+        "UI components highlight conflicts, compliance flags, and validation statuses dynamically based on API responses.",
+        "Export functionality pulls finalized justification content and formatted text blocks for download in funder-required formats."
+      ],
+      "validationRules": [
+        "Justification content must be non-empty string and within reasonable length limits (e.g., max 10,000 characters).",
+        "Version number must be provided on updates to enforce optimistic concurrency; reject if version mismatch.",
+        "Collaborator comments must be non-empty strings and linked to existing justification IDs.",
+        "Budget data JSON must conform to predefined schema including required fields for equipment cost lines and numeric validations (e.g., positive numbers).",
+        "Budget entries must pass funder guideline validations before being marked as validated.",
+        "Compliance check requests must include valid justificationId and budgetId referencing existing records.",
+        "ProjectId and userId parameters must correspond to existing authorized entities.",
+        "All inputs must be sanitized to prevent injection attacks and ensure data integrity.",
+        "Conflict detection logic flags overlapping collaborator inputs based on timestamps and content overlap heuristics.",
+        "Access control validations ensure users can only view or modify justifications and budgets for projects they are authorized for."
+      ],
+      "errorHandling": [
+        "API returns 401 Unauthorized if user is not authenticated or lacks access rights.",
+        "API returns 400 Bad Request with descriptive error messages for validation failures (e.g., missing fields, invalid data formats).",
+        "On version conflicts during justification updates, API returns 409 Conflict with current version info to prompt user refresh.",
+        "Server errors return 500 Internal Server Error with generic message; detailed logs kept server-side.",
+        "Conflict detection returns warnings in API responses; UI surfaces these with clear instructions for manual resolution.",
+        "Background job failures log errors and send alerts to admins; retries scheduled with exponential backoff.",
+        "Missing or inconsistent budget data blocks export and compliance checks, returning errors with actionable messages.",
+        "Partial or incomplete collaborator inputs are accepted but flagged; UI allows users to complete or discard them.",
+        "Network or transient errors trigger client-side retries with exponential backoff and user notifications.",
+        "All error responses follow a consistent JSON structure with 'errorCode', 'message', and optional 'details' fields."
+      ],
+      "securityNotes": [
+        "All API routes require user authentication and authorization checks based on project membership and roles.",
+        "Data access is scoped to user permissions to prevent unauthorized viewing or editing of justifications, budgets, or collaborator inputs.",
+        "Input data is validated and sanitized to prevent injection attacks, XSS, and other common vulnerabilities.",
+        "Version control and optimistic concurrency prevent data overwrites from simultaneous edits.",
+        "Sensitive data such as user identifiers and comments are stored securely with audit trails.",
+        "Background jobs run with restricted permissions and secure access to APIs and data stores.",
+        "Exported documents exclude sensitive collaborator metadata unless explicitly authorized.",
+        "Use HTTPS for all client-server communications to protect data in transit.",
+        "Implement rate limiting and logging to detect and mitigate abuse or suspicious activity.",
+        "Ensure compliance with applicable data privacy regulations for multi-institutional collaboration."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user with access to a project",
+          "when": "They navigate to /justifications and request justifications list",
+          "then": "They receive a list of equipment justifications filtered by project and optionally by user"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user editing a justification draft with version 3",
+          "when": "They submit an update with version 3",
+          "then": "The update is accepted, version increments to 4, and changes are saved"
+        },
+        {
+          "id": "AT-003",
+          "given": "Two users editing the same justification simultaneously",
+          "when": "User A submits update with version 3, then User B submits update with version 3",
+          "then": "User B receives a 409 Conflict error indicating version mismatch"
+        },
+        {
+          "id": "AT-004",
+          "given": "A collaborator adds a comment linked to a justification",
+          "when": "They submit the comment via POST /api/collaborator-inputs",
+          "then": "The comment is saved, linked correctly, and visible in collaborator inputs list"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user updates budget data with invalid negative equipment cost",
+          "when": "They submit the budget update",
+          "then": "The API rejects the update with 400 Bad Request and validation error message"
+        },
+        {
+          "id": "AT-006",
+          "given": "A justification and budget are submitted for compliance check",
+          "when": "The compliance check API is called",
+          "then": "Compliance flags are returned reflecting guideline adherence and any issues"
+        },
+        {
+          "id": "AT-007",
+          "given": "Funder guidelines are updated",
+          "when": "Background job runs compliance recheck",
+          "then": "Justifications with outdated compliance pass are flagged and notifications sent"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to access justification for unauthorized project",
+          "when": "They request justification data",
+          "then": "They receive 401 Unauthorized error"
+        },
+        {
+          "id": "AT-009",
+          "given": "Multiple collaborator inputs overlap in content",
+          "when": "Conflict detection runs",
+          "then": "Conflicts are flagged and surfaced in UI with instructions for manual resolution"
+        },
+        {
+          "id": "AT-010",
+          "given": "User exports finalized justification",
+          "when": "They trigger export function",
+          "then": "Formatted text blocks are generated in funder-required format without sensitive metadata"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models and migrate database",
+        "Implement authentication and authorization middleware",
+        "Develop API routes for justifications management with version control",
+        "Develop API routes for collaborator inputs with conflict detection",
+        "Develop API routes for budget management with validation",
+        "Develop API routes for compliance checking integrating funder guidelines",
+        "Develop API routes for impact analysis summaries",
+        "Implement background jobs for compliance recheck and impact summary update",
+        "Build UI pages: /justifications list with filters and version history",
+        "Build UI page: /justifications/edit/:id with editor, collaborator comments, compliance flags",
+        "Build UI page: /budget for budget viewing and editing with validation feedback",
+        "Build UI page: /impact for impact summary display",
+        "Build UI page: /compliance dashboard showing compliance status and flagged issues",
+        "Implement export functionality for justification narratives",
+        "Add comprehensive error handling and user notifications in UI",
+        "Perform security review and testing",
+        "Write and run acceptance tests"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/justifications/index.tsx",
+          "/justifications/edit/[id].tsx",
+          "/budget/index.tsx",
+          "/impact/index.tsx",
+          "/compliance/index.tsx"
+        ],
+        "apiFilesToCreate": [
+          "/api/justifications/index.ts",
+          "/api/collaborator-inputs/index.ts",
+          "/api/budgets/index.ts",
+          "/api/compliance/check.ts",
+          "/api/impact/summary.ts"
+        ],
+        "prismaModelsToAdd": [
+          "EquipmentJustification",
+          "CollaboratorInput",
+          "Budget",
+          "FunderGuideline",
+          "Project"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions and gather any missing constraints or details about the equipment justification and impact planning tool requirements.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}} Please provide detailed clarifying questions or missing constraints about the equipment justification and impact planner tool requirements to ensure comprehensive coverage. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define the final set of UI pages, data models, and API endpoints needed for the equipment justification and impact planner based on refined requirements.",
+        "promptTemplate": "Based on the refined requirements and blueprint: {{BLUEPRINT}} {{EXPANDED}} Generate a detailed specification of UI pages, data models, and API routes needed to implement the equipment justification and impact planner. Include rationale for design choices. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Produce starter code stubs for the UI pages and API routes defined in the architecture phase to accelerate development.",
+        "promptTemplate": "Using the finalized design specs for the equipment justification and impact planner including pages and API routes: {{BLUEPRINT}} {{EXPANDED}} Generate code stubs and scaffolding for the main UI pages and API endpoints to bootstrap development. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Plan the integration of UI, API, and database layers to create a cohesive and functional application.",
+        "promptTemplate": "With the page stubs and API routes ready for the equipment justification and impact planner: {{BLUEPRINT}} {{EXPANDED}} Provide detailed instructions and code snippets to integrate the UI pages with the backend APIs and database models, ensuring data flow, authorization, and error handling are correctly implemented. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

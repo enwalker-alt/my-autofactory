@@ -1,0 +1,752 @@
+{
+  "slug": "annotation-harmonizer-basic",
+  "title": "Annotation Harmonizer Basic",
+  "description": "Upload multiple annotated datasets and annotation schemas to generate a consolidated conflict report and label mapping suggestions for academic research data harmonization.",
+  "inputLabel": "Paste annotation data or schema JSON text, or upload annotation dataset files (CSV, JSON, Excel) and schema documents",
+  "outputLabel": "Harmonization summary, conflict report, and suggested label mappings",
+  "systemPrompt": "You are an expert assistant for harmonizing manual annotations from multiple academic research datasets. Accept input as pasted JSON text or uploaded dataset files (CSV, JSON, Excel) and annotation schema documents. Validate inputs strictly for format correctness and privacy compliance. Refuse any input containing sensitive personal data. Analyze annotations to detect conflicts, discrepancies, and overlapping labels. Generate a detailed plain text conflict report highlighting annotation inconsistencies across annotators and sites. Provide suggestions for label reconciliation such as merges, splits, or redefinitions, but do not perform automated merges without explicit human confirmation. Output a consolidated harmonized annotation summary with standardized label mappings. Enforce that all outputs are safe for academic data sharing and include disclaimers that final coding decisions remain with research teams. Respond only in plain text. If input is invalid or disallowed, return an error message. Do not accept requests unrelated to annotation harmonization.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets"
+  ],
+  "presets": [
+    {
+      "label": "Conflict Detection",
+      "prompt": "Analyze the provided annotation datasets and schemas. Generate a detailed conflict report describing inconsistencies, discrepancies, and overlapping labels across annotators and sites."
+    },
+    {
+      "label": "Label Mapping Suggestions",
+      "prompt": "Based on the detected conflicts, suggest label reconciliation proposals including merges, splits, or redefinitions. Emphasize that these are suggestions requiring human review."
+    },
+    {
+      "label": "Harmonized Annotation Summary",
+      "prompt": "Produce a consolidated summary of harmonized annotations with standardized label mappings derived from the input datasets and schemas."
+    }
+  ],
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Collaborative Data Annotation Harmonizer",
+      "niche": {
+        "role": "Academic research data managers and multi-site study coordinators",
+        "scenario": "Coordinating and harmonizing diverse manual annotations or coded labels applied by multiple annotators across datasets collected at different sites or times"
+      },
+      "problem": "In multi-site academic research projects, datasets often require manual annotations or coding (e.g., qualitative coding, image labeling, event tagging) performed by multiple annotators with varying schemas and conventions. This results in inconsistent, conflicting, or overlapping annotations that hinder downstream analysis, reproducibility, and data integration. Existing tools focus on data cleaning or harmonization of numeric or metadata fields but do not specifically address iterative, collaborative, and schema-driven annotation harmonization workflows.",
+      "inputs": [
+        "Multiple annotated dataset files (e.g., CSV, JSON, Excel) with annotator IDs and timestamps",
+        "Annotation schemas or codebooks describing labels and definitions (uploaded documents or structured text)",
+        "Notes or comments from annotators regarding ambiguous cases or annotation guidelines"
+      ],
+      "outputs": [
+        "Consolidated, harmonized annotation dataset with standardized label mappings",
+        "Detailed conflict and discrepancy reports highlighting inconsistent annotations across annotators and sites",
+        "Suggested reconciliation proposals including label merges, splits, or redefinitions based on pattern analysis",
+        "Versioned annotation harmonization logs and audit trails documenting changes and approvals"
+      ],
+      "whyItWins": [
+        "Addresses a distinct gap for academic data harmonization focused specifically on collaborative manual annotation workflows",
+        "Enables repeated, iterative review and refinement cycles with clear version control and communication between annotators and coordinators",
+        "Supports complex label schema mapping beyond numeric data harmonization, incorporating qualitative coding and annotation metadata",
+        "Improves reproducibility, data quality, and integration readiness for multi-site research projects with annotated datasets"
+      ],
+      "upgradePath": {
+        "today": "A lightweight single-page app to upload multiple annotated datasets and schema documents, generate basic conflict reports, and produce standardized label mapping suggestions",
+        "in90Days": "Add multi-user collaboration features, annotation versioning, comment threads for ambiguous cases, and manual reconciliation tools with exportable harmonized datasets",
+        "in12Months": "Develop a multi-page system incorporating role-based access, workflow management for annotation rounds, integration with common annotation tools, interactive visualization of annotation overlaps, and API support for seamless dataset updates"
+      },
+      "riskNotes": [
+        "Ensure uploaded datasets and annotations do not include sensitive personal data to maintain privacy compliance",
+        "Avoid automated label merging without human review to prevent data misinterpretation",
+        "Maintain clear disclaimers that the tool supports harmonization but final coding decisions remain with research teams",
+        "Handle diverse annotation formats safely and validate input consistency to avoid data corruption"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research data managers and multi-site study coordinators to iteratively harmonize manual annotations across diverse datasets and annotators, providing standardized label mappings, conflict reports, versioned audit trails, and communication tools to improve data quality and reproducibility.",
+      "primaryUser": "Academic research data managers and multi-site study coordinators",
+      "successMetrics": [
+        "Number of datasets successfully harmonized with multi-annotator inputs",
+        "User engagement in iterative review and reconciliation cycles",
+        "Reduction in annotation conflicts and discrepancies over versions",
+        "Positive user feedback on collaboration and harmonization workflow efficiency",
+        "Exported harmonized datasets adopted in downstream analyses"
+      ],
+      "components": [
+        {
+          "id": "ui-annotation-harmonizer",
+          "name": "Annotation Harmonizer UI",
+          "type": "ui",
+          "responsibility": "Provide multi-page user interface for dataset and schema uploads, visualization of conflicts, reconciliation workflows, comment threads, version browsing, and export functions.",
+          "dependsOn": [
+            "api-annotation-harmonizer",
+            "data-annotation-storage"
+          ],
+          "notes": [
+            "Pages include upload, dashboard, conflict reports, reconciliation editor, version history, and user management.",
+            "Must handle large datasets efficiently and provide clear visualizations of annotation overlaps and conflicts.",
+            "Supports role-based UI elements for coordinators vs annotators."
+          ]
+        },
+        {
+          "id": "api-annotation-harmonizer",
+          "name": "Annotation Harmonizer API",
+          "type": "api",
+          "responsibility": "Expose RESTful endpoints for uploading datasets and schemas, retrieving conflict reports, managing annotation versions, handling comments, user authentication, and exporting harmonized data.",
+          "dependsOn": [
+            "data-annotation-storage",
+            "integration-annotation-tools"
+          ],
+          "notes": [
+            "Implements input validation and format consistency checks.",
+            "Supports pagination and filtering for large datasets and version histories.",
+            "Enforces authentication and authorization for multi-user collaboration."
+          ]
+        },
+        {
+          "id": "data-annotation-storage",
+          "name": "Annotation Data Storage",
+          "type": "data",
+          "responsibility": "Persist uploaded datasets, annotation schemas, harmonized label mappings, conflict reports, versioned audit logs, user data, and comment threads.",
+          "dependsOn": [],
+          "notes": [
+            "Schema designed to support flexible annotation formats (CSV, JSON, Excel) with metadata.",
+            "Versioning system to track changes and approvals over harmonization cycles.",
+            "Indexes on annotator IDs, timestamps, and label codes for efficient querying."
+          ]
+        },
+        {
+          "id": "job-conflict-analysis",
+          "name": "Conflict Analysis Job",
+          "type": "job",
+          "responsibility": "Background job to analyze uploaded annotations, detect conflicts and discrepancies across annotators and sites, and generate detailed reports and suggested reconciliation proposals.",
+          "dependsOn": [
+            "data-annotation-storage"
+          ],
+          "notes": [
+            "Runs asynchronously after dataset/schema upload or version update.",
+            "Includes safeguards to avoid automated merges without human review.",
+            "Handles edge cases such as missing annotations, ambiguous labels, and inconsistent schemas."
+          ]
+        },
+        {
+          "id": "integration-annotation-tools",
+          "name": "Annotation Tools Integration",
+          "type": "integration",
+          "responsibility": "Provide connectors and import/export adapters for common annotation tools and formats to facilitate seamless dataset updates and integration.",
+          "dependsOn": [
+            "api-annotation-harmonizer"
+          ],
+          "notes": [
+            "Supports common qualitative coding and image labeling tools used in academia.",
+            "Plans for future API support to enable automated synchronization."
+          ]
+        },
+        {
+          "id": "job-versioning-audit",
+          "name": "Versioning and Audit Trail Job",
+          "type": "job",
+          "responsibility": "Manage creation of version snapshots on harmonization updates, maintain audit logs of changes, approvals, and user actions for reproducibility and accountability.",
+          "dependsOn": [
+            "data-annotation-storage"
+          ],
+          "notes": [
+            "Triggers on reconciliation actions and export events.",
+            "Supports rollback and comparison between versions."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "User",
+          "purpose": "Store user credentials, roles, and profile information for authentication and authorization.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "displayName",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        },
+        {
+          "name": "Dataset",
+          "purpose": "Represent uploaded annotated datasets with metadata, file references, and upload info.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploaderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileFormat",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "annotationData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "metadata",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "uploaderId",
+            "uploadDate"
+          ]
+        },
+        {
+          "name": "AnnotationSchema",
+          "purpose": "Store annotation schemas or codebooks uploaded by users describing labels and definitions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploaderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "schemaName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "schemaContent",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "uploaderId",
+            "schemaName"
+          ]
+        },
+        {
+          "name": "HarmonizationVersion",
+          "purpose": "Track versions of harmonized annotation datasets including mappings, conflict reports, and approval status.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetIds",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "schemaId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionNumber",
+              "type": "number",
+              "optional": false
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "harmonizedData",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "conflictReport",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "reconciliationProposals",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "approvalStatus",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "auditTrail",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "versionNumber",
+            "schemaId",
+            "approvalStatus"
+          ]
+        },
+        {
+          "name": "CommentThread",
+          "purpose": "Store threaded comments and notes from annotators and coordinators regarding ambiguous cases or reconciliation discussions.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "versionId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parentCommentId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "resolved",
+              "type": "boolean",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "versionId",
+            "authorId",
+            "parentCommentId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/upload",
+          "title": "Upload Datasets and Schemas",
+          "purpose": "Allow users to upload annotated datasets and annotation schemas/codebooks for harmonization processing.",
+          "inputs": [
+            "Dataset files (CSV, JSON, Excel)",
+            "Schema documents or structured text"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Preliminary validation feedback"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/dashboard",
+          "title": "Project Dashboard",
+          "purpose": "Overview of uploaded datasets, harmonization versions, conflict reports, and collaboration status.",
+          "inputs": [],
+          "outputs": [
+            "List of datasets and versions",
+            "Summary conflict metrics",
+            "Recent comments and activity"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/conflicts/:versionId",
+          "title": "Conflict Report and Analysis",
+          "purpose": "Visualize detailed annotation conflicts and discrepancies for a specific harmonization version.",
+          "inputs": [
+            "Version ID"
+          ],
+          "outputs": [
+            "Conflict report details",
+            "Annotation overlap visualizations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/reconciliation/:versionId",
+          "title": "Reconciliation Editor",
+          "purpose": "Interface for coordinators and annotators to review conflicts, propose merges/splits/redefinitions, comment, and approve harmonization changes.",
+          "inputs": [
+            "Version ID",
+            "User inputs on reconciliations and comments"
+          ],
+          "outputs": [
+            "Updated reconciliation proposals",
+            "Comment threads",
+            "Approval status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/versions",
+          "title": "Version History",
+          "purpose": "Browse and compare previous harmonization versions with audit trails and export options.",
+          "inputs": [],
+          "outputs": [
+            "List of versions",
+            "Diff views",
+            "Export buttons"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/user-management",
+          "title": "User and Role Management",
+          "purpose": "Manage user accounts, roles, and permissions for multi-user collaboration.",
+          "inputs": [
+            "User data inputs"
+          ],
+          "outputs": [
+            "User lists",
+            "Role assignment confirmation"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/upload/dataset",
+          "method": "POST",
+          "purpose": "Upload annotated dataset files with metadata.",
+          "requestShape": "{ file: binary, metadata: json }",
+          "responseShape": "{ success: boolean, datasetId: string, errors: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/upload/schema",
+          "method": "POST",
+          "purpose": "Upload annotation schema or codebook documents.",
+          "requestShape": "{ file: binary, description: string }",
+          "responseShape": "{ success: boolean, schemaId: string, errors: string[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/conflicts/:versionId",
+          "method": "GET",
+          "purpose": "Retrieve conflict report and analysis for a harmonization version.",
+          "requestShape": "{}",
+          "responseShape": "{ conflictReport: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/reconciliation/:versionId",
+          "method": "POST",
+          "purpose": "Submit reconciliation proposals, comments, and approvals.",
+          "requestShape": "{ proposals: json, comments: json, approvalStatus: string }",
+          "responseShape": "{ success: boolean, updatedVersion: json }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/versions",
+          "method": "GET",
+          "purpose": "List all harmonization versions with metadata and statuses.",
+          "requestShape": "{}",
+          "responseShape": "{ versions: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/export/:versionId",
+          "method": "GET",
+          "purpose": "Export harmonized annotation dataset for a specific version.",
+          "requestShape": "{}",
+          "responseShape": "{ file: binary }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users",
+          "method": "GET",
+          "purpose": "Retrieve list of users and roles.",
+          "requestShape": "{}",
+          "responseShape": "{ users: json[] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/users",
+          "method": "POST",
+          "purpose": "Create or update user accounts and roles.",
+          "requestShape": "{ userData: json }",
+          "responseShape": "{ success: boolean, userId: string }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Conflict Analysis Job",
+          "trigger": "After dataset or schema upload, or harmonization version update",
+          "purpose": "Analyze annotations to detect conflicts, generate discrepancy reports, and suggest reconciliation proposals."
+        },
+        {
+          "name": "Versioning and Audit Trail Job",
+          "trigger": "On reconciliation submission and approval events",
+          "purpose": "Create version snapshots, maintain audit logs, and support rollback/comparison features."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded datasets contain sensitive personal data violating privacy compliance - system must reject or warn users.",
+        "Annotation files with inconsistent or corrupted formats causing parsing failures - provide clear error messages and validation feedback.",
+        "Conflicting labels that cannot be automatically reconciled - require manual human review and explicit approval.",
+        "Annotators upload overlapping annotations with missing timestamps or IDs - system flags incomplete metadata for resolution.",
+        "Simultaneous edits by multiple users causing reconciliation conflicts - implement locking or merge conflict resolution strategies.",
+        "Rollback of harmonization versions with dependent downstream exports - warn users about potential data inconsistencies."
+      ],
+      "nonGoals": [
+        "Automated final annotation coding or merging without human review.",
+        "Handling numeric or metadata field harmonization unrelated to manual annotation workflows.",
+        "Storing or processing sensitive personal health information or other regulated data.",
+        "Replacing specialized annotation tools but rather integrating with them.",
+        "Providing advanced statistical analysis or machine learning on annotations beyond conflict detection and suggestion."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User authenticates via login and obtains session token.",
+        "User uploads dataset files and annotation schemas via /upload page, which POST to /api/upload/dataset and /api/upload/schema respectively.",
+        "API validates file formats, metadata, and schema content, stores data in Annotation Data Storage (Prisma models Dataset and AnnotationSchema).",
+        "Upon successful upload, Conflict Analysis Job is triggered asynchronously to analyze annotations, detect conflicts, and generate conflict reports and reconciliation proposals stored in HarmonizationVersion.",
+        "User accesses /dashboard to view uploaded datasets, harmonization versions, conflict summaries, and recent comments via API calls to /api/versions and /api/conflicts/:versionId.",
+        "User navigates to /conflicts/:versionId to retrieve detailed conflict reports and visualizations via /api/conflicts/:versionId GET endpoint.",
+        "On /reconciliation/:versionId, users submit reconciliation proposals, comments, and approval status via POST to /api/reconciliation/:versionId.",
+        "Versioning and Audit Trail Job triggers on reconciliation submission and approval to create version snapshots, update audit logs, and enable rollback/comparison.",
+        "Users browse version history on /versions page, fetching version lists and diffs via /api/versions.",
+        "Users export harmonized datasets for a specific version via /api/export/:versionId GET endpoint, receiving binary files.",
+        "User and role management is handled on /user-management page with GET and POST calls to /api/users for listing and updating user accounts and roles.",
+        "Integration-annotation-tools component interacts with API to import/export datasets in common annotation tool formats, facilitating seamless updates."
+      ],
+      "validationRules": [
+        "Dataset uploads must be in accepted formats (CSV, JSON, Excel) and parsable without errors.",
+        "Uploaded schemas must conform to expected JSON structure describing labels and definitions.",
+        "Metadata fields must include required fields such as uploaderId, uploadDate, and fileFormat.",
+        "User input on reconciliation proposals and comments must be well-formed JSON and non-empty content.",
+        "Approval status values must be from predefined enum (e.g., 'pending', 'approved', 'rejected').",
+        "User creation and updates require valid email format, unique email, and valid role assignment.",
+        "File uploads must be scanned to reject sensitive personal data violating privacy compliance.",
+        "API endpoints require authenticated user sessions; unauthorized requests are rejected.",
+        "Pagination and filtering parameters must be validated for type and range.",
+        "Conflict reports and harmonized data JSON must be consistent with schema definitions and harmonization version constraints."
+      ],
+      "errorHandling": [
+        "Return HTTP 400 with detailed error messages for invalid input data or file parsing failures.",
+        "Return HTTP 401 Unauthorized for unauthenticated API requests.",
+        "Return HTTP 403 Forbidden for unauthorized actions based on user roles.",
+        "Return HTTP 404 Not Found for invalid resource identifiers (e.g., versionId, datasetId).",
+        "Return HTTP 500 Internal Server Error for unexpected failures with logging for diagnostics.",
+        "API responses include 'errors' array with user-friendly messages for frontend display.",
+        "Upload endpoints provide preliminary validation feedback highlighting specific file or metadata issues.",
+        "Conflict analysis job failures are logged and surfaced in dashboard notifications for admin attention.",
+        "Simultaneous reconciliation edits trigger conflict resolution errors with instructions to reload or retry.",
+        "Rollback attempts with dependent downstream exports produce warnings and require explicit user confirmation."
+      ],
+      "securityNotes": [
+        "Enforce authentication on all API routes with session or token-based mechanisms.",
+        "Implement role-based access control (RBAC) to differentiate coordinators and annotators UI and API permissions.",
+        "Sanitize and validate all user inputs to prevent injection attacks.",
+        "Store hashed passwords securely using strong hashing algorithms (e.g., bcrypt).",
+        "Restrict file upload size and scan contents to prevent malicious files and sensitive data leaks.",
+        "Use HTTPS for all client-server communications.",
+        "Audit trail logs must be immutable and tamper-evident to ensure accountability.",
+        "Implement rate limiting on API endpoints to mitigate brute force and denial-of-service attacks.",
+        "Secure background job triggers and data access to prevent unauthorized data exposure.",
+        "Ensure export files do not contain sensitive or unauthorized data."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated user on the /upload page with a valid dataset file and schema document.",
+          "when": "The user uploads the dataset and schema files.",
+          "then": "The system validates inputs, stores data, triggers conflict analysis job, and returns success confirmation with datasetId and schemaId."
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the /dashboard page.",
+          "when": "The user views the dashboard.",
+          "then": "The system displays a list of uploaded datasets, harmonization versions, conflict summaries, and recent comments."
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user accesses /conflicts/:versionId with a valid versionId.",
+          "when": "The user requests conflict report data.",
+          "then": "The system returns detailed conflict report JSON and visualizations without errors."
+        },
+        {
+          "id": "AT-004",
+          "given": "A coordinator user on /reconciliation/:versionId page.",
+          "when": "The user submits reconciliation proposals, comments, and approval status.",
+          "then": "The system validates inputs, updates harmonization version, triggers audit job, and returns updated version data with success."
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user on /versions page.",
+          "when": "The user requests version history and diffs.",
+          "then": "The system returns a paginated list of harmonization versions with metadata and diff views."
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user requests export of harmonized dataset via /api/export/:versionId.",
+          "when": "The user initiates export.",
+          "then": "The system returns a binary file representing the harmonized dataset for the specified version."
+        },
+        {
+          "id": "AT-007",
+          "given": "An authenticated admin user on /user-management page.",
+          "when": "The user creates or updates a user account with role assignment.",
+          "then": "The system validates input, updates database, and returns success confirmation with userId."
+        },
+        {
+          "id": "AT-008",
+          "given": "An unauthenticated user attempts to access any protected API endpoint.",
+          "when": "The user sends a request without valid authentication.",
+          "then": "The system returns HTTP 401 Unauthorized error."
+        },
+        {
+          "id": "AT-009",
+          "given": "A user uploads a dataset containing sensitive personal data.",
+          "when": "The upload is processed.",
+          "then": "The system rejects the upload with a clear error message about privacy compliance."
+        },
+        {
+          "id": "AT-010",
+          "given": "Two users attempt simultaneous edits on the same reconciliation version.",
+          "when": "Both submit reconciliation proposals concurrently.",
+          "then": "The system detects conflict, rejects the second submission with conflict resolution instructions."
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, Dataset, AnnotationSchema, HarmonizationVersion, CommentThread.",
+        "Implement authentication and role-based authorization middleware.",
+        "Develop API routes for user management (/api/users GET, POST).",
+        "Develop API routes for dataset and schema upload with validation (/api/upload/dataset, /api/upload/schema).",
+        "Implement background job infrastructure and Conflict Analysis Job trigger on upload.",
+        "Develop API routes for conflict report retrieval (/api/conflicts/:versionId).",
+        "Develop API routes for reconciliation submission (/api/reconciliation/:versionId) with validation and audit trail triggers.",
+        "Implement Versioning and Audit Trail Job triggered on reconciliation updates.",
+        "Develop API routes for version listing and export (/api/versions, /api/export/:versionId).",
+        "Build Next.js pages: /upload, /dashboard, /conflicts/[versionId], /reconciliation/[versionId], /versions, /user-management with appropriate API integration and UI role-based controls.",
+        "Integrate annotation tools import/export adapters in API and UI.",
+        "Implement error handling, input validation, and security hardening across API and UI.",
+        "Write acceptance tests and perform manual testing for edge cases and concurrency.",
+        "Deploy and monitor background jobs and audit logs."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/upload",
+          "/dashboard",
+          "/conflicts/[versionId]",
+          "/reconciliation/[versionId]",
+          "/versions",
+          "/user-management"
+        ],
+        "apiFilesToCreate": [
+          "/api/upload/dataset.ts",
+          "/api/upload/schema.ts",
+          "/api/conflicts/[versionId].ts",
+          "/api/reconciliation/[versionId].ts",
+          "/api/versions.ts",
+          "/api/export/[versionId].ts",
+          "/api/users.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Dataset",
+          "AnnotationSchema",
+          "HarmonizationVersion",
+          "CommentThread"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask for missing constraints or clarifications about annotation harmonization workflows, data formats, or user roles.",
+        "promptTemplate": "Given the current blueprint {{BLUEPRINT}} and idea {{IDEA}}, please provide any missing constraints, requirements, or clarifications needed for the annotation harmonization tool. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define detailed page flows, data models, and API endpoints for the annotation harmonizer platform.",
+        "promptTemplate": "Using the refined idea {{IDEA}} and blueprint {{BLUEPRINT}}, finalize the pages, data models, and API routes needed. Include details on user roles and collaboration features. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate code stubs for the main pages and API routes of the annotation harmonizer.",
+        "promptTemplate": "Based on the finalized blueprint {{BLUEPRINT}}, generate Next.js page and API route stubs for the annotation harmonizer. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Implement integration between frontend pages, API endpoints, and database models with authentication and validation.",
+        "promptTemplate": "Given the page stubs and data models in blueprint {{BLUEPRINT}}, implement integration wiring connecting frontend pages, API endpoints, and Prisma database models. Include authentication and input validation. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}

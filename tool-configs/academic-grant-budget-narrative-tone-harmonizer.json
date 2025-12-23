@@ -1,0 +1,552 @@
+{
+  "slug": "academic-grant-budget-narrative-tone-harmonizer",
+  "title": "Academic Research Grant Budget Narrative Tone Harmonizer",
+  "description": "Upload multiple draft budget narrative texts and optional funder style guidelines to generate a harmonized budget narrative draft with consistent tone and style, including tone and clarity suggestions, summary report, and sample rephrased snippets to improve multi-institutional grant proposals.",
+  "inputLabel": "Upload draft budget narrative texts and optional funder style guidelines (txt, docx, pdf text) or paste text sections",
+  "outputLabel": "Harmonized narrative draft, tone & clarity suggestions, summary report, and sample rephrased snippets",
+  "systemPrompt": "You are an expert assistant specialized in harmonizing academic research grant budget narratives. Accept multiple draft narrative texts from different institutions and optional funder style guidelines. Validate all inputs strictly: only accept text files in txt, docx, or pdf (text-extractable) formats up to 5MB each. Reject any input containing confidential financial data or malformed content. Generate a unified harmonized budget narrative draft with consistent tone and style aligned with funder guidelines if provided. Provide detailed section-level tone and clarity improvement suggestions, a summary report highlighting tone inconsistencies with actionable recommendations, and sample rephrased narrative snippets to guide collaborators. The output must be in plain text. Do not generate or suggest any numeric budget data or legally binding content. Include disclaimers that tone suggestions are advisory and do not guarantee funding success. Refuse any disallowed requests or inputs that violate content policies. Maintain user data confidentiality and do not persist any confidential financial data beyond session. Respond only with the requested outputs without unrelated content.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Focus on Tone Consistency",
+      "prompt": "Prioritize harmonizing the tone and style of the budget narratives for consistent professionalism and clarity.",
+      "hint": "Refines output to emphasize tone alignment over other aspects."
+    },
+    {
+      "label": "Include Funder Style Guidelines",
+      "prompt": "Incorporate provided funder style guidelines strictly to ensure adherence to funder-specific narrative preferences.",
+      "hint": "Ensures harmonization respects funder style constraints."
+    },
+    {
+      "label": "Provide Detailed Improvement Suggestions",
+      "prompt": "Offer explicit, actionable section-level tone and clarity improvement suggestions along with sample rephrased snippets.",
+      "hint": "Enhances collaborative alignment and revision efficiency."
+    },
+    {
+      "label": "Summary Report Emphasis",
+      "prompt": "Generate a comprehensive summary report highlighting tone inconsistencies and recommended revisions across drafts.",
+      "hint": "Helps reviewers quickly assess areas needing attention."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, the output JSON includes fields: harmonizedNarrative (string), toneSuggestions (array of {section:string, suggestion:string}), summaryReport (string), sampleRephrases (array of strings).",
+  "clarifyPrompt": "Please upload your draft budget narrative files (txt, docx, or pdf text) from different institutions and optionally upload or paste funder style guideline documents. Ensure files do not contain confidential financial data and meet size limits (max 5MB each). Would you like to proceed or need assistance with file preparation?",
+  "finalizePrompt": "Confirm submission of your uploaded draft narratives and optional funder style guidelines for harmonization processing. The resulting harmonized narrative and tone analysis will be returned shortly. Do you wish to proceed?",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Grant Collaborative Budget Narrative Tone Harmonizer",
+      "niche": {
+        "role": "Academic research grant financial managers and proposal writers",
+        "scenario": "Collaboratively drafting and harmonizing budget narrative sections across multiple institutions to ensure consistent tone, style, and clarity aligned with funder expectations"
+      },
+      "problem": "Multi-institutional research grant proposals often suffer from inconsistent tone, style, and clarity in budget narratives due to multiple contributors. This inconsistency can reduce narrative persuasiveness and reviewer engagement, leading to decreased funding success. Existing tools focus on numeric budget consolidation, compliance, or narrative conflict detection but do not address narrative tone and style harmonization across collaborators.",
+      "inputs": [
+        "Multiple draft budget narrative text files or pasted sections from different institutions",
+        "Funder-specific narrative style guidelines or preference documents (optional)"
+      ],
+      "outputs": [
+        "A harmonized, unified budget narrative draft with consistent tone and style",
+        "Section-level tone and clarity improvement suggestions",
+        "Summary report highlighting tone inconsistencies and recommended revisions",
+        "Sample rephrased narrative snippets to guide collaborator alignment"
+      ],
+      "whyItWins": [
+        "Addresses a neglected but critical aspect of multi-institutional grant writing: narrative tone consistency",
+        "Enhances persuasiveness and professionalism of budget narratives beyond numeric compliance",
+        "Facilitates smoother collaboration and reduces revision cycles by providing concrete, actionable style guidance",
+        "Supports funder-specific style adherence, increasing proposal competitiveness",
+        "Lightweight initial tool can evolve into a multi-user collaborative platform with version control and integrated chat"
+      ],
+      "upgradePath": {
+        "today": "Single-page app to upload multiple budget narrative drafts and optional funder style guidelines, producing harmonized draft and tone analysis report",
+        "in90Days": "Add user accounts and multi-user draft collaboration features with inline comments and revision history; support template-based funder style profiles",
+        "in12Months": "Develop a full multi-page web system with real-time collaborative editing, AI-powered tone coaching, integration with numeric budget consolidators, and automated reviewer engagement analytics"
+      },
+      "riskNotes": [
+        "Ensure no confidential financial data is stored beyond session or is encrypted to protect sensitive proposal information",
+        "Avoid generating or suggesting legally binding budget commitments or financial figures",
+        "Provide disclaimers that narrative tone suggestions are advisory and do not guarantee funding success",
+        "Respect intellectual property of uploaded narrative texts and funder documents with clear data usage policies"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A collaborative platform for academic research grant financial managers and proposal writers to harmonize budget narrative tone and style across multiple institutions, ensuring consistent, clear, and funder-aligned narratives to improve proposal persuasiveness and competitiveness.",
+      "primaryUser": "Academic research grant financial managers and proposal writers collaborating across institutions",
+      "successMetrics": [
+        "Number of harmonized budget narratives produced",
+        "User satisfaction with tone consistency and clarity improvements",
+        "Reduction in revision cycles related to narrative inconsistencies",
+        "Adoption rate of funder-specific style guidelines",
+        "Engagement metrics on collaboration features (comments, revisions)"
+      ],
+      "components": [
+        {
+          "id": "ui-upload",
+          "name": "Upload & Input UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload multiple draft budget narrative files and optional funder style guideline documents; provide interface for text pasting and initial input validation.",
+          "dependsOn": [],
+          "notes": [
+            "Supports multiple file formats (txt, docx, pdf text extraction)",
+            "Validates file size and format to protect system stability",
+            "Handles optional funder guideline uploads"
+          ]
+        },
+        {
+          "id": "ui-harmonization-results",
+          "name": "Harmonization Results & Reporting UI",
+          "type": "ui",
+          "responsibility": "Display harmonized unified budget narrative drafts, section-level tone and clarity suggestions, summary reports, and sample rephrased snippets to guide collaborators.",
+          "dependsOn": [
+            "api-harmonize"
+          ],
+          "notes": [
+            "Supports side-by-side comparison of original vs harmonized text",
+            "Provides interactive tone suggestion highlights",
+            "Allows exporting reports and harmonized narratives"
+          ]
+        },
+        {
+          "id": "api-harmonize",
+          "name": "Tone Harmonization API",
+          "type": "api",
+          "responsibility": "Process uploaded narratives and optional funder style guidelines to generate a harmonized budget narrative draft, tone and clarity improvement suggestions, summary reports, and sample rephrased snippets.",
+          "dependsOn": [
+            "data-funderStyles"
+          ],
+          "notes": [
+            "Uses NLP and AI models specialized in tone and style harmonization",
+            "Handles edge cases like conflicting style guidelines or ambiguous tone",
+            "Ensures no confidential financial data is persisted beyond session"
+          ]
+        },
+        {
+          "id": "data-funderStyles",
+          "name": "Funder Style Guidelines Data Store",
+          "type": "data",
+          "responsibility": "Persist funder-specific narrative style guideline templates and user-uploaded style documents for reuse and reference during harmonization.",
+          "dependsOn": [],
+          "notes": [
+            "Stores metadata about funder guidelines (source, version, date)",
+            "Encrypted storage to protect intellectual property",
+            "Supports template-based style profiles for future upgrades"
+          ]
+        },
+        {
+          "id": "job-sessionCleanup",
+          "name": "Session Data Cleanup Job",
+          "type": "job",
+          "responsibility": "Periodically remove ephemeral uploaded narrative drafts and temporary harmonization data to ensure no confidential data persists beyond allowed retention.",
+          "dependsOn": [
+            "data-funderStyles"
+          ],
+          "notes": [
+            "Configurable retention period per privacy policy",
+            "Logs cleanup actions for audit and compliance"
+          ]
+        },
+        {
+          "id": "ui-auth",
+          "name": "User Authentication & Account Management UI",
+          "type": "ui",
+          "responsibility": "Manage user registration, login, password reset, and profile management to support multi-user collaboration features in future upgrades.",
+          "dependsOn": [
+            "api-auth"
+          ],
+          "notes": [
+            "Supports OAuth and email/password authentication",
+            "Prepares for role-based access control in collaborative environments"
+          ]
+        },
+        {
+          "id": "api-auth",
+          "name": "Authentication API",
+          "type": "api",
+          "responsibility": "Handle user authentication, session management, and authorization for protected routes and collaboration features.",
+          "dependsOn": [],
+          "notes": [
+            "Implements secure token-based authentication (e.g., JWT)",
+            "Enforces rate limiting and brute force protections"
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "FunderStyleGuideline",
+          "purpose": "Store funder-specific narrative style guideline templates and user-uploaded style documents for reference during harmonization.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "funderName",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "documentContent",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "uploadedByUserId",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "isTemplate",
+              "type": "boolean",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "funderName",
+            "uploadedByUserId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user account information for authentication and collaboration features.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "displayName",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "createdAt",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "lastLogin",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Upload Draft Narratives & Style Guidelines",
+          "purpose": "Entry page for users to upload multiple budget narrative drafts and optional funder style guidelines for harmonization processing.",
+          "inputs": [
+            "Multiple draft narrative files",
+            "Optional funder style guideline files or pasted text"
+          ],
+          "outputs": [
+            "Upload confirmation",
+            "Initial processing status"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/results",
+          "title": "Harmonized Narrative & Tone Analysis",
+          "purpose": "Display the harmonized unified budget narrative draft, section-level tone and clarity suggestions, summary report, and sample rephrased snippets.",
+          "inputs": [
+            "Processed harmonization data"
+          ],
+          "outputs": [
+            "Harmonized narrative text",
+            "Tone and clarity suggestions",
+            "Summary report",
+            "Sample rephrased snippets"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to enable multi-user collaboration features.",
+          "inputs": [
+            "Email",
+            "Password"
+          ],
+          "outputs": [
+            "Authentication token",
+            "Login success or failure message"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/account",
+          "title": "User Account Management",
+          "purpose": "Allow users to manage their profile and uploaded funder style guidelines.",
+          "inputs": [
+            "Profile updates",
+            "Style guideline uploads"
+          ],
+          "outputs": [
+            "Profile details",
+            "Uploaded style guideline list"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/harmonize",
+          "method": "POST",
+          "purpose": "Accept multiple draft narratives and optional funder style guidelines, return harmonized narrative and tone analysis.",
+          "requestShape": "{ drafts: [{ institutionId: string, text: string }], funderStyleId?: string, optionalGuidelines?: string[] }",
+          "responseShape": "{ harmonizedNarrative: string, toneSuggestions: [{ section: string, suggestion: string }], summaryReport: string, sampleRephrases: string[] }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user and return session token.",
+          "requestShape": "{ email: string, password: string }",
+          "responseShape": "{ token: string, userId: string }",
+          "auth": "public"
+        },
+        {
+          "route": "/api/auth/logout",
+          "method": "POST",
+          "purpose": "Invalidate user session token.",
+          "requestShape": "{}",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funderStyles",
+          "method": "GET",
+          "purpose": "Retrieve available funder style guideline templates and user-uploaded guidelines.",
+          "requestShape": "{}",
+          "responseShape": "{ funderStyles: [{ id: string, funderName: string, version: string, isTemplate: boolean }] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/funderStyles",
+          "method": "POST",
+          "purpose": "Upload a new funder style guideline document.",
+          "requestShape": "{ funderName: string, documentContent: json }",
+          "responseShape": "{ id: string, success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Session Data Cleanup",
+          "trigger": "Scheduled (e.g., daily at midnight)",
+          "purpose": "Remove ephemeral uploaded narrative drafts and temporary harmonization data after retention period to protect confidentiality."
+        }
+      ],
+      "edgeCases": [
+        "Conflicting or ambiguous funder style guidelines leading to incompatible tone suggestions",
+        "Uploaded narrative drafts containing confidential financial data that must not be persisted",
+        "Large or malformed file uploads causing processing failures",
+        "Network interruptions during upload or harmonization processing",
+        "Users uploading copyrighted or proprietary narrative texts requiring clear data usage policies",
+        "Multiple simultaneous harmonization requests causing resource contention",
+        "Users ignoring tone suggestions or rejecting harmonized output"
+      ],
+      "nonGoals": [
+        "Storing or processing numeric budget data or financial figures",
+        "Generating legally binding budget commitments or financial proposals",
+        "Guaranteeing funding success based on tone harmonization",
+        "Providing full document version control or real-time collaborative editing in initial release",
+        "Replacing human judgment or grant writing expertise"
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses '/' page to upload multiple draft budget narrative files and optional funder style guideline documents or paste text.",
+        "Upload & Input UI validates files (format, size) and sends data to '/api/harmonize' via POST request with drafts and optional funderStyleId or optionalGuidelines.",
+        "Tone Harmonization API receives drafts and guidelines, fetches referenced funder style guidelines from data-funderStyles store if funderStyleId provided.",
+        "API processes narratives using NLP/AI models to generate harmonized narrative, tone and clarity suggestions, summary report, and sample rephrased snippets.",
+        "API returns harmonization results to UI.",
+        "Harmonization Results UI ('/results') displays harmonized narrative, tone suggestions, summary report, and sample rephrases with side-by-side comparison and interactive highlights.",
+        "User can export reports or harmonized narratives from results UI.",
+        "User authentication handled via '/api/auth/login' and '/api/auth/logout' endpoints; authenticated users can manage profiles and upload funder style guidelines via '/account' page.",
+        "User uploads of funder style guidelines are stored encrypted in data-funderStyles with metadata.",
+        "Session Data Cleanup Job runs periodically to remove ephemeral uploaded drafts and temporary harmonization data per retention policy, logging actions for audit."
+      ],
+      "validationRules": [
+        "Uploaded narrative files must be in supported formats: txt, docx, pdf (text extractable).",
+        "File size limits enforced per file type to prevent system overload (e.g., max 5MB per file).",
+        "Uploaded funder style guideline documents must be valid JSON or parsable text converted to JSON format.",
+        "Draft narratives must include institutionId and non-empty text fields.",
+        "Authentication inputs: email must be valid format; password must meet complexity requirements.",
+        "API requests must include required fields; optional fields validated if present.",
+        "Reject uploads with malformed or corrupted files with clear error messages.",
+        "Rate limiting enforced on authentication endpoints to prevent brute force attacks.",
+        "Ensure no confidential financial data is persisted beyond session; ephemeral data cleared by cleanup job."
+      ],
+      "errorHandling": [
+        "UI displays user-friendly error messages for upload failures (invalid format, size exceeded, parsing errors).",
+        "API returns structured error responses with HTTP status codes (400 for validation errors, 401 for auth failures, 500 for server errors).",
+        "Harmonization API detects conflicting or ambiguous funder style guidelines and returns warnings or fallback harmonization with explanation.",
+        "Network interruptions during upload or processing trigger retry mechanisms or user prompts to retry.",
+        "Authentication failures return specific messages (invalid credentials, locked account).",
+        "Background job logs errors and alerts admins if cleanup fails.",
+        "All errors logged with context for debugging and audit purposes without exposing sensitive data."
+      ],
+      "securityNotes": [
+        "All API routes handling sensitive data require HTTPS and secure headers.",
+        "Authentication API uses JWT tokens with secure storage (HttpOnly cookies or secure local storage).",
+        "User passwords stored hashed with strong algorithm (e.g., bcrypt).",
+        "Uploaded funder style guideline documents stored encrypted at rest.",
+        "No confidential financial data from narratives persisted beyond session; ephemeral data cleared regularly.",
+        "Rate limiting and brute force protections enforced on auth endpoints.",
+        "Access control enforced on user-specific endpoints (e.g., funderStyles GET/POST require valid user token).",
+        "Data usage policies communicated to users regarding proprietary narrative texts.",
+        "Audit logs maintained for cleanup jobs and authentication events."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user visits the '/' upload page",
+          "when": "They upload multiple valid draft narrative files and optional funder style guideline documents",
+          "then": "The files are validated, accepted, and a processing status confirmation is displayed"
+        },
+        {
+          "id": "AT-002",
+          "given": "The user submits drafts and optional guidelines to '/api/harmonize'",
+          "when": "The API processes the request",
+          "then": "It returns a harmonized narrative, tone suggestions, summary report, and sample rephrases without persisting confidential data"
+        },
+        {
+          "id": "AT-003",
+          "given": "The user views the '/results' page with harmonization data",
+          "when": "They interact with tone suggestion highlights and side-by-side comparisons",
+          "then": "The UI displays accurate harmonized text and allows exporting reports"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user attempts to upload unsupported file formats or oversized files",
+          "when": "They submit the upload form",
+          "then": "The UI rejects the files with clear error messages and prevents submission"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user tries to login with valid credentials",
+          "when": "They submit the login form",
+          "then": "They receive an authentication token and access to protected routes"
+        },
+        {
+          "id": "AT-006",
+          "given": "A user uploads a new funder style guideline via '/api/funderStyles' POST",
+          "when": "The request is authenticated and valid",
+          "then": "The guideline is stored encrypted and metadata saved; response confirms success"
+        },
+        {
+          "id": "AT-007",
+          "given": "The session data cleanup job runs",
+          "when": "Retention period for ephemeral data has elapsed",
+          "then": "All temporary narrative drafts and harmonization data are removed and cleanup logged"
+        },
+        {
+          "id": "AT-008",
+          "given": "Conflicting funder style guidelines are provided",
+          "when": "The harmonization API processes the data",
+          "then": "It returns a harmonization result with warnings about conflicts and fallback suggestions"
+        },
+        {
+          "id": "AT-009",
+          "given": "A user uploads copyrighted narrative text",
+          "when": "They submit the upload",
+          "then": "The system accepts the upload but displays data usage policies and does not persist data beyond session"
+        }
+      ],
+      "buildOrder": [
+        "prismaModelsToAdd: User, FunderStyleGuideline",
+        "apiFilesToCreate: api-auth (login, logout), api-funderStyles (GET, POST), api-harmonize",
+        "ui-upload page and component with file upload and validation",
+        "ui-harmonization-results page and component with display and export features",
+        "ui-auth pages: login and account management",
+        "background job: session data cleanup implementation",
+        "integration of authentication middleware and token management",
+        "encryption and secure storage for funder style guidelines",
+        "error handling and validation integration across UI and API",
+        "acceptance testing and QA"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/results",
+          "/login",
+          "/account"
+        ],
+        "apiFilesToCreate": [
+          "api/auth/login.ts",
+          "api/auth/logout.ts",
+          "api/funderStyles/index.ts",
+          "api/harmonize.ts"
+        ],
+        "prismaModelsToAdd": [
+          "model User { id String @id @default(uuid()) email String @unique hashedPassword String displayName String? createdAt DateTime lastLogin DateTime? }",
+          "model FunderStyleGuideline { id String @id @default(uuid()) funderName String documentContent Json uploadedByUserId String? uploadDate DateTime version String? isTemplate Boolean }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask clarifying questions to gather missing constraints or details about the tone harmonization tool.",
+        "promptTemplate": "Given the current blueprint and expanded specs: {{BLUEPRINT}}\nUser input: {{USER_INPUT}}\nPlease ask targeted questions to clarify any missing or ambiguous requirements for the Academic Research Grant Budget Narrative Tone Harmonizer."
+      },
+      {
+        "id": "architect-finalize-pages-data-models",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Define and finalize the detailed pages, API routes, and data models needed for the tool based on refined requirements.",
+        "promptTemplate": "Using the refined requirements and blueprint: {{REFINED_REQUIREMENTS}}\nPlease produce a finalized list of pages, API endpoints, and data models for the Academic Research Grant Budget Narrative Tone Harmonizer."
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create initial scaffolding code stubs for the UI pages and API routes to jumpstart development.",
+        "promptTemplate": "Given the finalized architecture: {{ARCHITECTURE}}\nGenerate starter code stubs for the main UI pages and API routes of the Academic Research Grant Budget Narrative Tone Harmonizer."
+      },
+      {
+        "id": "integrator-wire-pages-api-db",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Integrate frontend pages with backend API and database models to enable end-to-end functionality.",
+        "promptTemplate": "Using the page stubs and data models: {{PAGE_STUBS}}, {{DATA_MODELS}}\nPlease provide integration code and instructions to connect UI, API, and database layers for the Academic Research Grant Budget Narrative Tone Harmonizer."
+      }
+    ]
+  }
+}

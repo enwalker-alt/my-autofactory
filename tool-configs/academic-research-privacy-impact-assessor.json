@@ -1,0 +1,724 @@
+{
+  "slug": "academic-research-privacy-impact-assessor",
+  "title": "Academic Research Collaborative Data Privacy Impact Assessor",
+  "description": "A lightweight single-page app for academic research data managers to upload sample datasets and related documents to generate a structured privacy impact assessment report highlighting privacy risks, compliance gaps, and mitigation recommendations.",
+  "inputLabel": "Upload sample dataset file(s) and related documents (CSV, Excel, JSON, PDF, DOCX, text). Optionally provide dataset metadata in JSON below.",
+  "outputLabel": "Privacy Impact Assessment Report",
+  "systemPrompt": "You are an expert privacy impact assessment assistant specialized in academic multi-institutional research data sharing. Given uploaded sample dataset files (CSV, Excel, JSON) and related documents (consent forms, data use agreements, policies) in PDF, DOCX, or text format, plus optional dataset metadata, generate a structured privacy impact assessment report. The report must include: (1) key privacy risks identified from dataset sensitivity and attributes; (2) compliance gap analysis highlighting missing or ambiguous consent elements and regulatory conflicts; (3) prioritized mitigation recommendations such as anonymization, access restrictions, or data minimization measures. Always include a clear disclaimer that this is advisory only and not legal advice. Refuse any requests unrelated to academic research data privacy impact assessments. Enforce strict data privacy and security considerations. Output only plain text or valid JSON if structured-output is enabled. Validate inputs for supported file types and metadata completeness. If input is disallowed or incomplete, respond with a clear error message.",
+  "temperature": 0.3,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "structured-output",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Basic Privacy Risk Summary",
+      "prompt": "Generate a concise privacy impact assessment report summarizing key privacy risks from the uploaded dataset and related documents. Highlight any immediate compliance gaps and suggest top mitigation actions."
+    },
+    {
+      "label": "Detailed Compliance Gap Analysis",
+      "prompt": "Provide a detailed compliance gap analysis based on participant consent documents and data use agreements. Identify missing or ambiguous consent elements and any regulatory conflicts relevant to the dataset."
+    },
+    {
+      "label": "Mitigation Recommendations Focus",
+      "prompt": "Focus the assessment on generating prioritized mitigation recommendations based on identified privacy risks and compliance gaps, including anonymization, access controls, and data minimization strategies."
+    },
+    {
+      "label": "Full Structured Privacy Impact Assessment",
+      "prompt": "Generate a comprehensive structured privacy impact assessment report including risk summary, compliance gap analysis, and prioritized mitigation recommendations with advisory disclaimers."
+    }
+  ],
+  "outputFormatDefault": "plain",
+  "jsonSchemaHint": "If structured-output is enabled, output must be valid JSON with keys: riskSummary (string), complianceGaps (array of strings), mitigationRecommendations (array of strings), disclaimer (string).",
+  "clarifyPrompt": "Please provide sample dataset files (CSV, Excel, or JSON) and any associated consent or policy documents (PDF, DOCX, or text). Also include dataset metadata such as title, institution, and upload date in JSON format. Ensure all files are supported formats and metadata is complete.",
+  "finalizePrompt": "Generate the privacy impact assessment report with clear advisory disclaimers, focusing on academic multi-institutional research datasets. Do not provide legal advice or unrelated content.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Collaborative Data Privacy Impact Assessor",
+      "niche": {
+        "role": "Academic research data managers and compliance officers",
+        "scenario": "When preparing to share or publish multi-institutional research datasets that include sensitive or personal data"
+      },
+      "problem": "Academic research data managers struggle to systematically and efficiently assess privacy risks and compliance gaps across complex, multi-institutional datasets prior to data sharing or publication, especially when datasets have varied sensitivity levels, consent constraints, and regulatory requirements. Existing tools focus on compliance checklists or anonymization steps but lack an integrated, data-driven privacy impact assessment workflow tailored to academic research collaboration contexts.",
+      "inputs": [
+        "Research dataset metadata and sample data files (CSV, Excel, JSON)",
+        "Participant consent and data use agreement documents (PDF, DOCX, text)",
+        "Institutional and funder data privacy policies and guidelines",
+        "Data sharing plans and intended data recipients or repositories"
+      ],
+      "outputs": [
+        "Structured Privacy Impact Assessment (PIA) report outlining key privacy risks identified by dataset attributes and policy analysis",
+        "Compliance gap analysis highlighting missing or ambiguous consent elements and regulatory conflicts",
+        "Prioritized mitigation recommendations including anonymization, access restrictions, or data minimization measures",
+        "Summary dashboards tracking privacy risk status across multiple datasets and institutions"
+      ],
+      "whyItWins": [
+        "Fills a critical gap by integrating dataset content analysis with policy and consent document evaluation to produce actionable PIAs tailored for academic research",
+        "Provides a repeatable, semi-automated workflow that reduces manual compliance effort and risk of oversight in complex multi-institution data sharing",
+        "Supports collaboration by tracking privacy risk status and mitigation progress across datasets and institutional partners",
+        "Scalable from a lightweight report generator to a full compliance management system with dashboards and workflow automation"
+      ],
+      "upgradePath": {
+        "today": "Lightweight single-page app that accepts dataset samples and policy documents to generate a basic privacy risk summary report with compliance gap flags",
+        "in90Days": "Add multi-dataset management, user roles, and interactive risk dashboards with recommendations prioritization and manual mitigation tracking",
+        "in12Months": "Develop a multi-page compliance platform integrating automated document parsing, dynamic consent validation, version tracking, collaboration features, and exportable audit-ready PIA reports"
+      },
+      "riskNotes": [
+        "Must carefully avoid generating legal advice; all outputs should be advisory with clear disclaimers",
+        "Requires strict data privacy and security controls for uploaded datasets and documents to protect sensitive information",
+        "Complex regulatory environments require periodic updates to policy and guideline parsing components",
+        "User training or guidance may be needed to interpret risk assessments and implement mitigations appropriately"
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A compliance-focused platform for academic research data managers to perform integrated privacy impact assessments on multi-institutional datasets by analyzing dataset metadata, consent documents, and policies, generating actionable reports and dashboards to support collaboration and risk mitigation.",
+      "primaryUser": "Academic research data managers and compliance officers",
+      "successMetrics": [
+        "Reduction in time spent on privacy impact assessments",
+        "Accuracy and completeness of identified privacy risks and compliance gaps",
+        "User adoption rate across institutions and datasets",
+        "Number of mitigation actions tracked and completed",
+        "User satisfaction with generated reports and dashboards"
+      ],
+      "components": [
+        {
+          "id": "ui-landing",
+          "name": "Landing and Authentication UI",
+          "type": "ui",
+          "responsibility": "Provide user login, onboarding, and access to dataset management and assessment features.",
+          "dependsOn": [],
+          "notes": [
+            "Supports user roles and permissions for future upgrades.",
+            "Must enforce secure authentication and session management."
+          ]
+        },
+        {
+          "id": "ui-dataset-management",
+          "name": "Dataset & Document Upload and Management UI",
+          "type": "ui",
+          "responsibility": "Allow users to upload datasets, consent documents, policies, and manage metadata for multiple datasets and institutions.",
+          "dependsOn": [
+            "ui-landing",
+            "api-dataset"
+          ],
+          "notes": [
+            "Supports multiple file formats (CSV, Excel, JSON, PDF, DOCX, text).",
+            "Includes progress indicators and file validation feedback."
+          ]
+        },
+        {
+          "id": "ui-assessment-dashboard",
+          "name": "Privacy Impact Assessment Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display privacy risk summaries, compliance gap analyses, mitigation recommendations, and tracking status across datasets and institutions.",
+          "dependsOn": [
+            "api-assessment",
+            "ui-dataset-management"
+          ],
+          "notes": [
+            "Interactive risk prioritization and filtering capabilities.",
+            "Supports manual input for mitigation tracking."
+          ]
+        },
+        {
+          "id": "api-dataset",
+          "name": "Dataset and Document Management API",
+          "type": "api",
+          "responsibility": "Handle dataset and document uploads, metadata extraction, storage, and retrieval.",
+          "dependsOn": [
+            "data-datasets",
+            "integration-file-parser"
+          ],
+          "notes": [
+            "Performs initial file validation and metadata extraction.",
+            "Implements strict access controls and data encryption."
+          ]
+        },
+        {
+          "id": "api-assessment",
+          "name": "Privacy Impact Assessment API",
+          "type": "api",
+          "responsibility": "Analyze datasets, consent documents, and policies to generate privacy risk summaries, compliance gap analyses, and mitigation recommendations.",
+          "dependsOn": [
+            "api-dataset",
+            "integration-nlp-parser",
+            "data-assessments"
+          ],
+          "notes": [
+            "Uses semi-automated document parsing and policy interpretation.",
+            "Returns structured reports and risk scoring."
+          ]
+        },
+        {
+          "id": "data-datasets",
+          "name": "Datasets and Documents Storage",
+          "type": "data",
+          "responsibility": "Persist uploaded datasets, consent documents, policies, and related metadata securely.",
+          "dependsOn": [],
+          "notes": [
+            "Encrypted at rest and access controlled.",
+            "Supports versioning for document updates."
+          ]
+        },
+        {
+          "id": "data-assessments",
+          "name": "Privacy Impact Assessment Data Store",
+          "type": "data",
+          "responsibility": "Store assessment results, risk scores, compliance gap flags, mitigation recommendations, and tracking status.",
+          "dependsOn": [
+            "data-datasets"
+          ],
+          "notes": [
+            "Supports audit trails and version history for assessments.",
+            "Enables querying for dashboard aggregation."
+          ]
+        },
+        {
+          "id": "integration-file-parser",
+          "name": "File Parsing and Metadata Extraction Service",
+          "type": "integration",
+          "responsibility": "Parse uploaded dataset files and documents to extract structured metadata and text content for analysis.",
+          "dependsOn": [],
+          "notes": [
+            "Handles CSV, Excel, JSON for datasets; PDF, DOCX, text for documents.",
+            "Detects file anomalies and reports parsing errors."
+          ]
+        },
+        {
+          "id": "integration-nlp-parser",
+          "name": "Policy and Consent Document NLP Analysis Service",
+          "type": "integration",
+          "responsibility": "Analyze consent forms, data use agreements, and policies using NLP to identify consent elements, restrictions, and regulatory requirements.",
+          "dependsOn": [
+            "integration-file-parser"
+          ],
+          "notes": [
+            "Requires periodic updates to regulatory knowledge base.",
+            "Outputs structured compliance elements for assessment API."
+          ]
+        },
+        {
+          "id": "job-assessment-generation",
+          "name": "Assessment Generation Background Job",
+          "type": "job",
+          "responsibility": "Trigger and manage asynchronous privacy impact assessment processing for uploaded datasets and documents.",
+          "dependsOn": [
+            "api-assessment"
+          ],
+          "notes": [
+            "Handles retries and failure notifications.",
+            "Scales to support multiple concurrent assessments."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Dataset",
+          "purpose": "Store metadata and references to uploaded research datasets.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "fileReferences",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "sensitivityLevel",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "consentDocumentIds",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "institution"
+          ]
+        },
+        {
+          "name": "ConsentDocument",
+          "purpose": "Store metadata and parsed content of participant consent and data use agreement documents.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileReference",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parsedContent",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "uploadDate",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "datasetId"
+          ]
+        },
+        {
+          "name": "PolicyDocument",
+          "purpose": "Store institutional and funder data privacy policies and guidelines.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "fileReference",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "parsedContent",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "effectiveDate",
+              "type": "date",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "institution"
+          ]
+        },
+        {
+          "name": "PrivacyImpactAssessment",
+          "purpose": "Store results of privacy risk assessments, compliance gaps, and mitigation recommendations.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "datasetId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assessmentDate",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "riskSummary",
+              "type": "json",
+              "optional": false
+            },
+            {
+              "name": "complianceGaps",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "mitigationRecommendations",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "mitigationStatus",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "version",
+              "type": "number",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "id",
+            "datasetId"
+          ]
+        },
+        {
+          "name": "User",
+          "purpose": "Store user account information and roles for access control.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "hashedPassword",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "institution",
+              "type": "string",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "id",
+            "email"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/",
+          "title": "Landing and Login",
+          "purpose": "User authentication and onboarding entry point.",
+          "inputs": [
+            "email",
+            "password"
+          ],
+          "outputs": [
+            "login success/failure",
+            "user role info"
+          ],
+          "requiresAuth": false
+        },
+        {
+          "route": "/datasets",
+          "title": "Dataset Management",
+          "purpose": "Upload and manage research datasets and associated documents.",
+          "inputs": [
+            "dataset files",
+            "consent documents",
+            "policy documents",
+            "metadata"
+          ],
+          "outputs": [
+            "upload status",
+            "dataset list",
+            "metadata display"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/assessments",
+          "title": "Privacy Impact Assessments Dashboard",
+          "purpose": "View privacy risk summaries, compliance gaps, and mitigation tracking across datasets.",
+          "inputs": [
+            "filter criteria",
+            "mitigation updates"
+          ],
+          "outputs": [
+            "risk dashboards",
+            "compliance gap reports",
+            "mitigation status"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/assessments/:id/report",
+          "title": "Assessment Detailed Report",
+          "purpose": "Display detailed privacy impact assessment report for a specific dataset.",
+          "inputs": [
+            "assessment id"
+          ],
+          "outputs": [
+            "structured PIA report",
+            "recommendations"
+          ],
+          "requiresAuth": true
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/datasets/upload",
+          "method": "POST",
+          "purpose": "Upload dataset files and associated documents.",
+          "requestShape": "multipart/form-data with files and metadata JSON",
+          "responseShape": "upload status and dataset id",
+          "auth": "user"
+        },
+        {
+          "route": "/api/datasets/:id",
+          "method": "GET",
+          "purpose": "Retrieve dataset metadata and associated documents.",
+          "requestShape": "dataset id in URL",
+          "responseShape": "dataset metadata and document references",
+          "auth": "user"
+        },
+        {
+          "route": "/api/assessments/generate",
+          "method": "POST",
+          "purpose": "Trigger privacy impact assessment generation for a dataset.",
+          "requestShape": "{ datasetId: string }",
+          "responseShape": "{ jobId: string, status: string }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/assessments/:id",
+          "method": "GET",
+          "purpose": "Retrieve privacy impact assessment results.",
+          "requestShape": "assessment id in URL",
+          "responseShape": "risk summary, compliance gaps, mitigation recommendations",
+          "auth": "user"
+        },
+        {
+          "route": "/api/mitigations/:assessmentId/update",
+          "method": "POST",
+          "purpose": "Update mitigation status or add manual mitigation notes.",
+          "requestShape": "{ assessmentId: string, mitigationStatus: json }",
+          "responseShape": "{ success: boolean }",
+          "auth": "user"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "AssessmentGenerationJob",
+          "trigger": "Triggered by API request to generate assessment",
+          "purpose": "Process dataset and documents asynchronously to produce privacy impact assessments."
+        },
+        {
+          "name": "PolicyUpdateSyncJob",
+          "trigger": "Scheduled periodic job",
+          "purpose": "Update regulatory and policy parsing knowledge base to reflect latest compliance requirements."
+        }
+      ],
+      "edgeCases": [
+        "Uploaded files with unsupported or corrupted formats causing parsing failures.",
+        "Incomplete or ambiguous consent documents leading to uncertain compliance gap flags.",
+        "Conflicting policies from multiple institutions requiring manual resolution.",
+        "Large datasets causing performance bottlenecks in metadata extraction and assessment generation.",
+        "User attempts unauthorized access to datasets or assessments from other institutions.",
+        "Network interruptions during file uploads or assessment processing.",
+        "Version conflicts when multiple users update mitigation tracking simultaneously."
+      ],
+      "nonGoals": [
+        "Providing legally binding advice or definitive compliance decisions.",
+        "Full anonymization or data masking of datasets within the tool.",
+        "Automated enforcement of data sharing restrictions or access controls beyond advisory.",
+        "Handling non-academic datasets or non-research data sharing scenarios.",
+        "Replacing institutional legal or compliance teams."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses Landing and Login page (/) and submits email and password.",
+        "Authentication API validates credentials, returns user role and session token.",
+        "Authenticated user navigates to Dataset Management page (/datasets).",
+        "User uploads dataset files, consent documents, and policy documents with metadata.",
+        "Dataset Management UI sends multipart/form-data POST request to /api/datasets/upload with files and metadata JSON.",
+        "Dataset API validates files, invokes integration-file-parser to extract metadata and text content.",
+        "Parsed metadata and files are stored encrypted in data-datasets with versioning.",
+        "Dataset API returns upload status and dataset ID to UI.",
+        "User navigates to Privacy Impact Assessments Dashboard (/assessments).",
+        "Dashboard UI fetches assessment summaries via GET /api/assessments/:id and dataset metadata via /api/datasets/:id.",
+        "User triggers assessment generation via POST /api/assessments/generate with datasetId.",
+        "Assessment API enqueues AssessmentGenerationJob to process dataset and documents asynchronously.",
+        "AssessmentGenerationJob calls integration-nlp-parser to analyze consent and policy documents.",
+        "Assessment API stores structured risk summaries, compliance gaps, mitigation recommendations in data-assessments.",
+        "Dashboard UI displays updated risk dashboards, compliance gap reports, and mitigation status.",
+        "User can update mitigation status via POST /api/mitigations/:assessmentId/update.",
+        "Assessment API updates mitigation tracking in data-assessments with concurrency control.",
+        "User can view detailed assessment report at /assessments/:id/report fetching data from /api/assessments/:id."
+      ],
+      "validationRules": [
+        "Authentication inputs: email must be valid format; password minimum length and complexity enforced.",
+        "File uploads: only accept CSV, Excel, JSON for datasets; PDF, DOCX, text for documents.",
+        "File size limits enforced per file and total upload.",
+        "Metadata JSON must include required fields: dataset title, institution, uploadDate.",
+        "Dataset ID and assessment ID parameters must be valid UUID strings.",
+        "Mitigation status JSON must conform to defined schema with status enums and optional notes.",
+        "Access control validation: user must belong to institution owning dataset or have admin role.",
+        "Concurrency control on mitigation updates to prevent version conflicts.",
+        "Background job input validation for dataset existence and completeness before processing."
+      ],
+      "errorHandling": [
+        "Authentication failures return 401 Unauthorized with generic error message.",
+        "File parsing errors return 400 Bad Request with detailed error about unsupported or corrupted files.",
+        "Validation errors return 422 Unprocessable Entity with field-specific messages.",
+        "Access denied attempts return 403 Forbidden with explanation.",
+        "Background job failures trigger retry with exponential backoff and notify user via UI alerts.",
+        "Network interruptions during uploads prompt client-side retry with progress preservation.",
+        "Version conflicts on mitigation updates return 409 Conflict with instructions to reload data.",
+        "Unexpected server errors return 500 Internal Server Error with logging for diagnostics."
+      ],
+      "securityNotes": [
+        "All API routes require authentication except landing/login.",
+        "Use secure HTTP-only cookies or JWT tokens for session management.",
+        "Encrypt all stored files and sensitive metadata at rest.",
+        "Implement role-based access control to restrict dataset and assessment access by institution and user role.",
+        "Sanitize all inputs to prevent injection attacks.",
+        "Limit file upload types and sizes to reduce attack surface.",
+        "Log all access and modification events for audit trails.",
+        "Use HTTPS for all client-server communication.",
+        "Background jobs run with least privilege principle and secure environment variables."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "A user with valid credentials on the landing page",
+          "when": "The user submits correct email and password",
+          "then": "The user is authenticated and redirected to the dataset management page with user role info"
+        },
+        {
+          "id": "AT-002",
+          "given": "An authenticated user on the dataset management page",
+          "when": "The user uploads valid dataset files and metadata",
+          "then": "The system accepts the files, extracts metadata, stores data securely, and returns upload success with dataset ID"
+        },
+        {
+          "id": "AT-003",
+          "given": "An authenticated user on the assessments dashboard",
+          "when": "The user triggers assessment generation for a dataset",
+          "then": "The system enqueues the assessment job and returns job ID and status"
+        },
+        {
+          "id": "AT-004",
+          "given": "An assessment job is completed",
+          "when": "The user views the assessment dashboard",
+          "then": "The dashboard displays updated risk summaries, compliance gaps, and mitigation recommendations"
+        },
+        {
+          "id": "AT-005",
+          "given": "An authenticated user viewing an assessment report",
+          "when": "The user requests detailed report by assessment ID",
+          "then": "The system returns structured PIA report and recommendations"
+        },
+        {
+          "id": "AT-006",
+          "given": "An authenticated user updating mitigation status",
+          "when": "The user submits mitigation status update",
+          "then": "The system validates input, updates mitigation tracking, handles concurrency, and returns success"
+        },
+        {
+          "id": "AT-007",
+          "given": "A user attempts to access a dataset or assessment from another institution",
+          "when": "The user requests the resource",
+          "then": "The system denies access with 403 Forbidden"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user uploads unsupported or corrupted files",
+          "when": "The upload is submitted",
+          "then": "The system rejects the upload with detailed parsing error messages"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for User, Dataset, ConsentDocument, PolicyDocument, PrivacyImpactAssessment",
+        "Implement authentication system with secure session management on Landing and Login UI and API",
+        "Build Dataset Management UI with file upload and metadata input, integrating with /api/datasets/upload",
+        "Develop Dataset API to handle uploads, invoke file parser integration, store encrypted data",
+        "Integrate file parsing service to support required file formats and metadata extraction",
+        "Implement Privacy Impact Assessment API with endpoints to trigger and retrieve assessments",
+        "Develop NLP parser integration for consent and policy document analysis",
+        "Create background job system for asynchronous assessment generation with retry and notification",
+        "Build Assessment Dashboard UI to display risk summaries, compliance gaps, and mitigation tracking",
+        "Implement mitigation update API and UI features with concurrency control",
+        "Add detailed assessment report page and API endpoint",
+        "Implement access control checks and security hardening across all APIs and UIs",
+        "Add error handling and validation layers consistently",
+        "Write acceptance tests and perform end-to-end testing",
+        "Deploy and monitor background jobs and periodic policy update sync"
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/",
+          "/datasets",
+          "/assessments",
+          "/assessments/[id]/report"
+        ],
+        "apiFilesToCreate": [
+          "api/datasets/upload.ts",
+          "api/datasets/[id].ts",
+          "api/assessments/generate.ts",
+          "api/assessments/[id].ts",
+          "api/mitigations/[assessmentId]/update.ts"
+        ],
+        "prismaModelsToAdd": [
+          "User",
+          "Dataset",
+          "ConsentDocument",
+          "PolicyDocument",
+          "PrivacyImpactAssessment"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner_refine",
+        "title": "Planner: refine requirements",
+        "purpose": "Tighten constraints and clarify missing requirements.",
+        "promptTemplate": "You are Atlas Planner. Given {{USER_INPUT}} and {{IDEA}}, ask up to 5 clarifying questions. Then output a refined requirements JSON with constraints, data sources, and success criteria."
+      },
+      {
+        "id": "architect_finalize",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Finalize architecture boundaries (pages, APIs, data).",
+        "promptTemplate": "You are Atlas Architect. Using {{REQUIREMENTS}} and {{BLUEPRINT}}, output a finalized pages list, api contracts, and prisma-style data models."
+      },
+      {
+        "id": "builder_stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Create Next.js route stubs and UI flows.",
+        "promptTemplate": "You are Atlas Builder. Using {{FINAL_ARCH}}, generate minimal Next.js route component stubs (TSX) for each page route, with TODOs for wiring and validation."
+      },
+      {
+        "id": "integrator_wire",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Connect UI to API and DB with safe validation and error handling.",
+        "promptTemplate": "You are Atlas Integrator. Using {{FINAL_ARCH}} and {{STUBS}}, produce wiring steps and code snippets for API routes and Prisma calls with error handling. Do not invent environment secrets."
+      }
+    ]
+  }
+}

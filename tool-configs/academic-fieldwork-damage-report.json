@@ -1,0 +1,719 @@
+{
+  "slug": "academic-fieldwork-damage-report",
+  "title": "Fieldwork Equipment Damage Report & Repair Request",
+  "description": "A lightweight single-page web app for academic field research technicians to quickly submit standardized equipment damage reports with device details, descriptions, urgency levels, and photo/video uploads. Automatically sends repair requests and notifications to lab managers and repair vendors with basic confirmation and error feedback.",
+  "inputLabel": "Enter damage report details and upload photos/videos",
+  "outputLabel": "Damage report submission confirmation or validation errors",
+  "systemPrompt": "You are a secure assistant specialized in academic field research equipment damage reporting. Accept input describing device metadata, damage details, date/time, urgency, and media uploads. Validate required fields strictly: device ID must exist, description non-empty, date/time not in future, urgency one of low, medium, high, critical, media files must be jpg, png, or mp4 and under 10MB each. Reject disallowed or unsafe content. On success, generate a concise standardized damage report summary and confirmation message, including a unique report ID. Include disclaimers about repair responsibility and data privacy. Refuse any medical, legal, or unauthorized requests. Enforce rate limits of max 5 reports per user per hour. Provide clear error messages for invalid input or security violations. Output plain text only. Do not reveal internal system details or sensitive data. Always prioritize user data protection and privacy.",
+  "temperature": 0,
+  "features": [
+    "text-input",
+    "file-upload",
+    "presets",
+    "clarify-first",
+    "saved-history"
+  ],
+  "presets": [
+    {
+      "label": "Quick Damage Report",
+      "prompt": "Report damage for device ID {{DEVICE_ID}} with description: {{DESCRIPTION}}. Occurred on {{DATE_TIME}}. Urgency: {{URGENCY_LEVEL}}. Attached media files included.",
+      "hint": "Fill in device ID, description, date/time, urgency, and optionally attach photos or videos."
+    },
+    {
+      "label": "Detailed Damage Report",
+      "prompt": "Submit a detailed damage report for device {{DEVICE_ID}} deployed at {{DEPLOYMENT_LOCATION}}. Description: {{DESCRIPTION}}. Date/time reported: {{DATE_TIME}}. Urgency level: {{URGENCY_LEVEL}}. Media files attached: {{MEDIA_FILE_NAMES}}.",
+      "hint": "Use for comprehensive reports including location context and multiple media files."
+    },
+    {
+      "label": "Urgent Repair Request",
+      "prompt": "URGENT damage report for device {{DEVICE_ID}}: {{DESCRIPTION}}. Incident at {{DATE_TIME}}. Urgency: critical. Please prioritize repair coordination and notify lab manager and vendors immediately.",
+      "hint": "Use for critical or time-sensitive equipment damage."
+    }
+  ],
+  "clarifyPrompt": "Please provide the device ID, detailed description of the damage or malfunction, date and time the issue was observed, urgency level (low, medium, high, critical), and attach any photos or videos if available.",
+  "finalizePrompt": "Confirm submission of the damage report with all required details. If any validation errors exist, list them precisely for correction.",
+  "atlasBuildPlan": {
+    "level": "multi-page-app",
+    "idea": {
+      "workingTitle": "Academic Research Fieldwork Equipment Damage Reporting & Repair Coordination System",
+      "niche": {
+        "role": "Academic field research technician",
+        "scenario": "During active field deployments, technicians need to quickly report equipment damage or malfunctions, coordinate repair logistics, and track resolution status to minimize data collection downtime."
+      },
+      "problem": "Academic field research technicians currently rely on fragmented communication channels (email, messaging apps, paper logs) to report device damage or malfunctions during fieldwork, leading to delayed repairs, miscommunication, and increased data loss risk. There is no dedicated lightweight digital tool to standardize damage reporting, automate repair coordination with lab managers or service providers, and track repair progress in an integrated workflow.",
+      "inputs": [
+        "Device metadata (ID, model, deployment location)",
+        "Damage/malfunction description",
+        "Date/time of issue occurrence",
+        "Photos or videos of damage",
+        "Urgency level",
+        "Repair notes and communication logs",
+        "Repair provider contact details"
+      ],
+      "outputs": [
+        "Standardized damage report summaries",
+        "Automated repair request dispatches to relevant personnel or vendors",
+        "Repair status dashboards with timeline tracking",
+        "Alerts and reminders for pending repairs or follow-ups",
+        "Repair cost and downtime impact estimations"
+      ],
+      "whyItWins": [
+        "Addresses a workflow gap not covered by existing equipment usage or calibration trackers by focusing on damage reporting and repair coordination",
+        "Reduces downtime and data loss risk by streamlining communication and tracking repair progress in real-time",
+        "Improves accountability and documentation for compliance and funding audits",
+        "Supports repeated use during multi-site, multi-device field deployments",
+        "Initial lightweight tool can scale into a comprehensive multi-page system combining inventory, damage, repair, and maintenance management"
+      ],
+      "upgradePath": {
+        "today": "Provide a simple form-based web app for technicians to submit damage reports with photo uploads and send automated email notifications to lab managers and repair vendors, with basic status tracking.",
+        "in90Days": "Add repair status dashboards, repair cost tracking, messaging features for communication between field technicians, lab managers, and vendors, plus analytics on damage frequency and repair turnaround times.",
+        "in12Months": "Develop a full multi-page system integrating device inventory, deployment scheduling, damage reporting, repair workflows, maintenance forecasting, budgeting for repairs, and compliance reporting with role-based access controls."
+      },
+      "riskNotes": [
+        "Must ensure secure handling of potentially sensitive location and device metadata to protect field site privacy.",
+        "Avoid any medical or legal advice in repair recommendations; focus purely on reporting and coordination.",
+        "Require clear disclaimers about responsibility for repairs and liability to avoid misinterpretations.",
+        "Ensure offline data capture capability or sync to accommodate remote field conditions with intermittent connectivity."
+      ]
+    },
+    "blueprint": {
+      "level": "multi-page-app",
+      "summary": "A multi-page web application designed to enable academic field research technicians to quickly report equipment damage, coordinate repairs with lab managers and vendors, and track repair progress to minimize downtime and data loss during field deployments.",
+      "primaryUser": "Academic field research technicians",
+      "successMetrics": [
+        "Reduction in average equipment downtime after damage reports",
+        "Increase in timely repair completions",
+        "User adoption rate among field technicians and lab managers",
+        "Number of damage reports submitted with complete metadata and media",
+        "Improved repair cost tracking accuracy",
+        "Positive user feedback on communication and coordination features"
+      ],
+      "components": [
+        {
+          "id": "ui-damage-report",
+          "name": "Damage Reporting UI",
+          "type": "ui",
+          "responsibility": "Provide technicians with forms to submit standardized damage reports including device metadata, descriptions, media uploads, and urgency levels.",
+          "dependsOn": [
+            "api-damage-report",
+            "api-auth",
+            "data-devices"
+          ],
+          "notes": [
+            "Supports offline data capture with local caching and sync.",
+            "Validates required fields and media file types/sizes.",
+            "Handles error states such as failed uploads or connectivity loss."
+          ]
+        },
+        {
+          "id": "ui-repair-dashboard",
+          "name": "Repair Status Dashboard UI",
+          "type": "ui",
+          "responsibility": "Display real-time repair status, timelines, cost estimates, and communication logs for reported damages to technicians, lab managers, and vendors.",
+          "dependsOn": [
+            "api-repair-status",
+            "api-auth",
+            "data-repairs"
+          ],
+          "notes": [
+            "Supports filtering by device, location, urgency, and status.",
+            "Includes alert notifications for pending repairs or follow-ups."
+          ]
+        },
+        {
+          "id": "api-damage-report",
+          "name": "Damage Report API",
+          "type": "api",
+          "responsibility": "Receive, validate, and persist damage reports; trigger notifications to lab managers and repair vendors; provide endpoints for querying damage reports.",
+          "dependsOn": [
+            "data-damage-reports",
+            "integration-email",
+            "api-auth"
+          ],
+          "notes": [
+            "Implements rate limiting and input sanitization to prevent abuse.",
+            "Handles partial uploads and retries for media attachments."
+          ]
+        },
+        {
+          "id": "api-repair-status",
+          "name": "Repair Coordination API",
+          "type": "api",
+          "responsibility": "Manage repair workflows including status updates, cost tracking, communication logs, and timeline tracking; provide endpoints for dashboard data and messaging.",
+          "dependsOn": [
+            "data-repairs",
+            "data-communications",
+            "api-auth"
+          ],
+          "notes": [
+            "Supports role-based access control for field technicians, lab managers, and vendors.",
+            "Ensures audit trails for compliance and accountability."
+          ]
+        },
+        {
+          "id": "data-devices",
+          "name": "Device Inventory Data Store",
+          "type": "data",
+          "responsibility": "Persist device metadata including ID, model, and deployment location to associate with damage reports and repairs.",
+          "dependsOn": [],
+          "notes": [
+            "Sensitive location data is encrypted at rest.",
+            "Supports multi-site and multi-device deployments."
+          ]
+        },
+        {
+          "id": "data-damage-reports",
+          "name": "Damage Reports Data Store",
+          "type": "data",
+          "responsibility": "Store submitted damage reports with descriptions, timestamps, media references, urgency, and associated device IDs.",
+          "dependsOn": [
+            "data-devices"
+          ],
+          "notes": [
+            "Media files stored in secure object storage with access controls.",
+            "Supports versioning or updates to reports."
+          ]
+        },
+        {
+          "id": "data-repairs",
+          "name": "Repair Workflows Data Store",
+          "type": "data",
+          "responsibility": "Persist repair status, cost estimates, timelines, repair provider contacts, and resolution notes linked to damage reports.",
+          "dependsOn": [
+            "data-damage-reports"
+          ],
+          "notes": [
+            "Tracks repair lifecycle states (e.g., reported, in progress, completed).",
+            "Supports cost and downtime impact estimations."
+          ]
+        },
+        {
+          "id": "data-communications",
+          "name": "Communication Logs Data Store",
+          "type": "data",
+          "responsibility": "Store messaging and communication logs between technicians, lab managers, and vendors related to repairs.",
+          "dependsOn": [
+            "data-repairs"
+          ],
+          "notes": [
+            "Supports audit and compliance requirements.",
+            "Includes timestamps and sender metadata."
+          ]
+        },
+        {
+          "id": "integration-email",
+          "name": "Email Notification Integration",
+          "type": "integration",
+          "responsibility": "Send automated email notifications for new damage reports, repair requests, status updates, and reminders to relevant personnel and vendors.",
+          "dependsOn": [
+            "api-damage-report",
+            "api-repair-status"
+          ],
+          "notes": [
+            "Handles email delivery failures with retries and alerts.",
+            "Templates include disclaimers about repair responsibility and liability."
+          ]
+        },
+        {
+          "id": "job-sync-offline-data",
+          "name": "Offline Data Sync Job",
+          "type": "job",
+          "responsibility": "Synchronize locally cached damage reports and updates from offline clients to the central data store when connectivity is restored.",
+          "dependsOn": [
+            "data-damage-reports",
+            "api-damage-report"
+          ],
+          "notes": [
+            "Handles conflict resolution for concurrent updates.",
+            "Ensures data integrity and prevents duplicates."
+          ]
+        },
+        {
+          "id": "job-reminder-alerts",
+          "name": "Repair Reminder and Alert Job",
+          "type": "job",
+          "responsibility": "Periodically scan pending repairs to send alerts and reminders for follow-ups or overdue repairs to assigned users.",
+          "dependsOn": [
+            "data-repairs",
+            "integration-email"
+          ],
+          "notes": [
+            "Configurable thresholds for alert timing and escalation.",
+            "Logs alert delivery status for audit."
+          ]
+        }
+      ],
+      "dataModels": [
+        {
+          "name": "Device",
+          "purpose": "Store metadata about field research devices deployed at various locations.",
+          "fields": [
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "model",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deploymentLocation",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "locationCoordinates",
+              "type": "json",
+              "optional": true
+            }
+          ],
+          "indexes": [
+            "deviceId",
+            "deploymentLocation"
+          ]
+        },
+        {
+          "name": "DamageReport",
+          "purpose": "Record details of reported equipment damage or malfunction.",
+          "fields": [
+            {
+              "name": "reportId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "deviceId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "dateTimeReported",
+              "type": "date",
+              "optional": false
+            },
+            {
+              "name": "mediaUrls",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "urgencyLevel",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reporterId",
+              "type": "string",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "reportId",
+            "deviceId",
+            "urgencyLevel"
+          ]
+        },
+        {
+          "name": "Repair",
+          "purpose": "Track repair workflow, status, cost, and communication related to a damage report.",
+          "fields": [
+            {
+              "name": "repairId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "reportId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "assignedTo",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "repairProviderContact",
+              "type": "json",
+              "optional": true
+            },
+            {
+              "name": "costEstimate",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "downtimeEstimateHours",
+              "type": "number",
+              "optional": true
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "lastUpdated",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "repairId",
+            "reportId",
+            "status"
+          ]
+        },
+        {
+          "name": "CommunicationLog",
+          "purpose": "Store messages and notes exchanged regarding repair coordination.",
+          "fields": [
+            {
+              "name": "messageId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "repairId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "senderId",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "messageContent",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "timestamp",
+              "type": "date",
+              "optional": false
+            }
+          ],
+          "indexes": [
+            "messageId",
+            "repairId",
+            "senderId"
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "route": "/report-damage",
+          "title": "Report Equipment Damage",
+          "purpose": "Allow technicians to submit new damage reports with device selection, description, media upload, and urgency level.",
+          "inputs": [
+            "deviceId",
+            "description",
+            "dateTimeReported",
+            "mediaFiles",
+            "urgencyLevel"
+          ],
+          "outputs": [
+            "confirmation of report submission",
+            "error messages for validation failures"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/repair-dashboard",
+          "title": "Repair Status Dashboard",
+          "purpose": "Provide an overview of repair statuses, timelines, cost estimates, and communication logs for users based on their role and permissions.",
+          "inputs": [
+            "filters (device, location, status, urgency)"
+          ],
+          "outputs": [
+            "list of repair cases",
+            "detailed repair timelines",
+            "alerts and reminders"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/repair-details/:repairId",
+          "title": "Repair Details and Communication",
+          "purpose": "Show detailed repair information and enable messaging between technicians, lab managers, and vendors.",
+          "inputs": [
+            "repairId",
+            "new messages or notes"
+          ],
+          "outputs": [
+            "repair status and notes",
+            "communication log",
+            "update confirmations"
+          ],
+          "requiresAuth": true
+        },
+        {
+          "route": "/login",
+          "title": "User Login",
+          "purpose": "Authenticate users to access the system with role-based permissions.",
+          "inputs": [
+            "username",
+            "password"
+          ],
+          "outputs": [
+            "authentication token or session",
+            "error messages"
+          ],
+          "requiresAuth": false
+        }
+      ],
+      "apiRoutes": [
+        {
+          "route": "/api/damage-reports",
+          "method": "POST",
+          "purpose": "Submit a new damage report with metadata and media references.",
+          "requestShape": "{ deviceId, description, dateTimeReported, mediaFiles, urgencyLevel }",
+          "responseShape": "{ reportId, status, message }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/repair-status",
+          "method": "GET",
+          "purpose": "Retrieve repair statuses and summaries filtered by device, location, or urgency.",
+          "requestShape": "{ filters }",
+          "responseShape": "{ repairs: [ { repairId, status, costEstimate, downtimeEstimateHours, lastUpdated } ] }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/repair-details/:repairId",
+          "method": "GET",
+          "purpose": "Get detailed information and communication logs for a specific repair.",
+          "requestShape": "{ repairId }",
+          "responseShape": "{ repairDetails, communicationLogs }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/repair-details/:repairId",
+          "method": "POST",
+          "purpose": "Post a new communication message or update to a repair case.",
+          "requestShape": "{ repairId, messageContent }",
+          "responseShape": "{ messageId, status }",
+          "auth": "user"
+        },
+        {
+          "route": "/api/auth/login",
+          "method": "POST",
+          "purpose": "Authenticate user credentials and issue access tokens.",
+          "requestShape": "{ username, password }",
+          "responseShape": "{ token, userRole }",
+          "auth": "public"
+        }
+      ],
+      "backgroundJobs": [
+        {
+          "name": "Offline Data Sync Job",
+          "trigger": "Triggered when client reconnects after offline period",
+          "purpose": "Synchronize locally cached damage reports and updates to central data store ensuring data integrity and conflict resolution."
+        },
+        {
+          "name": "Repair Reminder and Alert Job",
+          "trigger": "Runs periodically (e.g., daily)",
+          "purpose": "Send alerts and reminders for pending or overdue repairs to assigned users via email notifications."
+        }
+      ],
+      "edgeCases": [
+        "Intermittent or no connectivity in remote field locations requiring offline data capture and later synchronization.",
+        "Partial or corrupted media uploads requiring retry mechanisms and user feedback.",
+        "Conflicting updates to repair status or communication logs from multiple users simultaneously.",
+        "Unauthorized access attempts or role escalation attempts requiring strict authentication and authorization.",
+        "Sensitive location data exposure risks mitigated by encryption and access controls.",
+        "Failure of email delivery for notifications with retry and fallback strategies.",
+        "Users submitting incomplete or inaccurate damage reports requiring validation and optional follow-up."
+      ],
+      "nonGoals": [
+        "Providing medical or legal advice related to equipment repairs.",
+        "Replacing full inventory or calibration management systems at initial stages.",
+        "Handling physical repair logistics beyond coordination and communication (e.g., shipping or onsite repair execution).",
+        "Supporting non-academic or commercial equipment outside the scope of academic field research.",
+        "Real-time device telemetry or automated fault detection."
+      ]
+    },
+    "expanded": {
+      "dataFlow": [
+        "User accesses /login page and submits username and password to POST /api/auth/login.",
+        "Upon successful authentication, user receives token and role, stored client-side for subsequent requests.",
+        "Authenticated user navigates to /report-damage page.",
+        "User selects deviceId from device inventory fetched from data-devices via API or preloaded data.",
+        "User fills damage report form including description, dateTimeReported, urgencyLevel, and uploads media files.",
+        "Client validates inputs and media files locally, caches data if offline.",
+        "On submit, client sends POST /api/damage-reports with damage report data and media references.",
+        "api-damage-report validates input, stores damage report in data-damage-reports, stores media in secure object storage, triggers email notifications via integration-email to lab managers and vendors.",
+        "User navigates to /repair-dashboard page, client fetches repair summaries via GET /api/repair-status with optional filters.",
+        "api-repair-status queries data-repairs and related data, applies role-based access control, returns filtered repair cases with status, cost, downtime estimates, and last updated timestamps.",
+        "User selects a repair case, navigates to /repair-details/:repairId.",
+        "Client fetches detailed repair info and communication logs via GET /api/repair-details/:repairId.",
+        "User can post new messages or updates via POST /api/repair-details/:repairId with message content.",
+        "api-repair-status validates and persists communication logs in data-communications, updates repair status or notes as needed, triggers notifications if applicable.",
+        "Offline clients cache damage reports and updates locally; upon reconnect, job-sync-offline-data synchronizes cached data with api-damage-report ensuring conflict resolution and data integrity.",
+        "job-reminder-alerts runs periodically to scan pending repairs in data-repairs, sends email alerts via integration-email to assigned users, logs alert delivery status."
+      ],
+      "validationRules": [
+        "Authentication required for all pages and APIs except /login and /api/auth/login.",
+        "Damage report submission requires: deviceId (existing device), description (non-empty), dateTimeReported (valid date, not future), urgencyLevel (one of predefined levels: low, medium, high, critical), mediaFiles (optional, only allowed types: jpg, png, mp4, max size 10MB each).",
+        "Media uploads must be validated for file type and size before upload; partial uploads must support retry.",
+        "Repair status API filters must be validated for allowed fields and values.",
+        "Repair details API requires valid repairId belonging to user’s accessible scope.",
+        "Communication messages require non-empty messageContent, repairId must be valid and accessible.",
+        "Input sanitization on all string fields to prevent injection attacks.",
+        "Rate limiting on damage report submissions to prevent abuse (e.g., max 5 reports per user per hour).",
+        "Offline data sync must validate no duplicate reports or conflicting updates; conflicts resolved by latest timestamp or user confirmation.",
+        "Role-based access control enforced on all APIs: technicians can report and view their reports; lab managers and vendors have extended access per roles."
+      ],
+      "errorHandling": [
+        "Return 401 Unauthorized for unauthenticated or unauthorized API requests.",
+        "Return 400 Bad Request with detailed validation error messages for invalid inputs.",
+        "Return 429 Too Many Requests when rate limits exceeded.",
+        "Handle media upload failures with retry logic and user feedback on client side.",
+        "On partial media upload failure, allow resuming or re-uploading files.",
+        "Gracefully handle offline scenarios by caching data locally and informing user of sync status.",
+        "Log all API errors server-side with context for debugging and audit.",
+        "Email delivery failures logged and retried with exponential backoff; alert admins if persistent failures occur.",
+        "Conflict resolution errors during offline sync prompt user for manual review or automatic resolution based on timestamps.",
+        "Return 500 Internal Server Error for unexpected failures with generic error message to user."
+      ],
+      "securityNotes": [
+        "All API routes require authentication tokens validated on server side.",
+        "Role-based access control restricts data visibility and actions per user role (technician, lab manager, vendor).",
+        "Sensitive location data in Device model encrypted at rest in database.",
+        "Media files stored in secure object storage with access controls limiting access to authorized users only.",
+        "Input sanitization prevents injection and XSS attacks.",
+        "Rate limiting protects against brute force and abuse.",
+        "Audit trails maintained for all repair status changes and communication logs.",
+        "Email templates include disclaimers and avoid leaking sensitive data.",
+        "Offline data sync includes conflict detection to prevent unauthorized overwrites.",
+        "Use HTTPS for all client-server communications."
+      ],
+      "acceptanceTests": [
+        {
+          "id": "AT-001",
+          "given": "An authenticated technician on /report-damage page",
+          "when": "They submit a damage report with valid deviceId, description, dateTimeReported, urgencyLevel, and media files",
+          "then": "The system stores the report, uploads media, sends notification emails, and returns confirmation with reportId"
+        },
+        {
+          "id": "AT-002",
+          "given": "A user accesses /repair-dashboard with valid authentication",
+          "when": "They apply filters for device and urgency level",
+          "then": "The system returns a filtered list of repair cases with status, cost estimates, and last updated timestamps"
+        },
+        {
+          "id": "AT-003",
+          "given": "A user views /repair-details/:repairId with valid access",
+          "when": "They fetch repair details and post a new communication message",
+          "then": "The system returns repair details and communication logs, accepts the new message, and confirms messageId and status"
+        },
+        {
+          "id": "AT-004",
+          "given": "A user submits damage report with missing required fields or invalid media type",
+          "when": "They attempt to submit the form",
+          "then": "The system rejects submission with appropriate validation error messages"
+        },
+        {
+          "id": "AT-005",
+          "given": "A user tries to access /repair-dashboard without authentication",
+          "when": "They navigate to the page",
+          "then": "The system redirects to /login or returns 401 Unauthorized"
+        },
+        {
+          "id": "AT-006",
+          "given": "An offline technician submits damage reports locally",
+          "when": "The device reconnects to the internet",
+          "then": "The offline data sync job synchronizes cached reports without duplicates or conflicts"
+        },
+        {
+          "id": "AT-007",
+          "given": "A repair is pending beyond configured threshold",
+          "when": "The reminder alert job runs",
+          "then": "The system sends email alerts to assigned users and logs delivery status"
+        },
+        {
+          "id": "AT-008",
+          "given": "A user attempts to escalate role or access unauthorized repair data",
+          "when": "They make API requests beyond their permissions",
+          "then": "The system denies access with 403 Forbidden"
+        }
+      ],
+      "buildOrder": [
+        "Define Prisma data models for Device, DamageReport, Repair, CommunicationLog with indexes and encryption for sensitive fields.",
+        "Implement authentication API (/api/auth/login) with role-based token issuance.",
+        "Implement data-devices API or data access layer for device inventory.",
+        "Implement api-damage-report POST endpoint with validation, media upload handling, persistence, and email notification integration.",
+        "Implement offline data sync job to handle cached damage reports synchronization with conflict resolution.",
+        "Implement api-repair-status GET endpoint with filtering, role-based access control, and data aggregation.",
+        "Implement api-repair-details GET and POST endpoints for detailed repair info and communication logs with validation and audit trails.",
+        "Implement integration-email module for sending notification emails with retry and logging.",
+        "Implement job-reminder-alerts for periodic scanning and alerting of pending repairs.",
+        "Develop /login page with authentication form and token storage.",
+        "Develop /report-damage page with device selection, form validation, media upload UI, offline caching, and submission handling.",
+        "Develop /repair-dashboard page with filtering UI, real-time repair status display, and alert notifications.",
+        "Develop /repair-details/:repairId page with detailed repair info, communication log display, and messaging UI.",
+        "Implement client-side error handling and offline support mechanisms.",
+        "Perform security testing, validation testing, and acceptance testing."
+      ],
+      "scaffolds": {
+        "nextRoutesToCreate": [
+          "/login",
+          "/report-damage",
+          "/repair-dashboard",
+          "/repair-details/[repairId]"
+        ],
+        "apiFilesToCreate": [
+          "/api/auth/login.js",
+          "/api/damage-reports/index.js",
+          "/api/repair-status/index.js",
+          "/api/repair-details/[repairId].js"
+        ],
+        "prismaModelsToAdd": [
+          "model Device { deviceId String @id @unique model String deploymentLocation String locationCoordinates Json? }",
+          "model DamageReport { reportId String @id @unique deviceId String description String dateTimeReported DateTime mediaUrls Json? urgencyLevel String reporterId String }",
+          "model Repair { repairId String @id @unique reportId String status String assignedTo String? repairProviderContact Json? costEstimate Float? downtimeEstimateHours Float? notes String? lastUpdated DateTime }",
+          "model CommunicationLog { messageId String @id @unique repairId String senderId String messageContent String timestamp DateTime }"
+        ]
+      }
+    },
+    "nextPrompts": [
+      {
+        "id": "planner-refine-requirements",
+        "title": "Planner: refine requirements",
+        "purpose": "Ask the user for any missing constraints or details about the damage reporting and repair coordination workflow to clarify scope and requirements.",
+        "promptTemplate": "You are the planner. Based on the current blueprint and expanded specs: {{BLUEPRINT}} {{EXPANDED}}\nPlease ask the user for any missing constraints, edge cases, or specific workflow details needed to refine the requirements for the Academic Research Fieldwork Equipment Damage Reporting & Repair Coordination System. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "architect-finalize-design",
+        "title": "Architect: finalize pages + data models",
+        "purpose": "Refine and finalize the list of pages, data models, APIs, and security requirements for the system before development.",
+        "promptTemplate": "You are the architect. Using the idea, blueprint, and expanded specs: {{IDEA}} {{BLUEPRINT}} {{EXPANDED}}\nPlease produce a finalized design for pages, data models, API routes, and security considerations to implement the Academic Research Fieldwork Equipment Damage Reporting & Repair Coordination System. Include any refinements or additions needed. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "builder-generate-page-stubs",
+        "title": "Builder: generate page stubs",
+        "purpose": "Generate initial code stubs and UI scaffolding for the planned pages to enable quick prototyping and iterative development.",
+        "promptTemplate": "You are the builder. Given the finalized design and scaffold routes: {{SCAFFOLDS_NEXT_ROUTES}} and data models: {{SCAFFOLDS_PRISMA_MODELS}}\nGenerate code stubs or UI component scaffolds for the following pages to implement the Academic Research Fieldwork Equipment Damage Reporting & Repair Coordination System. User input: {{USER_INPUT}}"
+      },
+      {
+        "id": "integrator-wire-system",
+        "title": "Integrator: wire pages -> API -> DB",
+        "purpose": "Create integration logic connecting front-end pages, API endpoints, and database models for full end-to-end functionality.",
+        "promptTemplate": "You are the integrator. Using the finalized APIs, pages, and data models: {{BLUEPRINT}} {{EXPANDED}} {{SCAFFOLDS}}\nGenerate code and configuration to wire the front-end pages to backend APIs and database models, ensuring authentication, validation, error handling, and offline support for the Academic Research Fieldwork Equipment Damage Reporting & Repair Coordination System. User input: {{USER_INPUT}}"
+      }
+    ]
+  }
+}
